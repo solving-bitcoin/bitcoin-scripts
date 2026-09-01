@@ -10,7 +10,7 @@ use bitcoin::consensus::encode::serialize;
 use bitcoin::Witness;
 use bitcoin_lab::{
     arithmetic::{bigint::U254, rns, scriptint, u31, u32, u4},
-    ciphers::prince,
+    ciphers::{aes, prince},
     commitments::{
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
         verify_hash_path_to_integer, verify_preimage_length,
@@ -99,6 +99,14 @@ fn metrics() -> Vec<Metric> {
     let length_commitment = preimage_length_commitment(&length_preimage);
 
     let division_witness = vec![scriptnum(14), scriptnum(119)];
+    let aes_zero_key = [0u8; 16];
+    let aes_stack_script = script! {
+        { aes::aes128_encrypt(aes_zero_key) }
+        for _ in 0..16 {
+            OP_2DROP
+        }
+        OP_1
+    };
 
     vec![
         Metric {
@@ -490,6 +498,26 @@ fn metrics() -> Vec<Metric> {
             readme: "src/ciphers/prince/README.md",
             key: "prince_witness_max",
             value: witness_size(&vec![vec![1]; 16]),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_zero_key)),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_witness_min",
+            value: witness_size(&vec![Vec::new(); 32]),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_witness_max",
+            value: witness_size(&vec![vec![1]; 32]),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_stack",
+            value: max_stack_items(aes_stack_script, vec![Vec::new(); 32]),
         },
         Metric {
             readme: "src/curves/bn254/fields/README.md",

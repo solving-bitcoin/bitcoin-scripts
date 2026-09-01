@@ -10,7 +10,7 @@ src/
 ├── commitments/      # Integer hash-path and preimage-length commitments
 ├── hashes/           # RIPEMD-160, SHA-1, SHA-256, and BLAKE3
 ├── signatures/       # Lamport, HORS, and Winternitz OTS
-├── ciphers/          # PRINCEv2
+├── ciphers/          # AES-128 and PRINCEv2
 ├── curves/           # BN254 fields, groups, and pairing
 └── support/          # Script execution and shared pseudo-op helpers
 ```
