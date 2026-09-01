@@ -869,7 +869,7 @@
         "mixed-hash-path"
       ],
       "security": "Hiding depends on a secret high-entropy preimage; binding assumes the fixed-length mixed SHA-256/RIPEMD-160 schedule, and final RIPEMD-160 limits generic collision resistance to 80 bits.",
-      "stack_contract": "... digitN-1 ... digit0 preimage -> ... value",
+      "stack_contract": "... least_significant_digit ... most_significant_digit preimage -> ... value",
       "configurations": [
         {
           "id": "integer-31",
@@ -880,14 +880,14 @@
             "preimage_bytes": 32
           },
           "includes": "fragment-only: verifier and base-4 integer reconstruction; witness includes serialized digits and preimage",
-          "script_bytes": 653,
+          "script_bytes": 453,
           "witness_bytes": 61,
           "witness_bytes_max": 61,
-          "max_stack_items": 20,
+          "max_stack_items": 19,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 653,
+          "per_use_script_bytes": 453,
           "metric_keys": [
             "four_way_hash_path_integer_31",
             "four_way_hash_path_integer_witness_31",
@@ -897,7 +897,8 @@
       ],
       "limitations": [
         "Non-standard mixed-hash construction without dedicated cryptanalysis",
-        "Larger locking fragment than the binary mixed-hash path at the measured 31-bit configuration",
+        "Compact range validation relies on tapscript consensus MINIMALIF and is unsafe under legacy/P2WSH semantics without explicit checks",
+        "Digit values are bound, but byte-unique ScriptNum encodings are not guaranteed without MINIMALDATA",
         "Integer reconstruction limited to 31 bits",
         "Witness-input tests disable the stack limit; Bitcoin Core consensus and policy validation not performed"
       ],

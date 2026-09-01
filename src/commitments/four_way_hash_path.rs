@@ -15,8 +15,8 @@ use super::hash_path::MAX_INTEGER_BITS;
 /// Compute the four-way hash-path commitment for `digits`, starting from
 /// `preimage`.
 ///
-/// Digits are processed least-significant first and must be in `0..=3`. For
-/// each digit, its high bit selects the first hash (`0 -> SHA-256`,
+/// Digits are processed in slice order and must be in `0..=3`. For each
+/// digit, its high bit selects the first hash (`0 -> SHA-256`,
 /// `1 -> RIPEMD-160`) and its low bit selects the second hash using the same
 /// mapping. A final RIPEMD-160 produces the 20-byte commitment.
 pub fn four_way_hash_path_commitment(preimage: &[u8], digits: &[u8]) -> [u8; 20] {
@@ -39,10 +39,11 @@ pub fn four_way_hash_path_commitment(preimage: &[u8], digits: &[u8]) -> [u8; 20]
 
 /// Build the canonical witness for a generic four-way hash path.
 ///
-/// The returned vector is in witness serialization order: the most
-/// significant digit is deepest, digit zero is immediately below `preimage`,
-/// and `preimage` is the top item. Digits use canonical Script-number
-/// encodings: zero is empty and `1..=3` are one-byte items.
+/// The returned vector is in witness serialization order: the last digit is
+/// deepest, the first digit is immediately below `preimage`, and `preimage`
+/// is the top item. The builder uses minimal Script-number encodings: zero is
+/// empty and `1..=3` are one-byte items. The commitment binds numeric digit
+/// values, not necessarily a byte-unique encoding under every script flag set.
 pub fn four_way_hash_path_witness(preimage: &[u8], digits: &[u8]) -> Vec<Vec<u8>> {
     let mut witness = digits
         .iter()
@@ -72,7 +73,7 @@ pub fn four_way_hash_path_integer_commitment(
     four_way_hash_path_commitment(preimage, &digits)
 }
 
-/// Build the canonical witness for
+/// Build the minimally encoded witness for
 /// [`verify_four_way_hash_path_to_integer`].
 pub fn four_way_hash_path_integer_witness(
     preimage: &[u8],
@@ -90,6 +91,7 @@ fn integer_digits(value: u32, bit_width: usize) -> Vec<u8> {
         "value does not fit in bit_width"
     );
     (0..bit_width.div_ceil(2))
+        .rev()
         .map(|index| ((value >> (2 * index)) & 3) as u8)
         .collect()
 }
@@ -107,8 +109,9 @@ fn assert_integer_width(bit_width: usize) {
 /// Stack before (top first): `preimage, digit0, ..., digitN-1`.
 /// Stack after: `commitment`.
 ///
-/// Each digit is required to use the canonical Script-number encoding of a
-/// value in `0..=3`.
+/// This fragment is tapscript-specific: its final `OP_IF` uses consensus
+/// `MINIMALIF` to reject selectors outside `0..=3`. It must not be used under
+/// legacy or P2WSH consensus semantics without an explicit range check.
 pub fn four_way_hash_path_script(digit_count: usize) -> Script {
     assert!(digit_count > 0, "digit_count must be non-zero");
     four_way_hash_path_script_inner(digit_count, false)
@@ -118,20 +121,42 @@ fn four_way_hash_path_script_inner(digit_count: usize, save_digits: bool) -> Scr
     assert!(digit_count > 0, "digit_count must be non-zero");
     script! {
         for _ in 0..digit_count {
+            { four_way_hash_path_step(save_digits, false, false) }
+        }
+        OP_RIPEMD160
+    }
+}
+
+/// Process one digit. `accumulate_digit` keeps a base-4 accumulator on the
+/// altstack; `binary_digit` specializes a known `0..=1` most-significant digit.
+fn four_way_hash_path_step(save_digit: bool, accumulate_digit: bool, binary_digit: bool) -> Script {
+    assert!(!(save_digit && accumulate_digit));
+    script! {
+        if binary_digit {
+            // The most-significant 0/1 digit always begins with SHA-256, so
+            // hash the top state before bringing its selector to the top.
+            OP_SHA256 OP_SWAP
+        } else {
             OP_SWAP
+        }
 
-            // Enforce canonical Script-number encoding. For 0..=3, the
-            // encoded length is exactly the truth value of the digit: zero is
-            // empty and every non-zero digit is one byte.
-            OP_DUP OP_SIZE OP_SWAP OP_0NOTEQUAL OP_EQUALVERIFY
-            OP_DUP 0 4 OP_WITHIN OP_VERIFY
+        if save_digit {
+            OP_DUP OP_TOALTSTACK
+        }
 
-            if save_digits {
-                OP_DUP OP_TOALTSTACK
-            }
+        if accumulate_digit {
+            // accumulator = accumulator * 4 + digit, while retaining a copy
+            // of the digit for hash dispatch.
+            OP_DUP OP_FROMALTSTACK
+            OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
+            OP_TOALTSTACK
+        }
 
-            // The high bit selects the first hash and the low bit the second:
-            // 0 -> SS, 1 -> SR, 2 -> RS, 3 -> RR.
+        if binary_digit {
+            // The first hash was performed before the selector was moved.
+        } else {
+            // The high bit selects the first hash and normalizes the remaining
+            // selector to the low bit.
             OP_DUP 2 OP_LESSTHAN
             OP_IF
                 OP_SWAP OP_SHA256 OP_SWAP
@@ -139,13 +164,15 @@ fn four_way_hash_path_script_inner(digit_count: usize, save_digits: bool) -> Scr
                 2 OP_SUB
                 OP_SWAP OP_RIPEMD160 OP_SWAP
             OP_ENDIF
-            OP_IF
-                OP_RIPEMD160
-            OP_ELSE
-                OP_SHA256
-            OP_ENDIF
         }
-        OP_RIPEMD160
+        // The low bit selects the second hash. In tapscript, consensus
+        // MINIMALIF also proves that the normalized selector is 0 or 1. Thus
+        // the original digit was 0/1 in the binary case or 0..=3 otherwise.
+        OP_IF
+            OP_RIPEMD160
+        OP_ELSE
+            OP_SHA256
+        OP_ENDIF
     }
 }
 
@@ -178,7 +205,8 @@ pub fn verify_four_way_hash_path_to_altstack(digit_count: usize, commitment: [u8
 
 /// Verify a four-way hash-path commitment and return its committed integer.
 ///
-/// Stack before (top first): `preimage, digit0, ..., digitN-1`.
+/// Stack before (top first): `preimage, most_significant_digit, ...,
+/// least_significant_digit`.
 /// Stack after: the non-negative Script integer represented by those base-4
 /// digits. `bit_width` must be in `1..=31`; an odd width restricts the most
 /// significant digit to `0..=1`.
@@ -188,20 +216,17 @@ pub fn verify_four_way_hash_path_to_integer(bit_width: usize, commitment: [u8; 2
     let restrict_top_digit = bit_width % 2 == 1;
 
     script! {
-        { four_way_hash_path_script_inner(digit_count, true) }
+        // Process most-significant first so reconstruction can share the hash
+        // pass instead of retaining every digit for a second pass.
+        for index in 0..digit_count {
+            // The first digit is the initial accumulator; later digits update
+            // it with accumulator * 4 + digit.
+            { four_way_hash_path_step(index == 0, index != 0, restrict_top_digit && index == 0) }
+        }
+        OP_RIPEMD160
         { commitment.to_vec() }
         OP_EQUALVERIFY
-
-        0
-        for index in 0..digit_count {
-            // Digits leave the altstack from most to least significant.
-            OP_FROMALTSTACK
-            if restrict_top_digit && index == 0 {
-                OP_DUP 0 2 OP_WITHIN OP_VERIFY
-            }
-            // accumulator = accumulator * 4 + digit
-            OP_SWAP OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
-        }
+        OP_FROMALTSTACK
     }
 }
 
@@ -301,7 +326,7 @@ mod tests {
     }
 
     #[test]
-    fn non_canonical_digit_fails() {
+    fn non_minimal_digit_fails_under_local_minimaldata() {
         let preimage = [0x23; 32];
         let commitment = four_way_hash_path_integer_commitment(&preimage, 1, 2);
         let witness = vec![vec![1, 0], preimage.to_vec()];
@@ -335,12 +360,27 @@ mod tests {
     #[test]
     fn odd_width_rejects_oversized_top_digit() {
         let preimage = [0x25; 32];
-        let digits = [0, 2];
+        let digits = [2, 0];
         let commitment = four_way_hash_path_commitment(&preimage, &digits);
         let witness = four_way_hash_path_witness(&preimage, &digits);
         let result = execute_script_with_inputs(
             script! {
                 { verify_four_way_hash_path_to_integer(3, commitment) }
+                OP_DROP OP_1
+            },
+            witness,
+        );
+        assert!(!result.success);
+    }
+
+    #[test]
+    fn oversized_digit_encoding_fails() {
+        let preimage = [0x26; 32];
+        let commitment = four_way_hash_path_integer_commitment(&preimage, 0, 2);
+        let witness = vec![vec![0; 5], preimage.to_vec()];
+        let result = execute_script_with_inputs(
+            script! {
+                { verify_four_way_hash_path_to_integer(2, commitment) }
                 OP_DROP OP_1
             },
             witness,

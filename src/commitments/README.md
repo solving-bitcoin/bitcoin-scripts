@@ -12,7 +12,7 @@ not general-purpose hash functions.
 - **Preimage length:** a SHA-256 preimage is authenticated and its byte length,
   minus a public offset, becomes the committed integer.
 
-Both are experimental. In particular, a hash-path commitment without a secret,
+All three are experimental. In particular, a hash-path commitment without a secret,
 high-entropy preimage is deterministic and does not hide a small integer.
 
 ## Parameters
@@ -48,8 +48,8 @@ high-entropy preimage is deterministic and does not hide a small integer.
   SHA-256 (`S`) and RIPEMD-160 (`R`): `0 -> SS`, `1 -> SR`, `2 -> RS`, and
   `3 -> RR`. A final RIPEMD-160 produces the commitment.
 - The generic verifier consumes digits or retains them on the altstack; the
-  integer verifier reconstructs their base-4 value. There is no default
-  variant.
+  integer verifier hashes and reconstructs them most-significant first in one
+  pass. There is no default variant.
 
 ## Script metrics
 
@@ -61,7 +61,7 @@ the tests with the listed witness.
 | Fragment | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | `verify_hash_path_to_integer(31, commitment)` | <!-- metric:hash_path_integer_31 -->520<!-- /metric:hash_path_integer_31 --> bytes | <!-- metric:hash_path_integer_witness_31 -->78<!-- /metric:hash_path_integer_witness_31 --> bytes (32-byte nonce, 31 bits) | <!-- metric:hash_path_integer_stack_31 -->34<!-- /metric:hash_path_integer_stack_31 --> |
-| `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->653<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->20<!-- /metric:four_way_hash_path_integer_stack_31 --> |
+| `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->453<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->19<!-- /metric:four_way_hash_path_integer_stack_31 --> |
 | `verify_preimage_length(commitment)` | <!-- metric:preimage_length_default -->44<!-- /metric:preimage_length_default --> bytes | <!-- metric:preimage_length_witness_min -->18<!-- /metric:preimage_length_witness_min -->–<!-- metric:preimage_length_witness_max -->524<!-- /metric:preimage_length_witness_max --> bytes (16–520-byte preimage) | <!-- metric:preimage_length_stack -->3<!-- /metric:preimage_length_stack --> |
 
 ## Security
@@ -94,11 +94,14 @@ otherwise valid script. Bare outputs remain non-standard under default relay
 policy.
 
 Hash-path compatibility is parameter-dependent. Repeated branches and hashes
-can exceed the 201-opcode legacy limit, making wider configurations (including
-both measured 31-bit integer-returning variants) tapscript-only.
+can exceed the 201-opcode legacy limit. The binary path explicitly enforces
+canonical `[]`/`[1]` bits, including in legacy script. The four-way path is
+more restrictive: its compact range proof relies on tapscript's
+consensus-enforced `MINIMALIF`. It is unsafe under legacy or P2WSH consensus
+semantics without adding explicit range checks, even though every emitted
+opcode exists there. Both measured 31-bit variants are tapscript-only.
 Tapscript still enforces the 1,000-item combined stack limit, the 520-byte
-per-item limit, witness weight, and execution budget. The implementation
-explicitly enforces canonical `[]`/`[1]` bits, including in legacy script.
+per-item limit, witness weight, and execution budget.
 
 Neither fragment is a complete locking script by itself: callers must compose
 it with a predicate that leaves one truthy cleanstack item. See
@@ -114,10 +117,14 @@ bit0, preimage`; the preimage is therefore on top at script entry. A false bit
 is the empty vector and a true bit is `[01]`. `hash_path_integer_witness`
 produces this canonical encoding.
 
-For the four-way integer path, witness order is `digitN-1, ..., digit0,
-preimage`. Zero is encoded as the empty vector and `1..=3` as `[01]`, `[02]`,
-or `[03]`. The verifier rejects negative, out-of-range, and non-minimal digit
-encodings. `four_way_hash_path_integer_witness` produces the canonical form.
+For the four-way integer path, witness order is `least_significant_digit, ...,
+most_significant_digit, preimage`; the most-significant digit is processed
+first. Zero is encoded as the empty vector and `1..=3` as `[01]`, `[02]`, or
+`[03]`. Tapscript `MINIMALIF` rejects negative and out-of-range values. The
+helper produces minimal encodings, and the local executor's `MINIMALDATA`
+setting rejects non-minimal test witnesses. Numeric minimality is not itself a
+tapscript consensus rule, so callers must treat the digit value, rather than a
+unique byte representation, as committed.
 
 For the preimage-length construction, the witness contains the committed
 preimage as one item. The preimage is consumed and only the resulting integer
@@ -131,8 +138,9 @@ remains.
 - `verify_hash_path`: `... bitN-1 ... bit0 preimage -> ... true`.
 - `verify_hash_path_to_altstack` leaves true on the main stack and the bits on
   the altstack, with bit `N-1` on top.
-- `verify_four_way_hash_path_to_integer`: `... digitN-1 ... digit0 preimage ->
-  ... value`. It empties its temporary altstack state before returning.
+- `verify_four_way_hash_path_to_integer`: `... least_significant_digit ...
+  most_significant_digit preimage -> ... value`. It keeps only a running
+  accumulator on the altstack and empties it before returning.
 - `verify_four_way_hash_path`: `... digitN-1 ... digit0 preimage -> ... true`.
 - `verify_four_way_hash_path_to_altstack` leaves digit `N-1` on top of the
   altstack.
@@ -144,10 +152,13 @@ API. The preimage-length idea and hash-path family are independently implemented
 from the descriptions in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/).
 
-At 31 bits the four-way variant does not dominate the binary path: it uses 133
-more locking-script bytes while saving 17 serialized-witness bytes and 14 peak
-stack items. It is useful when witness weight or composition headroom matters
-more than fragment size. Correctness, malformed-witness, and metric tests run in
-the repository's tapscript-context executor; because witness-input execution
-disables the stack limit, these measurements are `research-unlimited`, not
-Bitcoin Core consensus or relay-policy validation.
+At 31 bits the four-way variant uses 67 fewer locking-script bytes, 17 fewer
+serialized-witness bytes, and 15 fewer peak stack items than the binary path.
+The savings come from processing two bits per dispatcher, reconstructing the
+integer during the hash pass, specializing the one-bit leading digit, and
+using tapscript `MINIMALIF` as the terminal selector-range check. Correctness,
+malformed-witness, and metric tests run in the repository's tapscript-context
+executor, and a representative test separately enables its stack-limit check.
+Because the general witness-input helper used by metrics disables that limit,
+the recorded execution class remains `research-unlimited`, not Bitcoin Core
+consensus or relay-policy validation.
