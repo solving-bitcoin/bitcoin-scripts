@@ -741,6 +741,7 @@ mod test {
     use std::str::FromStr;
 
     #[test]
+    #[ignore = "expensive BN254 Miller-loop Script execution; run explicitly with --ignored"]
     fn test_hinted_quad_miller_loop_with_c_wi() {
         let mut prng = ChaCha20Rng::seed_from_u64(0);
 

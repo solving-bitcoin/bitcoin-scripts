@@ -1,4 +1,4 @@
-# bitcoin-lab
+# bitcoin-scripts
 
 Experimental Bitcoin Script arithmetic and cryptographic primitives.
 
@@ -6,8 +6,9 @@ Experimental Bitcoin Script arithmetic and cryptographic primitives.
 
 ```text
 src/
-├── arithmetic/       # u4, u32, fixed-width bigint, and RNS
-├── hashes/           # SHA-256, BLAKE3, and BitHash128
+├── arithmetic/       # ScriptNum, u4, u31 fields, u32, bigint, and RNS
+├── commitments/      # Integer hash-path and preimage-length commitments
+├── hashes/           # SHA-256 and BLAKE3
 ├── signatures/       # Lamport, HORS, and Winternitz OTS
 ├── ciphers/          # PRINCEv2
 ├── curves/           # BN254 fields, groups, and pairing
@@ -20,9 +21,9 @@ compatibility, standardness, and witness hints. Shared interpretation notes are
 in [`docs/script-types.md`](docs/script-types.md) and
 [`docs/standardness.md`](docs/standardness.md).
 
-The cleaner domain paths are the canonical organization. Existing paths such
-as `bitcoin_lab::u4`, `bitcoin_lab::hash`, and `bitcoin_lab::bn254` remain
-available as compatibility re-exports.
+The cleaner domain paths are the canonical organization. Existing top-level
+paths such as `u4`, `hash`, and `bn254` remain available as compatibility
+re-exports.
 
 ## Metric snapshots
 

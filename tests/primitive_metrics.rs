@@ -9,13 +9,18 @@ use std::{env, fs, path::Path};
 use bitcoin::consensus::encode::serialize;
 use bitcoin::Witness;
 use bitcoin_lab::{
-    arithmetic::{bigint::U254, rns, u32, u4},
+    arithmetic::{bigint::U254, rns, scriptint, u31, u32, u4},
     ciphers::prince,
+    commitments::integer::{
+        hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
+        verify_hash_path_to_integer, verify_preimage_length,
+    },
     curves::bn254::{
         fields::{fp254::Fp254Impl, fq::Fq, fq2::Fq2, fr::Fr},
         groups::{g1::G1Affine, g2::G2Affine},
     },
-    hashes::{bithash, blake3, sha256},
+    execute_script_with_inputs,
+    hashes::{blake3, sha256},
     signatures::{hors, lamport, Wots, Wots32},
 };
 use bitcoin_script::script;
@@ -32,6 +37,18 @@ fn script_len(script: bitcoin_script::Script) -> usize {
 
 fn witness_size(items: &[Vec<u8>]) -> usize {
     serialize(&Witness::from_slice(items)).len()
+}
+
+fn scriptnum(value: i64) -> Vec<u8> {
+    let mut bytes = [0u8; 8];
+    let len = bitcoin::script::write_scriptint(&mut bytes, value);
+    bytes[..len].to_vec()
+}
+
+fn max_stack_items(script: bitcoin_script::Script, witness: Vec<Vec<u8>>) -> usize {
+    let result = execute_script_with_inputs(script, witness);
+    assert!(result.success, "metric execution failed: {result}");
+    result.stats.max_nb_stack_items
 }
 
 fn metrics() -> Vec<Metric> {
@@ -72,6 +89,17 @@ fn metrics() -> Vec<Metric> {
     let wots_public_key = Wots32::generate_public_key(&wots_secret);
     let wots_witness = Wots32::sign_to_raw_witness(&wots_secret, &wots_message);
 
+    let hash_path_preimage = vec![0x42; 32];
+    let hash_path_value = 0x1234_5678;
+    let hash_path_commitment =
+        hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
+    let hash_path_witness = hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+
+    let length_preimage = vec![0x24; 32];
+    let length_commitment = preimage_length_commitment(&length_preimage);
+
+    let division_witness = vec![scriptnum(14), scriptnum(119)];
+
     vec![
         Metric {
             readme: "src/arithmetic/u4/README.md",
@@ -82,6 +110,122 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u32/README.md",
             key: "u32_add_drop",
             value: script_len(u32::add::u32_add_drop(0, 1)),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_add_drop_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(0xffff_ffff) }
+                    { u32::stack::u32_push(1) }
+                    { u32::add::u32_add_drop(1, 0) }
+                    { u32::stack::u32_drop() }
+                    OP_1
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_sub_drop",
+            value: script_len(u32::sub::u32_sub_drop(0, 1)),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_sub_drop_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(1) }
+                    { u32::stack::u32_push(0) }
+                    { u32::sub::u32_sub_drop(0, 1) }
+                    { u32::stack::u32_drop() }
+                    OP_1
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_lessthan",
+            value: script_len(u32::cmp::u32_lessthan()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_lessthan_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(1) }
+                    { u32::stack::u32_push(2) }
+                    { u32::cmp::u32_lessthan() }
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_lessthanorequal",
+            value: script_len(u32::cmp::u32_lessthanorequal()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_lessthanorequal_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(1) }
+                    { u32::stack::u32_push(1) }
+                    { u32::cmp::u32_lessthanorequal() }
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_or",
+            value: script_len(u32::or::u32_or(0, 1, 3)),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_or_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::xor::u8_push_xor_table() }
+                    { u32::stack::u32_push(0x0123_4567) }
+                    { u32::stack::u32_push(0x89ab_cdef) }
+                    { u32::or::u32_or(0, 1, 3) }
+                    { u32::stack::u32_drop() }
+                    { u32::stack::u32_drop() }
+                    { u32::xor::u8_drop_xor_table() }
+                    OP_1
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_notequal",
+            value: script_len(u32::stack::u32_notequal()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_notequal_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(0) }
+                    { u32::stack::u32_push(1) }
+                    { u32::stack::u32_notequal() }
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u8_logic_table_push",
+            value: script_len(u32::xor::u8_push_xor_table()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u8_logic_table_drop",
+            value: script_len(u32::xor::u8_drop_xor_table()),
         },
         Metric {
             readme: "src/arithmetic/bigint/README.md",
@@ -109,6 +253,112 @@ fn metrics() -> Vec<Metric> {
             value: script_len(rns_mul),
         },
         Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_div_rem_8",
+            value: script_len(scriptint::hinted_div_rem(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_div_8",
+            value: script_len(scriptint::hinted_div(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_rem_8",
+            value: script_len(scriptint::hinted_rem(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_div_witness_min",
+            value: witness_size(&[Vec::new(), Vec::new()]),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_div_witness_max",
+            value: witness_size(&[scriptnum(2_147_483_647), scriptnum(2_147_483_647)]),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_div_rem_stack",
+            value: max_stack_items(
+                script! {
+                    { scriptint::hinted_div_rem(8) }
+                    OP_2DROP OP_1
+                },
+                division_witness,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_add",
+            value: script_len(u31::u31_add::<u31::M31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_sub",
+            value: script_len(u31::u31_sub::<u31::M31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_mul",
+            value: script_len(u31::u31_mul::<u31::M31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_mul_constant",
+            value: script_len(u31::u31_mul_by_constant::<u31::M31>(0x1234_5678)),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_witness_min",
+            value: witness_size(&vec![Vec::new(); 2]),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_witness_max",
+            value: witness_size(&vec![vec![1; 4]; 2]),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "qm31_add",
+            value: script_len(u31::u31ext_add::<u31::QM31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "qm31_sub",
+            value: script_len(u31::u31ext_sub::<u31::QM31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "qm31_mul",
+            value: script_len(u31::u31ext_mul::<u31::QM31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "babybear4_mul",
+            value: script_len(u31::u31ext_mul::<u31::BabyBear4>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "qm31_mul_base",
+            value: script_len(u31::u31ext_mul_u31::<u31::QM31>()),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "qm31_mul_constant",
+            value: script_len(u31::u31ext_mul_u31_by_constant::<u31::QM31>(0x1234_5678)),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31ext_witness_min",
+            value: witness_size(&vec![Vec::new(); 8]),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31ext_witness_max",
+            value: witness_size(&vec![vec![1; 4]; 8]),
+        },
+        Metric {
             readme: "src/hashes/sha256/README.md",
             key: "sha2_u32_32",
             value: script_len(sha256::sha2_u32::sha256(32)),
@@ -126,9 +376,45 @@ fn metrics() -> Vec<Metric> {
                 .len(),
         },
         Metric {
-            readme: "src/hashes/bithash/README.md",
-            key: "bithash_verify",
-            value: script_len(bithash::bithash_verify([0; 20])),
+            readme: "src/commitments/integer/README.md",
+            key: "hash_path_integer_31",
+            value: script_len(verify_hash_path_to_integer(31, hash_path_commitment)),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "hash_path_integer_witness_31",
+            value: witness_size(&hash_path_witness),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "hash_path_integer_stack_31",
+            value: max_stack_items(
+                verify_hash_path_to_integer(31, hash_path_commitment),
+                hash_path_witness,
+            ),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "preimage_length_default",
+            value: script_len(verify_preimage_length(length_commitment)),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "preimage_length_witness_min",
+            value: witness_size(&[vec![0; 16]]),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "preimage_length_witness_max",
+            value: witness_size(&[vec![0; 520]]),
+        },
+        Metric {
+            readme: "src/commitments/integer/README.md",
+            key: "preimage_length_stack",
+            value: max_stack_items(
+                verify_preimage_length(length_commitment),
+                vec![length_preimage],
+            ),
         },
         Metric {
             readme: "src/signatures/lamport/README.md",

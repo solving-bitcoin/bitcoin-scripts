@@ -34,3 +34,20 @@ Basic push/add/subtract helpers do not need hints. Multiplication, inversion,
 MSM, and pairing helpers return mandatory witness hints that the generated
 script verifies. Hints are not trusted inputs, but omitting or misordering them
 causes verification failure.
+
+## Test tiers
+
+Normal `cargo test` skips the two end-to-end BN254 Script executions that take
+more than a minute:
+
+- `test_bn254_fq6_hinted_mul_keep_elements`
+- `test_hinted_quad_miller_loop_with_c_wi`
+
+They remain compiled and can be run explicitly with:
+
+```sh
+cargo test --lib -- --ignored
+```
+
+To run just one, pass its full or unique test-name substring before
+`-- --ignored`.

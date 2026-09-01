@@ -851,6 +851,7 @@ mod test {
     }
 
     #[test]
+    #[ignore = "expensive BN254 Script execution; run explicitly with --ignored"]
     fn test_bn254_fq6_hinted_mul_keep_elements() {
         let mut prng: ChaCha20Rng = ChaCha20Rng::seed_from_u64(0);
 
@@ -978,4 +979,3 @@ mod test {
         }
     }
 }
-

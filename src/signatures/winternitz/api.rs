@@ -388,6 +388,11 @@ mod tests {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use serde_json;
 
+    const TEST_VECTOR_PATH: &str = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/src/signatures/winternitz/wots-test-vectors.json"
+    );
+
     #[test]
     fn test_signing_winternitz_with_message_success() {
         let secret = Wots4::generate_secret_key();
@@ -665,7 +670,7 @@ mod tests {
 
         let json = serde_json::to_string_pretty(&test_vectors)?;
 
-        let file = File::create("wots-test-vectors.json")?;
+        let file = File::create(TEST_VECTOR_PATH)?;
         let mut writer = io::BufWriter::new(file);
         writer.write_all(json.as_bytes())?;
         writer.flush()?;
@@ -675,7 +680,7 @@ mod tests {
     */
 
     fn load_test_vectors() -> io::Result<Vec<TestVector>> {
-        let mut file = File::open("wots-test-vectors.json")?;
+        let mut file = File::open(TEST_VECTOR_PATH)?;
 
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
@@ -772,4 +777,3 @@ mod tests {
         Ok(())
     }
 }
-

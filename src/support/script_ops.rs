@@ -9,7 +9,7 @@ pub fn OP_CHECKSEQUENCEVERIFY() -> Script {
 
 pub fn OP_4PICK() -> Script {
     script! {
-        OP_ADD
+        4 OP_ADD
         OP_DUP  OP_PICK OP_SWAP
         OP_DUP  OP_PICK OP_SWAP
         OP_DUP  OP_PICK OP_SWAP
@@ -140,5 +140,41 @@ pub fn NMUL(n: u32) -> Script {
             }
             for _ in 1..bits.iter().sum() { OP_ADD }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::run;
+    use crate::u32::stack::u32_equal;
+
+    #[test]
+    fn op_4pick_copies_top_and_deeper_groups() {
+        let pick_top = script! {
+            1 2 3 4
+            0
+            { OP_4PICK() }
+            1 2 3 4
+            { u32_equal() }
+            OP_TOALTSTACK
+            OP_2DROP OP_2DROP
+            OP_FROMALTSTACK
+        };
+        let pick_below_top = script! {
+            1 2 3 4
+            5 6 7 8
+            4
+            { OP_4PICK() }
+            1 2 3 4
+            { u32_equal() }
+            OP_TOALTSTACK
+            OP_2DROP OP_2DROP
+            OP_2DROP OP_2DROP
+            OP_FROMALTSTACK
+        };
+
+        run(pick_top);
+        run(pick_below_top);
     }
 }

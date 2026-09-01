@@ -2,6 +2,7 @@
 
 pub mod arithmetic;
 pub mod ciphers;
+pub mod commitments;
 pub mod curves;
 pub mod hashes;
 pub mod signatures;
@@ -9,7 +10,7 @@ pub mod support;
 
 // Keep the established public paths working while the source tree uses
 // domain-oriented names.
-pub use arithmetic::{bigint, rns, u32, u4};
+pub use arithmetic::{bigint, rns, scriptint, u31, u32, u4};
 pub use ciphers as cipher;
 pub use curves::bn254;
 pub use hashes as hash;

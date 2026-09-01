@@ -48,6 +48,13 @@ pub fn u32_equal() -> Script {
     }
 }
 
+pub fn u32_notequal() -> Script {
+    script! {
+        { u32_equal() }
+        OP_NOT
+    }
+}
+
 pub fn u32_toaltstack() -> Script {
     script! {
         OP_TOALTSTACK
@@ -144,5 +151,30 @@ pub fn u32_uncompress() -> Script {
         }
         OP_FROMALTSTACK OP_FROMALTSTACK OP_FROMALTSTACK
         OP_SWAP OP_2SWAP OP_SWAP
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_u32_notequal() {
+        for (a, b) in [
+            (0, 0),
+            (0, 1),
+            (0xff, 0x100),
+            (u32::MAX, u32::MAX),
+            (u32::MAX, 0),
+        ] {
+            let script = script! {
+                { u32_push(a) }
+                { u32_push(b) }
+                { u32_notequal() }
+                { (a != b) as u32 }
+                OP_EQUAL
+            };
+            run(script);
+        }
     }
 }
