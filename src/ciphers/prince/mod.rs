@@ -5,6 +5,8 @@
 // 64-bit block, 128-bit key (k0 || k1, each 64 bits, big-endian nibble order)
 // Nibble 0 = MSB nibble (bits 63:60), nibble 15 = LSB nibble (bits 3:0)
 
+use bitcoin::ScriptBuf;
+
 use crate::treepp::{script, Script};
 
 // ---------------------------------------------------------------------------
@@ -12,7 +14,7 @@ use crate::treepp::{script, Script};
 // ---------------------------------------------------------------------------
 
 const ALPHA: u64 = 0xc0ac29b7c97c50dd;
-const BETA: u64  = 0x3f84d5b5b5470917;
+const BETA: u64 = 0x3f84d5b5b5470917;
 
 // Round constants RC[0..10] (only 11 used — no RC[11] since BETA is embedded)
 const RC: [u64; 11] = [
@@ -88,7 +90,7 @@ fn mhat0_mul(state: u64, si: usize) -> u64 {
     let n2 = get_nibble(state, si + 2);
     let n3 = get_nibble(state, si + 3);
     let mut s = state;
-    s = set_nibble(s, si,     (M0 & n0) ^ (M1 & n1) ^ (M2 & n2) ^ (M3 & n3));
+    s = set_nibble(s, si, (M0 & n0) ^ (M1 & n1) ^ (M2 & n2) ^ (M3 & n3));
     s = set_nibble(s, si + 1, (M1 & n0) ^ (M2 & n1) ^ (M3 & n2) ^ (M0 & n3));
     s = set_nibble(s, si + 2, (M2 & n0) ^ (M3 & n1) ^ (M0 & n2) ^ (M1 & n3));
     s = set_nibble(s, si + 3, (M3 & n0) ^ (M0 & n1) ^ (M1 & n2) ^ (M2 & n3));
@@ -101,7 +103,7 @@ fn mhat1_mul(state: u64, si: usize) -> u64 {
     let n2 = get_nibble(state, si + 2);
     let n3 = get_nibble(state, si + 3);
     let mut s = state;
-    s = set_nibble(s, si,     (M1 & n0) ^ (M2 & n1) ^ (M3 & n2) ^ (M0 & n3));
+    s = set_nibble(s, si, (M1 & n0) ^ (M2 & n1) ^ (M3 & n2) ^ (M0 & n3));
     s = set_nibble(s, si + 1, (M2 & n0) ^ (M3 & n1) ^ (M0 & n2) ^ (M1 & n3));
     s = set_nibble(s, si + 2, (M3 & n0) ^ (M0 & n1) ^ (M1 & n2) ^ (M2 & n3));
     s = set_nibble(s, si + 3, (M0 & n0) ^ (M1 & n1) ^ (M2 & n2) ^ (M3 & n3));
@@ -286,58 +288,10 @@ pub fn prince_xor() -> Script {
 // This mirrors get_nibble(state, 0) = MSB.
 // ---------------------------------------------------------------------------
 
-/// Push a 16-entry lookup table for XOR with constant c: table[n] = n ^ c.
-/// table[0] is on top (depth 0), table[15] is deepest (depth 15).
-fn push_xor_const_table(c: u8) -> Script {
-    let mut s = script! {};
-    for n in (0..16usize).rev() {
-        let v = (n as u8 ^ c) as u32;
-        s = script! { { s } { v } };
-    }
-    s
-}
-
-
-/// XOR all 16 state nibbles with a constant.
-/// Constant nibble[i] = get_nibble(val, i) = (val >> (4*(15-i))) & 0xf
-/// Uses per-nibble 16-entry XOR lookup tables (no OP_XOR needed).
-fn script_xor_const(val: u64) -> Script {
-    let nibs: Vec<u8> = (0..16).map(|i| ((val >> (4 * (15 - i))) & 0xf) as u8).collect();
-    // Process each state nibble in order 0..15 (nibble[0] on top initially).
-    // For each nibble[i]:
-    //   - Stack: [...terms_on_altstack... | nibble[i] | nibble[i+1] | ... | nibble[15]]
-    //   - Push 16-entry table for XOR-with-nibs[i]: table[n] = n ^ nibs[i], table[0] on top.
-    //   - {16} OP_PICK: copy nibble[i] (at depth 16 below the table) to top.
-    //   - OP_PICK: table[nibble[i]] = nibble[i] ^ nibs[i].
-    //   - OP_TOALTSTACK: save result[i].
-    //   - DROP × 16: remove table.
-    //   - OP_DROP: remove original nibble[i].
-    // After 16 iterations: stack empty, altstack has result[15](bottom)..result[0](top).
-    // Wait: result[0] pushed first (when nibble[0] was on top) → altstack bottom.
-    //       result[15] pushed last → altstack top.
-    // FROMALTSTACK × 16: result[15] first → main BOTTOM. result[0] last → main TOP. ✓
-    let mut s = script! {};
-    for i in 0..16usize {
-        let table = push_xor_const_table(nibs[i]);
-        let nib_xor = script! {
-            { table }      // push 16-entry table (table[0] on top)
-            { 16u32 } OP_PICK   // copy nibble[i] (at depth 16) to top
-            OP_PICK        // table[nibble[i]] = nibble[i] ^ const
-            OP_TOALTSTACK  // save result[i]
-            for _ in 0..16 { OP_DROP }  // drop table
-            OP_DROP        // drop original nibble[i]
-        };
-        s = script! { { s } { nib_xor } };
-    }
-    script! {
-        { s }
-        for _ in 0..16 { OP_FROMALTSTACK }
-    }
-}
-
 /// Apply S-box to all 16 state nibbles.
 /// No persistent table; pushes and drops table inline.
 /// State: nibble[0] on top.
+#[cfg(test)]
 fn script_apply_sbox_fresh(sbox: &[u8; 16]) -> Script {
     // Strategy:
     // 1. Move all 16 nibbles to altstack (nibble[0] first → deepest in altstack)
@@ -406,6 +360,7 @@ fn script_apply_sbox_fresh(sbox: &[u8; 16]) -> Script {
 
 /// Apply ShiftRows or inverse.
 /// output_nibble[i] = input_nibble[perm[i]]
+#[cfg(test)]
 fn script_shift_rows(inv: bool) -> Script {
     let perm = if inv { SHIFT_INV } else { SHIFT };
     let mut s = script! {};
@@ -424,6 +379,7 @@ fn script_shift_rows(inv: bool) -> Script {
 
 /// Build and push a 256-entry pair table: table[a*16+b] = (m0&a)^(m1&b).
 /// table[0] is on top (depth 0), table[255] deepest (depth 255).
+#[cfg(test)]
 fn push_pair_table(m0: u8, m1: u8) -> Script {
     let table: [u32; 256] = std::array::from_fn(|i| {
         let a = (i / 16) as u8;
@@ -441,6 +397,7 @@ fn push_pair_table(m0: u8, m1: u8) -> Script {
 /// Lookup in a 256-entry table already on the stack.
 /// Pre: a on top (depth 0), b at depth 1, table at depth 2..257.
 /// Post: result = table[a*16+b] on top; table dropped (256 NIPs); original stack below b unchanged.
+#[cfg(test)]
 fn pair_table_lookup() -> Script {
     script! {
         // Compute 16*a: four doublings
@@ -457,6 +414,7 @@ fn pair_table_lookup() -> Script {
 
 /// Compute pair_table[a*16+b] = (m0&a)^(m1&b), consuming a (top) and b (depth 1).
 /// Uses altstack internally to push the table; original stack below b is preserved.
+#[cfg(test)]
 fn pair_lookup(m0: u8, m1: u8) -> Script {
     let table = push_pair_table(m0, m1);
     script! {
@@ -469,6 +427,7 @@ fn pair_lookup(m0: u8, m1: u8) -> Script {
 
 /// XOR two 4-bit nibbles a (top) and b (depth 1) without OP_XOR.
 /// Uses the universal XOR pair table.
+#[cfg(test)]
 fn xor_nibbles() -> Script {
     let xor_table: [u32; 256] = std::array::from_fn(|i| ((i / 16) ^ (i % 16)) as u32);
     let mut t = script! {};
@@ -494,6 +453,7 @@ fn xor_nibbles() -> Script {
 /// For each output nibble:
 ///   result = (m0&n[si]) ^ (m1&n[si+1]) ^ (m2&n[si+2]) ^ (m3&n[si+3])
 ///          = pair_lookup(m0,m1)[n[si]*16+n[si+1]] XOR pair_lookup(m2,m3)[n[si+2]*16+n[si+3]]
+#[cfg(test)]
 fn script_m_layer() -> Script {
     let mhat0: [[u8; 4]; 4] = [
         [M0, M1, M2, M3],
@@ -565,62 +525,66 @@ fn script_m_layer() -> Script {
     }
 }
 
-/// One forward round: S-layer, M-layer, ShiftRows, XOR rci^rk
-fn script_round_forward(rk: u64, rci: u64) -> Script {
-    script! {
-        { script_apply_sbox_fresh(&SBOX) }
-        { script_m_layer() }
-        { script_shift_rows(false) }
-        { script_xor_const(rci ^ rk) }
-    }
+// Generated by the optimized PRINCEv2 generator pinned below. The engine takes
+// 32 key nibbles followed by 16 plaintext nibbles, with each half/block pushed
+// most-significant nibble first (and therefore least-significant nibble on top).
+//
+// Source:
+// https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js
+// SHA-256: 5d85999b0be6ee66904a6f6da3b2f31c1b0074527665b27ea41c1fefe0332b44
+const OPTIMIZED_ENGINE_BYTES: &[u8; 7547] = include_bytes!("prince_v2_optimized10.bin");
+
+fn optimized_engine() -> Script {
+    Script::new("optimized PRINCEv2 engine")
+        .push_script(ScriptBuf::from_bytes(OPTIMIZED_ENGINE_BYTES.to_vec()))
 }
 
-/// One inverse round: XOR rci^rk, ShiftRows_inv, M-layer, S_inv-layer
-fn script_round_inverse(rk: u64, rci: u64) -> Script {
+/// Reverse the top 16 stack items without disturbing anything below them.
+fn reverse_top_block() -> Script {
     script! {
-        { script_xor_const(rci ^ rk) }
-        { script_shift_rows(true) }
-        { script_m_layer() }
-        { script_apply_sbox_fresh(&SBOX_INV) }
+        for depth in (1..16usize).rev() {
+            { depth as u32 } OP_ROLL OP_TOALTSTACK
+        }
+        OP_TOALTSTACK
+        for _ in 0..16 { OP_FROMALTSTACK }
     }
 }
 
 /// Full PRINCEv2 encryption with hardcoded key.
 /// Input: 16 state nibbles (nibble[0]=MSB on top, nibble[15]=LSB at depth 15).
 /// Output: 16 ciphertext nibbles in same layout.
-pub fn prince_encrypt(key: u128) -> Script {
-    let pv2_k0 = (key >> 64) as u64;
-    let pv2_k1 = key as u64;
-    let rkeys = [pv2_k0, pv2_k1];
+fn prince_encrypt_with_engine(key: u128, engine: Script) -> Script {
+    let upper_key = u64_to_nibbles_msb((key >> 64) as u64);
+    let lower_key = u64_to_nibbles_msb(key as u64);
+
+    let mut push_key = script! {};
+    // The source engine's key slots are the reverse of the public Rust key
+    // convention: k0 LSB-to-MSB, followed by k1 LSB-to-MSB.
+    for nibble in upper_key
+        .into_iter()
+        .rev()
+        .chain(lower_key.into_iter().rev())
+    {
+        push_key = script! { { push_key } { nibble as u32 } };
+    }
 
     script! {
-        // state ^= rkeys[0]
-        { script_xor_const(rkeys[0]) }
+        // The public Rust API keeps the established MSB-on-top state layout.
+        // The optimized engine uses LSB-on-top, so adapt at both boundaries.
+        { reverse_top_block() }
 
-        // Forward rounds 1..5: rkeys[i%2]
-        { script_round_forward(rkeys[1], RC[1]) }  // i=1: rkeys[1]
-        { script_round_forward(rkeys[0], RC[2]) }  // i=2: rkeys[0]
-        { script_round_forward(rkeys[1], RC[3]) }  // i=3: rkeys[1]
-        { script_round_forward(rkeys[0], RC[4]) }  // i=4: rkeys[0]
-        { script_round_forward(rkeys[1], RC[5]) }  // i=5: rkeys[1]
+        // Park the plaintext while placing the embedded key underneath it.
+        for _ in 0..16 { OP_TOALTSTACK }
+        { push_key }
+        for _ in 0..16 { OP_FROMALTSTACK }
 
-        // Middle layer: S, ^k0, M, ^(k1^BETA), S_inv
-        { script_apply_sbox_fresh(&SBOX) }
-        { script_xor_const(rkeys[0]) }
-        { script_m_layer() }
-        { script_xor_const(rkeys[1] ^ BETA) }
-        { script_apply_sbox_fresh(&SBOX_INV) }
-
-        // Backward rounds 6..10: rkeys[i%2]
-        { script_round_inverse(rkeys[0], RC[6]) }  // i=6: rkeys[0]
-        { script_round_inverse(rkeys[1], RC[7]) }  // i=7: rkeys[1]
-        { script_round_inverse(rkeys[0], RC[8]) }  // i=8: rkeys[0]
-        { script_round_inverse(rkeys[1], RC[9]) }  // i=9: rkeys[1]
-        { script_round_inverse(rkeys[0], RC[10]) } // i=10: rkeys[0]
-
-        // Final: ^(k1^BETA)
-        { script_xor_const(rkeys[1] ^ BETA) }
+        { engine }
+        { reverse_top_block() }
     }
+}
+
+pub fn prince_encrypt(key: u128) -> Script {
+    prince_encrypt_with_engine(key, optimized_engine())
 }
 
 // ---------------------------------------------------------------------------
@@ -645,6 +609,30 @@ mod tests {
     use super::*;
     use crate::execute_script;
     use crate::treepp::script;
+
+    fn execute_encryption(key: u128, plaintext: u64, expected: u64) -> usize {
+        let plaintext_nibbles = u64_to_nibbles_msb(plaintext);
+        let ciphertext = u64_to_nibbles_msb(expected);
+        let encrypt = prince_encrypt(key);
+
+        let result = execute_script(script! {
+            for i in (0..16usize).rev() {
+                { plaintext_nibbles[i] as u32 }
+            }
+            { encrypt }
+            for i in 0..16usize {
+                { ciphertext[i] as u32 }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(
+            result.success,
+            "Script encryption failed for key={key:032x}, plaintext={plaintext:x}, expected={expected:016x}: {result}"
+        );
+        result.stats.max_nb_stack_items
+    }
 
     #[test]
     fn test_prince_ref_known_vector() {
@@ -744,7 +732,11 @@ mod tests {
                     OP_EQUAL
                 };
                 let result = execute_script(s);
-                assert!(result.success, "xor({},{}) failed, expected {}", a, b, expected);
+                assert!(
+                    result.success,
+                    "xor({},{}) failed, expected {}",
+                    a, b, expected
+                );
             }
         }
     }
@@ -814,7 +806,11 @@ mod tests {
             OP_TRUE
         };
         let result = crate::execute_script(s);
-        assert!(result.success, "script_m_layer failed: expected {:?}, error={:?}", exp_nibs, result.error);
+        assert!(
+            result.success,
+            "script_m_layer failed: expected {:?}, error={:?}",
+            exp_nibs, result.error
+        );
     }
 
     #[test]
@@ -825,25 +821,31 @@ mod tests {
         let expected: u64 = 0x603cd95fa72a8704;
         let key = (k1 as u128) << 64 | k0 as u128;
 
-        let pt_nibs = u64_to_nibbles_msb(plaintext);
-        let ct_nibs = u64_to_nibbles_msb(expected);
-
         let encrypt_script = prince_encrypt(key);
-        println!("prince_encrypt script size: {} bytes", encrypt_script.clone().compile().len());
+        assert_eq!(OPTIMIZED_ENGINE_BYTES.len(), 7547);
+        assert_eq!(encrypt_script.compile().len(), 7735);
+        assert_eq!(execute_encryption(key, plaintext, expected), 681);
+    }
 
-        let s = script! {
-            for i in (0..16usize).rev() {
-                { pt_nibs[i] as u32 }
-            }
-            { encrypt_script }
-            for i in 0..16usize {
-                { ct_nibs[i] as u32 }
-                OP_EQUALVERIFY
-            }
-            OP_TRUE
-        };
+    #[test]
+    fn test_prince_script_matches_reference() {
+        let vectors = [
+            (0u128, 0u64),
+            (0u128, u64::MAX),
+            (u128::MAX, 0u64),
+            (u128::MAX, u64::MAX),
+            (
+                0x0123456789abcdeffedcba9876543210u128,
+                0xfedcba9876543210u64,
+            ),
+            (
+                0x6a09e667f3bcc908bb67ae8584caa73bu128,
+                0x3c6ef372fe94f82bu64,
+            ),
+        ];
 
-        let result = execute_script(s);
-        assert!(result.success, "Script encryption failed: {}", result);
+        for (key, plaintext) in vectors {
+            execute_encryption(key, plaintext, prince_encrypt_ref(key, plaintext));
+        }
     }
 }

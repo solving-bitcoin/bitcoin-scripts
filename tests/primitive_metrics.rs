@@ -166,6 +166,16 @@ fn metrics() -> Vec<Metric> {
             value: script_len(prince::prince_encrypt(0)),
         },
         Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_witness_min",
+            value: witness_size(&vec![Vec::new(); 16]),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_witness_max",
+            value: witness_size(&vec![vec![1]; 16]),
+        },
+        Metric {
             readme: "src/curves/bn254/fields/README.md",
             key: "fq_add",
             value: script_len(Fq::add(1, 0)),

@@ -13,14 +13,24 @@ a generation-time 128-bit key.
 
 ## Script metrics
 
-The metric excludes the 16-nibble plaintext witness and output comparison.
+The locking-fragment metric excludes the output comparison. The plaintext
+witness size is Bitcoin witness serialization for 16 canonical script-number
+nibbles; it varies only with the number of zero nibbles.
 
 | Fragment | Script size |
 | --- | ---: |
-| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->291044<!-- /metric:prince_encrypt --> bytes |
+| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->7735<!-- /metric:prince_encrypt --> bytes |
+| Plaintext witness, all-zero block | <!-- metric:prince_witness_min -->17<!-- /metric:prince_witness_min --> bytes |
+| Plaintext witness, no zero nibbles | <!-- metric:prince_witness_max -->33<!-- /metric:prince_witness_max --> bytes |
 
-Maximum depth is input/key-value dependent and is exercised by reference-vector
-tests. The state itself occupies 16 stack items.
+The fragment consists of a 7,547-byte optimized engine and a 188-byte adapter
+that embeds the key and preserves this crate's stack convention. Maximum
+combined main/alt-stack depth is 681 items. Tests pin both measurements and run
+the published vector plus varied key/plaintext pairs against the Rust reference.
+
+The engine is generated from BitVM's
+[`prince_v2_optimized10.js`](https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js),
+pinned to commit `b931a6711ab332fd5923e708c869bed02e39984e`.
 
 ## Security
 
@@ -31,13 +41,16 @@ not be treated as an authenticated-encryption mode.
 
 ## Script compatibility and standardness
 
-The fragment uses legacy-compatible stack/arithmetic/flow opcodes, but its
-generated size and opcode count make tapscript the practical research target.
-P2SH, P2WSH, and bare standard use is generally unsuitable. A caller must
-compare/consume all 16 output nibbles and leave a clean truthy stack.
+The fragment uses legacy-compatible stack and arithmetic opcodes, but exceeds
+the legacy 201-opcode execution limit. Tapscript is therefore the compatible
+script type; bare script, P2SH, and P2WSH are not. The fragment alone does not
+satisfy cleanstack because it intentionally returns 16 ciphertext nibbles. A
+caller must compare or consume all 16 and leave one truthy item.
 
 ## Witness and hints
 
 No hints. The plaintext is 16 canonical nibbles with nibble 0 (the most
 significant nibble) on top and nibble 15 deepest. The key is public in the
-locking script.
+locking script. `key` is a `u128` whose upper 64 bits are PRINCEv2 `k0` and
+lower 64 bits are `k1`; the adapter handles the optimized engine's internal
+nibble order.
