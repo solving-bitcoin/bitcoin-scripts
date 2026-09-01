@@ -23,6 +23,22 @@ stack peaks where currently null. **Complete when:** every active catalog record
 has a representative configuration with a checked boundary or an explicit
 reason the metric is instance-specific.
 
+## OP-004 — Prime-log RNS frontier
+
+Complete the exact-256-bit-product prime RNS deployment and batching frontier.
+**Complete when:** a full tapleaf and transaction are differentially validated
+against a pinned Bitcoin Core revision, complete witness/weight and validation
+behavior are recorded, and prime-major batch crossover curves are measured for
+stated reuse counts and live operand-state budgets.
+
+Progress: an exhaustive per-prime root/bias search selected a 75-prime hybrid;
+its 37,471-byte multiplication, 462-item peak, canonical add/sub, strict stack
+boundary, and 513-bit capacity are locally reproduced. A secp256k1-field hinted
+reduction is also reproduced at 69,199 bytes, 477 reduction-hint bytes, and a
+612-item peak, conditional on external global 256-bit bindings. Bitcoin Core
+consensus and policy validation, a concrete global binding construction,
+complete transaction weight, and reuse-inclusive workloads remain open.
+
 ## OP-005 — SHAKE256 composable output
 
 Avoid the 1,024-item raw-output failure. **Complete when:** a parameterized or

@@ -568,7 +568,166 @@
       ],
       "open_problems": [
         "OP-002",
-        "OP-003"
+        "OP-003",
+        "OP-004"
+      ]
+    },
+    {
+      "id": "arithmetic/prime-rns",
+      "name": "Prime logarithmic residue-number arithmetic",
+      "class": "arithmetic/rns",
+      "summary": "A 75-prime canonical RNS for exact unsigned 256-by-256-bit products and witness-hinted reduction by a fixed 256-bit modulus.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/prime-rns.md",
+      "implementation": "src/arithmetic/rns/prime.rs",
+      "documentation": "src/arithmetic/rns/README.md",
+      "tests": [
+        "arithmetic::rns::prime::tests"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "rns",
+        "log-exp-table",
+        "half-table",
+        "streaming-table",
+        "witness-hints"
+      ],
+      "security": "The combined modulus is composite. Witness coordinates must be range-checked before lookup, exact-integer semantics require a proved expression bound, and hinted modular reduction additionally requires every operand and hint vector to be bound globally below 2^256.",
+      "stack_contract": "Seventy-five canonical residues per value; exact multiplication consumes preserved | lhs | rhs and returns residues on the altstack, while hinted reduction consumes lhs | rhs | quotient | remainder | remainder_complement and returns the remainder on the main stack.",
+      "configurations": [
+        {
+          "id": "canonical-add",
+          "label": "Canonical addition",
+          "parameters": {
+            "residue_count": 75,
+            "modulus_bits": 513
+          },
+          "includes": "fragment-only: operation and return from altstack; excludes operand pushes and final verification; witness fields cover only the serialized 150-item operand vector",
+          "script_bytes": 1134,
+          "witness_bytes": 332,
+          "witness_bytes_max": 391,
+          "max_stack_items": 151,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1134,
+          "metric_keys": [
+            "prime_rns_add",
+            "prime_rns_add_stack",
+            "prime_rns_mul_witness",
+            "prime_rns_mul_witness_max"
+          ]
+        },
+        {
+          "id": "canonical-sub",
+          "label": "Canonical subtraction",
+          "parameters": {
+            "residue_count": 75,
+            "modulus_bits": 513
+          },
+          "includes": "fragment-only: operation and return from altstack; excludes operand pushes and final verification; witness fields cover only the serialized 150-item operand vector",
+          "script_bytes": 1140,
+          "witness_bytes": 332,
+          "witness_bytes_max": 391,
+          "max_stack_items": 151,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1140,
+          "metric_keys": [
+            "prime_rns_sub",
+            "prime_rns_sub_stack",
+            "prime_rns_mul_witness",
+            "prime_rns_mul_witness_max"
+          ]
+        },
+        {
+          "id": "u256-product",
+          "label": "Exact unsigned 256-by-256-bit multiplication",
+          "parameters": {
+            "operand_bits": 256,
+            "residue_count": 75,
+            "modulus_bits": 513
+          },
+          "includes": "fragment-with-memory: conditional per-coordinate table setup, query, destructive cleanup, and final return from altstack; excludes operand pushes, range checks, and final verification; witness fields cover only the serialized 150-item operand vector",
+          "script_bytes": 37471,
+          "witness_bytes": 332,
+          "witness_bytes_max": 391,
+          "max_stack_items": 462,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 37471,
+          "metric_keys": [
+            "prime_rns_mul",
+            "prime_rns_mul_stack",
+            "prime_rns_mul_witness",
+            "prime_rns_mul_witness_max"
+          ]
+        },
+        {
+          "id": "secp256k1-hinted-modular-product",
+          "label": "Witness-hinted secp256k1-field modular multiplication",
+          "parameters": {
+            "operand_bits": 256,
+            "residue_count": 75,
+            "modulus_bits": 256,
+            "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+          },
+          "includes": "fragment-with-memory: quotient/remainder/complement coordinate validation, remainder-bound equation, streamed variable and fixed-constant products, 75 modular-product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, global 256-bit bindings for all five vectors, terminal predicate, and all witness bytes except the 225 quotient/remainder/complement residue items for (N-1)^2",
+          "script_bytes": 69199,
+          "witness_bytes": 477,
+          "witness_bytes_max": null,
+          "max_stack_items": 612,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 69199,
+          "metric_keys": [
+            "prime_rns_hinted_mod_mul",
+            "prime_rns_hinted_mod_mul_witness",
+            "prime_rns_hinted_mod_mul_stack"
+          ]
+        },
+        {
+          "id": "canonical-range-check",
+          "label": "Canonical coordinate range verification",
+          "parameters": {
+            "residue_count": 75
+          },
+          "includes": "fragment-only: preserves and range-checks one encoded value; excludes the value push and terminal predicate; witness fields cover only the serialized 75-item value vector",
+          "script_bytes": 621,
+          "witness_bytes": 167,
+          "witness_bytes_max": 196,
+          "max_stack_items": 78,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 621,
+          "metric_keys": [
+            "prime_rns_verify",
+            "prime_rns_verify_stack",
+            "prime_rns_verify_witness",
+            "prime_rns_verify_witness_max"
+          ]
+        }
+      ],
+      "limitations": [
+        "Tapscript-only fragment due to legacy script-size and opcode-count limits",
+        "Range validation and terminal predicate are excluded from arithmetic metrics",
+        "Ordering, sign, CRT conversion, and global 256-bit binding are not coordinatewise",
+        "Hinted modular reduction is unsound unless every operand and hint vector satisfies its documented global range precondition",
+        "Bitcoin Core consensus and policy validation not performed"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-004"
       ]
     },
     {

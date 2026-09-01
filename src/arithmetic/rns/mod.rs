@@ -3,6 +3,8 @@
 //! The moduli `[4, 9, 25, 7, 11]` are pairwise coprime and have product
 //! 69,300.  A value is represented by one residue for each modulus, so
 //! arithmetic is performed modulo 69,300.
+//! The [`prime`] submodule provides a separate 75-prime, canonical-residue
+//! profile sized for exact unsigned 256-by-256-bit products.
 //!
 //! Addition and subtraction first combine corresponding residues and reduce
 //! the result through 107-entry lookup tables. Multiplication uses flattened
@@ -10,6 +12,8 @@
 //! operations process the five moduli in 35 Script instructions.
 
 use crate::support::script::*;
+
+pub mod prime;
 
 /// Pairwise-coprime moduli used by the residue number system.
 pub const RNS_MODULI: [u32; 5] = [4, 9, 25, 7, 11];

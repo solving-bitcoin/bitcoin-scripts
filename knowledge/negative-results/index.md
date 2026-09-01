@@ -21,22 +21,34 @@ checked metric snapshots and stack-limit tests.
 ## NR-003: Legacy RNS multiplication leaves little composition headroom
 
 The measured legacy RNS multiply peaks at 903 items. It is locally correct, but
-only 97 items remain for unrelated state under the consensus ceiling.
+only 97 items remain for unrelated state under the consensus ceiling. The
+exact-256-bit-product prime-log profile uses a different 513-bit modulus and 75
+canonical residues. It peaks at 462 items, leaving 538 items for unrelated
+state, but is not a drop-in replacement at fixed value range or encoding.
 
-## NR-004: Monolithic pairing execution is not a deployment result
+## NR-004: Larger dense-log primes lose byte efficiency
+
+For the streamed signed-log construction, a prime contributes `log2(p)` range
+bits while its dense table occupies linear-in-`p` items. An inspected search
+found that reducing the exact-product profile to roughly 54 primes in the
+587–941 range requires more than three times the table items of the selected
+75-prime basis. Larger primes reduce witness coordinates but are dominated for
+one-shot locking-script bytes under this lookup model.
+
+## NR-005: Monolithic pairing execution is not a deployment result
 
 The full BN254 Miller-loop test is expensive, ignored by default, and uses a
 relaxed executor. Passing it establishes algorithmic evidence, not consensus or
 policy feasibility. Protocol chunking and authenticated boundaries are required.
 
-## NR-005: SHA-1 is dominated for new collision-resistant protocols
+## NR-006: SHA-1 is dominated for new collision-resistant protocols
 
 SHA-1 remains useful for compatibility research, but practical collision
 attacks invalidate the ideal collision claim. Its local script is also not
 smaller than BLAKE3's measured 64-byte configuration. Semantics differ, so this
 is not a universal byte comparison.
 
-## NR-006: Large fragments do not become deployable through opcode compatibility
+## NR-007: Large fragments do not become deployable through opcode compatibility
 
 Many primitives use opcodes present in legacy and tapscript yet exceed script,
 opcode, validation, stack, or relay-policy limits once composed. Compatibility

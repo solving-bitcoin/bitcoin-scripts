@@ -7,7 +7,7 @@
 use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
-use bitcoin::Witness;
+use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::{
     arithmetic::{
         bigint::U254,
@@ -31,6 +31,8 @@ use bitcoin_lab::{
     support::execution::execute_script_with_inputs,
 };
 use bitcoin_script::script;
+use num_bigint::{BigInt, BigUint};
+use num_traits::One;
 
 struct Metric {
     readme: &'static str,
@@ -40,6 +42,17 @@ struct Metric {
 
 fn script_len(script: bitcoin_script::Script) -> usize {
     script.compile().len()
+}
+
+fn static_non_push_opcodes(script: bitcoin_script::Script) -> usize {
+    script
+        .compile()
+        .instructions()
+        .map(|instruction| instruction.expect("generated metric script must parse"))
+        .filter(
+            |instruction| matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60),
+        )
+        .count()
 }
 
 fn witness_size(items: &[Vec<u8>]) -> usize {
@@ -77,6 +90,89 @@ fn metrics() -> Vec<Metric> {
         { rns::rns_drop_mul_tables() }
         { rns::rns_fromaltstack() }
     };
+    let prime_rns_add = script! {
+        { rns::prime::add() }
+        { rns::prime::from_altstack() }
+    };
+    let prime_rns_sub = script! {
+        { rns::prime::sub() }
+        { rns::prime::from_altstack() }
+    };
+    let prime_rns_centered_add = script! {
+        { rns::prime::add_centered() }
+        { rns::prime::from_altstack() }
+    };
+    let prime_rns_centered_sub = script! {
+        { rns::prime::sub_centered() }
+        { rns::prime::from_altstack() }
+    };
+    let prime_rns_mul = script! {
+        { rns::prime::mul(0) }
+        { rns::prime::from_altstack() }
+    };
+    let prime_rns_verify = script! {
+        { rns::prime::verify_canonical() }
+    };
+    let prime_rns_hinted_target = BigUint::parse_bytes(
+        b"fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+        16,
+    )
+    .unwrap();
+    let prime_rns_hinted_lhs = &prime_rns_hinted_target - BigUint::one();
+    let prime_rns_hinted_rhs = prime_rns_hinted_lhs.clone();
+    let prime_rns_hinted_product = &prime_rns_hinted_lhs * &prime_rns_hinted_rhs;
+    let prime_rns_hinted_quotient = &prime_rns_hinted_product / &prime_rns_hinted_target;
+    let prime_rns_hinted_remainder = &prime_rns_hinted_product % &prime_rns_hinted_target;
+    let prime_rns_hinted_complement =
+        &prime_rns_hinted_target - BigUint::one() - &prime_rns_hinted_remainder;
+    let prime_rns_hinted_mul = rns::prime::mul_mod_hinted(&prime_rns_hinted_target, 0);
+    let prime_rns_hinted_mul_opcodes = static_non_push_opcodes(prime_rns_hinted_mul.clone());
+    let mut prime_rns_hinted_hint_items = Vec::new();
+    for value in [
+        &prime_rns_hinted_quotient,
+        &prime_rns_hinted_remainder,
+        &prime_rns_hinted_complement,
+    ] {
+        for residue in rns::prime::encode(value).iter().rev() {
+            prime_rns_hinted_hint_items.push(scriptnum(i64::from(*residue)));
+        }
+    }
+    let mut prime_rns_hinted_input_items = Vec::new();
+    for value in [
+        &prime_rns_hinted_lhs,
+        &prime_rns_hinted_rhs,
+        &prime_rns_hinted_quotient,
+        &prime_rns_hinted_remainder,
+        &prime_rns_hinted_complement,
+    ] {
+        for residue in rns::prime::encode(value).iter().rev() {
+            prime_rns_hinted_input_items.push(scriptnum(i64::from(*residue)));
+        }
+    }
+    let prime_rns_mul_opcodes = static_non_push_opcodes(prime_rns_mul.clone());
+    let prime_rns_max = (BigUint::one() << 256usize) - BigUint::one();
+    let prime_rns_rhs = &prime_rns_max - BigUint::one();
+    let prime_rns_centered_lhs = BigInt::from(-1);
+    let prime_rns_centered_rhs = BigInt::from(-2);
+    let mut prime_rns_operand_items = Vec::new();
+    for value in [&prime_rns_max, &prime_rns_rhs] {
+        for residue in rns::prime::encode(value) {
+            prime_rns_operand_items.push(scriptnum(i64::from(residue)));
+        }
+    }
+    let prime_rns_max_value_items = rns::prime::encode(&prime_rns_max)
+        .into_iter()
+        .map(|residue| scriptnum(i64::from(residue)))
+        .collect::<Vec<_>>();
+    let prime_rns_worst_value_items = rns::prime::MODULI
+        .into_iter()
+        .map(|modulus| scriptnum(i64::from(modulus - 1)))
+        .collect::<Vec<_>>();
+    let prime_rns_worst_operand_items = prime_rns_worst_value_items
+        .iter()
+        .chain(&prime_rns_worst_value_items)
+        .cloned()
+        .collect::<Vec<_>>();
     let f257_log_memory = script! {
         { f257::push_log_mul_tables() }
         { f257::drop_log_mul_tables() }
@@ -334,6 +430,176 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/rns/README.md",
             key: "rns_mul",
             value: script_len(rns_mul),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_add",
+            value: script_len(prime_rns_add),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_add_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_value(&prime_rns_max) }
+                    { rns::prime::push_value(&prime_rns_rhs) }
+                    { rns::prime::add() }
+                    { rns::prime::from_altstack() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_sub",
+            value: script_len(prime_rns_sub),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_sub_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_value(&prime_rns_max) }
+                    { rns::prime::push_value(&prime_rns_rhs) }
+                    { rns::prime::sub() }
+                    { rns::prime::from_altstack() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_centered_add",
+            value: script_len(prime_rns_centered_add),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_centered_add_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_centered_value(&prime_rns_centered_lhs) }
+                    { rns::prime::push_centered_value(&prime_rns_centered_rhs) }
+                    { rns::prime::add_centered() }
+                    { rns::prime::from_altstack() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_centered_sub",
+            value: script_len(prime_rns_centered_sub),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_centered_sub_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_centered_value(&prime_rns_centered_lhs) }
+                    { rns::prime::push_centered_value(&prime_rns_centered_rhs) }
+                    { rns::prime::sub_centered() }
+                    { rns::prime::from_altstack() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_mul",
+            value: script_len(prime_rns_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_value(&prime_rns_max) }
+                    { rns::prime::push_value(&prime_rns_rhs) }
+                    { rns::prime::mul(0) }
+                    { rns::prime::from_altstack() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_mul_opcodes",
+            value: prime_rns_mul_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_hinted_mod_mul",
+            value: script_len(prime_rns_hinted_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_hinted_mod_mul_opcodes",
+            value: prime_rns_hinted_mul_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_hinted_mod_mul_witness",
+            value: witness_size(&prime_rns_hinted_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_hinted_mod_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { prime_rns_hinted_mul }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                prime_rns_hinted_input_items,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_mul_witness",
+            value: witness_size(&prime_rns_operand_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_mul_witness_max",
+            value: witness_size(&prime_rns_worst_operand_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_verify",
+            value: script_len(prime_rns_verify),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_verify_witness",
+            value: witness_size(&prime_rns_max_value_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_verify_witness_max",
+            value: witness_size(&prime_rns_worst_value_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_verify_stack",
+            value: max_stack_items(
+                script! {
+                    { rns::prime::push_value(&prime_rns_max) }
+                    { rns::prime::verify_canonical() }
+                    { rns::prime::drop_value() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
         },
         Metric {
             readme: "src/arithmetic/scriptint/README.md",

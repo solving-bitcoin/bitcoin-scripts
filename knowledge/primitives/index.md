@@ -15,6 +15,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [F12289 radix arithmetic](f12289.md)
 - [Multi-limb big integers](bigint.md)
 - [Residue-number arithmetic](rns.md)
+- [Prime logarithmic residue-number arithmetic](prime-rns.md)
 
 ## Commitments
 
