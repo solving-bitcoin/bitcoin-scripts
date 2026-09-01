@@ -6,24 +6,38 @@
 //! value occupies 75 stack items.
 //!
 //! Addition and subtraction keep canonical residues (`0..p-1`) and use one
-//! conditional correction per odd coordinate. Multiplication streams one
-//! coordinate table at a time. Tiny coordinates have specialized formulas;
-//! small odd primes use full canonical log/exp tables; larger primes use a
-//! signed projective magnitude-log table and only half an exponent table.
-//! The latter exploits `g^(e + (p - 1) / 2) = -g^e`.
+//! conditional correction per odd coordinate. Multiplication selects the
+//! shortest of plain and centered-multiplier table-free binary Horner
+//! fragments and a streamed lookup fragment independently for each
+//! coordinate. Tiny coordinates have
+//! specialized formulas; lookup candidates use either full canonical log/exp
+//! tables or signed projective magnitude logs with half an exponent table.
 //!
 //! [`mul_mod_hinted`] additionally verifies a quotient/remainder witness for a
 //! fixed modulus, subject to its documented global 256-bit binding precondition.
+//! [`batch`] amortizes coordinate tables across up to six coordinate-major
+//! independent products.
+//! [`carry`] provides a separate table-free, exact-carry profile with fewer
+//! coordinates and a packed witness layout. [`carry::bound`] adds the complete
+//! limb-to-residue/global-range boundary required for standalone soundness.
 //!
 //! Arithmetic fragments do not range-check witness residues. Callers must
 //! establish canonical (or centered) coordinate ranges before a residue is
 //! used as an `OP_PICK` index. [`verify_canonical`] and [`verify_centered`]
 //! provide reusable validation fragments.
 
+pub mod batch;
+pub mod carry;
+
+use std::{cmp::Reverse, collections::BinaryHeap};
+
 use num_bigint::{BigInt, BigUint};
 use num_traits::{One, ToPrimitive, Zero};
 
-use crate::{arithmetic::u31::U31_LOOKUP_STACK_LIMIT, support::script::*};
+use crate::{
+    arithmetic::{scriptint, u31::U31_LOOKUP_STACK_LIMIT},
+    support::script::*,
+};
 
 /// Prime moduli in stack-coordinate order.
 ///
@@ -65,13 +79,41 @@ pub const LOG_BIASES: [u32; MODULI.len()] = [
 pub const RESIDUE_COUNT: u32 = MODULI.len() as u32;
 
 /// Measured peak for [`mul`] with two operands and no unrelated live items.
-pub const MUL_STACK_ITEMS: u32 = 462;
+pub const MUL_STACK_ITEMS: u32 = 183;
 
 /// Measured peak for [`add`] or [`sub`] with two operands.
 pub const ADD_SUB_STACK_ITEMS: u32 = 151;
 
-/// Measured peak for [`mul_mod_hinted`] with no unrelated live items.
-pub const HINTED_MUL_STACK_ITEMS: u32 = 612;
+/// Conservative peak bound for [`mul_mod_hinted`] over every fixed target.
+pub const HINTED_MUL_STACK_ITEMS: u32 = 466;
+
+/// Measured peak for [`mul_mod_hinted_with_carries`] with no unrelated items.
+pub const HINTED_CARRY_MUL_STACK_ITEMS: u32 = 453;
+
+/// Exact locking-script byte attribution for a generated operation.
+///
+/// `table_push` and `table_drop` are the only bytes attributable to lookup
+/// memory. `computation` is every remaining byte, including arithmetic,
+/// validation, stack routing, and output restoration at the operation's
+/// documented metric boundary.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct ScriptCostBreakdown {
+    pub table_push: usize,
+    pub table_drop: usize,
+    pub computation: usize,
+}
+
+impl ScriptCostBreakdown {
+    /// Total generated locking-script bytes.
+    pub fn total(self) -> usize {
+        self.table_push + self.table_drop + self.computation
+    }
+
+    /// Bytes that install and remove lookup memory.
+    pub fn table_overhead(self) -> usize {
+        self.table_push + self.table_drop
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum MulStrategy {
@@ -188,6 +230,68 @@ pub fn push_centered_residues(residues: &[i32; MODULI.len()]) -> Script {
     }
 }
 
+/// Push signed per-coordinate relation carries in [`MODULI`] order.
+pub fn push_relation_carries(carries: &[i32; MODULI.len()]) -> Script {
+    script! {
+        for carry in carries.iter().rev() {
+            { *carry }
+        }
+    }
+}
+
+/// Derive the signed per-coordinate carries for
+/// [`mul_mod_hinted_with_carries`].
+///
+/// The caller supplies an integer quotient and remainder satisfying
+/// `lhs * rhs = quotient * target_modulus + remainder`. Each returned carry
+/// binds the corresponding RNS congruence as an exact small-integer equation.
+pub fn hinted_mul_relation_carries(
+    lhs: &BigUint,
+    rhs: &BigUint,
+    quotient: &BigUint,
+    remainder: &BigUint,
+    target_modulus: &BigUint,
+) -> [i32; MODULI.len()] {
+    assert!(!target_modulus.is_zero(), "target modulus must be positive");
+    assert!(
+        target_modulus.bits() <= 256,
+        "target modulus must fit in 256 bits"
+    );
+    assert!(lhs < target_modulus, "lhs must be below target modulus");
+    assert!(rhs < target_modulus, "rhs must be below target modulus");
+    assert!(quotient.bits() <= 256, "quotient must fit in 256 bits");
+    assert!(
+        remainder < target_modulus,
+        "remainder must be below target modulus"
+    );
+    assert_eq!(
+        lhs * rhs,
+        quotient * target_modulus + remainder,
+        "quotient and remainder must satisfy the integer product equation"
+    );
+
+    let lhs = encode(lhs);
+    let rhs = encode(rhs);
+    let quotient = encode(quotient);
+    let remainder = encode(remainder);
+    let target = encode(target_modulus);
+
+    std::array::from_fn(|index| {
+        let modulus = i64::from(MODULI[index]);
+        let target = i64::from(center(target[index], MODULI[index]));
+        let rhs = i64::from(center(rhs[index], MODULI[index]));
+        let numerator = i64::from(lhs[index]) * rhs
+            - i64::from(quotient[index]) * target
+            - i64::from(remainder[index]);
+        assert_eq!(
+            numerator % modulus,
+            0,
+            "hinted multiplication values must satisfy every RNS congruence"
+        );
+        i32::try_from(numerator / modulus).expect("an RNS relation carry must fit i32")
+    })
+}
+
 /// Push the canonical RNS encoding of `value`.
 pub fn push_value(value: &BigUint) -> Script {
     push_residues(&encode(value))
@@ -287,6 +391,31 @@ fn canonical_full_coordinate_mul(modulus: u32) -> Script {
     }
 }
 
+/// Multiply one coordinate while leaving the full log/exp table intact.
+///
+/// This costs two non-destructive table reads instead of the destructive
+/// reads used by [`mul`], allowing a hinted reduction to reuse the same table
+/// for both `lhs * rhs` and `quotient * target`.
+fn canonical_full_coordinate_mul_reusable(modulus: u32) -> Script {
+    let order = modulus - 1;
+    script! {
+        OP_2DUP OP_BOOLAND
+        OP_IF
+            OP_PICK
+            OP_SWAP OP_PICK
+            OP_ADD
+            OP_DUP { modulus - 2 } OP_GREATERTHAN
+            OP_IF
+                { order } OP_SUB
+            OP_ENDIF
+            // All `order` log entries remain above exponent zero.
+            { order } OP_ADD OP_PICK
+        OP_ELSE
+            OP_BOOLAND
+        OP_ENDIF
+    }
+}
+
 fn reduce_projective_sum(half: u32) -> Script {
     let held_half = script! {
         { half } OP_2DUP OP_GREATERTHANOREQUAL
@@ -358,6 +487,56 @@ fn projective_coordinate_mul(modulus: u32, centered_exponents: bool) -> Script {
     }
 }
 
+/// Projective coordinate multiplication with non-destructive log/exp reads.
+fn projective_coordinate_mul_reusable(modulus: u32, centered_exponents: bool) -> Script {
+    let half = (modulus - 1) / 2;
+    script! {
+        OP_2DUP OP_BOOLAND
+        OP_IF
+            // Produce min(x,p-x) while recording which canonical half x used.
+            { modulus } OP_OVER OP_SUB
+            OP_2DUP OP_GREATERTHAN OP_TOALTSTACK
+            OP_MIN OP_PICK
+            OP_SWAP
+            { modulus } OP_OVER OP_SUB
+            OP_2DUP OP_GREATERTHAN
+            OP_FROMALTSTACK OP_NUMNOTEQUAL OP_TOALTSTACK
+            // Preserve the second log-table entry as well.
+            OP_MIN OP_PICK
+
+            OP_2DUP
+            0 OP_LESSTHAN
+            OP_SWAP
+            0 OP_LESSTHAN
+            OP_NUMNOTEQUAL
+            OP_FROMALTSTACK OP_NUMNOTEQUAL OP_TOALTSTACK
+            OP_ABS OP_SWAP OP_ABS OP_ADD
+
+            { reduce_projective_sum(half) }
+
+            // All `half` log entries remain above exponent zero.
+            { half } OP_ADD OP_PICK
+            OP_FROMALTSTACK
+
+            if centered_exponents {
+                OP_IF
+                    OP_NEGATE
+                OP_ENDIF
+                OP_DUP 0 OP_LESSTHAN
+                OP_IF
+                    { modulus } OP_ADD
+                OP_ENDIF
+            } else {
+                OP_IF
+                    { modulus } OP_SWAP OP_SUB
+                OP_ENDIF
+            }
+        OP_ELSE
+            OP_BOOLAND
+        OP_ENDIF
+    }
+}
+
 fn ternary_coordinate_mul() -> Script {
     script! {
         OP_2DUP OP_BOOLAND
@@ -403,26 +582,82 @@ fn streamed_table_coordinate(
     }
 }
 
+fn selected_coordinate_mul(index: usize) -> (Script, u32, u64) {
+    let modulus = MODULI[index];
+    let lhs_depth = RESIDUE_COUNT - index as u32;
+    match strategy(modulus) {
+        MulStrategy::Binary => (
+            script! {
+                { lhs_depth } OP_ROLL OP_BOOLAND OP_TOALTSTACK
+            },
+            0,
+            0,
+        ),
+        MulStrategy::Ternary => (
+            script! {
+                { lhs_depth } OP_ROLL
+                { ternary_coordinate_mul() }
+                OP_TOALTSTACK
+            },
+            0,
+            2,
+        ),
+        strategy @ MulStrategy::CanonicalFull => {
+            let entries = full_table_entries(index);
+            let table = streamed_table_coordinate(
+                lhs_depth,
+                &entries,
+                canonical_full_coordinate_mul(modulus),
+                cleanup_items(modulus, strategy),
+            );
+            let table_free = script! {
+                { lhs_depth } OP_ROLL
+                { compact_binary_horner_coordinate_mul(modulus) }
+                OP_TOALTSTACK
+            };
+            if table_free.clone().compile().len() < table.clone().compile().len() {
+                (table_free, 0, 4)
+            } else {
+                (table, table_items(modulus, strategy), 2)
+            }
+        }
+        strategy @ (MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered) => {
+            let centered = strategy == MulStrategy::ProjectiveCentered;
+            let entries = projective_table_entries(index, centered);
+            let table = streamed_table_coordinate(
+                lhs_depth,
+                &entries,
+                projective_coordinate_mul(modulus, centered),
+                cleanup_items(modulus, strategy),
+            );
+            let table_free = script! {
+                { lhs_depth } OP_ROLL
+                { compact_binary_horner_coordinate_mul(modulus) }
+                OP_TOALTSTACK
+            };
+            if table_free.clone().compile().len() < table.clone().compile().len() {
+                (table_free, 0, 4)
+            } else {
+                (table, table_items(modulus, strategy), 4)
+            }
+        }
+    }
+}
+
 fn calculated_mul_peak(preserved_items: u32) -> u64 {
     MODULI
         .iter()
         .enumerate()
-        .map(|(index, modulus)| {
-            let strategy = strategy(*modulus);
+        .map(|(index, _)| {
+            let (_, table, transient) = selected_coordinate_mul(index);
             let live = 2 * u64::from(RESIDUE_COUNT) - index as u64;
-            let table = u64::from(table_items(*modulus, strategy));
-            let transient = match strategy {
-                MulStrategy::Binary => 0,
-                MulStrategy::Ternary | MulStrategy::CanonicalFull => 2,
-                MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered => 4,
-            };
-            u64::from(preserved_items) + live + table + transient
+            u64::from(preserved_items) + live + u64::from(table) + transient
         })
         .max()
         .unwrap_or(u64::from(preserved_items))
 }
 
-/// Multiply two canonical RNS values with per-coordinate streamed tables.
+/// Multiply two canonical RNS values with per-coordinate generated strategies.
 ///
 /// Input layout: `preserved | lhs | rhs`, where `preserved_items` counts all
 /// unrelated live main- and altstack items. Both operands are consumed. The
@@ -433,56 +668,50 @@ pub fn mul(preserved_items: u32) -> Script {
         "prime RNS multiplication exceeds Bitcoin Script's stack limit"
     );
 
-    let coordinates = MODULI
-        .iter()
-        .copied()
-        .enumerate()
-        .map(|(index, modulus)| {
-            let lhs_depth = RESIDUE_COUNT - index as u32;
-            match strategy(modulus) {
-                MulStrategy::Binary => script! {
-                    { lhs_depth } OP_ROLL OP_BOOLAND OP_TOALTSTACK
-                },
-                MulStrategy::Ternary => script! {
-                    { lhs_depth } OP_ROLL
-                    { ternary_coordinate_mul() }
-                    OP_TOALTSTACK
-                },
-                strategy @ MulStrategy::CanonicalFull => {
-                    let entries = full_table_entries(index);
-                    streamed_table_coordinate(
-                        lhs_depth,
-                        &entries,
-                        canonical_full_coordinate_mul(modulus),
-                        cleanup_items(modulus, strategy),
-                    )
-                }
-                strategy @ MulStrategy::ProjectiveCanonical => {
-                    let entries = projective_table_entries(index, false);
-                    streamed_table_coordinate(
-                        lhs_depth,
-                        &entries,
-                        projective_coordinate_mul(modulus, false),
-                        cleanup_items(modulus, strategy),
-                    )
-                }
-                strategy @ MulStrategy::ProjectiveCentered => {
-                    let entries = projective_table_entries(index, true);
-                    streamed_table_coordinate(
-                        lhs_depth,
-                        &entries,
-                        projective_coordinate_mul(modulus, true),
-                        cleanup_items(modulus, strategy),
-                    )
-                }
-            }
-        })
+    let coordinates = (0..MODULI.len())
+        .map(|index| selected_coordinate_mul(index).0)
         .collect::<Vec<_>>();
 
     script! {
         for coordinate in coordinates {
             { coordinate }
         }
+    }
+}
+
+fn selected_mul_table_bytes(index: usize) -> (usize, usize) {
+    let modulus = MODULI[index];
+    let (_, selected_table_items, _) = selected_coordinate_mul(index);
+    if selected_table_items == 0 {
+        return (0, 0);
+    }
+
+    let selected = strategy(modulus);
+    let entries = match selected {
+        MulStrategy::CanonicalFull => full_table_entries(index),
+        MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered => {
+            projective_table_entries(index, selected == MulStrategy::ProjectiveCentered)
+        }
+        MulStrategy::Binary | MulStrategy::Ternary => unreachable!(),
+    };
+    (
+        push_table_entries(&entries).compile().len(),
+        drop_items(cleanup_items(modulus, selected)).compile().len(),
+    )
+}
+
+/// Return the exact one-shot [`mul`] byte attribution used by the README
+/// metric, including restoration of all 75 outputs from the altstack.
+pub fn mul_cost_breakdown() -> ScriptCostBreakdown {
+    let (table_push, table_drop) = (0..MODULI.len()).fold((0, 0), |total, index| {
+        let coordinate = selected_mul_table_bytes(index);
+        (total.0 + coordinate.0, total.1 + coordinate.1)
+    });
+    let total = mul(0).compile().len() + from_altstack().compile().len();
+    ScriptCostBreakdown {
+        table_push,
+        table_drop,
+        computation: total - table_push - table_drop,
     }
 }
 
@@ -538,6 +767,288 @@ fn mul_by_constant_addition_chain(constant: u32, modulus: u32) -> Script {
     }
 }
 
+/// Multiply by a fixed constant with a binary Horner chain.
+fn mul_by_constant_binary_horner(constant: u32, modulus: u32) -> Script {
+    let constant = constant % modulus;
+    let negative = constant > modulus / 2;
+    let magnitude = if negative {
+        modulus - constant
+    } else {
+        constant
+    };
+    let bits = if magnitude == 0 {
+        Vec::new()
+    } else {
+        (0..32 - magnitude.leading_zeros())
+            .rev()
+            .map(|shift| (magnitude >> shift) & 1 != 0)
+            .collect::<Vec<_>>()
+    };
+
+    script! {
+        if magnitude == 0 {
+            OP_DROP 0
+        } else {
+            // The leading one initializes the accumulator with x.
+            OP_DUP
+            for bit in bits.into_iter().skip(1) {
+                OP_DUP OP_ADD
+                { canonical_add_reduce(modulus) }
+                if bit {
+                    OP_OVER OP_ADD
+                    { canonical_add_reduce(modulus) }
+                }
+            }
+            OP_NIP
+
+            if negative {
+                OP_DUP OP_0NOTEQUAL
+                OP_IF
+                    { modulus } OP_SWAP OP_SUB
+                OP_ENDIF
+            }
+        }
+    }
+}
+
+fn canonical_sub_reduce(modulus: u32) -> Script {
+    script! {
+        OP_SUB
+        OP_DUP 0 OP_LESSTHAN
+        OP_IF
+            { modulus } OP_ADD
+        OP_ENDIF
+    }
+}
+
+fn canonical_negate(modulus: u32) -> Script {
+    script! {
+        OP_DUP OP_0NOTEQUAL
+        OP_IF
+            { modulus } OP_SWAP OP_SUB
+        OP_ENDIF
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+enum ModularChainOp {
+    Double,
+    DoublePlusInput,
+    DoubleMinusInput,
+    AddInput,
+    SubtractInput,
+    Negate,
+    InputMinus,
+    Triple,
+    TriplePlusInput,
+    TripleMinusInput,
+    Quintuple,
+}
+
+impl ModularChainOp {
+    const ALL: [Self; 11] = [
+        Self::Double,
+        Self::DoublePlusInput,
+        Self::DoubleMinusInput,
+        Self::AddInput,
+        Self::SubtractInput,
+        Self::Negate,
+        Self::InputMinus,
+        Self::Triple,
+        Self::TriplePlusInput,
+        Self::TripleMinusInput,
+        Self::Quintuple,
+    ];
+
+    fn next(self, coefficient: u32, modulus: u32) -> u32 {
+        let coefficient = i64::from(coefficient);
+        let value = match self {
+            Self::Double => 2 * coefficient,
+            Self::DoublePlusInput => 2 * coefficient + 1,
+            Self::DoubleMinusInput => 2 * coefficient - 1,
+            Self::AddInput => coefficient + 1,
+            Self::SubtractInput => coefficient - 1,
+            Self::Negate => -coefficient,
+            Self::InputMinus => 1 - coefficient,
+            Self::Triple => 3 * coefficient,
+            Self::TriplePlusInput => 3 * coefficient + 1,
+            Self::TripleMinusInput => 3 * coefficient - 1,
+            Self::Quintuple => 5 * coefficient,
+        };
+        value.rem_euclid(i64::from(modulus)) as u32
+    }
+
+    fn script(self, modulus: u32) -> Script {
+        let double = script! {
+            OP_DUP OP_ADD
+            { canonical_add_reduce(modulus) }
+        };
+        let add_input = script! {
+            OP_OVER OP_ADD
+            { canonical_add_reduce(modulus) }
+        };
+        let subtract_input = script! {
+            OP_OVER
+            { canonical_sub_reduce(modulus) }
+        };
+        let triple = script! {
+            OP_DUP
+            { double.clone() }
+            OP_ADD
+            { canonical_add_reduce(modulus) }
+        };
+
+        match self {
+            Self::Double => double,
+            Self::DoublePlusInput => script! {
+                { double }
+                { add_input }
+            },
+            Self::DoubleMinusInput => script! {
+                { double }
+                { subtract_input }
+            },
+            Self::AddInput => add_input,
+            Self::SubtractInput => subtract_input,
+            Self::Negate => canonical_negate(modulus),
+            Self::InputMinus => script! {
+                OP_OVER OP_SWAP
+                { canonical_sub_reduce(modulus) }
+            },
+            Self::Triple => triple,
+            Self::TriplePlusInput => script! {
+                { triple }
+                { add_input }
+            },
+            Self::TripleMinusInput => script! {
+                { triple }
+                { subtract_input }
+            },
+            Self::Quintuple => script! {
+                OP_DUP
+                { double.clone() }
+                { double }
+                OP_ADD
+                { canonical_add_reduce(modulus) }
+            },
+        }
+    }
+}
+
+/// Find a shortest generated modular chain for one fixed coordinate constant.
+fn mul_by_constant_modular_chain(constant: u32, modulus: u32) -> Script {
+    let target = constant % modulus;
+    if target == 0 {
+        return script! { OP_DROP 0 };
+    }
+    if target == 1 {
+        return script! {};
+    }
+
+    let mut distances = vec![usize::MAX; modulus as usize];
+    let mut predecessors = vec![None; modulus as usize];
+    let mut frontier = BinaryHeap::new();
+    let operations = ModularChainOp::ALL.map(|operation| {
+        let byte_len = operation.script(modulus).compile().len();
+        (operation, byte_len)
+    });
+    distances[1] = 0;
+    frontier.push((Reverse(0usize), 1u32));
+
+    while let Some((Reverse(distance), coefficient)) = frontier.pop() {
+        if distance != distances[coefficient as usize] {
+            continue;
+        }
+        if coefficient == target {
+            break;
+        }
+        for (operation, byte_len) in operations.iter().copied() {
+            let next = operation.next(coefficient, modulus);
+            let next_distance = distance + byte_len;
+            if next_distance < distances[next as usize] {
+                distances[next as usize] = next_distance;
+                predecessors[next as usize] = Some((coefficient, operation));
+                frontier.push((Reverse(next_distance), next));
+            }
+        }
+    }
+
+    let mut coefficient = target;
+    let mut operations = Vec::new();
+    while coefficient != 1 {
+        let (previous, operation) = predecessors[coefficient as usize]
+            .expect("every prime-field multiplication constant must be reachable");
+        operations.push(operation);
+        coefficient = previous;
+    }
+    operations.reverse();
+
+    script! {
+        OP_DUP
+        for operation in operations {
+            { operation.script(modulus) }
+        }
+        OP_NIP
+    }
+}
+
+/// Multiply by a fixed constant with a width-2 non-adjacent form.
+fn mul_by_constant_width_2_naf(constant: u32, modulus: u32) -> Script {
+    let constant = constant % modulus;
+    let negative = constant > modulus / 2;
+    let mut remaining = if negative {
+        modulus - constant
+    } else {
+        constant
+    };
+    let mut digits = Vec::new();
+    while remaining != 0 {
+        if remaining & 1 == 0 {
+            digits.push(0i8);
+            remaining >>= 1;
+        } else {
+            let digit = 2i8 - (remaining % 4) as i8;
+            digits.push(digit);
+            if digit > 0 {
+                remaining -= 1;
+            } else {
+                remaining += 1;
+            }
+            remaining >>= 1;
+        }
+    }
+    digits.reverse();
+
+    script! {
+        if digits.is_empty() {
+            OP_DROP 0
+        } else {
+            // The leading digit is one. Keep x beneath the accumulator so a
+            // signed low digit costs only one modular add or subtract.
+            OP_DUP
+            for digit in digits.into_iter().skip(1) {
+                OP_DUP OP_ADD
+                { canonical_add_reduce(modulus) }
+                if digit == 1 {
+                    OP_OVER OP_ADD
+                    { canonical_add_reduce(modulus) }
+                } else if digit == -1 {
+                    OP_OVER
+                    { canonical_sub_reduce(modulus) }
+                }
+            }
+            OP_NIP
+
+            if negative {
+                OP_DUP OP_0NOTEQUAL
+                OP_IF
+                    { modulus } OP_SWAP OP_SUB
+                OP_ENDIF
+            }
+        }
+    }
+}
+
 fn mul_by_constant_direct_table(constant: u32, modulus: u32, centered: bool) -> Script {
     let entries = (0..modulus)
         .rev()
@@ -570,12 +1081,16 @@ fn mul_by_constant_direct_table(constant: u32, modulus: u32, centered: bool) -> 
 
 /// Multiply one canonical coordinate by a fixed constant.
 ///
-/// Script generation selects the shortest of a centered addition chain and
+/// Script generation selects the shortest of repeated addition, binary
+/// Horner, width-2 NAF, a shortest modular affine chain, and
 /// canonical/centered direct lookup tables. Direct tables are streamed and
 /// destructively queried, so only one coordinate table is live at a time.
 fn mul_by_constant_mod(constant: u32, modulus: u32) -> Script {
     let candidates = [
         mul_by_constant_addition_chain(constant, modulus),
+        mul_by_constant_binary_horner(constant, modulus),
+        mul_by_constant_width_2_naf(constant, modulus),
+        mul_by_constant_modular_chain(constant, modulus),
         mul_by_constant_direct_table(constant, modulus, false),
         mul_by_constant_direct_table(constant, modulus, true),
     ];
@@ -585,25 +1100,233 @@ fn mul_by_constant_mod(constant: u32, modulus: u32) -> Script {
         .expect("constant multiplication has candidates")
 }
 
-fn verify_sum_to_constant(constant: &[u32; MODULI.len()]) -> Script {
+/// Multiply two canonical coordinates by decomposing the top operand into
+/// binary in place. The fragment is table-free and consumes both inputs.
+fn binary_horner_coordinate_mul(modulus: u32) -> Script {
+    let highest_power = 1u32 << (31 - (modulus - 1).leading_zeros());
+    let powers = (0..32 - highest_power.leading_zeros())
+        .rev()
+        .map(|shift| 1u32 << shift)
+        .collect::<Vec<_>>();
+
     script! {
-        for (index, modulus) in MODULI.iter().copied().enumerate() {
-            // Layout is `value | complement`; preserve both while checking
-            // one coordinate of value + complement = constant.
-            { RESIDUE_COUNT + index as u32 } OP_PICK
-            { index as u32 + 1 } OP_PICK
-            OP_ADD
-            { canonical_add_reduce(modulus) }
-            { constant[index] } OP_EQUALVERIFY
+        // Layout throughout is `multiplicand | remaining_multiplier | acc`.
+        0
+        for (iteration, power) in powers.into_iter().enumerate() {
+            if iteration != 0 {
+                OP_DUP OP_ADD
+                { canonical_add_reduce(modulus) }
+            }
+
+            if power == 1 {
+                // Move the final 0/1 remainder into OP_IF and collapse the
+                // scan layout directly to `x | product`.
+                OP_SWAP
+                OP_IF
+                    OP_OVER OP_ADD
+                    { canonical_add_reduce(modulus) }
+                OP_ENDIF
+                OP_NIP
+            } else if iteration == 0 {
+                // The zero accumulator makes the leading selected-bit branch
+                // just `x | (y-power) | x`; x is already canonical.
+                OP_OVER { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_DROP { power } OP_SUB OP_OVER
+                OP_ENDIF
+            } else {
+                OP_OVER
+                { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_SWAP { power } OP_SUB OP_SWAP
+                    2 OP_PICK OP_ADD
+                    { canonical_add_reduce(modulus) }
+                OP_ENDIF
+            }
         }
     }
 }
 
+/// Multiply two canonical coordinates after centering the multiplier.
+fn centered_binary_horner_coordinate_mul(modulus: u32) -> Script {
+    let highest_power = 1u32 << (31 - (modulus / 2).leading_zeros());
+    let powers = (0..32 - highest_power.leading_zeros())
+        .rev()
+        .map(|shift| 1u32 << shift)
+        .collect::<Vec<_>>();
+
+    script! {
+        // Replace y by min(y, p-y), remembering whether the canonical result
+        // must be negated after the shorter magnitude scan.
+        { modulus } OP_OVER OP_SUB
+        OP_2DUP OP_GREATERTHAN OP_TOALTSTACK
+        OP_MIN
+
+        0
+        for (iteration, power) in powers.into_iter().enumerate() {
+            if iteration != 0 {
+                OP_DUP OP_ADD
+                { canonical_add_reduce(modulus) }
+            }
+
+            if power == 1 {
+                OP_SWAP
+                OP_IF
+                    OP_OVER OP_ADD
+                    { canonical_add_reduce(modulus) }
+                OP_ENDIF
+                OP_NIP
+            } else if iteration == 0 {
+                OP_OVER { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_DROP { power } OP_SUB OP_OVER
+                OP_ENDIF
+            } else {
+                OP_OVER
+                { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_SWAP { power } OP_SUB OP_SWAP
+                    2 OP_PICK OP_ADD
+                    { canonical_add_reduce(modulus) }
+                OP_ENDIF
+            }
+        }
+
+        OP_FROMALTSTACK
+        OP_IF
+            OP_DUP OP_0NOTEQUAL
+            OP_IF
+                { modulus } OP_SWAP OP_SUB
+            OP_ENDIF
+        OP_ENDIF
+    }
+}
+
+fn compact_binary_horner_coordinate_mul(modulus: u32) -> Script {
+    [
+        binary_horner_coordinate_mul(modulus),
+        centered_binary_horner_coordinate_mul(modulus),
+    ]
+    .into_iter()
+    .min_by_key(|candidate| candidate.clone().compile().len())
+    .expect("binary coordinate multiplication has candidates")
+}
+
+/// Multiply two canonical coordinates as an exact Script integer.
+///
+/// Since every prime is at most 383, the largest result is below 147,000 and
+/// comfortably inside Bitcoin's four-byte Script-number arithmetic domain.
+fn exact_binary_horner_coordinate_mul(modulus: u32) -> Script {
+    let highest_power = 1u32 << (31 - (modulus / 2).leading_zeros());
+    let powers = (0..32 - highest_power.leading_zeros())
+        .rev()
+        .map(|shift| 1u32 << shift)
+        .collect::<Vec<_>>();
+
+    script! {
+        // Center the multiplier. Its sign only changes the exact relation
+        // carry, while its magnitude needs one fewer decomposition bit.
+        { modulus } OP_OVER OP_SUB
+        OP_2DUP OP_GREATERTHAN OP_TOALTSTACK
+        OP_MIN
+
+        // Layout throughout is `multiplicand | remaining_multiplier | acc`.
+        0
+        for (iteration, power) in powers.into_iter().enumerate() {
+            if iteration != 0 {
+                OP_DUP OP_ADD
+            }
+
+            if power == 1 {
+                OP_SWAP
+                OP_IF
+                    OP_OVER OP_ADD
+                OP_ENDIF
+                OP_NIP
+            } else if iteration == 0 {
+                OP_OVER { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_DROP { power } OP_SUB OP_OVER
+                OP_ENDIF
+            } else {
+                OP_OVER
+                { power - 1 } OP_GREATERTHAN
+                OP_IF
+                    OP_SWAP { power } OP_SUB OP_SWAP
+                    2 OP_PICK OP_ADD
+                OP_ENDIF
+            }
+        }
+        OP_FROMALTSTACK
+        OP_IF
+            OP_NEGATE
+        OP_ENDIF
+    }
+}
+
+fn hinted_coordinate_table_bytes(index: usize, target_residue: u32) -> (usize, usize) {
+    let modulus = MODULI[index];
+    let selected = strategy(modulus);
+    let (entries, query) = match selected {
+        MulStrategy::CanonicalFull => (
+            full_table_entries(index),
+            canonical_full_coordinate_mul_reusable(modulus),
+        ),
+        MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered => (
+            projective_table_entries(index, selected == MulStrategy::ProjectiveCentered),
+            projective_coordinate_mul_reusable(
+                modulus,
+                selected == MulStrategy::ProjectiveCentered,
+            ),
+        ),
+        MulStrategy::Binary | MulStrategy::Ternary => return (0, 0),
+    };
+    let items = table_items(modulus, selected);
+    let table_push = push_table_entries(&entries);
+    let table_drop = drop_items(items);
+
+    // `extract` and `finish_relation` are byte-identical in both generated
+    // candidates, so compare only the multiplication-specific suffixes.
+    let shared_table = script! {
+        OP_TOALTSTACK OP_TOALTSTACK
+        { table_push.clone() }
+        OP_FROMALTSTACK OP_FROMALTSTACK
+        { query.clone() }
+        OP_TOALTSTACK
+        { items } OP_ROLL
+        { target_residue }
+        { query }
+        { table_drop.clone() }
+    };
+    let table_free = script! {
+        { compact_binary_horner_coordinate_mul(modulus) }
+        OP_TOALTSTACK
+        { mul_by_constant_mod(target_residue, modulus) }
+    };
+    if shared_table.compile().len() <= table_free.compile().len() {
+        (table_push.compile().len(), table_drop.compile().len())
+    } else {
+        (0, 0)
+    }
+}
+
 fn calculated_hinted_reduction_peak(preserved_items: u32) -> u64 {
-    let multiplication = calculated_mul_peak(preserved_items + 2 * RESIDUE_COUNT);
-    let relation = u64::from(preserved_items + 3 * RESIDUE_COUNT + MODULI[MODULI.len() - 1] + 3);
-    let input_validation = u64::from(preserved_items + 5 * RESIDUE_COUNT + 3);
-    multiplication.max(relation).max(input_validation)
+    let coordinate_peak = MODULI
+        .iter()
+        .copied()
+        .enumerate()
+        .map(|(index, modulus)| {
+            let remaining = u64::from(RESIDUE_COUNT) - index as u64;
+            let outputs = index as u64;
+            let table = u64::from(table_items(modulus, strategy(modulus)));
+            // Five shrinking input vectors, completed remainder coordinates,
+            // the reusable table, and the largest query transient.
+            u64::from(preserved_items) + 5 * remaining + outputs + table + 5
+        })
+        .max()
+        .unwrap_or(u64::from(preserved_items));
+    let input_validation = u64::from(preserved_items) + 5 * u64::from(RESIDUE_COUNT) + 3;
+    coordinate_peak.max(input_validation)
 }
 
 /// Verify a witness-hinted modular multiplication and return its remainder.
@@ -637,58 +1360,275 @@ pub fn mul_mod_hinted(target_modulus: &BigUint, preserved_items: u32) -> Script 
         "prime RNS hinted modular multiplication exceeds Bitcoin Script's stack limit"
     );
 
-    let target_residues = encode(target_modulus);
     let complement_sum = target_modulus - BigUint::one();
     let complement_sum_residues = encode(&complement_sum);
-    let relation_checks = MODULI
+    let target_residues = encode(target_modulus);
+    let coordinates = MODULI
         .iter()
         .copied()
         .enumerate()
         .map(|(index, modulus)| {
             let index = index as u32;
-            script! {
-                // Layout is `product | quotient | remainder`. Copy one
-                // coordinate from each vector without disturbing the output.
-                { 2 * RESIDUE_COUNT + index } OP_PICK
-                { RESIDUE_COUNT + index + 1 } OP_PICK
-                { index + 2 } OP_PICK
-
-                OP_TOALTSTACK
-                { mul_by_constant_mod(target_residues[index as usize], modulus) }
-                OP_FROMALTSTACK
+            let remaining = RESIDUE_COUNT - index;
+            let validate_coordinate = script! {
+                OP_DUP 0 { modulus } OP_WITHIN OP_VERIFY
+            };
+            let extract = script! {
+                // Consume and validate c_i and r_i, proving
+                // r_i + c_i = (target - 1)_i. Keep r_i on the altstack.
+                { validate_coordinate.clone() }
+                { remaining } OP_ROLL
+                { validate_coordinate.clone() }
+                OP_DUP OP_TOALTSTACK
                 OP_ADD
                 { canonical_add_reduce(modulus) }
+                { complement_sum_residues[index as usize] } OP_EQUALVERIFY
+
+                // Extract and validate q_i, then consume rhs_i and lhs_i.
+                { 2 * (remaining - 1) } OP_ROLL
+                { validate_coordinate }
+                OP_TOALTSTACK
+                { 3 * (remaining - 1) } OP_ROLL OP_TOALTSTACK
+                { 4 * (remaining - 1) } OP_ROLL
+                OP_FROMALTSTACK
+                OP_FROMALTSTACK
+                // `lhs_i | rhs_i | q_i` -> `q_i | lhs_i | rhs_i`.
+                OP_ROT OP_ROT
+            };
+            let finish_relation = script! {
+                // Altstack suffix is `r_i | product_i`. Preserve r_i as this
+                // coordinate's output while checking product_i = q_i*N_i+r_i.
+                OP_FROMALTSTACK
+                OP_FROMALTSTACK
+                OP_DUP OP_TOALTSTACK
+                OP_ROT
+                if modulus == 2 {
+                    OP_NUMNOTEQUAL
+                } else {
+                    OP_ADD
+                    { canonical_add_reduce(modulus) }
+                }
                 OP_EQUALVERIFY
+            };
+
+            match strategy(modulus) {
+                MulStrategy::Binary => script! {
+                    { extract }
+                    OP_BOOLAND OP_TOALTSTACK
+                    { mul_by_constant_mod(target_residues[index as usize], modulus) }
+                    { finish_relation }
+                },
+                MulStrategy::Ternary => script! {
+                    { extract }
+                    { ternary_coordinate_mul() }
+                    OP_TOALTSTACK
+                    { mul_by_constant_mod(target_residues[index as usize], modulus) }
+                    { finish_relation }
+                },
+                strategy @ MulStrategy::CanonicalFull => {
+                    let entries = full_table_entries(index as usize);
+                    let query = canonical_full_coordinate_mul_reusable(modulus);
+                    let table_items = table_items(modulus, strategy);
+                    let shared_table = script! {
+                        { extract.clone() }
+                        OP_TOALTSTACK OP_TOALTSTACK
+                        { push_table_entries(&entries) }
+                        OP_FROMALTSTACK OP_FROMALTSTACK
+                        { query.clone() }
+                        OP_TOALTSTACK
+                        { table_items } OP_ROLL
+                        { target_residues[index as usize] }
+                        { query }
+                        { finish_relation.clone() }
+                        { drop_items(table_items) }
+                    };
+                    let table_free = script! {
+                        { extract }
+                        { compact_binary_horner_coordinate_mul(modulus) }
+                        OP_TOALTSTACK
+                        { mul_by_constant_mod(target_residues[index as usize], modulus) }
+                        { finish_relation }
+                    };
+                    [shared_table, table_free]
+                        .into_iter()
+                        .min_by_key(|candidate| candidate.clone().compile().len())
+                        .expect("hinted coordinate has candidates")
+                }
+                strategy @ (MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered) => {
+                    let centered = strategy == MulStrategy::ProjectiveCentered;
+                    let entries = projective_table_entries(index as usize, centered);
+                    let query = projective_coordinate_mul_reusable(modulus, centered);
+                    let table_items = table_items(modulus, strategy);
+                    let shared_table = script! {
+                        { extract.clone() }
+                        OP_TOALTSTACK OP_TOALTSTACK
+                        { push_table_entries(&entries) }
+                        OP_FROMALTSTACK OP_FROMALTSTACK
+                        { query.clone() }
+                        OP_TOALTSTACK
+                        { table_items } OP_ROLL
+                        { target_residues[index as usize] }
+                        { query }
+                        { finish_relation.clone() }
+                        { drop_items(table_items) }
+                    };
+                    let table_free = script! {
+                        { extract }
+                        { compact_binary_horner_coordinate_mul(modulus) }
+                        OP_TOALTSTACK
+                        { mul_by_constant_mod(target_residues[index as usize], modulus) }
+                        { finish_relation }
+                    };
+                    [shared_table, table_free]
+                        .into_iter()
+                        .min_by_key(|candidate| candidate.clone().compile().len())
+                        .expect("hinted coordinate has candidates")
+                }
             }
         })
         .collect::<Vec<_>>();
 
     script! {
-        // Validate and bind r' = target - 1 - r before any hint can be used as
-        // a lookup index. Both vectors remain live for the equality checks.
-        { verify_canonical() }
-        { verify_sum_to_constant(&complement_sum_residues) }
-        { drop_value() }
-        { verify_canonical() }
-
-        // Preserve r and validate q before multiplication.
-        { to_altstack() }
-        { verify_canonical() }
-        { to_altstack() }
-
-        // q and r coexist below all temporary multiplication state.
-        { mul(preserved_items + 2 * RESIDUE_COUNT) }
-        { from_altstack() }
-        { from_altstack() }
-        { from_altstack() }
-
-        for check in relation_checks {
-            { check }
+        for coordinate in coordinates {
+            { coordinate }
         }
+        { from_altstack() }
+    }
+}
 
-        // Preserve only the verified canonical remainder.
-        { to_altstack() }
-        { drop_items(2 * RESIDUE_COUNT) }
+/// Return the exact [`mul_mod_hinted`] byte attribution for `target_modulus`.
+///
+/// The returned total has the same boundary as the generated verifier: hint
+/// checks, relation checks, cleanup, and returned remainder are included;
+/// operand pushes, external bindings, and a terminal predicate are excluded.
+pub fn mul_mod_hinted_cost_breakdown(target_modulus: &BigUint) -> ScriptCostBreakdown {
+    let target_residues = encode(target_modulus);
+    let (table_push, table_drop) =
+        target_residues
+            .iter()
+            .copied()
+            .enumerate()
+            .fold((0, 0), |total, (index, residue)| {
+                let coordinate = hinted_coordinate_table_bytes(index, residue);
+                (total.0 + coordinate.0, total.1 + coordinate.1)
+            });
+    let total = mul_mod_hinted(target_modulus, 0).compile().len();
+    ScriptCostBreakdown {
+        table_push,
+        table_drop,
+        computation: total - table_push - table_drop,
+    }
+}
+
+fn calculated_hinted_carry_reduction_peak(preserved_items: u32) -> u64 {
+    // Six 75-coordinate input vectors plus the largest range-check transient.
+    u64::from(preserved_items) + 6 * u64::from(RESIDUE_COUNT) + 3
+}
+
+/// Verify a witness-hinted modular multiplication using exact relation carries.
+///
+/// Input layout is `preserved | lhs | rhs | quotient | remainder |
+/// remainder_complement | relation_carries`. The first five values after
+/// `preserved` are canonical RNS vectors. `relation_carries` contains one
+/// signed Script integer per coordinate and is generated by
+/// [`hinted_mul_relation_carries`]. The fragment consumes everything except
+/// the verified canonical remainder, which it returns on the main stack.
+///
+/// For every coordinate `i`, the carry binds the congruence with the exact
+/// small-integer equation
+/// `lhs_i*rhs_i - quotient_i*center(target_i) - remainder_i = carry_i*p_i`.
+/// This avoids all multiplication lookup tables. Carry values need no separate
+/// range check: an incorrect value fails exact equality, and oversized witness
+/// integers or arithmetic intermediates fail Script-number decoding.
+///
+/// The same essential global precondition as [`mul_mod_hinted`] applies: all
+/// five RNS vectors must already be bound coordinate-by-coordinate to the
+/// canonical encoding of unsigned integers below `2^256`, and
+/// `lhs,rhs < target_modulus`. Coordinate checks and relation carries do not
+/// establish those non-coordinatewise bindings.
+pub fn mul_mod_hinted_with_carries(target_modulus: &BigUint, preserved_items: u32) -> Script {
+    assert!(!target_modulus.is_zero(), "target modulus must be positive");
+    assert!(
+        target_modulus.bits() <= 256,
+        "target modulus must fit in 256 bits"
+    );
+    assert!(
+        calculated_hinted_carry_reduction_peak(preserved_items)
+            <= u64::from(U31_LOOKUP_STACK_LIMIT),
+        "prime RNS carry-hinted modular multiplication exceeds Bitcoin Script's stack limit"
+    );
+
+    let target_residues = encode(target_modulus);
+    let centered_target: [i32; MODULI.len()] =
+        std::array::from_fn(|index| center(target_residues[index], MODULI[index]));
+    let complement_sum = target_modulus - BigUint::one();
+    let complement_sum_residues = encode(&complement_sum);
+    let coordinates = MODULI
+        .iter()
+        .copied()
+        .enumerate()
+        .map(|(index, modulus)| {
+            let index = index as u32;
+            let remaining = RESIDUE_COUNT - index;
+            let target = centered_target[index as usize];
+            let validate_coordinate = script! {
+                OP_DUP 0 { modulus } OP_WITHIN OP_VERIFY
+            };
+
+            script! {
+                // Remove the exact signed relation carry before processing the
+                // five aligned canonical RNS coordinates.
+                OP_TOALTSTACK
+
+                // Validate c_i and r_i and bind r_i+c_i=(target-1)_i.
+                { remaining - 1 } OP_ROLL
+                { validate_coordinate.clone() }
+                { 2 * (remaining - 1) + 1 } OP_ROLL
+                { validate_coordinate.clone() }
+                OP_DUP OP_TOALTSTACK
+                OP_ADD
+                { canonical_add_reduce(modulus) }
+                { complement_sum_residues[index as usize] } OP_EQUALVERIFY
+
+                // Extract and validate q_i, then consume rhs_i and lhs_i.
+                { 3 * (remaining - 1) } OP_ROLL
+                { validate_coordinate }
+                OP_TOALTSTACK
+                { 4 * (remaining - 1) } OP_ROLL OP_TOALTSTACK
+                { 5 * (remaining - 1) } OP_ROLL
+                OP_FROMALTSTACK
+                OP_FROMALTSTACK
+                OP_ROT OP_ROT
+
+                // Exact product: q_i | lhs_i | rhs_i -> q_i | lhs_i*rhs_i.
+                { exact_binary_horner_coordinate_mul(modulus) }
+                OP_TOALTSTACK
+
+                // Exact q_i * centered(target_i), whose magnitude is < p_i/2.
+                { scriptint::mul_by_constant(target.unsigned_abs()) }
+                if target < 0 {
+                    OP_NEGATE
+                }
+                OP_FROMALTSTACK
+
+                // Altstack suffix is `carry_i | r_i`. Preserve r_i as output,
+                // calculate carry_i*p_i, and verify exact equality.
+                OP_FROMALTSTACK
+                OP_FROMALTSTACK
+                OP_OVER OP_TOALTSTACK
+                { scriptint::mul_by_constant(modulus) }
+                OP_TOALTSTACK
+                OP_SUB
+                OP_SWAP OP_SUB
+                OP_FROMALTSTACK OP_EQUALVERIFY
+            }
+        })
+        .collect::<Vec<_>>();
+
+    script! {
+        for coordinate in coordinates {
+            { coordinate }
+        }
         { from_altstack() }
     }
 }
@@ -948,6 +1888,31 @@ mod tests {
         })
     }
 
+    fn run_carry_hinted_modular_product(
+        lhs: &BigUint,
+        rhs: &BigUint,
+        target: &BigUint,
+        operation: Script,
+    ) -> crate::support::execution::ExecuteInfo {
+        let product = lhs * rhs;
+        let quotient = &product / target;
+        let remainder = &product % target;
+        let complement = target - BigUint::one() - &remainder;
+        let carries = hinted_mul_relation_carries(lhs, rhs, &quotient, &remainder, target);
+        crate::support::execution::execute_script(script! {
+            { push_value(lhs) }
+            { push_value(rhs) }
+            { push_value(&quotient) }
+            { push_value(&remainder) }
+            { push_value(&complement) }
+            { push_relation_carries(&carries) }
+            { operation }
+            { push_value(&remainder) }
+            { equalverify() }
+            OP_TRUE
+        })
+    }
+
     #[test]
     fn basis_has_exact_unsigned_256_bit_product_capacity() {
         assert_eq!(MODULI.len(), 75);
@@ -1099,6 +2064,106 @@ mod tests {
     }
 
     #[test]
+    fn table_free_coordinate_multiplication_matches_reference() {
+        for modulus in MODULI {
+            let values = if modulus <= 43 {
+                (0..modulus).collect::<Vec<_>>()
+            } else {
+                vec![
+                    0,
+                    1,
+                    2,
+                    modulus / 2,
+                    modulus / 2 + 1,
+                    modulus - 2,
+                    modulus - 1,
+                ]
+            };
+
+            let operation = binary_horner_coordinate_mul(modulus);
+            for lhs in values.iter().copied() {
+                for rhs in values.iter().copied() {
+                    let result = crate::support::execution::execute_script(script! {
+                        { lhs }
+                        { rhs }
+                        { operation.clone() }
+                        { lhs * rhs % modulus }
+                        OP_EQUAL
+                    });
+                    assert!(result.success, "{lhs} * {rhs} mod {modulus}: {result}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn centered_binary_horner_scans_every_coordinate_multiplier() {
+        for modulus in MODULI {
+            let operation = centered_binary_horner_coordinate_mul(modulus);
+            let multiplicands = [0, 1, modulus / 2, modulus - 1];
+            for multiplier in 0..modulus {
+                for multiplicand in multiplicands {
+                    let result = crate::support::execution::execute_script(script! {
+                        { multiplicand }
+                        { multiplier }
+                        { operation.clone() }
+                        { multiplicand * multiplier % modulus }
+                        OP_EQUAL
+                    });
+                    assert!(
+                        result.success,
+                        "{multiplicand} * {multiplier} mod {modulus}: {result}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn width_2_naf_constant_multiplication_matches_every_coordinate() {
+        let target = secp256k1_modulus();
+        let constants = encode(&target);
+        for (index, modulus) in MODULI.into_iter().enumerate() {
+            let constant = constants[index];
+            let operation = mul_by_constant_width_2_naf(constant, modulus);
+            for value in 0..modulus {
+                let result = crate::support::execution::execute_script(script! {
+                    { value }
+                    { operation.clone() }
+                    { value * constant % modulus }
+                    OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "{value} * {constant} mod {modulus}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn modular_chain_constant_multiplication_matches_every_coordinate() {
+        let target = secp256k1_modulus();
+        let constants = encode(&target);
+        for (index, modulus) in MODULI.into_iter().enumerate() {
+            let constant = constants[index];
+            let operation = mul_by_constant_modular_chain(constant, modulus);
+            for value in 0..modulus {
+                let result = crate::support::execution::execute_script(script! {
+                    { value }
+                    { operation.clone() }
+                    { value * constant % modulus }
+                    OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "{value} * {constant} mod {modulus}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
     fn multiplication_preserves_unrelated_items() {
         let lhs = BigUint::from(123_456_789u64);
         let rhs = (BigUint::one() << 255usize) + BigUint::from(17u32);
@@ -1138,6 +2203,30 @@ mod tests {
 
         for (lhs, rhs) in pairs {
             let result = run_hinted_modular_product(&lhs, &rhs, &target, operation.clone());
+            assert!(result.success, "{lhs} * {rhs} mod target: {result}");
+        }
+    }
+
+    #[test]
+    fn carry_hinted_modular_multiplication_is_correct() {
+        let target = secp256k1_modulus();
+        let operation = mul_mod_hinted_with_carries(&target, 0);
+        let mut rng = StdRng::seed_from_u64(0x4341_5252_595f_4d4f);
+        let mut pairs = vec![
+            (BigUint::zero(), BigUint::zero()),
+            (BigUint::zero(), &target - BigUint::one()),
+            (BigUint::one(), &target - BigUint::one()),
+            (&target - BigUint::one(), &target - BigUint::one()),
+        ];
+        for _ in 0..4 {
+            pairs.push((
+                rng.gen_biguint_below(&target),
+                rng.gen_biguint_below(&target),
+            ));
+        }
+
+        for (lhs, rhs) in pairs {
+            let result = run_carry_hinted_modular_product(&lhs, &rhs, &target, operation.clone());
             assert!(result.success, "{lhs} * {rhs} mod target: {result}");
         }
     }
@@ -1328,9 +2417,32 @@ mod tests {
             OP_TRUE
         });
         assert!(result.success, "hinted peak execution failed: {result}");
+        assert_eq!(result.stats.max_nb_stack_items, 384);
+        assert!(result.stats.max_nb_stack_items <= HINTED_MUL_STACK_ITEMS as usize);
+
+        let carries = hinted_mul_relation_carries(&lhs, &rhs, &quotient, &remainder, &target);
+        assert_eq!(
+            calculated_hinted_carry_reduction_peak(0),
+            u64::from(HINTED_CARRY_MUL_STACK_ITEMS)
+        );
+        let result = crate::support::execution::execute_script(script! {
+            { push_value(&lhs) }
+            { push_value(&rhs) }
+            { push_value(&quotient) }
+            { push_value(&remainder) }
+            { push_value(&complement) }
+            { push_relation_carries(&carries) }
+            { mul_mod_hinted_with_carries(&target, 0) }
+            { drop_value() }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "carry-hinted peak execution failed: {result}"
+        );
         assert_eq!(
             result.stats.max_nb_stack_items,
-            HINTED_MUL_STACK_ITEMS as usize
+            HINTED_CARRY_MUL_STACK_ITEMS as usize
         );
     }
 
@@ -1359,5 +2471,27 @@ mod tests {
     #[should_panic(expected = "target modulus must fit in 256 bits")]
     fn hinted_multiplication_rejects_oversized_target() {
         let _ = mul_mod_hinted(&(BigUint::one() << 256usize), 0);
+    }
+
+    #[test]
+    fn one_shot_cost_breakdowns_match_generated_scripts() {
+        assert_eq!(
+            mul_cost_breakdown(),
+            ScriptCostBreakdown {
+                table_push: 392,
+                table_drop: 153,
+                computation: 15_083,
+            }
+        );
+
+        let target = secp256k1_modulus();
+        assert_eq!(
+            mul_mod_hinted_cost_breakdown(&target),
+            ScriptCostBreakdown {
+                table_push: 123,
+                table_drop: 60,
+                computation: 25_594,
+            }
+        );
     }
 }

@@ -14,5 +14,11 @@ For every hinted construction, document:
 - witness bytes and stack peak attributable to hints.
 
 Local examples include ScriptNum quotient hints and BN254 intermediate field
-values. “The reference implementation generated the hint” is test setup, not a
-security argument.
+values. Prime RNS shows why the binding question is separate from the local
+hint equation: its compact 42-prime verifier checks exact coordinate carries
+but remains conditional on external global vector bindings. The standalone
+36-prime profile instead accepts four shared 16-limb values and 180 carries,
+derives every canonical residue from those limbs, proves the field bounds, and
+then checks the modular-product relation. Its complete consumed data witness is
+244 items, not merely the 36 product carries. “The reference implementation
+generated the hint” is test setup, not a security argument.

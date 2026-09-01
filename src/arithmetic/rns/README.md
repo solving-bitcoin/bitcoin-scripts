@@ -61,7 +61,7 @@ include both 75-item operands and count the main and alt stacks together.
 | Canonical | Subtract | <!-- metric:prime_rns_sub -->1140<!-- /metric:prime_rns_sub --> bytes | <!-- metric:prime_rns_sub_stack -->151<!-- /metric:prime_rns_sub_stack --> |
 | Centered | Add | <!-- metric:prime_rns_centered_add -->1862<!-- /metric:prime_rns_centered_add --> bytes | <!-- metric:prime_rns_centered_add_stack -->151<!-- /metric:prime_rns_centered_add_stack --> |
 | Centered | Subtract | <!-- metric:prime_rns_centered_sub -->1936<!-- /metric:prime_rns_centered_sub --> bytes | <!-- metric:prime_rns_centered_sub_stack -->151<!-- /metric:prime_rns_centered_sub_stack --> |
-| Canonical | Multiply | <!-- metric:prime_rns_mul -->37471<!-- /metric:prime_rns_mul --> bytes | <!-- metric:prime_rns_mul_stack -->462<!-- /metric:prime_rns_mul_stack --> |
+| Canonical | Multiply | <!-- metric:prime_rns_mul -->15628<!-- /metric:prime_rns_mul --> bytes | <!-- metric:prime_rns_mul_stack -->183<!-- /metric:prime_rns_mul_stack --> |
 
 Canonical add/sub needs one conditional correction per odd prime. Centered
 add/sub needs upper and lower corrections, so it has the same peak but a larger
@@ -77,16 +77,18 @@ bytes. Both exclude the tapscript, control block, and terminal predicate.
 
 ### Multiplication design
 
-`mul` streams one coordinate at a time, so tables never coexist:
+`mul` generates both a streamed lookup candidate and a table-free binary
+Horner candidate for each coordinate, then keeps the shorter compiled script.
+Tables therefore never coexist, and many larger-prime coordinates need no
+table at all:
 
 1. Modulo 2 uses `OP_BOOLAND` and modulo 3 uses a table-free equality formula.
-2. Primes 5 through 19 use full canonical discrete-log/exponent tables because
-   their shorter query outweighs a tiny table-size increase.
-3. Primes 23 through 151 use signed magnitude logs and canonical half-exponent
-   entries.
-4. Primes 157 through 383 use the same query with centered half-exponent
-   entries, then normalize the result back to canonical form. The smaller
-   table literals save more bytes than the five-byte normalization tail costs.
+2. Plain and centered-multiplier binary Horner queries destructively decompose
+   one canonical operand and perform modular doubling and conditional addition
+   without witness hints.
+3. Where a lookup remains shorter, small primes use full canonical
+   discrete-log/exponent tables; other primes use signed-magnitude logarithms
+   and half-exponent entries.
 
 For `p=2h+1`, a positive magnitude has
 `log_g(m) = L + b*h`. The table stores `L` with sign `b`; the query adds two
@@ -105,9 +107,48 @@ fewer table items to be cleaned up. Table setup and cleanup live wholly inside
 the nonzero branch, so the zero path remains stack-balanced.
 
 The completed multiplication fragment contains
-<!-- metric:prime_rns_mul_opcodes -->10787<!-- /metric:prime_rns_mul_opcodes -->
-static non-push opcodes. A resident-table variant is intentionally omitted: its
-combined table footprint exceeds Bitcoin Script's 1,000-item stack limit.
+<!-- metric:prime_rns_mul_opcodes -->10931<!-- /metric:prime_rns_mul_opcodes -->
+static non-push opcodes.
+
+The locking-script total is split by exact compiled origin, rather than
+treating every byte as a per-product query cost:
+
+| One-shot component | Bytes |
+| --- | ---: |
+| Table-entry pushes | <!-- metric:prime_rns_mul_table_push -->392<!-- /metric:prime_rns_mul_table_push --> |
+| Destructive table cleanup | <!-- metric:prime_rns_mul_table_drop -->153<!-- /metric:prime_rns_mul_table_drop --> |
+| Arithmetic, routing, and 75-output restoration | <!-- metric:prime_rns_mul_computation -->15083<!-- /metric:prime_rns_mul_computation --> |
+| **Total** | **15,628** |
+
+Thus lookup-memory lifecycle is 545 bytes, or about 3.5% of the one-shot
+fragment. Concatenating ordinary `mul` fragments does not automatically
+amortize those bytes: each fragment streams and destructively consumes its own
+tables.
+
+`prime::batch::mul` provides an executable coordinate-major alternative. It
+keeps one coordinate table live while processing the whole batch, then drops
+it before advancing. Generation reselects table versus binary Horner for the
+requested batch size. For the maximum strict-stack batch of six products:
+
+| Six-product batch component | Bytes |
+| --- | ---: |
+| Table-entry pushes | <!-- metric:prime_rns_mul_batch_6_table_push -->25510<!-- /metric:prime_rns_mul_batch_6_table_push --> |
+| Full table cleanup | <!-- metric:prime_rns_mul_batch_6_table_drop -->6521<!-- /metric:prime_rns_mul_batch_6_table_drop --> |
+| Arithmetic queries | <!-- metric:prime_rns_mul_batch_6_arithmetic -->30229<!-- /metric:prime_rns_mul_batch_6_arithmetic --> |
+| Operand routing and result-to-altstack | <!-- metric:prime_rns_mul_batch_6_routing -->2202<!-- /metric:prime_rns_mul_batch_6_routing --> |
+| **Raw batch fragment** | **<!-- metric:prime_rns_mul_batch_6_raw -->64462<!-- /metric:prime_rns_mul_batch_6_raw -->** |
+| Restore all 450 outputs to main stack | <!-- metric:prime_rns_mul_batch_6_output_restore -->450<!-- /metric:prime_rns_mul_batch_6_output_restore --> |
+| **Comparable returned-output total** | **<!-- metric:prime_rns_mul_batch_6 -->64912<!-- /metric:prime_rns_mul_batch_6 -->** |
+
+That is 10,819 bytes per product after amortization, versus 15,628 bytes for
+each independent one-shot fragment: 64,912 versus 93,768 bytes for six, a
+30.8% reduction. The reproduced combined-stack peak is
+<!-- metric:prime_rns_mul_batch_6_stack -->900<!-- /metric:prime_rns_mul_batch_6_stack -->
+items. Seven products already require 1,050 operand items, so they cannot enter
+the current 1,000-item-limited fragment. The batch metric assumes operands are
+already supplied coordinate-major and outputs may remain coordinate-major;
+conversion from existing vector-major state is excluded and can erase the
+savings.
 
 ### Witness-hinted modular reduction
 
@@ -120,30 +161,123 @@ remainder, and complement are public derived hints.
 The measured secp256k1-field instance uses
 `N = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f`:
 
-| Fragment | Locking script | Hint witness | Maximum stack items |
+| Fragment | Locking script | Measured witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
-| Hinted modular multiply | <!-- metric:prime_rns_hinted_mod_mul -->69199<!-- /metric:prime_rns_hinted_mod_mul --> bytes | <!-- metric:prime_rns_hinted_mod_mul_witness -->477<!-- /metric:prime_rns_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_hinted_mod_mul_stack -->612<!-- /metric:prime_rns_hinted_mod_mul_stack --> |
+| 75-prime, no relation carries | <!-- metric:prime_rns_hinted_mod_mul -->25777<!-- /metric:prime_rns_hinted_mod_mul --> bytes | <!-- metric:prime_rns_hinted_mod_mul_witness -->477<!-- /metric:prime_rns_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_hinted_mod_mul_stack -->384<!-- /metric:prime_rns_hinted_mod_mul_stack --> |
+| 42-prime, exact carries, external bindings | <!-- metric:prime_rns_carry_hinted_mod_mul -->10952<!-- /metric:prime_rns_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_witness -->301<!-- /metric:prime_rns_carry_hinted_mod_mul_witness --> hint bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_stack -->231<!-- /metric:prime_rns_carry_hinted_mod_mul_stack --> |
+| 36-prime, exact carries, standalone global bindings | <!-- metric:prime_rns_bound_carry_hinted_mod_mul -->88225<!-- /metric:prime_rns_bound_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_witness -->722<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_witness --> bytes for all 244 inputs | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_stack -->249<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_stack --> |
+
+Their exact one-shot locking-script attribution is:
+
+| Fragment | Table pushes | Table drops | Computation, validation, and routing | Total |
+| --- | ---: | ---: | ---: | ---: |
+| 75-prime, no carries | <!-- metric:prime_rns_hinted_mod_mul_table_push -->123<!-- /metric:prime_rns_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_hinted_mod_mul_table_drop -->60<!-- /metric:prime_rns_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_hinted_mod_mul_computation -->25594<!-- /metric:prime_rns_hinted_mod_mul_computation --> | 25,777 |
+| 42-prime, exact carries | <!-- metric:prime_rns_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_carry_hinted_mod_mul_computation -->10952<!-- /metric:prime_rns_carry_hinted_mod_mul_computation --> | 10,952 |
+| 36-prime, globally bound exact carries | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_drop --> | range <!-- metric:prime_rns_bound_carry_hinted_mod_mul_range_checks -->1060<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_range_checks --> + binding <!-- metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding -->75732<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding --> + relation <!-- metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation -->11121<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_bound_carry_hinted_mod_mul_routing_output -->312<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_routing_output --> | 88,225 |
+
+Only 183 bytes, 0.7%, of the no-carry verifier are table lifecycle. The carry
+verifier has no lookup memory at all: its 10,952 bytes consist of 9,595 bytes
+of arithmetic and exact relation checks, 979 bytes of canonical/complement
+validation, and 378 bytes of routing and output handling. Repeating that
+fragment therefore exposes no table setup to amortize; batching must instead
+share external bindings or introduce a different arithmetic strategy.
+
+The standalone verifier is also entirely table-free. Its larger size is not
+static lookup overhead: 75,732 of 88,225 bytes derive and bind four complete
+RNS vectors to shared 256-bit values, while 11,121 bytes perform the actual
+modular-product relations. The reusable `carry::bound::bind_value` boundary is
+<!-- metric:prime_rns_bind_value -->19147<!-- /metric:prime_rns_bind_value -->
+bytes: <!-- metric:prime_rns_bind_value_validation -->208<!-- /metric:prime_rns_bind_value_validation -->
+bytes validate limbs, <!-- metric:prime_rns_bind_value_binding -->18867<!-- /metric:prime_rns_bind_value_binding -->
+bytes derive all residues, and <!-- metric:prime_rns_bind_value_routing -->72<!-- /metric:prime_rns_bind_value_routing -->
+bytes route the dual output. This plain binder proves only that the shared
+integer is below `2^256`. `carry::bound::bind_value_below(N)` is
+<!-- metric:prime_rns_bind_value_below -->19234<!-- /metric:prime_rns_bind_value_below -->
+bytes and additionally proves the fixed field bound required for `lhs`, `rhs`,
+or `r` unless that predicate is established elsewhere. A composed program can
+certify persistent values once at their introduction boundary; the 88,225-byte
+fused API deliberately rechecks all four values to provide a sound standalone
+operation.
 
 The boundary is `fragment-with-memory`: it includes complement and hint
-coordinate validation, streamed variable-product tables, streamed
-constant-product tables selected per coordinate, all 75 product equations,
-cleanup, and the returned remainder. Operand pushes, input-operand coordinate
-checks, the required global 256-bit bindings, and the terminal predicate are
-excluded. The hint witness contains the 225 serialized quotient, remainder,
-and complement residues for `(N-1)^2`; the two 75-residue operands are
-excluded. The generated fragment has
-<!-- metric:prime_rns_hinted_mod_mul_opcodes -->23990<!-- /metric:prime_rns_hinted_mod_mul_opcodes -->
+coordinate validation, a per-coordinate choice between a reused streamed table
+and plain/centered table-free binary Horner multiplication, shortest-choice
+fixed products, all 75 product equations, cleanup, and the returned remainder. Operand pushes,
+input-operand coordinate checks, the required global 256-bit bindings, and the
+terminal predicate are excluded. The hint witness contains the 225 serialized
+quotient, remainder, and complement residues for `(N-1)^2`; the two 75-residue
+operands are excluded. The generated fragment has
+<!-- metric:prime_rns_hinted_mod_mul_opcodes -->17816<!-- /metric:prime_rns_hinted_mod_mul_opcodes -->
+static non-push opcodes.
+
+A separately executed two-proof coordinate-lockstep prototype reselected
+shared tables for 25 coordinates, but measured 52,048 bytes and a 753-item
+peak. Two independent fragments cost 51,554 bytes. Its 1,391 bytes of relayout
+and deeper-query overhead exceeded the ideal 897-byte table saving; a third
+proof cannot enter because its 1,125 input items already exceed the stack
+limit. This dominated batch is recorded as a negative result rather than a
+public API.
+
+The smaller `prime::carry::mul_mod_hinted` is a separate, table-free profile.
+It uses 42 target-aware prime coordinates whose product remains greater than
+`2^512`. Its packed witness interleaves `lhs_i`, `rhs_i`, `q_i`, `r_i`, an
+optional complement coordinate, and an exact signed relation carry. Each
+channel checks
+
+```text
+lhs_i * center(rhs_i) - q_i * center(N_i) - r_i = carry_i * p_i.
+```
+
+These exact products fit four-byte Script-number arithmetic, eliminating all
+logarithm, exponent, and modular-reduction tables. Fixed products select among
+binary, width-2 NAF, and a bounded shortest affine addition chain. A selected
+18-coordinate subbasis with product greater than `2^257` checks
+`r + complement = N - 1`; the other 24 complement coordinates are omitted.
+Its `fragment-only` metric includes hint-coordinate checks, all 42 exact
+relations, cleanup, and the returned 42-residue remainder. The 144-item hint
+witness for `(N-1)^2` contains 42 quotient residues, 42 remainder residues, 42
+carries, and 18 complement residues; operands, global bindings, and the
+terminal predicate are excluded. The generated fragment has
+<!-- metric:prime_rns_carry_hinted_mod_mul_opcodes -->8137<!-- /metric:prime_rns_carry_hinted_mod_mul_opcodes -->
 static non-push opcodes.
 
 Soundness has an essential non-coordinatewise precondition: `lhs`, `rhs`,
 `quotient`, `remainder`, and `remainder_complement` must each already be bound
 to an unsigned integer below `2^256`, and the operands must be below `N`.
 Under those bounds, `r + complement = N - 1` proves `r < N`; both sides of
-`a*b = q*N + r` are below `2^512`, while the 75-prime dynamic range is larger
-than `2^512`. The RNS congruences therefore imply exact integer equality.
+`a*b = q*N + r` are below `2^512`, while each product basis used here has
+dynamic range greater than `2^512`. The RNS congruences therefore imply exact
+integer equality.
 `verify_canonical` checks only individual coordinate ranges and is not a
 substitute for the global 256-bit binding. Without that binding, arbitrary
 RNS hints can satisfy the congruences after wraparound.
+
+The carry profile deliberately does not range-check operand coordinates. Each
+operand coordinate must be tied to the claimed globally bounded integer, not
+merely accompanied by an unrelated range claim. Carries need no independent
+range check: a wrong small carry fails equality, while an oversized Script
+integer or intermediate fails numeric decoding. Callers that require a unique
+byte encoding must enforce minimal witness-number encoding; the fragment
+returns the validated numeric remainder but does not normalize its raw bytes.
+
+`prime::carry::bound::mul_mod_hinted` closes that precondition in the fragment
+itself. Its witness supplies four values as 16 centered base-`2^16` limbs plus
+four residue-binding carries and one multiplication carry for each of 36
+primes. For coordinate `i`, the script derives a canonical residue from the
+same limb vector with an exact dot-product equation
+
+```text
+offset_i + sum_j(center(2^(16j) mod p_i) * limb_j)
+    - residue_i = binding_carry_i * p_i.
+```
+
+It validates all limb ranges, proves `lhs`, `rhs`, and `r` are below `N`, and
+therefore needs no remainder-complement vector. The 36-prime product has 521
+bits, so the bound product congruence cannot wrap. The complete witness has 64
+limbs, 144 binding carries, and 36 relation carries. The fragment returns the
+16 centered remainder limbs beneath its 36 canonical residues. It has
+<!-- metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->79271<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->
+static non-push opcodes; this marker is refreshed from the generated script.
 
 ### Range validation
 
@@ -189,10 +323,18 @@ and 201-non-push-opcode limits. It is evaluated only in tapscript context,
 where BIP342 removes those two limits, but no Bitcoin Core consensus or relay
 policy matrix has been run. Results are `locally-reproduced`; deployment is
 `unclassified`. The metric helper disables stack-limit enforcement while
-recording peaks, while unit tests separately execute the 462-item path under
-the strict stack limit; the hinted-reduction path is likewise exercised at its
-612-item peak. The fragment still needs input validation, a terminal
-predicate, clean-stack composition, and transaction-weight accounting.
+recording peaks, while unit tests separately exercise the same paths with the
+strict stack limit enabled. The refreshed 75-prime multiply peaks at 183 items;
+the measured secp256k1 no-carry reduction peaks at 384 items, and its
+target-independent generation guard reserves a conservative 466. The packed
+carry profile is exercised at its exact 231-item peak and at exactly 1,000
+items after unrelated state is added. The standalone bound profile is likewise
+strict-executed at its exact 249-item peak and with exactly 1,000 items. The
+conditional fragments still need their documented external bindings; the
+standalone profile closes that obligation locally. Every fragment still needs
+a terminal predicate, clean-stack composition, and transaction-weight
+accounting.
+
 See the repository's [script-type](../../../docs/script-types.md) and
 [standardness](../../../docs/standardness.md) notes for the comparison rules.
 
@@ -202,8 +344,15 @@ Basic RNS add/subtract/multiply needs no hints. Original-RNS residues remain
 ordered with modulus 4 on top and modulus 11 deepest. Prime-RNS residues have
 modulus 2 on top and modulus 383 deepest. `mul(preserved_items)` starts from
 `preserved | lhs | rhs`, consumes both operands, streams each table internally,
-and leaves the result on the altstack. `preserved_items` must count unrelated
-live items across both stacks for the generation-time 1,000-item guard.
+or uses its table-free coordinate candidate, and then leaves the result on the
+altstack. `preserved_items` must count unrelated live items across both stacks
+for the generation-time 1,000-item guard.
+
+`prime::batch::mul(products, preserved_items)` instead expects, from the top,
+all operand pairs for modulus 2, then all pairs for modulus 3, and so on. It
+leaves results on the altstack in the same processing order. `products` is
+limited to six; callers must preserve the coordinate-major layout across
+adjacent operations or account separately for transposition.
 
 `mul_mod_hinted(target, preserved_items)` starts from
 `preserved | lhs | rhs | quotient | remainder | remainder_complement`, consumes
@@ -211,6 +360,20 @@ all vectors except the remainder, and returns that remainder on the main stack.
 The three hint vectors are mandatory, public, and derived from the operands and
 fixed target. Their global 256-bit bindings are caller obligations, not implied
 by the local coordinate checks.
+
+`prime::carry::mul_mod_hinted(target, preserved_items)` instead consumes the
+packed 42-coordinate groups produced by `prime::carry::push_hinted_witness`.
+Only the 18 complement-subbasis groups contain a complement coordinate. It
+returns a 42-residue carry-basis value, which is a distinct representation
+from the contiguous 75-residue value above.
+
+`prime::carry::bound::mul_mod_hinted(target, preserved_items)` is the
+self-contained alternative. It consumes the layout produced by
+`prime::carry::bound::push_hinted_witness`, proves all global bindings and
+field bounds locally, and returns both a centered 16-limb remainder and its
+36-residue encoding. `prime::carry::bound::bind_value` separately certifies
+one reusable limb-plus-residue value below `2^256` for larger composed scripts;
+`bind_value_below` also proves a fixed field bound.
 
 ## Knowledge-base integration
 

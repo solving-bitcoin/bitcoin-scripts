@@ -1,60 +1,83 @@
-# Prime logarithmic residue-number arithmetic
+# Prime residue-number arithmetic
 
-Represents integers with 75 canonical prime residues and streams affine
-signed-logarithm tables one coordinate at a time. The selected modulus is just
-large enough to represent every unsigned 256-by-256-bit product without wrap.
+The implementation now exposes two exact-carry secp256k1 modular-product
+profiles with different trust boundaries. The 42-prime profile is the compact
+choice when a surrounding protocol already binds every RNS vector. The
+36-prime `carry::bound` profile performs those global bindings and field-range
+checks inside the measured fragment.
 
-- **Position:** exact wide multiplication with much less script and stack than
-  the local limb-based U254 multiplier, while retaining coordinatewise add and
-  subtract.
-- **Evidence:** `locally-reproduced` deterministic capacity checks, exhaustive
-  per-prime algebra checks, maximum/random 256-bit products, malformed-range
-  tests, preserved-state tests, and an exact 1,000-item stack-boundary test.
-  Measurements use `bitcoin-scriptexec` in tapscript context.
-- **Basis:** `2` and every odd prime through `383` except `47`; 75 residues,
-  `log2(M) = 512.063700...`, and `M > (2^256 - 1)^2`.
-- **Measured fragments:** canonical add/sub are 1,134/1,140 bytes at a
-  151-item peak. Streamed multiply is 37,471 bytes at a 462-item peak. Two
-  maximum-valued 256-bit operands serialize to 332 witness bytes; an arbitrary
-  pair of canonical residue vectors can use up to 391 bytes. Both exclude the
-  tapscript and control block.
-- **Hinted reduction:** for the secp256k1 field modulus, `mul_mod_hinted`
-  verifies quotient, remainder, and remainder-complement vectors in 69,199
-  script bytes with 477 boundary-case hint-witness bytes and a 612-item peak.
-  It returns the canonical remainder without CRT reconstruction.
-- **Lookup design:** tiny coordinates use specialized or full canonical
-  tables. Larger coordinates use affine signed-projective magnitude logs and
-  half exponent tables. Canonical exponent entries win through prime 151;
-  centered exponent literals win from 157 onward and are normalized back to
-  canonical output.
-- **Centered tradeoff:** public centered add/sub is 1,862/1,936 bytes with the
-  same 151-item peak. Signed-projective magnitude logs give canonical inputs
-  the same asymptotic multiplication-table footprint, so a centered public
-  representation no longer buys the expected stack reduction for this design.
-- **Trust boundary:** coordinates must be range-checked before table lookup.
-  Arithmetic is modulo composite `M`; exact-integer claims additionally need a
-  static bound below `M`, and coordinate canonicality alone does not prove that
-  an input's CRT representative is below `2^256`. Ordering, sign, ordinary
-  integer quotient, and CRT conversion are not coordinatewise.
-- **Hint soundness:** hinted reduction additionally assumes all five RNS
-  vectors are bound to unsigned integers below `2^256` and both operands are
-  below the target modulus. The fragment verifies coordinate canonicality for
-  the three hint vectors and checks `r + complement = N - 1`, but it does not
-  implement the global 256-bit binding. Without that precondition, wrapped RNS
-  hints are not sound.
-- **Larger-prime result:** under dense log/exp tables, range grows as
-  `log2(p)` while table memory grows as `p`. An inspected search found that a
-  minimum-coordinate large-prime basis uses more than three times as many
-  table items, so it is dominated for one-shot locking-script bytes.
-- **Deployment:** `unclassified`. Strict local stack tests pass, but Bitcoin
-  Core consensus and relay-policy validation have not been run. The fragment
-  exceeds legacy/P2WSH script-size and opcode-count limits and is only evaluated
-  in tapscript context.
-- **Research need:** measure complete-tapleaf transaction weight and validation
-  behavior against Bitcoin Core, and find the batch/reuse frontier when a
-  prime's table can serve several products before cleanup.
+- **Evidence:** `locally-reproduced`. Deterministic correct-product,
+  malformed-carry, field-bound, reusable-binding, preserved-state, exact-peak,
+  and 1,000-item strict-stack tests execute in a tapscript context under
+  `bitcoin-scriptexec`; checked metrics reproduce the values below.
+- **Conditional 42-prime profile:** its 513-bit product basis exceeds
+  `2^512`. Each coordinate verifies
+  `lhs_i * center(rhs_i) - q_i * center(N_i) - r_i = carry_i * p_i`.
+  Eighteen selected coordinates also bind `c = N - 1 - r`; their subbasis
+  product exceeds `2^257`. The fragment is 10,952 locking-script bytes with a
+  301-byte, 144-item hint and a strict 231-item peak.
+- **Conditional binding obligation:** the 42-prime fragment assumes every
+  supplied `lhs`, `rhs`, `q`, `r`, and partial-complement coordinate is tied to
+  the canonical residues of one corresponding unsigned integer below
+  `2^256`; `lhs` and `rhs` must also be below `N`. It does not validate operand
+  coordinates or provide those global bindings locally.
+- **Standalone 36-prime profile:** four hostile values are supplied as 16
+  centered base-`2^16` limbs. For every prime, four exact dot-product carries
+  derive canonical residues from those same limb vectors before an exact
+  multiplication-relation carry is checked. The basis product has 521 bits.
+  Limb checks bound all four values below `2^256`; fixed-target comparisons
+  prove `lhs`, `rhs`, and `r` below `N`, so no complement is required.
+- **Standalone witness and output:** the complete data witness has 244 items:
+  64 limbs, 144 residue-binding carries, and 36 relation carries. For
+  `(N-1)^2` it serializes to 722 bytes. The fragment returns the 16 centered
+  remainder limbs beneath its 36 canonical residues.
+- **Standalone metrics:** `carry::bound::mul_mod_hinted` is 88,225
+  locking-script bytes, contains 79,271 static non-push opcodes, and reaches a
+  strict combined-stack peak of 249 items. Its bytes split into 1,060 for
+  range checks, 75,732 for four residue bindings, 11,121 for modular
+  relations, and 312 for routing and output. It uses no lookup tables.
+- **Reusable binding:** `carry::bound::bind_value` certifies one persistent
+  16-limb value and returns both its limbs and 36 residues in 19,147 bytes:
+  208 bytes of limb validation, 18,867 bytes of residue binding, and 72 bytes
+  of routing. This proves only the unsigned `<2^256` bound.
+  `bind_value_below(N)` costs 19,234 bytes and additionally proves the field
+  bound required for `lhs`, `rhs`, or `r` unless another fragment establishes
+  it. A composed protocol can pay the appropriate binder at value introduction
+  instead of repeatedly using the fused standalone verifier.
+- **Why the global proof is exact:** the shared limbs prevent coordinates from
+  referring to unrelated CRT representatives. With `lhs,rhs,r < N < 2^256`
+  and `q < 2^256`, both sides of `lhs*rhs = q*N + r` are below `2^512`.
+  Congruence modulo the 521-bit basis product therefore implies ordinary
+  integer equality, and `r < N` makes the returned remainder canonical.
+- **Wraparound boundary of the conditional profile:** without its external
+  quotient binding, `lhs = rhs = 0`, `q = floor(M/N)`, and `r = M mod N`
+  satisfy all coordinate relations while returning a wrong nonzero remainder.
+  Adding `p_i` to an unchecked operand coordinate and adjusting its carry is a
+  second accepted shift. The standalone limb-to-residue bindings close both
+  attacks; they remain valid counterexamples to the smaller conditional API.
+- **No-carry baseline:** the 75-prime per-coordinate table/Horner hybrid is
+  15,628 bytes at a 183-item peak. Its 392 bytes of table pushes and 153 bytes
+  of cleanup contrast with the table-free carry profiles. The no-carry
+  modular verifier is 25,777 bytes, of which only 183 bytes are table
+  lifecycle; like the 42-prime verifier, it excludes the required global
+  bindings for its supplied coordinate vectors.
+- **Batch result:** `prime::batch::mul(6, ...)` processes six coordinate-major
+  products in 64,462 bytes with results on the altstack, or 64,912 bytes after
+  restoring all 450 outputs, at a strict 900-item peak. Seven products cannot
+  enter this layout because their 1,050 operands already exceed the stack
+  limit.
+- **Deployment:** `unclassified`. These are generated fragments rather than
+  complete leaves. Terminal predicates, tapleaf and control-block
+  serialization, transaction weight, Bitcoin Core consensus comparison, and
+  relay-policy acceptance remain unmeasured. The 79,271 figure is a static
+  opcode count, not an executed-opcode or validation-budget measurement.
+- **Research need:** compose reusable bound values through a complete program,
+  measure complete leaf and transaction costs, and differentially validate a
+  fixed transaction against a pinned Bitcoin Core revision.
 
-See the [source](../../src/arithmetic/rns/prime.rs),
+See the [standalone-bound source](../../src/arithmetic/rns/prime/carry/bound.rs),
+[conditional carry source](../../src/arithmetic/rns/prime/carry.rs),
+[no-carry baseline source](../../src/arithmetic/rns/prime.rs),
 [implementation README](../../src/arithmetic/rns/README.md),
 [lookup comparison](../comparisons/lookup-strategies.md), and catalog record
 `arithmetic/prime-rns`.

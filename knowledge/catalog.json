@@ -574,9 +574,9 @@
     },
     {
       "id": "arithmetic/prime-rns",
-      "name": "Prime logarithmic residue-number arithmetic",
+      "name": "Prime residue-number arithmetic",
       "class": "arithmetic/rns",
-      "summary": "A 75-prime canonical RNS for exact unsigned 256-by-256-bit products and witness-hinted reduction by a fixed 256-bit modulus.",
+      "summary": "Prime RNS profiles for exact unsigned 256-by-256-bit products, coordinate-major table-amortized batches, and fixed-modulus witness-hinted reduction, including both a compact externally bound verifier and a standalone globally bound verifier.",
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
@@ -585,7 +585,10 @@
       "implementation": "src/arithmetic/rns/prime.rs",
       "documentation": "src/arithmetic/rns/README.md",
       "tests": [
-        "arithmetic::rns::prime::tests"
+        "arithmetic::rns::prime::tests",
+        "arithmetic::rns::prime::batch::tests",
+        "arithmetic::rns::prime::carry::tests",
+        "arithmetic::rns::prime::carry::bound::tests"
       ],
       "references": [
         "bip-342",
@@ -598,8 +601,8 @@
         "streaming-table",
         "witness-hints"
       ],
-      "security": "The combined modulus is composite. Witness coordinates must be range-checked before lookup, exact-integer semantics require a proved expression bound, and hinted modular reduction additionally requires every operand and hint vector to be bound globally below 2^256.",
-      "stack_contract": "Seventy-five canonical residues per value; exact multiplication consumes preserved | lhs | rhs and returns residues on the altstack, while hinted reduction consumes lhs | rhs | quotient | remainder | remainder_complement and returns the remainder on the main stack.",
+      "security": "Each combined modulus is composite, so exact-integer semantics require a proved expression bound. The coordinate-only hinted profiles, including the 42-prime carry verifier, are conditional on external global bindings for every supplied vector. The standalone 36-prime profile instead range-checks four shared 16-limb values, derives their canonical residues with exact binding carries, proves lhs, rhs, and remainder below the target, and checks the product relation locally.",
+      "stack_contract": "The no-carry profile uses 75 canonical residues and contiguous vectors. Its batch API consumes coordinate-major operand pairs and leaves coordinate-major products on the altstack. The conditional carry profile consumes 42 coordinate-interleaved groups lhs_i | rhs_i | q_i | r_i | [complement_i] | carry_i and returns 42 remainder residues. The standalone profile consumes 64 centered limbs followed by 36 five-carry groups and returns 16 centered remainder limbs beneath 36 canonical remainder residues.",
       "configurations": [
         {
           "id": "canonical-add",
@@ -653,17 +656,20 @@
           "parameters": {
             "operand_bits": 256,
             "residue_count": 75,
-            "modulus_bits": 513
+            "modulus_bits": 513,
+            "table_push_script_bytes": 392,
+            "table_cleanup_script_bytes": 153,
+            "non_table_script_bytes": 15083
           },
-          "includes": "fragment-with-memory: conditional per-coordinate table setup, query, destructive cleanup, and final return from altstack; excludes operand pushes, range checks, and final verification; witness fields cover only the serialized 150-item operand vector",
-          "script_bytes": 37471,
+          "includes": "fragment-with-memory: 392 bytes of selected per-coordinate table pushes, shortest-choice table or centered/plain binary-Horner queries, 153 bytes of destructive cleanup, and final return from altstack; excludes operand pushes, range checks, and final verification; witness fields cover only the serialized 150-item operand vector",
+          "script_bytes": 15628,
           "witness_bytes": 332,
           "witness_bytes_max": 391,
-          "max_stack_items": 462,
+          "max_stack_items": 183,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": null,
-          "per_use_script_bytes": 37471,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 15628,
           "metric_keys": [
             "prime_rns_mul",
             "prime_rns_mul_stack",
@@ -672,27 +678,138 @@
           ]
         },
         {
+          "id": "u256-product-batch-6",
+          "label": "Six coordinate-major exact unsigned 256-by-256-bit products",
+          "parameters": {
+            "operand_bits": 256,
+            "products": 6,
+            "residue_count": 75,
+            "modulus_bits": 513,
+            "raw_script_bytes": 64462,
+            "table_coordinates": 73,
+            "table_cleanup_script_bytes": 6521,
+            "arithmetic_script_bytes": 30229,
+            "routing_script_bytes": 2202,
+            "output_restoration_script_bytes": 450,
+            "amortized_script_bytes_per_product": 10818.666666666666
+          },
+          "includes": "fragment-with-memory: coordinate-major six-product table setup, non-destructive queries, full table cleanup, result routing, and restoration of all 450 outputs from altstack; excludes operand pushes, vector-major transposition, range checks, and final verification",
+          "script_bytes": 64912,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 900,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 25510,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "prime_rns_mul_batch_6",
+            "prime_rns_mul_batch_6_table_push",
+            "prime_rns_mul_batch_6_stack"
+          ]
+        },
+        {
           "id": "secp256k1-hinted-modular-product",
-          "label": "Witness-hinted secp256k1-field modular multiplication",
+          "label": "Witness-hinted secp256k1-field modular multiplication without relation carries",
           "parameters": {
             "operand_bits": 256,
             "residue_count": 75,
             "modulus_bits": 256,
-            "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"
+            "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+            "table_push_script_bytes": 123,
+            "table_cleanup_script_bytes": 60,
+            "non_table_script_bytes": 25594
           },
-          "includes": "fragment-with-memory: quotient/remainder/complement coordinate validation, remainder-bound equation, streamed variable and fixed-constant products, 75 modular-product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, global 256-bit bindings for all five vectors, terminal predicate, and all witness bytes except the 225 quotient/remainder/complement residue items for (N-1)^2",
-          "script_bytes": 69199,
+          "includes": "fragment-with-memory: quotient/remainder/complement coordinate validation, remainder-bound equation, per-coordinate shortest-choice shared-table or centered/plain binary-Horner products, shortest generated modular constant chains, 75 modular-product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, global 256-bit bindings for all five vectors, terminal predicate, and all witness bytes except the 225 quotient/remainder/complement residue items for (N-1)^2",
+          "script_bytes": 25777,
           "witness_bytes": 477,
           "witness_bytes_max": null,
-          "max_stack_items": 612,
+          "max_stack_items": 384,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 69199,
+          "per_use_script_bytes": 25777,
           "metric_keys": [
             "prime_rns_hinted_mod_mul",
             "prime_rns_hinted_mod_mul_witness",
             "prime_rns_hinted_mod_mul_stack"
+          ]
+        },
+        {
+          "id": "secp256k1-carry-hinted-modular-product",
+          "label": "Exact-carry witness-hinted secp256k1-field modular multiplication",
+          "parameters": {
+            "operand_bits": 256,
+            "residue_count": 42,
+            "complement_residue_count": 18,
+            "product_modulus_bits": 513,
+            "target_modulus_bits": 256,
+            "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+            "arithmetic_relation_script_bytes": 9595,
+            "validation_script_bytes": 979,
+            "routing_output_script_bytes": 378
+          },
+          "includes": "fragment-only: quotient/remainder/partial-complement coordinate validation, the >2^257 partial-complement equation, 42 exact signed-carry product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, external coordinate and global 256-bit bindings, terminal predicate, and all witness bytes except the 144 quotient/remainder/partial-complement/carry items for (N-1)^2",
+          "script_bytes": 10952,
+          "witness_bytes": 301,
+          "witness_bytes_max": null,
+          "max_stack_items": 231,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 10952,
+          "metric_keys": [
+            "prime_rns_carry_hinted_mod_mul",
+            "prime_rns_carry_hinted_mod_mul_table_push",
+            "prime_rns_carry_hinted_mod_mul_table_drop",
+            "prime_rns_carry_hinted_mod_mul_computation",
+            "prime_rns_carry_hinted_mod_mul_witness",
+            "prime_rns_carry_hinted_mod_mul_stack"
+          ]
+        },
+        {
+          "id": "secp256k1-standalone-bound-carry-hinted-modular-product",
+          "label": "Standalone globally bound exact-carry secp256k1-field modular multiplication",
+          "parameters": {
+            "operand_bits": 256,
+            "limb_bits": 16,
+            "limb_count": 16,
+            "bound_value_count": 4,
+            "residue_count": 36,
+            "product_modulus_bits": 521,
+            "complement_residue_count": 0,
+            "coordinate_hint_items": 5,
+            "witness_item_count": 244,
+            "binding_carry_items": 144,
+            "relation_carry_items": 36,
+            "target_modulus_bits": 256,
+            "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
+            "table_push_script_bytes": 0,
+            "table_cleanup_script_bytes": 0,
+            "range_check_script_bytes": 1060,
+            "residue_binding_script_bytes": 75732,
+            "modular_relation_script_bytes": 11121,
+            "routing_output_script_bytes": 312,
+            "static_non_push_opcodes": 79271,
+            "reusable_value_binding_script_bytes": 19147,
+            "reusable_value_below_target_script_bytes": 19234,
+            "reusable_value_limb_validation_script_bytes": 208,
+            "reusable_value_residue_binding_script_bytes": 18867,
+            "reusable_value_routing_output_script_bytes": 72
+          },
+          "includes": "fragment-only: four 16-limb range and global-binding checks, fixed-target comparisons for lhs, rhs, and remainder, 36 four-vector canonical-residue derivations, 36 exact signed-carry modular-product equations, cleanup, and returned remainder limbs and residues; excludes input pushes, terminal predicate and output comparison, tapleaf and control-block serialization, and transaction context; witness bytes cover all 244 consumed limb and carry items for (N-1)^2",
+          "script_bytes": 88225,
+          "witness_bytes": 722,
+          "witness_bytes_max": null,
+          "max_stack_items": 249,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 88225,
+          "metric_keys": [
+            "prime_rns_bound_carry_hinted_mod_mul",
+            "prime_rns_bound_carry_hinted_mod_mul_witness",
+            "prime_rns_bound_carry_hinted_mod_mul_stack"
           ]
         },
         {
@@ -720,15 +837,71 @@
       ],
       "limitations": [
         "Tapscript-only fragment due to legacy script-size and opcode-count limits",
-        "Range validation and terminal predicate are excluded from arithmetic metrics",
-        "Ordering, sign, CRT conversion, and global 256-bit binding are not coordinatewise",
-        "Hinted modular reduction is unsound unless every operand and hint vector satisfies its documented global range precondition",
+        "Terminal predicates are excluded from arithmetic metrics; range and global-binding work is also excluded from the older coordinate-only profiles",
+        "Ordering, sign, CRT conversion, and global 256-bit binding are not coordinatewise; only the standalone bound profile implements that global binding locally",
+        "The coordinate-only hinted modular profiles are unsound unless every supplied vector satisfies its documented external binding and range preconditions",
         "Bitcoin Core consensus and policy validation not performed"
       ],
       "open_problems": [
         "OP-003",
         "OP-004"
       ]
+    },
+    {
+      "id": "commitment/four-way-hash-path-integer",
+      "name": "Four-way mixed-hash integer path",
+      "class": "commitment/integer",
+      "summary": "Authenticates base-4 digits with fixed-length SHA-256/RIPEMD-160 codewords and reconstructs a 1–31-bit integer.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/four-way-hash-path-integer.md",
+      "implementation": "src/commitments/four_way_hash_path.rs",
+      "documentation": "src/commitments/README.md",
+      "tests": [
+        "commitments::four_way_hash_path::tests"
+      ],
+      "references": [
+        "bip-342"
+      ],
+      "techniques": [
+        "mixed-hash-path"
+      ],
+      "security": "Hiding depends on a secret high-entropy preimage; binding assumes the fixed-length mixed SHA-256/RIPEMD-160 schedule, and final RIPEMD-160 limits generic collision resistance to 80 bits.",
+      "stack_contract": "... digitN-1 ... digit0 preimage -> ... value",
+      "configurations": [
+        {
+          "id": "integer-31",
+          "label": "31-bit four-way integer path",
+          "parameters": {
+            "bit_width": 31,
+            "digit_count": 16,
+            "preimage_bytes": 32
+          },
+          "includes": "fragment-only: verifier and base-4 integer reconstruction; witness includes serialized digits and preimage",
+          "script_bytes": 653,
+          "witness_bytes": 61,
+          "witness_bytes_max": 61,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 653,
+          "metric_keys": [
+            "four_way_hash_path_integer_31",
+            "four_way_hash_path_integer_witness_31",
+            "four_way_hash_path_integer_stack_31"
+          ]
+        }
+      ],
+      "limitations": [
+        "Non-standard mixed-hash construction without dedicated cryptanalysis",
+        "Larger locking fragment than the binary mixed-hash path at the measured 31-bit configuration",
+        "Integer reconstruction limited to 31 bits",
+        "Witness-input tests disable the stack limit; Bitcoin Core consensus and policy validation not performed"
+      ],
+      "open_problems": []
     },
     {
       "id": "commitment/hash-path-integer",

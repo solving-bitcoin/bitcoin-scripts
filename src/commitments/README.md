@@ -1,12 +1,14 @@
 # Integer commitments
 
-This module contains two constructions that authenticate a small integer and
+This module contains three constructions that authenticate a small integer and
 return it to the surrounding Bitcoin Script. They are commitment primitives,
 not general-purpose hash functions.
 
 - **Hash path:** a nonce/preimage is hashed through one of two branches for
   each committed bit. The verifier authenticates the path and reconstructs a
   1–31-bit non-negative Script integer.
+- **Four-way hash path:** two bits select one of four fixed-length hash
+  codewords per base-4 digit, reducing witness items and peak stack usage.
 - **Preimage length:** a SHA-256 preimage is authenticated and its byte length,
   minus a public offset, becomes the committed integer.
 
@@ -35,6 +37,20 @@ high-entropy preimage is deterministic and does not hide a small integer.
 - The revealed integer is `preimage.len() - offset`, so the preimage length
   must be in `offset..=520`.
 
+### Four-way hash path
+
+- `bit_width`: required, with no default. Integer reconstruction accepts
+  `1..=31` and uses `ceil(bit_width / 2)` base-4 digits. For an odd width the
+  most-significant digit is restricted to `0..=1`.
+- `preimage`: caller-chosen byte string with the same secrecy and 520-byte
+  element-limit obligations as the binary hash path.
+- `commitment`: 20 bytes. Each digit selects a two-stage codeword over
+  SHA-256 (`S`) and RIPEMD-160 (`R`): `0 -> SS`, `1 -> SR`, `2 -> RS`, and
+  `3 -> RR`. A final RIPEMD-160 produces the commitment.
+- The generic verifier consumes digits or retains them on the altstack; the
+  integer verifier reconstructs their base-4 value. There is no default
+  variant.
+
 ## Script metrics
 
 Sizes are the generated locking fragments. Witness sizes use Bitcoin's
@@ -45,6 +61,7 @@ the tests with the listed witness.
 | Fragment | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | `verify_hash_path_to_integer(31, commitment)` | <!-- metric:hash_path_integer_31 -->520<!-- /metric:hash_path_integer_31 --> bytes | <!-- metric:hash_path_integer_witness_31 -->78<!-- /metric:hash_path_integer_witness_31 --> bytes (32-byte nonce, 31 bits) | <!-- metric:hash_path_integer_stack_31 -->34<!-- /metric:hash_path_integer_stack_31 --> |
+| `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->653<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->20<!-- /metric:four_way_hash_path_integer_stack_31 --> |
 | `verify_preimage_length(commitment)` | <!-- metric:preimage_length_default -->44<!-- /metric:preimage_length_default --> bytes | <!-- metric:preimage_length_witness_min -->18<!-- /metric:preimage_length_witness_min -->–<!-- metric:preimage_length_witness_max -->524<!-- /metric:preimage_length_witness_max --> bytes (16–520-byte preimage) | <!-- metric:preimage_length_stack -->3<!-- /metric:preimage_length_stack --> |
 
 ## Security
@@ -54,6 +71,15 @@ The hash path ends in a 160-bit digest, capping generic collision resistance at
 also depends on the security of the mixed SHA-256/RIPEMD-160 path. Hiding is
 only computational and depends on the entropy and secrecy of the initial
 preimage; a public or guessable preimage permits enumeration of small values.
+
+The four-way path has the same 160-bit final-digest bounds and additionally
+assumes that mixed SHA-256/RIPEMD-160 schedules remain binding across the four
+codewords. Every codeword contains exactly two primitive hashes. This is
+essential: the superficially cheaper mapping to `SHA256`, `HASH256`,
+`RIPEMD160`, and `HASH160` has deterministic aliases because the latter two
+double-hash opcodes are compositions of the former primitives. The fixed-length
+code avoids those structural aliases but is still a non-standard construction
+without a dedicated cryptanalysis.
 
 The preimage-length construction uses SHA-256, giving generic 128-bit collision
 resistance and 256-bit preimage/second-preimage resistance. Its hiding property
@@ -67,9 +93,9 @@ preimage-length fragment is small enough for those forms when composed into an
 otherwise valid script. Bare outputs remain non-standard under default relay
 policy.
 
-Hash-path compatibility is parameter-dependent. Its repeated branches and
-hashes can exceed the 201-opcode legacy limit, making wider configurations
-(including the measured 31-bit integer-returning variant) tapscript-only.
+Hash-path compatibility is parameter-dependent. Repeated branches and hashes
+can exceed the 201-opcode legacy limit, making wider configurations (including
+both measured 31-bit integer-returning variants) tapscript-only.
 Tapscript still enforces the 1,000-item combined stack limit, the 520-byte
 per-item limit, witness weight, and execution budget. The implementation
 explicitly enforces canonical `[]`/`[1]` bits, including in legacy script.
@@ -88,6 +114,11 @@ bit0, preimage`; the preimage is therefore on top at script entry. A false bit
 is the empty vector and a true bit is `[01]`. `hash_path_integer_witness`
 produces this canonical encoding.
 
+For the four-way integer path, witness order is `digitN-1, ..., digit0,
+preimage`. Zero is encoded as the empty vector and `1..=3` as `[01]`, `[02]`,
+or `[03]`. The verifier rejects negative, out-of-range, and non-minimal digit
+encodings. `four_way_hash_path_integer_witness` produces the canonical form.
+
 For the preimage-length construction, the witness contains the committed
 preimage as one item. The preimage is consumed and only the resulting integer
 remains.
@@ -100,6 +131,11 @@ remains.
 - `verify_hash_path`: `... bitN-1 ... bit0 preimage -> ... true`.
 - `verify_hash_path_to_altstack` leaves true on the main stack and the bits on
   the altstack, with bit `N-1` on top.
+- `verify_four_way_hash_path_to_integer`: `... digitN-1 ... digit0 preimage ->
+  ... value`. It empties its temporary altstack state before returning.
+- `verify_four_way_hash_path`: `... digitN-1 ... digit0 preimage -> ... true`.
+- `verify_four_way_hash_path_to_altstack` leaves digit `N-1` on top of the
+  altstack.
 - `verify_preimage_length`: `... preimage -> ... length_minus_offset`.
 
 The hash-path construction generalizes the former fixed-width `BitHash128`
@@ -107,3 +143,11 @@ prototype. It is exposed only through the parameterized `commitments::hash_path`
 API. The preimage-length idea and hash-path family are independently implemented
 from the descriptions in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/).
+
+At 31 bits the four-way variant does not dominate the binary path: it uses 133
+more locking-script bytes while saving 17 serialized-witness bytes and 14 peak
+stack items. It is useful when witness weight or composition headroom matters
+more than fragment size. Correctness, malformed-witness, and metric tests run in
+the repository's tapscript-context executor; because witness-input execution
+disables the stack limit, these measurements are `research-unlimited`, not
+Bitcoin Core consensus or relay-policy validation.

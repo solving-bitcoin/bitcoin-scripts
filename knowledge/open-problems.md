@@ -31,13 +31,48 @@ against a pinned Bitcoin Core revision, complete witness/weight and validation
 behavior are recorded, and prime-major batch crossover curves are measured for
 stated reuse counts and live operand-state budgets.
 
-Progress: an exhaustive per-prime root/bias search selected a 75-prime hybrid;
-its 37,471-byte multiplication, 462-item peak, canonical add/sub, strict stack
-boundary, and 513-bit capacity are locally reproduced. A secp256k1-field hinted
-reduction is also reproduced at 69,199 bytes, 477 reduction-hint bytes, and a
-612-item peak, conditional on external global 256-bit bindings. Bitcoin Core
-consensus and policy validation, a concrete global binding construction,
-complete transaction weight, and reuse-inclusive workloads remain open.
+Progress: the 15,628-byte, 183-item no-carry 75-prime table/Horner hybrid
+remains the baseline. The current `locally-reproduced` flagship instead uses a
+42-prime carry-optimized basis whose product is 513 bits. Packed coordinate
+groups verify exact signed carry equations, and an
+18-coordinate remainder-complement subbasis with product greater than
+`2^257` establishes `r < N` once its values are globally bounded. For the
+secp256k1 field modulus, the fragment is 10,952 locking-script bytes with a
+301-byte serialized hint and a strict 231-item peak. The 144 hint items are 42
+quotient residues, 42 remainder residues, 42 relation carries, and 18
+complement residues. It is table-free, so none of those 10,952 bytes is
+amortizable lookup setup.
+
+A second `locally-reproduced` profile now supplies the previously missing
+global binding inside the arithmetic fragment. It represents `lhs`, `rhs`,
+quotient, and remainder with 16 centered base-`2^16` limbs each, derives four
+canonical RNS vectors with exact binding carries, proves `lhs`, `rhs`, and
+remainder below the target, and checks the modular relation over a 36-prime,
+521-bit basis. It is 88,225 locking-script bytes with a 722-byte complete
+244-item data witness, 79,271 static non-push opcodes, and a strict 249-item
+peak. The script is table-free: 75,732 bytes are the four residue bindings,
+11,121 are modular relations, 1,060 are range checks, and 312 are routing.
+For programs that retain certified values, the separate one-value binder costs
+19,147 bytes and returns both the 16 limbs and 36 residues, proving the value
+is below `2^256`. Its `bind_value_below(N)` variant costs 19,234 bytes and also
+proves the field bound required for operands and remainders.
+
+The ordinary-product batch frontier is now reproduced for one through six
+coordinate-major products. Six cost 64,462 bytes with outputs on the altstack,
+or 64,912 after restoring all 450 outputs, at a strict 900-item peak. This is
+30.8% below six independent returned-output fragments. Seven products begin
+with 1,050 operands and are impossible under the current stack limit. A
+two-proof no-carry modular batch was also executed and is dominated: 52,048
+bytes versus 51,554 independently because routing exceeded table savings.
+
+Both profiles remain `unclassified`. The 10,952-byte profile is still
+conditional: all supplied coordinates must be externally tied to canonical
+encodings of corresponding unsigned integers below `2^256`, and operands must
+be below the target. The 88,225-byte profile closes that binding boundary for
+one operation, but it is still a fragment rather than a complete tapleaf or
+transaction. Bitcoin Core consensus and policy validation, executed-opcode and
+validation-budget measurement, complete witness and transaction weight, and
+dependent workloads that reuse certified values remain open.
 
 ## OP-005 — SHAKE256 composable output
 
