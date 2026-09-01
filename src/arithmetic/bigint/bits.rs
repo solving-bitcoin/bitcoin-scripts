@@ -1,5 +1,5 @@
-use crate::bigint::BigIntImpl;
-use crate::script::{script, Script};
+use crate::arithmetic::bigint::BigIntImpl;
+use crate::support::script::{script, Script};
 use std::cmp::min;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
@@ -195,8 +195,8 @@ pub fn limb_to_be_bits_toaltstack(num_bits: u32) -> Script {
 #[cfg(test)]
 mod test {
     use super::{limb_to_be_bits, limb_to_le_bits};
-    use crate::bigint::{U254, U64};
-    use crate::run;
+    use crate::arithmetic::bigint::{U254, U64};
+    use crate::support::execution::run;
     use bitcoin_script::script;
     use core::ops::ShrAssign;
     use num_bigint::{BigUint, RandomBits};
@@ -561,4 +561,3 @@ mod test {
         }
     }
 }
-

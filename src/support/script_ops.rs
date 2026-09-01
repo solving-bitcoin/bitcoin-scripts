@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(dead_code)]
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 
 pub fn OP_CHECKSEQUENCEVERIFY() -> Script {
     script! {OP_CSV}
@@ -131,8 +131,8 @@ pub fn push_to_stack(element: usize, n: usize) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::run;
-    use crate::u32::stack::u32_equal;
+    use crate::arithmetic::u32::stack::u32_equal;
+    use crate::support::execution::run;
 
     #[test]
     fn op_4pick_copies_top_and_deeper_groups() {

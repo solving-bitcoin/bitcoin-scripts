@@ -1,5 +1,5 @@
-use crate::bigint::BigIntImpl;
-use crate::script::*;
+use crate::arithmetic::bigint::BigIntImpl;
+use crate::support::script::*;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     /// Compute the difference of two BigInts
@@ -94,8 +94,9 @@ pub fn limb_sub_noborrow(head_offset: u32) -> Script {
 
 #[cfg(test)]
 mod test {
-    use crate::bigint::{U254, U64};
-    use crate::script::*;
+    use crate::arithmetic::bigint::{U254, U64};
+    use crate::support::execution::run;
+    use crate::support::script::*;
     use core::ops::{Rem, Shl};
     use num_bigint::{BigUint, RandomBits};
     use num_traits::One;
@@ -180,4 +181,3 @@ mod test {
         run(script);
     }
 }
-

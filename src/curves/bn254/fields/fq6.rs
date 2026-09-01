@@ -1,8 +1,8 @@
-use crate::bn254::fp254impl::Fp254Impl;
-use crate::bn254::fq::Fq;
-use crate::bn254::fq2::Fq2;
-use crate::bn254::utils::Hint;
-use crate::script::{script, Script};
+use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::curves::bn254::fields::fq::Fq;
+use crate::curves::bn254::fields::fq2::Fq2;
+use crate::curves::bn254::hints::Hint;
+use crate::support::script::{script, Script};
 use ark_ff::{AdditiveGroup, Field, Fp6Config};
 use num_bigint::BigUint;
 
@@ -737,9 +737,10 @@ impl Fq6 {
 
 #[cfg(test)]
 mod test {
-    use crate::bn254::fq2::Fq2;
-    use crate::bn254::fq6::Fq6;
-    use crate::script::*;
+    use crate::curves::bn254::fields::fq2::Fq2;
+    use crate::curves::bn254::fields::fq6::Fq6;
+    use crate::support::execution::run;
+    use crate::support::script::*;
     use ark_ff::AdditiveGroup;
     use ark_ff::Field;
     use ark_std::UniformRand;

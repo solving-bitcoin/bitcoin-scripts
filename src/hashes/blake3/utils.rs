@@ -1,4 +1,4 @@
-use crate::u4::{u4_add_stack::*, u4_logic_stack::*, u4_shift_stack::*};
+use crate::arithmetic::u4::{stack_add::*, stack_logic::*, stack_shift::*};
 pub use bitcoin_script::builder::StructuredScript as Script;
 use bitcoin_script_stack::stack::{StackTracker, StackVariable};
 use std::collections::HashMap;
@@ -270,14 +270,102 @@ fn round(
     tables: &TablesVars,
     last_round: bool,
 ) {
-    g(stack, state_var_map, 0, 4, 8, 12, message_var_map[&0], message_var_map[&1], tables, last_round);
-    g(stack, state_var_map, 1, 5, 9, 13, message_var_map[&2], message_var_map[&3], tables, last_round);
-    g(stack, state_var_map, 2, 6, 10, 14, message_var_map[&4], message_var_map[&5], tables, last_round);
-    g(stack, state_var_map, 3, 7, 11, 15, message_var_map[&6], message_var_map[&7], tables, last_round);
-    g(stack, state_var_map, 0, 5, 10, 15, message_var_map[&8], message_var_map[&9], tables, last_round);
-    g(stack, state_var_map, 1, 6, 11, 12, message_var_map[&10], message_var_map[&11], tables, last_round);
-    g(stack, state_var_map, 2, 7, 8, 13, message_var_map[&12], message_var_map[&13], tables, last_round);
-    g(stack, state_var_map, 3, 4, 9, 14, message_var_map[&14], message_var_map[&15], tables, last_round);
+    g(
+        stack,
+        state_var_map,
+        0,
+        4,
+        8,
+        12,
+        message_var_map[&0],
+        message_var_map[&1],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        1,
+        5,
+        9,
+        13,
+        message_var_map[&2],
+        message_var_map[&3],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        2,
+        6,
+        10,
+        14,
+        message_var_map[&4],
+        message_var_map[&5],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        3,
+        7,
+        11,
+        15,
+        message_var_map[&6],
+        message_var_map[&7],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        0,
+        5,
+        10,
+        15,
+        message_var_map[&8],
+        message_var_map[&9],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        1,
+        6,
+        11,
+        12,
+        message_var_map[&10],
+        message_var_map[&11],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        2,
+        7,
+        8,
+        13,
+        message_var_map[&12],
+        message_var_map[&13],
+        tables,
+        last_round,
+    );
+    g(
+        stack,
+        state_var_map,
+        3,
+        4,
+        9,
+        14,
+        message_var_map[&14],
+        message_var_map[&15],
+        tables,
+        last_round,
+    );
 }
 
 fn permutate(message_var_map: &HashMap<u8, StackVariable>) -> HashMap<u8, StackVariable> {

@@ -102,8 +102,8 @@ remains.
   the altstack, with bit `N-1` on top.
 - `verify_preimage_length`: `... preimage -> ... length_minus_offset`.
 
-The hash-path construction generalizes the former `BitHash128` code. The old
-`hashes::bithash` names remain deprecated compatibility wrappers using 128 bits
-and an empty initial preimage. The preimage-length idea and hash-path family are
-independently implemented from the descriptions in
+The hash-path construction generalizes the former fixed-width `BitHash128`
+prototype. It is exposed only through the parameterized `commitments::hash_path`
+API. The preimage-length idea and hash-path family are independently implemented
+from the descriptions in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/).

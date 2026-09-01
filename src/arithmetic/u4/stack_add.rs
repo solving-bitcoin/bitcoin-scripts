@@ -1,7 +1,7 @@
-use crate::script::*;
+use crate::support::script::*;
 use bitcoin_script_stack::stack::{StackTracker, StackVariable};
 
-use super::u4_add::{u4_push_modulo_table_5, u4_push_quotient_table_5};
+use super::add::{u4_push_modulo_table_5, u4_push_quotient_table_5};
 
 pub fn u4_push_quotient_table_stack(stack: &mut StackTracker) -> StackVariable {
     stack.var(80, u4_push_quotient_table_5(), "quotient_table")
@@ -110,7 +110,7 @@ pub fn u4_add_internal_stack(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u4::u4_std::verify_n;
+    use crate::arithmetic::u4::stack::verify_n;
 
     #[test]
     fn test_add_for_blake() {

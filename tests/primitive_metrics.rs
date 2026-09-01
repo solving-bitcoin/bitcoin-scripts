@@ -23,9 +23,12 @@ use bitcoin_lab::{
         fields::{fp254::Fp254Impl, fq::Fq, fq2::Fq2, fr::Fr},
         groups::{g1::G1Affine, g2::G2Affine},
     },
-    execute_script_with_inputs,
     hashes::{blake3, ripemd160, sha1, sha256, shake256},
-    signatures::{hors, lamport, Wots, Wots32},
+    signatures::{
+        hors, lamport,
+        winternitz::{Wots, Wots32},
+    },
+    support::execution::execute_script_with_inputs,
 };
 use bitcoin_script::script;
 

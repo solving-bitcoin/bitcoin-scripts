@@ -346,4 +346,3 @@ mod tests {
         assert_eq!(result1, result2);
     }
 }
-

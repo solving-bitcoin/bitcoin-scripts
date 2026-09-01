@@ -1,3 +1,4 @@
+use crate::support::script::{script, Script};
 /// HORS-like (Hash to Obtain Random Subset) one-time signatures in Bitcoin Script.
 ///
 /// Based on the scheme described in the Binohash paper (Robin Linus, 2025):
@@ -23,7 +24,6 @@
 /// The locking script then pushes n hashes on top of these, and verifies each
 /// (index, preimage) pair against its committed hash.
 use bitcoin::hashes::{hash160, Hash};
-use crate::script::{script, Script};
 
 /// Compute HASH160 of data, returning a 20-byte array.
 pub fn hash160(data: &[u8]) -> [u8; 20] {
@@ -203,8 +203,8 @@ fn encode_script_int(v: i64) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script_with_inputs, execute_script};
-    use crate::script::script;
+    use crate::support::execution::{execute_script, execute_script_with_inputs};
+    use crate::support::script::script;
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
         (0..n).map(|i| vec![i as u8; 20]).collect()
@@ -241,7 +241,11 @@ mod tests {
             { 1u8 } OP_EQUAL
         };
         let result = execute_script_with_inputs(script, witness);
-        assert!(result.success, "witness ordering check failed: {:?}", result);
+        assert!(
+            result.success,
+            "witness ordering check failed: {:?}",
+            result
+        );
     }
 
     /// Check exact stack layout as locking script starts.
@@ -253,10 +257,7 @@ mod tests {
         let public_keys = hors_public_keys(&preimages);
 
         // Witness: index=1 (witness[0]=deepest), preimage[1] (witness[1]=top)
-        let witness = vec![
-            encode_script_int(1),
-            preimages[1].clone(),
-        ];
+        let witness = vec![encode_script_int(1), preimages[1].clone()];
 
         // Script: just push hashes and verify the depth of preimage.
         // After pushing n=3 hashes, preimage should be at depth 3.
@@ -287,10 +288,7 @@ mod tests {
         let public_keys = hors_public_keys(&preimages);
         let idx = 1usize;
 
-        let witness = vec![
-            encode_script_int(idx as i64),
-            preimages[idx].clone(),
-        ];
+        let witness = vec![encode_script_int(idx as i64), preimages[idx].clone()];
 
         // Manually implement just step 1: roll index to top and check it's correct.
         let script_step1 = script! {
@@ -376,7 +374,11 @@ mod tests {
         let witness = hors_unlocking_witness(&preimages, &indices);
 
         let result = execute_script_with_inputs(locking, witness);
-        assert!(result.success, "HORS single pair index 0 failed: {:?}", result);
+        assert!(
+            result.success,
+            "HORS single pair index 0 failed: {:?}",
+            result
+        );
     }
 
     #[test]
@@ -391,7 +393,11 @@ mod tests {
         let witness = hors_unlocking_witness(&preimages, &indices);
 
         let result = execute_script_with_inputs(locking, witness);
-        assert!(result.success, "HORS single pair last index failed: {:?}", result);
+        assert!(
+            result.success,
+            "HORS single pair last index failed: {:?}",
+            result
+        );
     }
 
     #[test]
@@ -434,10 +440,7 @@ mod tests {
 
         let locking = hors_locking_script(&public_keys, t);
         // Provide correct index but wrong preimage.
-        let witness = vec![
-            encode_script_int(2),
-            b"wrong_preimage_data_here".to_vec(),
-        ];
+        let witness = vec![encode_script_int(2), b"wrong_preimage_data_here".to_vec()];
         let result = execute_script_with_inputs(locking, witness);
         assert!(!result.success, "wrong preimage should fail");
     }

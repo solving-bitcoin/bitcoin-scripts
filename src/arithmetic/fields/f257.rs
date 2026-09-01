@@ -5,7 +5,7 @@
 //! variable and constant multiplications and still fits beside a 512-item
 //! polynomial state under Bitcoin Script's 1,000-item combined stack limit.
 
-use crate::script::*;
+use crate::support::script::*;
 
 use crate::arithmetic::u31::{U31Config, U31_LOOKUP_STACK_LIMIT};
 
@@ -240,7 +240,7 @@ mod tests {
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     use super::*;
-    use crate::execute_script;
+    use crate::support::execution::execute_script;
 
     fn center(value: i32) -> i32 {
         f257_center(value)

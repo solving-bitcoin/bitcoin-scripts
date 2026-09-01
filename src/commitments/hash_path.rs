@@ -2,7 +2,7 @@
 
 use bitcoin::hashes::{ripemd160, sha256, Hash};
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 
 /// Largest bit width that can be reconstructed as a positive four-byte
 /// Script integer.
@@ -152,7 +152,7 @@ pub fn verify_hash_path_to_integer(bit_width: usize, commitment: [u8; 20]) -> Sc
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script_with_inputs, script::script};
+    use crate::support::{execution::execute_script_with_inputs, script::script};
 
     #[test]
     fn verifies_and_returns_integers() {

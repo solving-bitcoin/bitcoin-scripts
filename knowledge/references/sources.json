@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-09-01",
+  "sources": [
+    {
+      "id": "bip-16",
+      "title": "BIP 16: Pay to Script Hash",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki",
+      "revision": "accepted specification"
+    },
+    {
+      "id": "bip-141",
+      "title": "BIP 141: Segregated Witness",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki",
+      "revision": "final specification"
+    },
+    {
+      "id": "bip-341",
+      "title": "BIP 341: Taproot",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki",
+      "revision": "final specification"
+    },
+    {
+      "id": "bip-342",
+      "title": "BIP 342: Tapscript",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki",
+      "revision": "final specification"
+    },
+    {
+      "id": "bitcoin-core-interpreter",
+      "title": "Bitcoin Core Script interpreter",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/master/src/script/interpreter.cpp",
+      "revision": "rolling master; pin before reproduction"
+    },
+    {
+      "id": "bitcoin-script-locked",
+      "title": "BitVM rust-bitcoin-script",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/rust-bitcoin-script/tree/01b4cb66cbf5b525079cabe006f9f99627da97cd",
+      "revision": "01b4cb66cbf5b525079cabe006f9f99627da97cd"
+    },
+    {
+      "id": "bitcoin-script-stack-locked",
+      "title": "BitVM rust-bitcoin-script-stack",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/rust-bitcoin-script-stack/tree/643c5f1a44af448274849c01a5ae7fbdd54d8213",
+      "revision": "643c5f1a44af448274849c01a5ae7fbdd54d8213"
+    },
+    {
+      "id": "bitcoin-scriptexec-locked",
+      "title": "BitVM rust-bitcoin-scriptexec",
+      "kind": "execution-tool",
+      "url": "https://github.com/BitVM/rust-bitcoin-scriptexec/tree/ba96bc2bd76774c9d1b011461cb79d983c2c43a1",
+      "revision": "ba96bc2bd76774c9d1b011461cb79d983c2c43a1"
+    },
+    {
+      "id": "bitvm-repository",
+      "title": "BitVM trust-minimized bridge implementation",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/BitVM",
+      "revision": "rolling upstream; pin before reproduction"
+    },
+    {
+      "id": "bitvm-paper",
+      "title": "BitVM: Compute Anything on Bitcoin",
+      "kind": "paper",
+      "url": "https://bitvm.org/bitvm.pdf",
+      "revision": "published PDF"
+    },
+    {
+      "id": "bitvm2-bridge-paper",
+      "title": "BitVM Bridge",
+      "kind": "paper",
+      "url": "https://bitvm.org/bitvm_bridge.pdf",
+      "revision": "published PDF"
+    },
+    {
+      "id": "binohash-paper",
+      "title": "Binohash: Transaction Introspection Without Softforks",
+      "kind": "paper",
+      "url": "https://robinlinus.com/binohash.pdf",
+      "revision": "2026 PDF reviewed 2026-09-01"
+    },
+    {
+      "id": "on-proving-pairings",
+      "title": "On Proving Pairings",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2024/640.pdf",
+      "revision": "IACR ePrint 2024/640"
+    },
+    {
+      "id": "openvm-pairing-advisory",
+      "title": "Pairing check missing proper subfield check on scaling factor",
+      "kind": "security-advisory",
+      "url": "https://github.com/openvm-org/openvm/security/advisories/GHSA-76mq-v757-53gr",
+      "revision": "GHSA-76mq-v757-53gr, published 2026"
+    },
+    {
+      "id": "bitvm-garbled-snark-verifier",
+      "title": "BitVM garbled SNARK verifier",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/garbled-snark-verifier",
+      "revision": "rolling upstream; pin before reproduction"
+    },
+    {
+      "id": "arkworks-algebra-0.5",
+      "title": "arkworks algebra and BN254 implementation",
+      "kind": "reference-implementation",
+      "url": "https://github.com/arkworks-rs/algebra",
+      "revision": "crate series 0.5 used locally"
+    },
+    {
+      "id": "fips-180-4",
+      "title": "FIPS 180-4 Secure Hash Standard",
+      "kind": "standard",
+      "url": "https://doi.org/10.6028/NIST.FIPS.180-4",
+      "revision": "FIPS 180-4"
+    },
+    {
+      "id": "fips-202",
+      "title": "FIPS 202 SHA-3 Standard",
+      "kind": "standard",
+      "url": "https://doi.org/10.6028/NIST.FIPS.202",
+      "revision": "FIPS 202"
+    },
+    {
+      "id": "fips-197",
+      "title": "FIPS 197 Advanced Encryption Standard",
+      "kind": "standard",
+      "url": "https://doi.org/10.6028/NIST.FIPS.197-upd1",
+      "revision": "updated edition 2023"
+    },
+    {
+      "id": "blake3-spec",
+      "title": "BLAKE3 specification and reference implementation",
+      "kind": "reference-implementation",
+      "url": "https://github.com/BLAKE3-team/BLAKE3",
+      "revision": "test vectors vendored locally; pin upstream for new claims"
+    },
+    {
+      "id": "princev2-reference",
+      "title": "PRINCEv2 reference implementation",
+      "kind": "reference-implementation",
+      "url": "https://github.com/rub-hgi/princev2",
+      "revision": "upstream reference named by local implementation"
+    },
+    {
+      "id": "u31-bitvm-source",
+      "title": "BitVM u31 field arithmetic source",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/rust-bitcoin-m31-or-babybear/tree/1015e3393c7310f0f30f0b73ff4a7f2bc1a5173e",
+      "revision": "1015e3393c7310f0f30f0b73ff4a7f2bc1a5173e"
+    }
+  ]
+}

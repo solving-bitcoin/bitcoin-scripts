@@ -1,9 +1,9 @@
-use crate::bigint::BigIntImpl;
-use crate::bigint::U256;
-use crate::bn254::fq::bigint_to_u32_limbs;
-use crate::bn254::fq::Fq;
-use crate::bn254::fr::Fr;
-use crate::script::*;
+use crate::arithmetic::bigint::BigIntImpl;
+use crate::arithmetic::bigint::U256;
+use crate::curves::bn254::fields::fq::bigint_to_u32_limbs;
+use crate::curves::bn254::fields::fq::Fq;
+use crate::curves::bn254::fields::fr::Fr;
+use crate::support::script::*;
 use ark_ff::BigInt;
 
 #[derive(Debug, Clone)]
@@ -75,4 +75,3 @@ pub fn fq_to_bits(fq: BigInt<4>, limb_size: usize) -> Vec<u32> {
         })
         .collect()
 }
-

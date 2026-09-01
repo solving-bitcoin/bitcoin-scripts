@@ -1,6 +1,26 @@
-# bitcoin-scripts
+# Bitcoin Scripts
 
 Library of Bitcoin Script arithmetic and cryptographic primitives.
+
+## State-of-the-art knowledge base
+
+This repository is also an evidence-backed atlas for agents researching Bitcoin
+Script primitives. Start at [`knowledge/index.md`](knowledge/index.md) to compare
+constructions, execution assumptions, normalized costs, protocol dependencies,
+negative results, primary sources, and open problems.
+
+The machine-readable catalog can be queried without building the Rust crate:
+
+```sh
+python3 tools/kb.py list
+python3 tools/kb.py search lookup
+python3 tools/kb.py best hash/fixed script_bytes
+python3 tools/kb.py validate
+```
+
+Catalog presence is evidence of coverage; catalog absence is not evidence that
+a construction does not exist. Every result is dated and labeled as reported,
+inspected, locally reproduced, or differentially validated.
 
 ## Layout
 
@@ -21,9 +41,9 @@ compatibility, standardness, and witness hints. Shared interpretation notes are
 in [`docs/script-types.md`](docs/script-types.md) and
 [`docs/standardness.md`](docs/standardness.md).
 
-The cleaner domain paths are the canonical organization. Existing top-level
-paths such as `u4`, `hash`, and `bn254` remain available as compatibility
-re-exports.
+The domain-oriented hierarchy is the only public organization. Use paths such
+as `arithmetic::u4`, `hashes::sha256`, `curves::bn254`, and
+`support::execution`; flat aliases are intentionally not provided.
 
 ## Metric snapshots
 

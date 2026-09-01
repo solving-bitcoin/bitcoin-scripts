@@ -1,5 +1,5 @@
-use crate::script::*;
-use crate::u32::u32_zip::u32_copy_zip;
+use crate::arithmetic::u32::zip::u32_copy_zip;
+use crate::support::script::*;
 
 /// Bitwise XOR of two u8 elements, i denoting how many values are there in the stack after the table (including the input numbers A and B)
 /// Expects the u8_xor_table on the stack and uses it to process even and odd bits separately
@@ -331,7 +331,8 @@ pub fn u8_drop_xor_table() -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u32::u32_std::*;
+    use crate::arithmetic::u32::stack::*;
+    use crate::support::execution::run;
     use rand::Rng;
 
     #[test]

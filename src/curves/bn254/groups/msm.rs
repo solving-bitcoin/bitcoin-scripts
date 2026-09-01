@@ -12,11 +12,11 @@
 ///
 /// As such a batch of double+addition terms is implemented on a chunk, thus a single point-scalar multiplication requires around 32/8 = 4 chunks
 /// This number increases linearly as the number of scalar grows.
-use crate::bn254::fq2::Fq2;
-use crate::bn254::utils::{fq_to_bits, Hint};
-use crate::bn254::fp254impl::Fp254Impl;
-use crate::bn254::{fr::Fr, g1::G1Affine};
-use crate::script::*;
+use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::curves::bn254::fields::{fq2::Fq2, fr::Fr};
+use crate::curves::bn254::groups::g1::G1Affine;
+use crate::curves::bn254::hints::{fq_to_bits, Hint};
+use crate::support::script::*;
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{One, PrimeField};
 use itertools::Itertools;
@@ -295,8 +295,8 @@ pub(crate) fn g1_multi_scalar_mul(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::bn254::g1::G1Affine;
-    use crate::execute_script_without_stack_limit;
+    use crate::curves::bn254::groups::g1::G1Affine;
+    use crate::support::execution::{execute_script, execute_script_without_stack_limit};
     use ark_ec::{CurveGroup, VariableBaseMSM};
     use ark_std::{end_timer, start_timer, test_rng, UniformRand};
     use rand::SeedableRng;

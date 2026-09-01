@@ -1,6 +1,6 @@
 //! Arithmetic over Bitcoin's four-byte Script integer domain.
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 
 /// Largest positive integer accepted by four-byte Script-number arithmetic.
 pub const MAX_SCRIPTNUM: u32 = 0x7fff_ffff;
@@ -85,7 +85,7 @@ pub fn hinted_rem(divisor: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
 
     fn assert_division(dividend: i64, divisor: u32) {
         let divisor_i64 = i64::from(divisor);

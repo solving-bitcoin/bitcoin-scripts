@@ -5,7 +5,7 @@
 // 64-bit block, 128-bit key (k0 || k1, each 64 bits, big-endian nibble order)
 // Nibble 0 = MSB nibble (bits 63:60), nibble 15 = LSB nibble (bits 3:0)
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -541,7 +541,7 @@ mod optimized {
         ScriptBuf,
     };
 
-    use crate::script::Script;
+    use crate::support::script::Script;
 
     use super::{BETA, M0, M1, M2, M3, RC, SBOX, SBOX_INV, SHIFT, SHIFT_INV};
 
@@ -1661,8 +1661,8 @@ pub fn u64_to_nibbles_msb(v: u64) -> [u8; 16] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execute_script;
-    use crate::script::script;
+    use crate::support::execution::execute_script;
+    use crate::support::script::script;
     use sha2::{Digest, Sha256};
 
     fn execute_encryption(key: u128, plaintext: u64, expected: u64) -> usize {
@@ -1860,7 +1860,7 @@ mod tests {
             }
             OP_TRUE
         };
-        let result = crate::execute_script(s);
+        let result = crate::support::execution::execute_script(s);
         assert!(
             result.success,
             "script_m_layer failed: expected {:?}, error={:?}",

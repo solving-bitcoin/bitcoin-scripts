@@ -16,7 +16,7 @@ use bitcoin::{
     script::Builder,
 };
 
-use crate::script::Script;
+use crate::support::script::Script;
 
 const BLOCK_BYTES: usize = 16;
 const STATE_NIBBLES: usize = 32;
@@ -576,7 +576,7 @@ pub fn aes128_encrypt(key: [u8; 16]) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
 
     fn execute_vector(key: [u8; 16], plaintext: [u8; 16], ciphertext: [u8; 16]) -> usize {
         let plaintext = bytes_to_nibbles(plaintext);

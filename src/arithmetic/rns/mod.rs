@@ -9,7 +9,7 @@
 //! `m * m` tables and a lookup-row encoding for its left operand. All three
 //! operations process the five moduli in 35 Script instructions.
 
-use crate::script::*;
+use crate::support::script::*;
 
 /// Pairwise-coprime moduli used by the residue number system.
 pub const RNS_MODULI: [u32; 5] = [4, 9, 25, 7, 11];
@@ -292,7 +292,7 @@ mod tests {
             { rns_equalverify() }
             OP_TRUE
         };
-        crate::run(script);
+        crate::support::execution::run(script);
     }
 
     fn run_add(lhs: u32, rhs: u32) {
@@ -433,7 +433,7 @@ mod tests {
             OP_DROP
             OP_TRUE
         };
-        let result = crate::execute_script(script);
+        let result = crate::support::execution::execute_script(script);
         assert!(result.success);
         result.stats.max_nb_stack_items
     }

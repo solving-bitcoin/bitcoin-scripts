@@ -11,7 +11,7 @@
 
 use bitcoin::ScriptBuf;
 
-use crate::script::*;
+use crate::support::script::*;
 
 mod extension;
 mod karatsuba;
@@ -445,7 +445,7 @@ mod tests {
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
 
     struct TestField257;
 

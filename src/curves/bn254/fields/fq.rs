@@ -4,11 +4,11 @@ use std::str::FromStr;
 use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, ToPrimitive};
 
-use crate::bigint::BigIntImpl;
+use crate::arithmetic::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
-use crate::bn254::fp254impl::Fp254Impl;
-use crate::bn254::utils::Hint;
-use crate::script::*;
+use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::curves::bn254::hints::Hint;
+use crate::support::script::*;
 
 pub struct Fq;
 
@@ -800,9 +800,12 @@ fp_lc_mul!(Mul4LC, 3, 3, [true, true, true, true]);
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::bigint::U254;
-    use crate::bn254::fq::Fq;
-    use crate::{bn254::fp254impl::Fp254Impl, ExecuteInfo};
+    use crate::arithmetic::bigint::U254;
+    use crate::curves::bn254::fields::fq::Fq;
+    use crate::{
+        curves::bn254::fields::fp254::Fp254Impl,
+        support::execution::{execute_script, run, ExecuteInfo},
+    };
     use ark_ff::AdditiveGroup;
     use ark_ff::Field;
     use ark_std::UniformRand;

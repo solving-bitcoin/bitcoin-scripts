@@ -48,7 +48,8 @@ terminal output predicate required by their protocol.
 
 The raw output contains 1024 stack items, exceeding Bitcoin's consensus limit
 of 1,000 combined main- and alt-stack items. Consequently the standalone
-primitive must be evaluated with `execute_script_without_stack_limit`. A
+primitive must be evaluated with
+`support::execution::execute_script_without_stack_limit`. A
 different, specialized construction would have to consume squeeze blocks
 incrementally. This function is not directly usable as a consensus-valid
 tapscript in its raw-output form.

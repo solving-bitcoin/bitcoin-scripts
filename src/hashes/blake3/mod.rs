@@ -9,8 +9,8 @@ use itertools::Itertools;
 pub use bitcoin_script::builder::StructuredScript as Script;
 pub use bitcoin_script::script;
 
-use crate::bigint::U256;
-use crate::hash::blake3_utils::{compress, get_flags_for_block, TablesVars};
+use crate::arithmetic::bigint::U256;
+use crate::hashes::blake3::utils::{compress, get_flags_for_block, TablesVars};
 
 fn blake3(
     stack: &mut StackTracker,
@@ -233,8 +233,7 @@ pub fn blake3_push_message_script_with_limb(message_bytes: &[u8], limb_len: u8) 
 
 const SUM_OF_FULL_TABLES: usize = 384;
 const UNPACKED_BLOCK: usize = 128;
-const MAX_BLAKE3_ELEMENT_COUNT: usize =
-    SUM_OF_FULL_TABLES + UNPACKED_BLOCK + 132;
+const MAX_BLAKE3_ELEMENT_COUNT: usize = SUM_OF_FULL_TABLES + UNPACKED_BLOCK + 132;
 
 pub fn maximum_number_of_altstack_elements_using_blake3(message_len: usize, limb_len: u8) -> i32 {
     let n = message_len.div_ceil(64);
@@ -280,7 +279,7 @@ pub fn blake3_verify_output_script(expected_output: [u8; 32]) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, execute_script_buf_without_stack_limit};
+    use crate::support::execution::{execute_script, execute_script_buf_without_stack_limit};
     use bitcoin::ScriptBuf;
     use bitcoin_script_stack::optimizer;
 

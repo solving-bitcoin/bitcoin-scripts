@@ -1,6 +1,6 @@
 //! Radix-decomposition multiplication for Falcon's coefficient field.
 
-use crate::script::*;
+use crate::support::script::*;
 
 use crate::arithmetic::u31::{u31_add, U31Config, U31_LOOKUP_STACK_LIMIT};
 
@@ -150,7 +150,7 @@ pub fn mul_by_constant_radix_lookup_batch(constant: u32, radix_bits: u32, count:
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
 
     fn mul_mod(value: u32, constant: u32) -> u32 {
         (value as u64 * constant as u64 % F12289::MODULUS as u64) as u32

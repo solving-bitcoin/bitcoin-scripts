@@ -1,5 +1,5 @@
-use crate::script::{script, Script};
-use crate::u4::{u4_add::*, u4_logic::*, u4_rot::*, u4_std::*};
+use crate::arithmetic::u4::{add::*, logic::*, rotate::*, stack::*};
+use crate::support::script::{script, Script};
 use std::vec;
 
 const K: [u32; 64] = [
@@ -466,7 +466,7 @@ pub fn sha256(num_bytes: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
     use bitcoin::hex::{DisplayHex, FromHex};
     use sha2::{Digest, Sha256};
 

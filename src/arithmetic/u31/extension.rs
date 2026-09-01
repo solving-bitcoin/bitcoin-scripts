@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 
 use super::{
     karatsuba_big, karatsuba_complex_big, u31_add, u31_double, u31_mul_by_constant, u31_mul_common,

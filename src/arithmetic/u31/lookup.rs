@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 
 use super::{u31_adjust, U31Config};
 
@@ -250,7 +250,7 @@ pub fn u31_mul_by_constant_half_lookup<C: U31Config>(constant: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, script::script};
+    use crate::support::{execution::execute_script, script::script};
 
     use super::super::M31;
 

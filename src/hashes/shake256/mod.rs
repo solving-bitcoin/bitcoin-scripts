@@ -5,12 +5,12 @@
 //! bytes in little-endian order, which makes absorbing and squeezing match the
 //! FIPS 202 byte convention without a separate endian-conversion pass.
 
-use crate::script::{script, Script};
-use crate::u32::{
-    u32_rrot::u8_extract_hbit,
-    u32_std::u32_push,
-    u32_xor::{u8_drop_xor_table, u8_push_xor_table, u8_xor},
+use crate::arithmetic::u32::{
+    rotate::u8_extract_hbit,
+    stack::u32_push,
+    xor::{u8_drop_xor_table, u8_push_xor_table, u8_xor},
 };
+use crate::support::script::{script, Script};
 
 /// Number of bytes returned by [`shake256`].
 pub const OUTPUT_LEN: usize = 1024;
@@ -60,7 +60,7 @@ const ROUND_CONSTANTS: [u64; 24] = [
 /// the message and leaves the first output byte on top of the stack.
 ///
 /// A 1024-byte result alone exceeds Bitcoin's 1,000-item combined stack limit.
-/// Execute this primitive with [`crate::execute_script_without_stack_limit`]. A
+/// Execute this primitive with [`crate::support::execution::execute_script_without_stack_limit`]. A
 /// consensus-compatible construction would need a specialized variant that
 /// consumes squeeze blocks incrementally.
 pub fn shake256(num_bytes: usize) -> Script {
@@ -180,7 +180,7 @@ fn and_top_lanes(items_above_table: usize) -> Script {
         for output_index in 0..8 {
             { 15 } OP_PICK
             { 8 } OP_PICK
-            { crate::u32::u32_and::u8_and(
+            { crate::arithmetic::u32::and::u8_and(
                 (items_above_table + output_index + 2) as u32
             ) }
         }
@@ -445,7 +445,10 @@ fn squeeze_1024() -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script_without_stack_limit, u32::u32_xor::u8_push_xor_table};
+    use crate::{
+        arithmetic::u32::xor::u8_push_xor_table,
+        support::execution::execute_script_without_stack_limit,
+    };
 
     fn push_message(message: &[u8]) -> Script {
         script! {

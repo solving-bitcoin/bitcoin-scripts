@@ -6,9 +6,6 @@ pub mod mul;
 pub mod stack;
 pub mod sub;
 
-// Compatibility with the original module name.
-pub use stack as std;
-
 #[derive(Debug)]
 pub struct BigIntImpl<const N_BITS: u32, const LIMB_SIZE: u32> {}
 

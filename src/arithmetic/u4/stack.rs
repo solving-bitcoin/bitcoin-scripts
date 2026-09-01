@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 use bitcoin::{opcodes::all::*, Opcode};
 
 pub fn u4_toaltstack(n: u32) -> Script {
@@ -136,7 +136,7 @@ impl CalculateOffset for i32 {
 mod tests {
     use super::*;
     use super::{u4_hex_to_nibbles, u4_repeat_number};
-    use crate::u4::u4_std::u4_number_to_nibble;
+    use crate::arithmetic::u4::stack::u4_number_to_nibble;
 
     #[test]
     fn test_repeat() {
@@ -148,7 +148,7 @@ mod tests {
                 }
                 OP_TRUE
             };
-            crate::run(script);
+            crate::support::execution::run(script);
         }
     }
 
@@ -174,7 +174,7 @@ mod tests {
             OP_EQUALVERIFY
             OP_TRUE
         };
-        crate::run(script);
+        crate::support::execution::run(script);
     }
 
     #[test]
@@ -199,6 +199,6 @@ mod tests {
             OP_EQUALVERIFY
             OP_TRUE
         };
-        crate::run(script);
+        crate::support::execution::run(script);
     }
 }

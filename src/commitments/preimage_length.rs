@@ -2,7 +2,7 @@
 
 use bitcoin::hashes::{sha256, Hash};
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 
 /// Offset used by [`verify_preimage_length`].
 pub const DEFAULT_PREIMAGE_LENGTH_OFFSET: usize = 16;
@@ -48,7 +48,7 @@ pub fn verify_preimage_length_with_offset(commitment: [u8; 32], offset: usize) -
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script_with_inputs, script::script};
+    use crate::support::{execution::execute_script_with_inputs, script::script};
 
     #[test]
     fn verifies_default_offset() {

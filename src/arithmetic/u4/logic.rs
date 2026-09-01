@@ -1,6 +1,6 @@
-use super::u4_std::u4_drop;
-use crate::script::*;
-use crate::u4::u4_add::u4_arrange_nibbles;
+use super::stack::u4_drop;
+use crate::arithmetic::u4::add::u4_arrange_nibbles;
+use crate::support::script::*;
 
 pub fn u4_push_full_xor_table() -> Script {
     script! {

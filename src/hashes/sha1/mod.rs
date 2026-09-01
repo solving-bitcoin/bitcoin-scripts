@@ -1,15 +1,15 @@
 //! SHA-1 implemented over the byte-oriented u32 stack representation.
 
-use crate::pseudo::push_to_stack;
-use crate::script::{script, Script};
-use crate::u32::{
-    u32_add::u32_add_drop,
-    u32_and::u32_and,
-    u32_or::u32_or,
-    u32_rrot::u32_rrot,
-    u32_std::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_roll, u32_toaltstack},
-    u32_xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
+use crate::arithmetic::u32::{
+    add::u32_add_drop,
+    and::u32_and,
+    or::u32_or,
+    rotate::u32_rrot,
+    stack::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_roll, u32_toaltstack},
+    xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
 };
+use crate::support::script::{script, Script};
+use crate::support::script_ops::push_to_stack;
 
 const INITIAL_STATE: [u32; 5] = [
     0x6745_2301,
@@ -306,7 +306,7 @@ fn majority(words_above_table: usize) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u32::u32_std::{u32_equal, u32_push};
+    use crate::arithmetic::u32::stack::{u32_equal, u32_push};
     use bitcoin::hashes::{sha1 as reference_sha1, Hash};
 
     fn push_message(message: &[u8]) -> Script {
@@ -319,7 +319,7 @@ mod tests {
 
     fn verify_digest(message: &[u8]) {
         let expected = reference_sha1::Hash::hash(message).to_byte_array();
-        let result = crate::execute_script_without_stack_limit(script! {
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
             { push_message(message) }
             { sha1(message.len()) }
             for byte in expected {
@@ -346,7 +346,7 @@ mod tests {
             (parity(words), b ^ c ^ d),
             (majority(words), (b & c) | (d & (b | c))),
         ] {
-            let result = crate::execute_script_without_stack_limit(script! {
+            let result = crate::support::execution::execute_script_without_stack_limit(script! {
                 { u8_push_xor_table() }
                 for _ in 0..80 {
                     { u32_push(0) }
@@ -379,7 +379,7 @@ mod tests {
                 .rotate_left(1);
         }
 
-        let result = crate::execute_script_without_stack_limit(script! {
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
             { u8_push_xor_table() }
             for word in expected[..16].iter().rev() {
                 { u32_push(*word) }
@@ -387,7 +387,7 @@ mod tests {
             { extend_schedule(16) }
             for word in expected.iter().rev() {
                 { u32_push(*word) }
-                { crate::u32::u32_std::u32_equalverify() }
+                { crate::arithmetic::u32::stack::u32_equalverify() }
             }
             { u8_drop_xor_table() }
             OP_TRUE
@@ -415,7 +415,7 @@ mod tests {
             d,
         ];
 
-        let result = crate::execute_script_without_stack_limit(script! {
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
             { u8_push_xor_table() }
             for word in schedule {
                 { u32_push(word) }
@@ -428,7 +428,7 @@ mod tests {
             { sha1_round(0, 85) }
             for word in next {
                 { u32_push(word) }
-                { crate::u32::u32_std::u32_equalverify() }
+                { crate::arithmetic::u32::stack::u32_equalverify() }
             }
             for _ in 0..80 {
                 { u32_drop() }

@@ -2,8 +2,8 @@ use bitcoin::hex::DisplayHex;
 use bitcoin::script::read_scriptint;
 use bitcoin_script::Script;
 
-use crate::signatures::utils::bitcoin_representation;
 use crate::signatures::winternitz;
+use crate::signatures::winternitz::utils::bitcoin_representation;
 use crate::signatures::winternitz::{
     BruteforceVerifier, Converter, ListpickVerifier, Parameters, VoidConverter, Winternitz,
 };
@@ -373,7 +373,7 @@ impl_wots!(Wots80, 80, VoidConverter);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, signatures::utils};
+    use crate::{signatures::winternitz::utils, support::execution::execute_script};
 
     use std::fs::File;
     use std::io;

@@ -1,7 +1,7 @@
-use crate::bigint::add::limb_add_carry;
-use crate::bigint::sub::limb_sub_borrow;
-use crate::bigint::U254;
-use crate::script::*;
+use crate::arithmetic::bigint::add::limb_add_carry;
+use crate::arithmetic::bigint::sub::limb_sub_borrow;
+use crate::arithmetic::bigint::U254;
+use crate::support::script::*;
 use ark_ff::PrimeField;
 use bitcoin_script::script;
 use num_bigint::{BigInt, BigUint};
@@ -602,4 +602,3 @@ pub trait Fp254Impl {
         }
     }
 }
-

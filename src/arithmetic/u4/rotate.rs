@@ -1,5 +1,5 @@
-use crate::script::*;
-use crate::u4::u4_shift::*;
+use crate::arithmetic::u4::shift::*;
+use crate::support::script::*;
 
 /// Push 2 nib right shift tables, i.e. tables to calculate (16 * Y + X) >> n modulo 16 (which is equal to concatenating two nibbles and shifting them by n)
 pub fn u4_push_rrot_tables() -> Script {
@@ -65,7 +65,8 @@ pub fn u4_rrot(shift: u32, number_pos: u32, shift_tables: u32, is_shift: bool) -
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u4::u4_std::{u4_drop, u4_number_to_nibble};
+    use crate::arithmetic::u4::stack::{u4_drop, u4_number_to_nibble};
+    use crate::support::execution::run;
     use rand::Rng;
 
     fn rrot(x: u32, n: u32) -> u32 {

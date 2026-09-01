@@ -4,10 +4,10 @@ use num_traits::Num;
 use std::cmp::Ordering;
 use std::str::FromStr;
 
-use crate::bigint::BigIntImpl;
+use crate::arithmetic::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
-use crate::pseudo::push_to_stack;
-use crate::script::*;
+use crate::support::script::*;
+use crate::support::script_ops::push_to_stack;
 
 /// Struct to store the information of each step in `transform_limbsize` function.
 /// ## Fields:
@@ -374,7 +374,7 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
                 let n_limbs_to_add = n_limbs_target - n_limbs_self;
                 script! {
                     if n_limbs_to_add > 0 {
-                        {0} {crate::pseudo::OP_NDUP((n_limbs_to_add - 1) as usize)} // Pushing zeros to the stack
+                        {0} {crate::support::script_ops::OP_NDUP((n_limbs_to_add - 1) as usize)} // Pushing zeros to the stack
                     }
                     for _ in 0..n_limbs_self {
                         { n_limbs_target - 1 } OP_ROLL
@@ -664,10 +664,10 @@ pub fn extract_digits(start_index: u32, window: u32) -> Script {
 
 #[cfg(test)]
 mod test {
-    use crate::bigint::std::extract_digits;
-    use crate::bigint::U256;
-    use crate::bigint::{BigIntImpl, U254};
-    use crate::{execute_script, run};
+    use crate::arithmetic::bigint::stack::extract_digits;
+    use crate::arithmetic::bigint::U256;
+    use crate::arithmetic::bigint::{BigIntImpl, U254};
+    use crate::support::execution::{execute_script, run};
 
     use bitcoin_script::script;
     use num_bigint::{BigUint, RandBigInt};
@@ -995,7 +995,7 @@ mod test {
                 OP_EQUAL
             );
 
-            let res = crate::execute_script(script.clone());
+            let res = crate::support::execution::execute_script(script.clone());
             assert!(res.success);
         }
     }
@@ -1045,7 +1045,7 @@ mod test {
             }
             OP_EQUAL
         );
-        let res = crate::execute_script(script.clone());
+        let res = crate::support::execution::execute_script(script.clone());
         assert!(res.success);
     }
 
@@ -1074,7 +1074,7 @@ mod test {
             OP_EQUAL
 
         );
-        let res = crate::execute_script(script.clone());
+        let res = crate::support::execution::execute_script(script.clone());
         assert!(res.success);
     }
 
@@ -1104,7 +1104,7 @@ mod test {
             OP_EQUAL
 
         );
-        let res = crate::execute_script(script.clone());
+        let res = crate::support::execution::execute_script(script.clone());
         assert!(res.success);
     }
 
@@ -1139,7 +1139,7 @@ mod test {
             OP_EQUAL
 
         );
-        let res = crate::execute_script(script.clone());
+        let res = crate::support::execution::execute_script(script.clone());
         assert!(res.success);
     }
 
@@ -1239,7 +1239,7 @@ mod test {
                 }
                 OP_TRUE
             );
-            let res = crate::execute_script(script.clone());
+            let res = crate::support::execution::execute_script(script.clone());
             assert!(res.success);
         }
     }

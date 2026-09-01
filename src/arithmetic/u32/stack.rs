@@ -1,5 +1,5 @@
-use crate::pseudo::{push_to_stack, OP_256MUL, OP_4DUP};
-use crate::script::*;
+use crate::support::script::*;
+use crate::support::script_ops::{push_to_stack, OP_256MUL, OP_4DUP};
 
 pub fn u32_push(value: u32) -> Script {
     script! {
@@ -157,6 +157,7 @@ pub fn u32_uncompress() -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::support::execution::run;
 
     #[test]
     fn test_u32_notequal() {

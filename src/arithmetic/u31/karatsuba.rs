@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 
 use super::{u31_add, u31_mul, u31_sub, U31Config};
 

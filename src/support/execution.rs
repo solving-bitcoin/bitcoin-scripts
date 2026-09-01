@@ -1,6 +1,6 @@
 use core::fmt;
 
-use crate::script;
+use crate::support::script;
 use bitcoin::{
     hashes::Hash,
     hex::DisplayHex,

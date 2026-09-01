@@ -41,3 +41,10 @@ Document preconditions, postconditions, main/alt-stack use, and cleanup.
 
 Document performance, composition constraints, test coverage, and known
 limitations.
+
+## Knowledge-base integration
+
+Add or update an atomic record in `knowledge/catalog.json` and a page under
+`knowledge/primitives/`. Link the relevant comparisons, techniques, protocol
+maps, primary sources, negative results, and open problems. Run
+`python3 tools/kb.py validate` before committing.

@@ -1,4 +1,4 @@
-use super::u4_shift::u4_push_lshift_tables;
+use super::shift::u4_push_lshift_tables;
 use bitcoin_script::Script;
 use bitcoin_script_stack::stack::{script, StackTracker, StackVariable};
 

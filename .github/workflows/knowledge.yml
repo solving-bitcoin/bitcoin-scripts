@@ -1,0 +1,21 @@
+name: Knowledge base
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: 1.98.0
+      - name: Validate knowledge schema and links
+        run: python3 tools/kb.py validate
+      - name: Run locked test suite
+        run: cargo test --locked

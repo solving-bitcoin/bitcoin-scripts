@@ -1,5 +1,5 @@
-use crate::script::*;
-use crate::u32::u32_zip::u32_copy_zip;
+use crate::arithmetic::u32::zip::u32_copy_zip;
+use crate::support::script::*;
 
 /// Bitwise OR of the top two byte limbs.
 ///
@@ -117,8 +117,9 @@ pub fn u32_or(a: u32, b: u32, stack_size: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u32::u32_std::{u32_drop, u32_equal, u32_push};
-    use crate::u32::u32_xor::{u8_drop_xor_table, u8_push_xor_table};
+    use crate::arithmetic::u32::stack::{u32_drop, u32_equal, u32_push};
+    use crate::arithmetic::u32::xor::{u8_drop_xor_table, u8_push_xor_table};
+    use crate::support::execution::run;
     use rand::Rng;
 
     #[test]

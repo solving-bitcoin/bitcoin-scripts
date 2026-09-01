@@ -1,13 +1,13 @@
-use crate::script::*;
+use crate::support::script::*;
 use bitcoin_script_stack::stack::{StackTracker, StackVariable};
 
-use crate::u4::u4_logic::u4_sort;
+use crate::arithmetic::u4::logic::u4_sort;
 
 use super::{
-    u4_logic::{
+    logic::{
         u4_push_full_lookup, u4_push_full_xor_table, u4_push_half_and_table, u4_push_half_xor_table,
     },
-    u4_shift_stack::u4_rshift_stack,
+    stack_shift::u4_rshift_stack,
 };
 
 pub fn u4_push_half_and_table_stack(stack: &mut StackTracker) -> StackVariable {

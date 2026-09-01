@@ -1,15 +1,15 @@
 #![allow(non_snake_case)]
 
-use crate::pseudo::push_to_stack;
-use crate::script::{script, Script};
-use crate::u32::u32_add::u32_add_drop;
-use crate::u32::u32_std::{u32_dup, u32_roll};
-use crate::u32::{
-    u32_and::u32_and,
-    u32_rrot::u32_rrot,
-    u32_std::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_toaltstack},
-    u32_xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
+use crate::arithmetic::u32::add::u32_add_drop;
+use crate::arithmetic::u32::stack::{u32_dup, u32_roll};
+use crate::arithmetic::u32::{
+    and::u32_and,
+    rotate::u32_rrot,
+    stack::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_toaltstack},
+    xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
 };
+use crate::support::script::{script, Script};
+use crate::support::script_ops::push_to_stack;
 
 const K: [u32; 64] = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -914,8 +914,8 @@ pub fn maj(x: u32, y: u32, z: u32, stack_depth: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::script::{execute_script, script};
-    use crate::u32::u32_std::{u32_equal, u32_equalverify};
+    use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify};
+    use crate::support::{execution::execute_script, script::script};
     use bitcoin::hex::{DisplayHex, FromHex};
     use sha2::{Digest, Sha256};
 

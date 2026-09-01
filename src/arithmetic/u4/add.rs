@@ -1,5 +1,5 @@
-use super::u4_std::{u4_drop, CalculateOffset};
-use crate::script::*;
+use super::stack::{u4_drop, CalculateOffset};
+use crate::support::script::*;
 use bitcoin::opcodes::all::*;
 
 pub fn u4_push_quotient_table() -> Script {
@@ -200,8 +200,7 @@ pub fn u4_add(
 
 #[cfg(test)]
 mod tests {
-    use crate::script::*;
-    use crate::u4::{u4_add::*, u4_std::u4_number_to_nibble};
+    use crate::arithmetic::u4::{add::*, stack::u4_number_to_nibble};
     use rand::Rng;
 
     #[test]
@@ -227,7 +226,7 @@ mod tests {
                     }
                     OP_TRUE
                 };
-                crate::run(script);
+                crate::support::execution::run(script);
             }
         }
     }
@@ -257,7 +256,7 @@ mod tests {
                     }
                     OP_TRUE
                 };
-                crate::run(script);
+                crate::support::execution::run(script);
             }
         }
     }

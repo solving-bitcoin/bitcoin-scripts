@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 
 fn u32_cmp(comparison: Script) -> Script {
     script! {
@@ -99,7 +99,8 @@ pub fn u32_greaterthanorequal() -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u32::u32_std::u32_push;
+    use crate::arithmetic::u32::stack::u32_push;
+    use crate::support::execution::run;
     use rand::Rng;
 
     #[test]

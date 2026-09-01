@@ -1,4 +1,4 @@
-use crate::script::*;
+use crate::support::script::*;
 
 /// Right rotation of an u32 element by 16 bits
 pub fn u32_rrot16() -> Script {
@@ -221,7 +221,8 @@ pub fn u32_rrot(rot_num: usize) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::u32::u32_std::*;
+    use crate::arithmetic::u32::stack::*;
+    use crate::support::execution::run;
     use rand::Rng;
 
     fn rrot(x: u32, n: usize) -> u32 {

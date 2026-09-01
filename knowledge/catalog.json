@@ -1,0 +1,1513 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-09-01",
+  "cost_model": "knowledge/cost-model.md",
+  "records": [
+    {
+      "id": "arithmetic/scriptnum-constant-mul",
+      "name": "ScriptNum constant multiplication",
+      "class": "arithmetic/scriptnum",
+      "summary": "Double-and-add multiplication by a compile-time constant in Bitcoin's four-byte numeric domain.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/scriptnum-constant-mul.md",
+      "implementation": "src/arithmetic/scriptint/mod.rs",
+      "documentation": "src/arithmetic/scriptint/README.md",
+      "tests": [
+        "arithmetic::scriptint::tests::multiplies_by_constants"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "addition-chain",
+        "constant-embedding"
+      ],
+      "security": "No independent cryptographic claim; operands and intermediates must fit minimally encoded ScriptNum.",
+      "stack_contract": "... value -> ... value*constant",
+      "configurations": [
+        {
+          "id": "mul-13",
+          "label": "mul_by_constant(13)",
+          "parameters": {
+            "multiplier": 13
+          },
+          "includes": "fragment-only: generated multiplication; excludes input push and output check",
+          "script_bytes": 10,
+          "witness_bytes": 2,
+          "witness_bytes_max": 6,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 10,
+          "metric_keys": [
+            "scriptint_mul_constant_13",
+            "scriptint_mul_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Four-byte ScriptNum range",
+        "Not validated against Bitcoin Core"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/scriptnum-hinted-div",
+      "name": "Hinted ScriptNum division",
+      "class": "arithmetic/scriptnum",
+      "summary": "Euclidean division by a public constant using a witness quotient checked by recomposition.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/scriptnum-hinted-div.md",
+      "implementation": "src/arithmetic/scriptint/mod.rs",
+      "documentation": "src/arithmetic/scriptint/README.md",
+      "tests": [
+        "arithmetic::scriptint::tests::verifies_division_and_remainder",
+        "arithmetic::scriptint::tests::rejects_wrong_quotient_hint"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "witness-hints",
+        "constant-embedding"
+      ],
+      "security": "The quotient is hostile witness data; correctness relies on recomposition and remainder bounds in the ScriptNum domain.",
+      "stack_contract": "... dividend quotient_hint -> ... quotient remainder",
+      "configurations": [
+        {
+          "id": "div-rem-8",
+          "label": "hinted_div_rem(8)",
+          "parameters": {
+            "divisor": 8
+          },
+          "includes": "fragment-only: quotient verification and remainder derivation; excludes witness pushes and terminal check",
+          "script_bytes": 13,
+          "witness_bytes": 3,
+          "witness_bytes_max": 11,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 13,
+          "metric_keys": [
+            "scriptint_div_rem_8",
+            "scriptint_div_rem_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Positive compile-time divisor only",
+        "Four-byte ScriptNum range"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/u4",
+      "name": "u4 digit arithmetic",
+      "class": "arithmetic/word",
+      "summary": "Nibble-oriented arithmetic and logic with reusable lookup tables and tracked-stack variants.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/u4.md",
+      "implementation": "src/arithmetic/u4/mod.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-script-stack-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "tracked-stack"
+      ],
+      "security": "No independent cryptographic claim; callers must supply canonical nibbles.",
+      "stack_contract": "Values are expanded into four-bit stack digits; operation-specific ordering is documented beside source.",
+      "configurations": [
+        {
+          "id": "addition-memory",
+          "label": "u4_push_add_tables()",
+          "parameters": {},
+          "includes": "fragment-only: addition-table setup; excludes queries and cleanup",
+          "script_bytes": 92,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 92,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_add_tables"
+          ]
+        }
+      ],
+      "limitations": [
+        "Digit expansion increases stack occupancy",
+        "Table coexistence is composition-dependent"
+      ],
+      "open_problems": [
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/u32",
+      "name": "u32 byte-word arithmetic",
+      "class": "arithmetic/word",
+      "summary": "Four-byte stack representation with arithmetic, comparisons, Boolean lookup operations, shifts, and rotations.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/u32.md",
+      "implementation": "src/arithmetic/u32/mod.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "src/arithmetic/u32"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "No independent cryptographic claim; every byte item must be canonical and in range.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers.",
+      "configurations": [
+        {
+          "id": "add-drop",
+          "label": "u32_add_drop(0,1)",
+          "parameters": {
+            "a_depth": 0,
+            "b_depth": 1
+          },
+          "includes": "fragment-only: operation; excludes operand pushes and output check",
+          "script_bytes": 78,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 10,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 78,
+          "metric_keys": [
+            "u32_add_drop",
+            "u32_add_drop_stack"
+          ]
+        },
+        {
+          "id": "xor-memory",
+          "label": "u8_push_xor_table()",
+          "parameters": {
+            "entries": 256
+          },
+          "includes": "fragment-only: Boolean lookup-table setup; excludes queries and cleanup",
+          "script_bytes": 236,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 256,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 236,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u8_logic_table_push"
+          ]
+        }
+      ],
+      "limitations": [
+        "Boolean table consumes 256 persistent items",
+        "Not validated against Bitcoin Core"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/u31",
+      "name": "u31 prime-field arithmetic",
+      "class": "arithmetic/field",
+      "summary": "Single-ScriptNum prime fields and degree-four extensions with hinted modular reduction.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/u31.md",
+      "implementation": "src/arithmetic/u31/mod.rs",
+      "documentation": "src/arithmetic/u31/README.md",
+      "tests": [
+        "arithmetic::u31::tests"
+      ],
+      "references": [
+        "u31-bitvm-source",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "witness-hints",
+        "addition-chain"
+      ],
+      "security": "Inputs must be canonical field elements and every quotient hint must be constrained.",
+      "stack_contract": "One item per base-field coefficient; four coefficients per degree-four extension element.",
+      "configurations": [
+        {
+          "id": "m31-base",
+          "label": "M31 representative base operations",
+          "parameters": {
+            "field": "M31"
+          },
+          "includes": "fragment-only: operation fragments; excludes inputs, hints, and output checks",
+          "script_bytes": 1400,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 37,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1400,
+          "metric_keys": [
+            "u31_mul"
+          ]
+        },
+        {
+          "id": "qm31-extension-mul",
+          "label": "u31ext_mul::<QM31>()",
+          "parameters": {
+            "field": "QM31",
+            "degree": 4
+          },
+          "includes": "fragment-only: extension multiplication; excludes operands, hints, and result check",
+          "script_bytes": 13186,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 52,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 13186,
+          "metric_keys": [
+            "qm31_mul"
+          ]
+        }
+      ],
+      "limitations": [
+        "Modulus below 2^31",
+        "Canonicality is not automatic"
+      ],
+      "open_problems": [
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/f257",
+      "name": "F257 lookup arithmetic",
+      "class": "arithmetic/field",
+      "summary": "Centered and canonical F257 products using chains, direct tables, log/exp memory, or exact-square memory.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/f257.md",
+      "implementation": "src/arithmetic/fields/f257.rs",
+      "documentation": "src/arithmetic/fields/README.md",
+      "tests": [
+        "arithmetic::fields::f257::tests"
+      ],
+      "references": [
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "addition-chain",
+        "half-table",
+        "log-exp-table",
+        "lookup-table"
+      ],
+      "security": "Inputs must match the selected canonical or centered representation; lookup depths must not address unrelated items.",
+      "stack_contract": "One field coefficient per item; table queries preserve the documented number of intervening items.",
+      "configurations": [
+        {
+          "id": "centered-constant-173",
+          "label": "Centered multiplication by 173",
+          "parameters": {
+            "constant": 173
+          },
+          "includes": "fragment-only: signed addition chain; excludes input and output check",
+          "script_bytes": 132,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 132,
+          "metric_keys": [
+            "f257_mul_centered_173",
+            "f257_mul_centered_stack"
+          ]
+        },
+        {
+          "id": "log-exp-depth-511",
+          "label": "Shared log/exp constant query at depth 511",
+          "parameters": {
+            "constant": 173,
+            "preserved_items": 511
+          },
+          "includes": "fragment-only: query preserves 511 live items; setup is reported separately and cleanup is excluded",
+          "script_bytes": 44,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 900,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1196,
+          "per_use_script_bytes": 44,
+          "metric_keys": [
+            "f257_log_memory",
+            "f257_log_constant_query",
+            "f257_log_constant_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Table memory competes with live protocol state",
+        "Representation conversions are explicit"
+      ],
+      "open_problems": [
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/f12289",
+      "name": "F12289 radix arithmetic",
+      "class": "arithmetic/field",
+      "summary": "Compact and radix-table multiplication for the 12,289-element coefficient field.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/f12289.md",
+      "implementation": "src/arithmetic/fields/f12289.rs",
+      "documentation": "src/arithmetic/fields/README.md",
+      "tests": [
+        "arithmetic::fields::f12289::tests"
+      ],
+      "references": [
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "radix-table",
+        "lookup-table"
+      ],
+      "security": "Field inputs must be canonical and radix lookup depths must be valid.",
+      "stack_contract": "One canonical coefficient per item; reusable radix memory remains beneath preserved state.",
+      "configurations": [
+        {
+          "id": "radix128-depth511",
+          "label": "Radix-128 constant query at depth 511",
+          "parameters": {
+            "constant": 10000,
+            "radix_bits": 7,
+            "preserved_items": 511
+          },
+          "includes": "fragment-only: query preserves 511 live items; setup is reported separately and cleanup is excluded",
+          "script_bytes": 135,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 740,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 781,
+          "per_use_script_bytes": 135,
+          "metric_keys": [
+            "f12289_radix128_memory",
+            "f12289_radix128_query",
+            "f12289_radix128_state_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Crossover depends on reuse count",
+        "Unrelated live stack is excluded"
+      ],
+      "open_problems": [
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/bigint",
+      "name": "Fixed-width multi-limb big integers",
+      "class": "arithmetic/bigint",
+      "summary": "Configurable unsigned wide integers split into ScriptNum limbs.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/bigint.md",
+      "implementation": "src/arithmetic/bigint/mod.rs",
+      "documentation": "src/arithmetic/bigint/README.md",
+      "tests": [
+        "arithmetic::bigint"
+      ],
+      "references": [
+        "bitvm-repository",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "limb-arithmetic",
+        "witness-hints"
+      ],
+      "security": "Range and canonical limb constraints are protocol obligations; arithmetic has no independent security claim.",
+      "stack_contract": "Little-endian limb sequence, with the least-significant limb nearest the top as documented by stack helpers.",
+      "configurations": [
+        {
+          "id": "u254-mul",
+          "label": "U254 full multiplication",
+          "parameters": {
+            "bits": 254,
+            "limb_bits": 29,
+            "limbs": 9
+          },
+          "includes": "fragment-only: multiplication fragment; excludes operand pushes, hints, and output verification",
+          "script_bytes": 111466,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 111466,
+          "metric_keys": [
+            "u254_mul"
+          ]
+        }
+      ],
+      "limitations": [
+        "Large multiplication fragments",
+        "Strict complete-script feasibility not established"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/rns",
+      "name": "Legacy residue-number arithmetic",
+      "class": "arithmetic/rns",
+      "summary": "Five-coordinate arithmetic modulo 69,300 with direct lookup tables.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/rns.md",
+      "implementation": "src/arithmetic/rns/mod.rs",
+      "documentation": "src/arithmetic/rns/README.md",
+      "tests": [
+        "arithmetic::rns::tests"
+      ],
+      "references": [
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "rns",
+        "lookup-table"
+      ],
+      "security": "Operands must use the required ordinary/indexed-row representation and are unique only modulo 69,300.",
+      "stack_contract": "Five residues per value; multiplication requires an indexed-row left operand and ordinary right operand.",
+      "configurations": [
+        {
+          "id": "legacy-mul",
+          "label": "RNS multiplication",
+          "parameters": {
+            "moduli": [
+              4,
+              9,
+              25,
+              7,
+              11
+            ]
+          },
+          "includes": "fragment-with-memory: setup, operation, cleanup, and return from altstack; excludes operands and final check",
+          "script_bytes": 1564,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 903,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "rns_mul"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only 97 stack items of consensus headroom in measured multiplication",
+        "Asymmetric multiplication encoding"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "commitment/hash-path-integer",
+      "name": "Mixed-hash integer path",
+      "class": "commitment/integer",
+      "summary": "Authenticates a bit path with SHA-256/RIPEMD-160 branches and reconstructs a 1–31-bit integer.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/hash-path-integer.md",
+      "implementation": "src/commitments/hash_path.rs",
+      "documentation": "src/commitments/README.md",
+      "tests": [
+        "commitments::hash_path::tests"
+      ],
+      "references": [
+        "bip-342"
+      ],
+      "techniques": [
+        "mixed-hash-path"
+      ],
+      "security": "Hiding depends on a secret high-entropy preimage; final RIPEMD-160 limits generic collision resistance to 80 bits.",
+      "stack_contract": "... bitN-1 ... bit0 preimage -> ... value",
+      "configurations": [
+        {
+          "id": "integer-31",
+          "label": "31-bit integer path",
+          "parameters": {
+            "bit_width": 31,
+            "preimage_bytes": 32
+          },
+          "includes": "fragment-only: verifier and integer reconstruction; witness includes serialized bits and preimage",
+          "script_bytes": 520,
+          "witness_bytes": 78,
+          "witness_bytes_max": 78,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 520,
+          "metric_keys": [
+            "hash_path_integer_31",
+            "hash_path_integer_witness_31",
+            "hash_path_integer_stack_31"
+          ]
+        }
+      ],
+      "limitations": [
+        "Mixed-hash security assumption",
+        "Integer reconstruction limited to 31 bits"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "commitment/preimage-length",
+      "name": "Preimage-length integer",
+      "class": "commitment/integer",
+      "summary": "Authenticates a SHA-256 preimage and returns its length minus a public offset.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/preimage-length.md",
+      "implementation": "src/commitments/preimage_length.rs",
+      "documentation": "src/commitments/README.md",
+      "tests": [
+        "commitments::preimage_length::tests"
+      ],
+      "references": [
+        "bip-342",
+        "fips-180-4"
+      ],
+      "techniques": [
+        "constant-embedding"
+      ],
+      "security": "Binding uses SHA-256; hiding depends on unpredictable preimage bytes and the length is revealed on opening.",
+      "stack_contract": "... preimage -> ... len(preimage)-offset",
+      "configurations": [
+        {
+          "id": "offset-16",
+          "label": "Default offset 16",
+          "parameters": {
+            "offset": 16,
+            "preimage_bytes_min": 16,
+            "preimage_bytes_max": 520
+          },
+          "includes": "fragment-only: verifier; witness includes serialized preimage item",
+          "script_bytes": 44,
+          "witness_bytes": 18,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 44,
+          "metric_keys": [
+            "preimage_length_default",
+            "preimage_length_witness_min",
+            "preimage_length_witness_max",
+            "preimage_length_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Value range coupled to 520-byte element limit"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "introspection/binohash",
+      "name": "Binohash transaction digest",
+      "class": "introspection/transaction",
+      "summary": "Reported transaction-readable digest using legacy FindAndDelete semantics and signature grinding.",
+      "status": "literature-only",
+      "evidence": "reported",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/binohash.md",
+      "implementation": null,
+      "documentation": null,
+      "tests": [],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter"
+      ],
+      "techniques": [
+        "hash-chain"
+      ],
+      "security": "Security and honest work are parameterized by the two-round construction; local reproduction is absent.",
+      "stack_contract": "Legacy signature semantics expose a transaction-dependent digest for later authentication.",
+      "configurations": [
+        {
+          "id": "paper-w42",
+          "label": "Paper example W1=W2=42",
+          "parameters": {
+            "W1": 42,
+            "W2": 42,
+            "reported_collision_bits": 84,
+            "reported_honest_work_bits": 44.6
+          },
+          "includes": "complete-transaction: paper-level construction; local byte and stack metrics are not reproduced",
+          "script_bytes": null,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "No local implementation",
+        "Relies on legacy signature semantics",
+        "Grinding economics are reported, not reproduced"
+      ],
+      "open_problems": [
+        "OP-010",
+        "OP-011"
+      ]
+    },
+    {
+      "id": "hash/sha1-u32",
+      "name": "SHA-1 over u32 bytes",
+      "class": "hash/fixed",
+      "summary": "Fixed-length SHA-1 implemented with byte-oriented u32 operations.",
+      "status": "compatibility",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/sha1-u32.md",
+      "implementation": "src/hashes/sha1/mod.rs",
+      "documentation": "src/hashes/sha1/README.md",
+      "tests": [
+        "hashes::sha1::tests::hashes_standard_vectors"
+      ],
+      "references": [
+        "fips-180-4",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "SHA-1 collision resistance is broken; retain only for compatibility research.",
+      "stack_contract": "Consumes one item per message byte and returns 20 byte items with the first digest byte on top.",
+      "configurations": [
+        {
+          "id": "message-32",
+          "label": "32-byte input",
+          "parameters": {
+            "message_bytes": 32
+          },
+          "includes": "fragment-only: hashing fragment; excludes message pushes and digest comparison",
+          "script_bytes": 209726,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 209726,
+          "metric_keys": [
+            "sha1_u32_32"
+          ]
+        }
+      ],
+      "limitations": [
+        "Collision-broken",
+        "Strict complete-leaf feasibility unclassified"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "hash/ripemd160-u32",
+      "name": "RIPEMD-160 over u32 bytes",
+      "class": "hash/fixed",
+      "summary": "Fixed-length RIPEMD-160 implemented with byte-oriented u32 operations.",
+      "status": "compatibility",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/ripemd160-u32.md",
+      "implementation": "src/hashes/ripemd160/mod.rs",
+      "documentation": "src/hashes/ripemd160/README.md",
+      "tests": [
+        "hashes::ripemd160::tests::hashes_standard_vectors"
+      ],
+      "references": [
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "160-bit output limits generic collision resistance to 80 bits.",
+      "stack_contract": "Consumes one item per message byte and returns 20 byte items with the first digest byte on top.",
+      "configurations": [
+        {
+          "id": "message-32",
+          "label": "32-byte input",
+          "parameters": {
+            "message_bytes": 32
+          },
+          "includes": "fragment-only: hashing fragment; excludes message pushes and digest comparison",
+          "script_bytes": 244063,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 244063,
+          "metric_keys": [
+            "ripemd160_u32_32"
+          ]
+        }
+      ],
+      "limitations": [
+        "80-bit ideal collision bound",
+        "Strict complete-leaf feasibility unclassified"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "hash/sha256-u32",
+      "name": "SHA-256 over u32 bytes",
+      "class": "hash/fixed",
+      "summary": "SHA-256 implemented with four byte-valued stack items per word.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/sha256-u32.md",
+      "implementation": "src/hashes/sha256/sha2_u32.rs",
+      "documentation": "src/hashes/sha256/README.md",
+      "tests": [
+        "hashes::sha256::sha2_u32::tests::test_sha256"
+      ],
+      "references": [
+        "fips-180-4",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "Security is inherited from SHA-256 when padding, byte order, and digest binding are correct.",
+      "stack_contract": "Consumes byte-oriented message state and returns eight u32 words as byte items.",
+      "configurations": [
+        {
+          "id": "message-32",
+          "label": "32-byte input",
+          "parameters": {
+            "message_bytes": 32
+          },
+          "includes": "fragment-only: hashing fragment; excludes message pushes and digest comparison",
+          "script_bytes": 512428,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 512428,
+          "metric_keys": [
+            "sha2_u32_32"
+          ]
+        }
+      ],
+      "limitations": [
+        "Larger than local u4 configuration",
+        "Strict complete-leaf feasibility unclassified"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "hash/sha256-u4",
+      "name": "SHA-256 over u4 digits",
+      "class": "hash/fixed",
+      "summary": "SHA-256 implemented with nibble state and configurable arithmetic/logic tables.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/sha256-u4.md",
+      "implementation": "src/hashes/sha256/sha2_u4.rs",
+      "documentation": "src/hashes/sha256/README.md",
+      "tests": [
+        "hashes::sha256::sha2_u4::tests::test_sha256_strs"
+      ],
+      "references": [
+        "fips-180-4",
+        "bitcoin-script-stack-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "tracked-stack"
+      ],
+      "security": "Security is inherited from SHA-256 when nibble canonicality, padding, and digest binding are correct.",
+      "stack_contract": "Consumes two canonical nibble items per message byte and returns digest nibbles in the documented order.",
+      "configurations": [
+        {
+          "id": "message-32",
+          "label": "32-byte input",
+          "parameters": {
+            "message_bytes": 32
+          },
+          "includes": "fragment-only: hashing fragment; excludes message pushes and digest comparison",
+          "script_bytes": 332942,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 332942,
+          "metric_keys": [
+            "sha2_u4_32"
+          ]
+        }
+      ],
+      "limitations": [
+        "Table configuration affects stack peak",
+        "Strict complete-leaf feasibility unclassified"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "hash/blake3-limb29",
+      "name": "BLAKE3 tracked-limb construction",
+      "class": "hash/fixed",
+      "summary": "Single-chunk BLAKE3 using tracked-stack u4 and configurable bigint limbs.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/blake3-limb29.md",
+      "implementation": "src/hashes/blake3/mod.rs",
+      "documentation": "src/hashes/blake3/README.md",
+      "tests": [
+        "hashes::blake3::tests::test_official_test_vectors"
+      ],
+      "references": [
+        "blake3-spec",
+        "bitcoin-script-stack-locked"
+      ],
+      "techniques": [
+        "limb-arithmetic",
+        "tracked-stack",
+        "lookup-table"
+      ],
+      "security": "Security is inherited from BLAKE3 within the supported single-chunk range.",
+      "stack_contract": "Consumes the selected limb encoding and returns a 256-bit digest in the helper-defined layout.",
+      "configurations": [
+        {
+          "id": "message64-limb29",
+          "label": "64-byte input, 29-bit limbs",
+          "parameters": {
+            "message_bytes": 64,
+            "limb_bits": 29
+          },
+          "includes": "fragment-only: compute fragment; excludes message encoding and output verification",
+          "script_bytes": 77777,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 77777,
+          "metric_keys": [
+            "blake3_64_limb29"
+          ]
+        }
+      ],
+      "limitations": [
+        "Messages limited to one 1,024-byte chunk",
+        "Some configurations disable stack limits"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "hash/shake256-byte",
+      "name": "SHAKE256 byte-lane construction",
+      "class": "hash/xof",
+      "summary": "FIPS 202 SHAKE256 with byte-oriented Keccak lanes and a fixed 1,024-byte output.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "consensus-incompatible",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/shake256-byte.md",
+      "implementation": "src/hashes/shake256/mod.rs",
+      "documentation": "src/hashes/shake256/README.md",
+      "tests": [
+        "hashes::shake256::tests"
+      ],
+      "references": [
+        "fips-202",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "sponge",
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "Security is inherited from SHAKE256 if the byte-lane permutation, domain suffix, and padding are correct.",
+      "stack_contract": "Consumes one item per input byte and leaves 1,024 output byte items with the first byte on top.",
+      "configurations": [
+        {
+          "id": "output1024",
+          "label": "Fixed 1,024-byte output",
+          "parameters": {
+            "output_bytes": 1024,
+            "message_bytes_max": 511
+          },
+          "includes": "fragment-only: full sponge and squeeze; checked byte metrics not yet recorded",
+          "script_bytes": null,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "Output alone exceeds the 1,000-item consensus stack limit",
+        "No metric snapshot yet"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-005"
+      ]
+    },
+    {
+      "id": "cipher/aes128-u4",
+      "name": "AES-128 u4 encryption",
+      "class": "cipher/block",
+      "summary": "AES-128 encryption with an embedded key and nibble-oriented plaintext witness.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/aes128-u4.md",
+      "implementation": "src/ciphers/aes/mod.rs",
+      "documentation": "src/ciphers/aes/README.md",
+      "tests": [
+        "ciphers::aes::tests::reference_vectors",
+        "ciphers::aes::tests::script_vectors_and_metrics"
+      ],
+      "references": [
+        "fips-197",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "constant-embedding"
+      ],
+      "security": "Security is inherited from AES-128 for one-block encryption with a correctly managed embedded key.",
+      "stack_contract": "Consumes 32 plaintext nibbles and returns 32 ciphertext nibbles.",
+      "configurations": [
+        {
+          "id": "zero-key",
+          "label": "Embedded zero key",
+          "parameters": {
+            "key_hex": "00000000000000000000000000000000"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25515,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25515,
+          "metric_keys": [
+            "aes128_encrypt",
+            "aes128_witness_min",
+            "aes128_witness_max",
+            "aes128_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "908-item measured peak",
+        "Embedded-key construction only"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "cipher/princev2-u4",
+      "name": "PRINCEv2 u4 encryption",
+      "class": "cipher/block",
+      "summary": "Lightweight PRINCEv2 encryption with embedded key and nibble witness.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/princev2-u4.md",
+      "implementation": "src/ciphers/prince/mod.rs",
+      "documentation": "src/ciphers/prince/README.md",
+      "tests": [
+        "ciphers::prince::tests::test_prince_script_matches_reference"
+      ],
+      "references": [
+        "princev2-reference",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "constant-embedding"
+      ],
+      "security": "Use only when PRINCEv2's block/key semantics and security profile match the protocol requirement.",
+      "stack_contract": "Consumes 16 plaintext nibbles and returns 16 ciphertext nibbles.",
+      "configurations": [
+        {
+          "id": "zero-key",
+          "label": "Embedded zero key",
+          "parameters": {
+            "key": 0
+          },
+          "includes": "fragment-with-memory: full encryption fragment; witness serializes plaintext nibbles",
+          "script_bytes": 7735,
+          "witness_bytes": 17,
+          "witness_bytes_max": 33,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 7735,
+          "metric_keys": [
+            "prince_encrypt",
+            "prince_witness_min",
+            "prince_witness_max"
+          ]
+        }
+      ],
+      "limitations": [
+        "Not semantically interchangeable with AES",
+        "Combined stack peak not cataloged"
+      ],
+      "open_problems": [
+        "OP-003"
+      ]
+    },
+    {
+      "id": "signature/lamport-2bit",
+      "name": "Lamport 2-bit commitment",
+      "class": "signature/one-time",
+      "summary": "Four-way HASH160 preimage commitment that authenticates and optionally returns a two-bit value.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/lamport-2bit.md",
+      "implementation": "src/signatures/lamport/mod.rs",
+      "documentation": "src/signatures/lamport/README.md",
+      "tests": [
+        "signatures::lamport::tests"
+      ],
+      "references": [
+        "binohash-paper"
+      ],
+      "techniques": [
+        "hash-chain"
+      ],
+      "security": "Strictly one-time; security is bounded by HASH160 and safe key lifecycle.",
+      "stack_contract": "... value preimage -> ... authenticated_value for commit mode; reveal mode returns true.",
+      "configurations": [
+        {
+          "id": "commit-2bit",
+          "label": "Two-bit commit",
+          "parameters": {
+            "values": 4
+          },
+          "includes": "fragment-only: locking fragment and serialized value/preimage witness",
+          "script_bytes": 96,
+          "witness_bytes": 11,
+          "witness_bytes_max": 11,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 96,
+          "metric_keys": [
+            "lamport_lock",
+            "lamport_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Out-of-range values currently clamp to three",
+        "One-time key only"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-009"
+      ]
+    },
+    {
+      "id": "signature/hors-hash160",
+      "name": "HORS-like HASH160 authentication",
+      "class": "signature/one-time",
+      "summary": "Explicit-index subset opening over HASH160-committed preimages.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/hors-hash160.md",
+      "implementation": "src/signatures/hors/mod.rs",
+      "documentation": "src/signatures/hors/README.md",
+      "tests": [
+        "signatures::hors::tests"
+      ],
+      "references": [
+        "binohash-paper"
+      ],
+      "techniques": [
+        "hash-chain"
+      ],
+      "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160.",
+      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true.",
+      "configurations": [
+        {
+          "id": "n32-t8",
+          "label": "n=32, t=8, 32-byte preimages",
+          "parameters": {
+            "n": 32,
+            "t": 8,
+            "preimage_bytes": 32
+          },
+          "includes": "fragment-only: locking verifier and serialized subset witness",
+          "script_bytes": 833,
+          "witness_bytes": 280,
+          "witness_bytes_max": 280,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 833,
+          "metric_keys": [
+            "hors_lock_n32_t8",
+            "hors_witness_n32_t8"
+          ]
+        }
+      ],
+      "limitations": [
+        "Message-to-index derivation not implemented",
+        "One-time key only"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-009"
+      ]
+    },
+    {
+      "id": "signature/winternitz-base16",
+      "name": "Base-16 Winternitz signatures",
+      "class": "signature/one-time",
+      "summary": "HASH160 Winternitz chains with typed messages and multiple verifier/witness tradeoffs.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/winternitz-base16.md",
+      "implementation": "src/signatures/winternitz/mod.rs",
+      "documentation": "src/signatures/winternitz/README.md",
+      "tests": [
+        "signatures::winternitz::api::tests::verify_test_vectors"
+      ],
+      "references": [
+        "bitvm-repository",
+        "binohash-paper"
+      ],
+      "techniques": [
+        "hash-chain",
+        "lookup-table"
+      ],
+      "security": "Strictly one-time; checksum, domain encoding, HASH160 chains, multi-target effects, and key lifecycle all matter.",
+      "stack_contract": "Witness contains chain values and optionally digits; verifier recovers or clears the typed message.",
+      "configurations": [
+        {
+          "id": "wots32-list-pick",
+          "label": "Wots32 list-pick verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "list-pick"
+          },
+          "includes": "fragment-only: locking verifier and serialized deterministic signature witness",
+          "script_bytes": 4908,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1477,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4908,
+          "metric_keys": [
+            "wots32_lock",
+            "wots32_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "One-time key only",
+        "Verifier selection changes all resource costs"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-009"
+      ]
+    },
+    {
+      "id": "curve/bn254-fields",
+      "name": "BN254 field tower",
+      "class": "curve/field",
+      "summary": "Fq, Fr, Fq2, Fq6, and Fq12 arithmetic over nine 29-bit limbs with witness hints.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/bn254-fields.md",
+      "implementation": "src/curves/bn254/fields/mod.rs",
+      "documentation": "src/curves/bn254/fields/README.md",
+      "tests": [
+        "curves::bn254::fields"
+      ],
+      "references": [
+        "arkworks-algebra-0.5",
+        "on-proving-pairings"
+      ],
+      "techniques": [
+        "limb-arithmetic",
+        "witness-hints"
+      ],
+      "security": "Canonical field range and every hinted equation must be checked; field arithmetic alone has no protocol security claim.",
+      "stack_contract": "Base fields use nine limbs; extension elements concatenate tower coefficients in source-defined order.",
+      "configurations": [
+        {
+          "id": "fq-add",
+          "label": "Fq::add(1,0)",
+          "parameters": {
+            "field": "Fq",
+            "limb_bits": 29
+          },
+          "includes": "fragment-only: addition fragment; excludes operands, hints, and result check",
+          "script_bytes": 415,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 415,
+          "metric_keys": [
+            "fq_add"
+          ]
+        }
+      ],
+      "limitations": [
+        "Hint inventory incomplete",
+        "Expensive Fq6 path ignored by default"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-006",
+        "OP-012"
+      ]
+    },
+    {
+      "id": "curve/bn254-groups",
+      "name": "BN254 group operations and MSM",
+      "class": "curve/group",
+      "summary": "Affine G1/G2 predicates, hinted point operations, and constant-base G1 MSM.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/bn254-groups.md",
+      "implementation": "src/curves/bn254/groups/mod.rs",
+      "documentation": "src/curves/bn254/groups/README.md",
+      "tests": [
+        "curves::bn254::groups"
+      ],
+      "references": [
+        "arkworks-algebra-0.5",
+        "bitvm-repository"
+      ],
+      "techniques": [
+        "limb-arithmetic",
+        "witness-hints",
+        "constant-embedding"
+      ],
+      "security": "Points require canonical coordinates, on-curve and identity handling, and protocol-required subgroup checks.",
+      "stack_contract": "Affine points concatenate field coordinates; hinted operations consume ordered field hints.",
+      "configurations": [
+        {
+          "id": "g1-is-zero",
+          "label": "G1Affine::is_zero()",
+          "parameters": {
+            "group": "G1"
+          },
+          "includes": "fragment-only: stack predicate; excludes point push and terminal clean-stack logic",
+          "script_bytes": 77,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 77,
+          "metric_keys": [
+            "g1_is_zero"
+          ]
+        }
+      ],
+      "limitations": [
+        "Full operation metrics are instance-specific",
+        "MSM tests may disable stack limits"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-006"
+      ]
+    },
+    {
+      "id": "curve/bn254-pairing",
+      "name": "BN254 four-pair verifier",
+      "class": "curve/pairing",
+      "summary": "Hinted affine four-pair Miller-loop/final-verification path specialized for Groth16 equations.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/bn254-pairing.md",
+      "implementation": "src/curves/bn254/pairing/engine.rs",
+      "documentation": "src/curves/bn254/pairing/README.md",
+      "tests": [
+        "curves::bn254::pairing::engine::test::test_hinted_quad_miller_loop_with_c_wi"
+      ],
+      "references": [
+        "on-proving-pairings",
+        "arkworks-algebra-0.5",
+        "openvm-pairing-advisory"
+      ],
+      "techniques": [
+        "pairing",
+        "witness-hints",
+        "constant-embedding"
+      ],
+      "security": "Prepared coefficients, point validity, subgroup policy, residue witnesses, subfield conditions, and every hint relation must be bound.",
+      "stack_contract": "Consumes four G1 evaluations, one variable G2 point, residue witnesses, prepared constants, and ordered intermediate hints.",
+      "configurations": [],
+      "limitations": [
+        "Full test ignored by default",
+        "No stable checked size",
+        "Proper-subfield conditions require explicit audit"
+      ],
+      "open_problems": [
+        "OP-006",
+        "OP-007",
+        "OP-008",
+        "OP-012"
+      ]
+    }
+  ]
+}

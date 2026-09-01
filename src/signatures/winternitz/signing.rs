@@ -2,13 +2,13 @@ use bitcoin::hex::DisplayHex;
 use bitcoin::Witness;
 use serde::{Deserialize, Serialize};
 
-use crate::script::{script, Script};
+use crate::support::script::{script, Script};
 use crate::{
+    arithmetic::u32::stack::u32_compress,
     signatures::winternitz::{
         generate_public_key, BruteforceVerifier, ListpickVerifier, Parameters, PublicKey,
         SecretKey, ToBytesConverter, VoidConverter, Winternitz,
     },
-    u32::u32_std::u32_compress,
 };
 
 #[derive(Serialize, Deserialize, Eq, PartialEq, Hash, Clone)]
@@ -134,7 +134,7 @@ pub fn winternitz_message_checksig_verify(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script, signatures::utils};
+    use crate::{signatures::winternitz::utils, support::execution::execute_script};
     use bitcoin_script::script;
 
     const BLAKE3_HASH_LENGTH: usize = 20;
@@ -195,5 +195,4 @@ mod tests {
             assert_eq!(public_key.public_key[i as usize].len(), 20);
         }
     }
-
 }

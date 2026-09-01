@@ -1,11 +1,11 @@
-use crate::bn254::utils::Hint;
-use crate::bn254::ell_coeffs::EllCoeff;
-use crate::bn254::ell_coeffs::G2Prepared;
-use crate::bn254::fp254impl::Fp254Impl;
-use crate::bn254::fq::Fq;
-use crate::bn254::fq12::Fq12;
-use crate::bn254::fq2::Fq2;
-use crate::script::{script, Script};
+use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::curves::bn254::fields::fq::Fq;
+use crate::curves::bn254::fields::fq12::Fq12;
+use crate::curves::bn254::fields::fq2::Fq2;
+use crate::curves::bn254::hints::Hint;
+use crate::curves::bn254::pairing::coefficients::EllCoeff;
+use crate::curves::bn254::pairing::coefficients::G2Prepared;
+use crate::support::script::{script, Script};
 use ark_ec::bn::BnConfig;
 use ark_ff::{AdditiveGroup, Field};
 use num_bigint::BigUint;
@@ -770,11 +770,14 @@ pub fn hinted_check_chord_line(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::bn254::fq::Fq;
-    use crate::bn254::fq2::Fq2;
-    use crate::bn254::g1::hinted_from_eval_point;
-    use crate::bn254::g2::G2Affine;
-    use crate::{script::*, ExecuteInfo};
+    use crate::curves::bn254::fields::fq::Fq;
+    use crate::curves::bn254::fields::fq2::Fq2;
+    use crate::curves::bn254::groups::g1::hinted_from_eval_point;
+    use crate::curves::bn254::groups::g2::G2Affine;
+    use crate::support::{
+        execution::{execute_script, ExecuteInfo},
+        script::*,
+    };
     use ark_ff::AdditiveGroup;
     use ark_std::UniformRand;
     use num_traits::One;

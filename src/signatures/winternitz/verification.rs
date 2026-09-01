@@ -1,5 +1,5 @@
 use super::utils::*;
-use crate::script::*;
+use crate::support::script::*;
 use bitcoin::{
     hashes::{hash160, Hash},
     Witness,
@@ -698,7 +698,7 @@ impl Converter for ToBytesConverter {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{execute_script, run};
+    use crate::support::execution::{execute_script, run};
     use bitcoin::hex::FromHex;
     use rand::{Rng, SeedableRng};
     use rand_chacha::ChaCha20Rng;
@@ -1111,4 +1111,3 @@ mod test {
         );
     }
 }
-

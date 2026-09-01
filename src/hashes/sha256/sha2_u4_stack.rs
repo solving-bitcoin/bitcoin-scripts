@@ -1,8 +1,8 @@
-use crate::u4::{
-    u4_add::{u4_add_carry_nested, u4_add_nested},
-    u4_add_stack::*,
-    u4_logic_stack::*,
-    u4_shift_stack::*,
+use crate::arithmetic::u4::{
+    add::{u4_add_carry_nested, u4_add_nested},
+    stack_add::*,
+    stack_logic::*,
+    stack_shift::*,
 };
 use bitcoin_script_stack::stack::{script, Script, StackTracker, StackVariable};
 use std::{collections::HashMap, vec};
@@ -727,8 +727,8 @@ pub fn sha256_stack(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execute_script;
-    use crate::u4::u4_std::u4_drop;
+    use crate::arithmetic::u4::stack::u4_drop;
+    use crate::support::execution::execute_script;
     use bitcoin::hex::{DisplayHex, FromHex};
     use bitcoin_script::Script as StructuredScript;
     use bitcoin_script_stack::stack::{script, Script, StackTracker};
@@ -970,4 +970,3 @@ mod tests {
         assert!(res.success);
     }
 }
-

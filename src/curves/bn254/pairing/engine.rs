@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
-use crate::bn254::utils::Hint;
-use crate::bn254::ell_coeffs::G2Prepared;
-use crate::bn254::fp254impl::Fp254Impl;
-use crate::bn254::fq::Fq;
-use crate::bn254::fq12::Fq12;
-use crate::bn254::fq2::Fq2;
-use crate::bn254::g2::*;
-use crate::script::*;
+use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::curves::bn254::fields::fq::Fq;
+use crate::curves::bn254::fields::fq12::Fq12;
+use crate::curves::bn254::fields::fq2::Fq2;
+use crate::curves::bn254::groups::g2::*;
+use crate::curves::bn254::hints::Hint;
+use crate::curves::bn254::pairing::coefficients::G2Prepared;
+use crate::support::script::*;
 use ark_ec::bn::BnConfig;
 use ark_ff::{AdditiveGroup, Field};
 use num_bigint::BigUint;
@@ -724,14 +724,14 @@ impl Pairing {
 
 #[cfg(test)]
 mod test {
-    use crate::bn254::ell_coeffs::{AffinePairing, BnAffinePairing, G2Prepared};
-    use crate::bn254::fp254impl::Fp254Impl;
-    use crate::bn254::fq::Fq;
-    use crate::bn254::fq12::Fq12;
-    use crate::bn254::fq2::Fq2;
-    use crate::bn254::g1::hinted_from_eval_point;
-    use crate::bn254::pairing::Pairing;
-    use crate::{execute_script_without_stack_limit, script::*};
+    use crate::curves::bn254::fields::fp254::Fp254Impl;
+    use crate::curves::bn254::fields::fq::Fq;
+    use crate::curves::bn254::fields::fq12::Fq12;
+    use crate::curves::bn254::fields::fq2::Fq2;
+    use crate::curves::bn254::groups::g1::hinted_from_eval_point;
+    use crate::curves::bn254::pairing::coefficients::{AffinePairing, BnAffinePairing, G2Prepared};
+    use crate::curves::bn254::pairing::Pairing;
+    use crate::support::{execution::execute_script_without_stack_limit, script::*};
 
     use ark_ff::Field;
     use ark_std::UniformRand;

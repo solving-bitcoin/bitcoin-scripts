@@ -1,5 +1,5 @@
-use crate::script::*;
-use crate::u32::u32_zip::{u32_copy_zip, u32_zip};
+use crate::arithmetic::u32::zip::{u32_copy_zip, u32_zip};
+use crate::support::script::*;
 
 /// Addition of two u8 elements at the top of the stack, pushing the carry after the sum
 pub fn u8_add_carry() -> Script {
@@ -106,7 +106,8 @@ pub fn u32_add_drop(a: u32, b: u32) -> Script {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::u32::u32_std::{u32_equal, u32_equalverify, u32_push};
+    use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify, u32_push};
+    use crate::support::execution::run;
     use rand::Rng;
 
     #[test]

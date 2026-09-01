@@ -1,5 +1,5 @@
+use crate::support::script::{script, Script};
 use bitcoin::hashes::{hash160, Hash};
-use crate::script::{script, Script};
 
 /// Compute HASH160 of arbitrary bytes, returning a 20-byte array.
 pub fn hash160_bytes(data: &[u8]) -> [u8; 20] {
@@ -92,16 +92,15 @@ pub fn lamport_2bit_reveal(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{execute_script_with_inputs};
+    use crate::support::execution::execute_script_with_inputs;
     use bitcoin::script::read_scriptint;
 
     const PREIMAGES: [&[u8]; 4] = [b"secret0", b"secret1", b"secret2", b"secret3"];
 
     #[test]
     fn test_commit_all_values() {
-        let (h0, h1, h2, h3) = lamport_2bit_public_keys(
-            PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3],
-        );
+        let (h0, h1, h2, h3) =
+            lamport_2bit_public_keys(PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3]);
         for value in 0u8..4 {
             let script = lamport_2bit_commit(h0, h1, h2, h3);
             let preimage = PREIMAGES[value as usize].to_vec();
@@ -118,26 +117,31 @@ mod tests {
             assert!(
                 result.error.is_none(),
                 "value={} execution error: {:?}",
-                value, result
+                value,
+                result
             );
             assert_eq!(
                 result.final_stack.len(),
                 1,
                 "value={} stack should have exactly 1 item, got {:?}",
-                value, result
+                value,
+                result
             );
             // value_clamped should be on top of the stack
             let top = result.final_stack.get(0);
             let got_value = read_scriptint(&top).unwrap_or(-1);
-            assert_eq!(got_value, value as i64, "value on stack wrong for value={}", value);
+            assert_eq!(
+                got_value, value as i64,
+                "value on stack wrong for value={}",
+                value
+            );
         }
     }
 
     #[test]
     fn test_commit_wrong_preimage_fails() {
-        let (h0, h1, h2, h3) = lamport_2bit_public_keys(
-            PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3],
-        );
+        let (h0, h1, h2, h3) =
+            lamport_2bit_public_keys(PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3]);
         let script = lamport_2bit_commit(h0, h1, h2, h3);
         // wrong preimage for value 0: value (deepest, encoded as [] for 0), preimage (top)
         let witness = vec![vec![], b"wrong".to_vec()];
@@ -147,9 +151,8 @@ mod tests {
 
     #[test]
     fn test_reveal_all_values() {
-        let (h0, h1, h2, h3) = lamport_2bit_public_keys(
-            PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3],
-        );
+        let (h0, h1, h2, h3) =
+            lamport_2bit_public_keys(PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3]);
         for value in 0..4 {
             let script = lamport_2bit_reveal(h0, h1, h2, h3);
             let witness = vec![PREIMAGES[value].to_vec()];
@@ -160,9 +163,8 @@ mod tests {
 
     #[test]
     fn test_reveal_wrong_preimage_fails() {
-        let (h0, h1, h2, h3) = lamport_2bit_public_keys(
-            PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3],
-        );
+        let (h0, h1, h2, h3) =
+            lamport_2bit_public_keys(PREIMAGES[0], PREIMAGES[1], PREIMAGES[2], PREIMAGES[3]);
         let script = lamport_2bit_reveal(h0, h1, h2, h3);
         let witness = vec![b"not_a_preimage".to_vec()];
         let result = execute_script_with_inputs(script, witness);

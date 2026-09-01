@@ -1,6 +1,6 @@
-use crate::bigint::BigIntImpl;
-use crate::pseudo::push_to_stack;
-use crate::script::{script, Script};
+use crate::arithmetic::bigint::BigIntImpl;
+use crate::support::script::{script, Script};
+use crate::support::script_ops::push_to_stack;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     pub fn mul() -> Script {
@@ -37,8 +37,9 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
 
 #[cfg(test)]
 mod test {
-    use crate::bigint::{U254, U64};
-    use crate::script::*;
+    use crate::arithmetic::bigint::{U254, U64};
+    use crate::support::execution::run;
+    use crate::support::script::*;
     use core::ops::{Mul, Rem, Shl};
     use num_bigint::{BigUint, RandomBits};
     use num_traits::One;
@@ -81,4 +82,3 @@ mod test {
         }
     }
 }
-
