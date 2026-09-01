@@ -5,9 +5,9 @@ use num_bigint::{BigInt, BigUint};
 use num_traits::{FromPrimitive, ToPrimitive};
 
 use crate::bigint::BigIntImpl;
+use crate::arithmetic::scriptint::mul_by_constant;
 use crate::bn254::fp254impl::Fp254Impl;
 use crate::bn254::utils::Hint;
-use crate::pseudo::NMUL;
 use crate::treepp::*;
 
 pub struct Fq;
@@ -611,7 +611,7 @@ macro_rules! fp_lc_mul {
 
                                 if (e_bit % LIMB_SIZE == 0) || (s_limb > e_limb) {
                                     if s_limb > e_limb {
-                                        { NMUL(2) }
+                                        { mul_by_constant(2) }
                                     } else {
                                         0
                                     }
@@ -647,7 +647,7 @@ macro_rules! fp_lc_mul {
                                                 OP_DROP
                                                 OP_SWAP
                                             OP_ENDIF
-                                            if i < VAR_WIDTH - 1 { { NMUL(2) } }
+                                            if i < VAR_WIDTH - 1 { { mul_by_constant(2) } }
                                             OP_SWAP
                                         } else {
                                             OP_TUCK
@@ -655,7 +655,7 @@ macro_rules! fp_lc_mul {
                                             OP_GREATERTHAN
                                             OP_TUCK
                                             OP_ADD
-                                            if i < VAR_WIDTH - 1 { { NMUL(2) } }
+                                            if i < VAR_WIDTH - 1 { { mul_by_constant(2) } }
                                             OP_ROT OP_ROT
                                             OP_IF
                                                 { 1 << ((s_bit - i) % LIMB_SIZE) }
@@ -740,7 +740,7 @@ macro_rules! fp_lc_mul {
                                             for _ in 0..T::N_LIMBS {
                                                 OP_NIP
                                             }
-                                            { NMUL(T::N_LIMBS) }
+                                            { mul_by_constant(T::N_LIMBS) }
                                             OP_DUP OP_PICK
                                             for _ in 0..T::N_LIMBS-1 {
                                                 OP_SWAP
@@ -1395,4 +1395,3 @@ mod test {
         }
     }
 }
-

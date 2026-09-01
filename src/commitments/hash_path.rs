@@ -1,3 +1,5 @@
+//! Hash-path commitments to bit strings and 1–31-bit Script integers.
+
 use bitcoin::hashes::{ripemd160, sha256, Hash};
 
 use crate::treepp::{script, Script};

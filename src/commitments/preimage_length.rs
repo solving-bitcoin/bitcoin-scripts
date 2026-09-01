@@ -1,3 +1,5 @@
+//! Integer commitments encoded as authenticated preimage lengths.
+
 use bitcoin::hashes::{sha256, Hash};
 
 use crate::treepp::{script, Script};

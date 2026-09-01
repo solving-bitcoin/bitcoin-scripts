@@ -1,5 +1,5 @@
 use crate::bigint::BigIntImpl;
-use crate::pseudo::NMUL;
+use crate::arithmetic::scriptint::mul_by_constant;
 use crate::treepp::*;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
@@ -300,7 +300,7 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     /// This does not support addition to self, depth=0
     pub fn add_ref_stack() -> Script {
         script! {
-            { NMUL(Self::N_LIMBS) }
+            { mul_by_constant(Self::N_LIMBS) }
             { Self::_add_ref_inner() }
         }
     }
@@ -416,7 +416,7 @@ fn limb_add_with_carry_prevent_overflow(head_offset: u32) -> Script {
 fn limb_double_without_carry() -> Script {
     script! {
         // {base} {limb}
-        { NMUL(2) } // {base} {2*limb}
+        { mul_by_constant(2) } // {base} {2*limb}
         OP_2DUP // {base} {2*limb} {base} {2*limb}
         OP_LESSTHANOREQUAL // {base} {2*limb} {base<=2*limb}
         OP_TUCK // {base} {base<=2*limb} {2*limb} {base<=2*limb}
@@ -429,7 +429,7 @@ fn limb_double_without_carry() -> Script {
 fn limb_double_with_carry() -> Script {
     script! {
         // {base} {carry} {limb}
-        { NMUL(2) } // {base} {carry} {2*limb}
+        { mul_by_constant(2) } // {base} {carry} {2*limb}
         OP_ADD // {base} {2*limb + carry}
         OP_2DUP // {base} {2*limb + carry} {base} {2*limb + carry}
         OP_LESSTHANOREQUAL // {base} {2*limb + carry} {base<=2*limb + carry}
@@ -443,7 +443,7 @@ fn limb_double_with_carry() -> Script {
 fn limb_double_with_carry_allow_overflow(head_offset: u32) -> Script {
     script! {
         // {carry} {limb}
-        { NMUL(2) } // {carry} {2*limb}
+        { mul_by_constant(2) } // {carry} {2*limb}
         OP_ADD // {carry + 2*limb}
         { head_offset } OP_2DUP
         OP_GREATERTHANOREQUAL
@@ -476,7 +476,7 @@ fn limb_lshift_without_carry(bits: u32) -> Script {
     script! {
         OP_SWAP                  // {base} {limb}
         for i in 1..=bits {
-            { NMUL(2) }          // {base} {2*limb}
+            { mul_by_constant(2) }          // {base} {2*limb}
             OP_2DUP              // {base} {2*limb} {base} {2*limb}
             OP_LESSTHANOREQUAL   // {base} {2*limb} {carry:base<=2*limb}
             OP_TUCK              // {base} {carry} {2*limb} {carry}
@@ -494,7 +494,7 @@ fn limb_lshift_with_carry(bits: u32) -> Script {
         // {limb} {p_carry..} {base}
         { 1 + bits } OP_ROLL     // {p_carry..} {base} {limb}
         for i in 1..=bits {
-            { NMUL(2) }                     // {p_carry..} {base} {2*limb}
+            { mul_by_constant(2) }                     // {p_carry..} {base} {2*limb}
             { 1 + bits } OP_ROLL OP_ADD     // {p_carry..} {base} {2*limb+c0}
             OP_2DUP                         // {p_carry..} {base} {2*limb+c0} {base} {2*limb+c0}
             OP_LESSTHANOREQUAL              // {p_carry..} {base} {2*limb+c0} {carry:base<=2*limb+c0}
@@ -519,7 +519,7 @@ fn limb_lshift_with_carry_prevent_overflow(bits: u32, head: u32) -> Script {
         OP_DUP OP_ADD OP_SUB                                 // {c..} {a/a-2x} | {x}
 
         for i in 0..bits {
-            { NMUL(2) }
+            { mul_by_constant(2) }
             if i < bits - 1 {
                 { bits - i } OP_ROLL
             }
@@ -636,4 +636,3 @@ mod test {
         }
     }
 }
-

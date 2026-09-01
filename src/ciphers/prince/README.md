@@ -28,9 +28,10 @@ that embeds the key and preserves this crate's stack convention. Maximum
 combined main/alt-stack depth is 681 items. Tests pin both measurements and run
 the published vector plus varied key/plaintext pairs against the Rust reference.
 
-The engine is generated from BitVM's
+The engine is generated and cached by a native Rust translation of BitVM's
 [`prince_v2_optimized10.js`](https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js),
-pinned to commit `b931a6711ab332fd5923e708c869bed02e39984e`.
+pinned to commit `b931a6711ab332fd5923e708c869bed02e39984e`. Tests pin the
+generated engine's exact byte length and SHA-256 digest.
 
 ## Security
 

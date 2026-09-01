@@ -1,12 +1,39 @@
 //! Arithmetic over Bitcoin's four-byte Script integer domain.
 
-use crate::{
-    pseudo::NMUL,
-    treepp::{script, Script},
-};
+use crate::treepp::{script, Script};
 
 /// Largest positive integer accepted by four-byte Script-number arithmetic.
 pub const MAX_SCRIPTNUM: u32 = 0x7fff_ffff;
+
+/// Multiply the top Script integer by the compile-time constant `multiplier`.
+///
+/// Stack before: `... value`.
+/// Stack after: `... value_times_multiplier`.
+///
+/// The implementation uses a binary double-and-add chain. The input, result,
+/// and every intermediate value must fit Bitcoin's Script-number domain.
+pub fn mul_by_constant(multiplier: u32) -> Script {
+    let bit_count = u32::BITS - multiplier.leading_zeros();
+    let bits = (0..bit_count)
+        .map(|index| 1 & (multiplier >> index))
+        .collect::<Vec<_>>();
+
+    script! {
+        if bit_count == 0 {
+            OP_DROP 0
+        } else {
+            for index in 0..bits.len() - 1 {
+                if bits[index] == 1 {
+                    OP_DUP
+                }
+                OP_DUP OP_ADD
+            }
+            for _ in 1..bits.iter().sum() {
+                OP_ADD
+            }
+        }
+    }
+}
 
 fn assert_divisor(divisor: u32) {
     assert!(
@@ -28,7 +55,7 @@ pub fn hinted_div_rem(divisor: u32) -> Script {
     assert_divisor(divisor);
     script! {
         OP_OVER
-        { NMUL(divisor) }
+        { mul_by_constant(divisor) }
         OP_SUB
 
         OP_DUP
@@ -92,6 +119,22 @@ mod tests {
             { remainder } OP_EQUAL
         });
         assert!(rem_result.success, "{dividend} % {divisor}: {rem_result}");
+    }
+
+    #[test]
+    fn multiplies_by_constants() {
+        for multiplier in [0, 1, 2, 3, 5, 13, 255] {
+            for value in [-1_000i64, -1, 0, 1, 1_000] {
+                let expected = value * i64::from(multiplier);
+                let result = execute_script(script! {
+                    { value }
+                    { mul_by_constant(multiplier) }
+                    { expected }
+                    OP_EQUAL
+                });
+                assert!(result.success, "{value} * {multiplier}: {result}");
+            }
+        }
     }
 
     #[test]

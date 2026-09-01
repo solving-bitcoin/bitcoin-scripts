@@ -1,15 +1,17 @@
 //! Hash primitives and their representation-specific implementations.
 
 pub mod blake3;
+pub mod ripemd160;
+pub mod sha1;
 pub mod sha256;
 
 /// Compatibility wrappers for the former `hashes::bithash` API.
 ///
 /// BitHash is a hash-path commitment rather than a general-purpose hash. New
-/// code should use [`crate::commitments::integer::hash_path`] directly.
+/// code should use [`crate::commitments::hash_path`] directly.
 pub mod bithash {
     use crate::{
-        commitments::integer::hash_path::{
+        commitments::hash_path::{
             hash_path_commitment, hash_path_script, verify_hash_path, verify_hash_path_to_altstack,
         },
         treepp::{script, Script},
@@ -21,13 +23,13 @@ pub mod bithash {
 
     /// Deprecated fixed-width reference implementation using an empty initial
     /// preimage.
-    #[deprecated(note = "use commitments::integer::hash_path_commitment")]
+    #[deprecated(note = "use commitments::hash_path_commitment")]
     pub fn bithash_compute(bits: &[u8; 128]) -> [u8; 20] {
         hash_path_commitment(&[], &legacy_bits(bits))
     }
 
     /// Deprecated fixed-width verifier using an empty initial preimage.
-    #[deprecated(note = "use commitments::integer::verify_hash_path")]
+    #[deprecated(note = "use commitments::verify_hash_path")]
     pub fn bithash_verify(expected_hash: [u8; 20]) -> Script {
         script! {
             OP_0
@@ -37,7 +39,7 @@ pub mod bithash {
 
     /// Deprecated fixed-width verifier that saves the input bits to the
     /// altstack.
-    #[deprecated(note = "use commitments::integer::verify_hash_path_to_altstack")]
+    #[deprecated(note = "use commitments::verify_hash_path_to_altstack")]
     pub fn bithash_verify_save_to_altstack(expected_hash: [u8; 20]) -> Script {
         script! {
             OP_0
@@ -46,7 +48,7 @@ pub mod bithash {
     }
 
     /// Deprecated fixed-width hash-path computation script.
-    #[deprecated(note = "use commitments::integer::hash_path_script")]
+    #[deprecated(note = "use commitments::hash_path_script")]
     pub fn bithash_compute_script() -> Script {
         script! {
             OP_0

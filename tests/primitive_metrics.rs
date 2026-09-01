@@ -11,7 +11,7 @@ use bitcoin::Witness;
 use bitcoin_lab::{
     arithmetic::{bigint::U254, rns, scriptint, u31, u32, u4},
     ciphers::prince,
-    commitments::integer::{
+    commitments::{
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
         verify_hash_path_to_integer, verify_preimage_length,
     },
@@ -20,7 +20,7 @@ use bitcoin_lab::{
         groups::{g1::G1Affine, g2::G2Affine},
     },
     execute_script_with_inputs,
-    hashes::{blake3, sha256},
+    hashes::{blake3, ripemd160, sha1, sha256},
     signatures::{hors, lamport, Wots, Wots32},
 };
 use bitcoin_script::script;
@@ -254,6 +254,26 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_mul_constant_13",
+            value: script_len(scriptint::mul_by_constant(13)),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_mul_witness_min",
+            value: witness_size(&[Vec::new()]),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_mul_witness_max",
+            value: witness_size(&[scriptnum(2_147_483_647)]),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
+            key: "scriptint_mul_stack",
+            value: max_stack_items(scriptint::mul_by_constant(13), vec![scriptnum(7)]),
+        },
+        Metric {
+            readme: "src/arithmetic/scriptint/README.md",
             key: "scriptint_div_rem_8",
             value: script_len(scriptint::hinted_div_rem(8)),
         },
@@ -359,6 +379,16 @@ fn metrics() -> Vec<Metric> {
             value: witness_size(&vec![vec![1; 4]; 8]),
         },
         Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_32",
+            value: script_len(ripemd160::ripemd160(32)),
+        },
+        Metric {
+            readme: "src/hashes/sha1/README.md",
+            key: "sha1_u32_32",
+            value: script_len(sha1::sha1(32)),
+        },
+        Metric {
             readme: "src/hashes/sha256/README.md",
             key: "sha2_u32_32",
             value: script_len(sha256::sha2_u32::sha256(32)),
@@ -376,17 +406,17 @@ fn metrics() -> Vec<Metric> {
                 .len(),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "hash_path_integer_31",
             value: script_len(verify_hash_path_to_integer(31, hash_path_commitment)),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "hash_path_integer_witness_31",
             value: witness_size(&hash_path_witness),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "hash_path_integer_stack_31",
             value: max_stack_items(
                 verify_hash_path_to_integer(31, hash_path_commitment),
@@ -394,22 +424,22 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "preimage_length_default",
             value: script_len(verify_preimage_length(length_commitment)),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "preimage_length_witness_min",
             value: witness_size(&[vec![0; 16]]),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "preimage_length_witness_max",
             value: witness_size(&[vec![0; 520]]),
         },
         Metric {
-            readme: "src/commitments/integer/README.md",
+            readme: "src/commitments/README.md",
             key: "preimage_length_stack",
             value: max_stack_items(
                 verify_preimage_length(length_commitment),

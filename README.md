@@ -8,7 +8,7 @@ Experimental Bitcoin Script arithmetic and cryptographic primitives.
 src/
 ├── arithmetic/       # ScriptNum, u4, u31 fields, u32, bigint, and RNS
 ├── commitments/      # Integer hash-path and preimage-length commitments
-├── hashes/           # SHA-256 and BLAKE3
+├── hashes/           # RIPEMD-160, SHA-1, SHA-256, and BLAKE3
 ├── signatures/       # Lamport, HORS, and Winternitz OTS
 ├── ciphers/          # PRINCEv2
 ├── curves/           # BN254 fields, groups, and pairing

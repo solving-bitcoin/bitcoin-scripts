@@ -5,7 +5,8 @@ use std::cmp::Ordering;
 use std::str::FromStr;
 
 use crate::bigint::BigIntImpl;
-use crate::pseudo::{push_to_stack, NMUL};
+use crate::arithmetic::scriptint::mul_by_constant;
+use crate::pseudo::push_to_stack;
 use crate::treepp::*;
 
 /// Struct to store the information of each step in `transform_limbsize` function.
@@ -651,7 +652,7 @@ pub fn extract_digits(start_index: u32, window: u32) -> Script {
             OP_GREATERTHANOREQUAL
             OP_TUCK
             OP_ADD
-            if i < window - 1 { { NMUL(2) } }
+            if i < window - 1 { { mul_by_constant(2) } }
             OP_ROT OP_ROT
             OP_IF
                 { 1 << (start_index - i - 1) }
@@ -1258,4 +1259,3 @@ mod test {
         }
     }
 }
-

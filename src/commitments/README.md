@@ -76,8 +76,8 @@ explicitly enforces canonical `[]`/`[1]` bits, including in legacy script.
 
 Neither fragment is a complete locking script by itself: callers must compose
 it with a predicate that leaves one truthy cleanstack item. See
-[`docs/script-types.md`](../../../docs/script-types.md) and
-[`docs/standardness.md`](../../../docs/standardness.md).
+[`docs/script-types.md`](../../docs/script-types.md) and
+[`docs/standardness.md`](../../docs/standardness.md).
 
 ## Witness and hints
 
