@@ -1,4 +1,4 @@
-use crate::treepp::*;
+use crate::script::*;
 
 fn u32_cmp(comparison: Script) -> Script {
     script! {

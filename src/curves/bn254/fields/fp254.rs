@@ -1,7 +1,7 @@
 use crate::bigint::add::limb_add_carry;
 use crate::bigint::sub::limb_sub_borrow;
 use crate::bigint::U254;
-use crate::treepp::*;
+use crate::script::*;
 use ark_ff::PrimeField;
 use bitcoin_script::script;
 use num_bigint::{BigInt, BigUint};

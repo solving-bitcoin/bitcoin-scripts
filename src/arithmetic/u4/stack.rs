@@ -1,4 +1,4 @@
-use crate::treepp::*;
+use crate::script::*;
 use bitcoin::{opcodes::all::*, Opcode};
 
 pub fn u4_toaltstack(n: u32) -> Script {

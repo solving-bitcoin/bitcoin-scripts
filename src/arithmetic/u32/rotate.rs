@@ -1,4 +1,4 @@
-use crate::treepp::*;
+use crate::script::*;
 
 /// Right rotation of an u32 element by 16 bits
 pub fn u32_rrot16() -> Script {

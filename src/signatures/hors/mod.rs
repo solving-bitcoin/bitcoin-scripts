@@ -23,7 +23,7 @@
 /// The locking script then pushes n hashes on top of these, and verifies each
 /// (index, preimage) pair against its committed hash.
 use bitcoin::hashes::{hash160, Hash};
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 
 /// Compute HASH160 of data, returning a 20-byte array.
 pub fn hash160(data: &[u8]) -> [u8; 20] {
@@ -204,7 +204,7 @@ fn encode_script_int(v: i64) -> Vec<u8> {
 mod tests {
     use super::*;
     use crate::{execute_script_with_inputs, execute_script};
-    use crate::treepp::script;
+    use crate::script::script;
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
         (0..n).map(|i| vec![i as u8; 20]).collect()

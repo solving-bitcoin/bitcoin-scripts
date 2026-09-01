@@ -1,5 +1,5 @@
 use super::u4_std::u4_drop;
-use crate::treepp::*;
+use crate::script::*;
 use crate::u4::u4_add::u4_arrange_nibbles;
 
 pub fn u4_push_full_xor_table() -> Script {

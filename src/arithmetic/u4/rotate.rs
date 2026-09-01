@@ -1,4 +1,4 @@
-use crate::treepp::*;
+use crate::script::*;
 use crate::u4::u4_shift::*;
 
 /// Push 2 nib right shift tables, i.e. tables to calculate (16 * Y + X) >> n modulo 16 (which is equal to concatenating two nibbles and shifting them by n)

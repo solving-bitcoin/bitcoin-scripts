@@ -2,7 +2,7 @@ use crate::bn254::fp254impl::Fp254Impl;
 use crate::bn254::fq::Fq;
 use crate::bn254::fq2::Fq2;
 use crate::bn254::utils::Hint;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use ark_ff::{AdditiveGroup, Field, Fp6Config};
 use num_bigint::BigUint;
 
@@ -739,7 +739,7 @@ impl Fq6 {
 mod test {
     use crate::bn254::fq2::Fq2;
     use crate::bn254::fq6::Fq6;
-    use crate::treepp::*;
+    use crate::script::*;
     use ark_ff::AdditiveGroup;
     use ark_ff::Field;
     use ark_std::UniformRand;

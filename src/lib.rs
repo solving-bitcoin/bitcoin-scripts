@@ -22,7 +22,7 @@ pub use support::execution::{
 pub use support::script_ops as pseudo;
 
 #[allow(dead_code)]
-pub mod treepp {
+pub mod script {
     pub use bitcoin_script::{script, Script};
 
     pub use crate::{execute_script, execute_script_without_stack_limit, run};

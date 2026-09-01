@@ -1,4 +1,4 @@
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 
 /// Zips the a-th and b-th u32 elements from the top (without preserving order)
 /// Assuming a is smaller than b and x_i denoting the i-th part of the x-th number:

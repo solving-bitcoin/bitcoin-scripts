@@ -1,5 +1,5 @@
 use crate::bigint::BigIntImpl;
-use crate::treepp::*;
+use crate::script::*;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     pub fn div2() -> Script {
@@ -149,7 +149,7 @@ pub fn limb_div3_carry(limb_size: u32) -> Script {
 mod test {
     use crate::bigint::inv::{limb_div3_carry, limb_shr1_carry};
     use crate::bigint::{U254, U64};
-    use crate::treepp::*;
+    use crate::script::*;
 
     use core::ops::{Div, Shr};
     use num_bigint::{BigUint, RandomBits};

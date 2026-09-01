@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::pseudo::push_to_stack;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use crate::u32::u32_add::u32_add_drop;
 use crate::u32::u32_std::{u32_dup, u32_roll};
 use crate::u32::{
@@ -914,7 +914,7 @@ pub fn maj(x: u32, y: u32, z: u32, stack_depth: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::treepp::{execute_script, script};
+    use crate::script::{execute_script, script};
     use crate::u32::u32_std::{u32_equal, u32_equalverify};
     use bitcoin::hex::{DisplayHex, FromHex};
     use sha2::{Digest, Sha256};

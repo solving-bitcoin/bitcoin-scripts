@@ -5,7 +5,7 @@ use crate::bn254::fp254impl::Fp254Impl;
 use crate::bn254::fq::Fq;
 use crate::bn254::fq12::Fq12;
 use crate::bn254::fq2::Fq2;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use ark_ec::bn::BnConfig;
 use ark_ff::{AdditiveGroup, Field};
 use num_bigint::BigUint;
@@ -774,7 +774,7 @@ mod test {
     use crate::bn254::fq2::Fq2;
     use crate::bn254::g1::hinted_from_eval_point;
     use crate::bn254::g2::G2Affine;
-    use crate::{treepp::*, ExecuteInfo};
+    use crate::{script::*, ExecuteInfo};
     use ark_ff::AdditiveGroup;
     use ark_std::UniformRand;
     use num_traits::One;

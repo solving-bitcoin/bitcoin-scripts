@@ -1,6 +1,6 @@
 use crate::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
-use crate::treepp::*;
+use crate::script::*;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     /// Double a BigInt
@@ -540,7 +540,7 @@ fn limb_lshift_with_carry_prevent_overflow(bits: u32, head: u32) -> Script {
 #[cfg(test)]
 mod test {
     use crate::bigint::{U254, U64};
-    use crate::treepp::*;
+    use crate::script::*;
     use core::ops::{Rem, Shl};
     use num_bigint::{BigUint, RandomBits};
     use num_traits::One;

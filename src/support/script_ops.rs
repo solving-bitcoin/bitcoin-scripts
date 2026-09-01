@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(dead_code)]
 
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 
 pub fn OP_CHECKSEQUENCEVERIFY() -> Script {
     script! {OP_CSV}
@@ -128,11 +128,6 @@ pub fn push_to_stack(element: usize, n: usize) -> Script {
     }
 }
 
-#[deprecated(note = "use arithmetic::scriptint::mul_by_constant")]
-pub fn NMUL(multiplier: u32) -> Script {
-    crate::arithmetic::scriptint::mul_by_constant(multiplier)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -166,15 +161,5 @@ mod tests {
 
         run(pick_top);
         run(pick_below_top);
-    }
-
-    #[test]
-    #[allow(deprecated)]
-    fn nmul_compatibility_wrapper() {
-        run(script! {
-            7
-            { NMUL(13) }
-            91 OP_EQUAL
-        });
     }
 }

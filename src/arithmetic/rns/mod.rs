@@ -9,7 +9,7 @@
 //! `m * m` tables and a lookup-row encoding for its left operand. All three
 //! operations process the five moduli in 35 Script instructions.
 
-use crate::treepp::*;
+use crate::script::*;
 
 /// Pairwise-coprime moduli used by the residue number system.
 pub const RNS_MODULI: [u32; 5] = [4, 9, 25, 7, 11];

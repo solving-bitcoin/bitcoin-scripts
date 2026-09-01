@@ -1,5 +1,5 @@
 use bitcoin::hashes::{hash160, Hash};
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 
 /// Compute HASH160 of arbitrary bytes, returning a 20-byte array.
 pub fn hash160_bytes(data: &[u8]) -> [u8; 20] {

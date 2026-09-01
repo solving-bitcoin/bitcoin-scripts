@@ -6,7 +6,7 @@ use crate::bn254::fq::Fq;
 use crate::bn254::fq12::Fq12;
 use crate::bn254::fq2::Fq2;
 use crate::bn254::g2::*;
-use crate::treepp::*;
+use crate::script::*;
 use ark_ec::bn::BnConfig;
 use ark_ff::{AdditiveGroup, Field};
 use num_bigint::BigUint;
@@ -731,7 +731,7 @@ mod test {
     use crate::bn254::fq2::Fq2;
     use crate::bn254::g1::hinted_from_eval_point;
     use crate::bn254::pairing::Pairing;
-    use crate::{execute_script_without_stack_limit, treepp::*};
+    use crate::{execute_script_without_stack_limit, script::*};
 
     use ark_ff::Field;
     use ark_std::UniformRand;

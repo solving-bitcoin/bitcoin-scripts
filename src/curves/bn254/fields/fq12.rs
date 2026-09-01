@@ -3,7 +3,7 @@ use crate::bn254::fq::Fq;
 use crate::bn254::fq2::Fq2;
 use crate::bn254::fq6::Fq6;
 use crate::bn254::utils::Hint;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use ark_ff::{Field, Fp12Config};
 use num_bigint::BigUint;
 
@@ -296,7 +296,7 @@ impl Fq12 {
 mod test {
     use crate::bn254::fq12::Fq12;
     use crate::bn254::fq2::Fq2;
-    use crate::treepp::*;
+    use crate::script::*;
     use ark_ff::AdditiveGroup;
     use ark_ff::Field;
     use ark_std::UniformRand;

@@ -11,13 +11,15 @@
 
 use bitcoin::ScriptBuf;
 
-use crate::treepp::*;
+use crate::script::*;
 
 mod extension;
 mod karatsuba;
+mod lookup;
 
 pub use extension::*;
 pub use karatsuba::*;
+pub use lookup::*;
 
 /// Configuration for a field with a modulus strictly below `2^31`.
 pub trait U31Config {
@@ -173,22 +175,36 @@ pub fn v31_neg<C: U31Config>() -> Script {
 /// Decompose a canonical element into 31 bits, with the least-significant bit
 /// on top and the most-significant bit deepest.
 pub fn u31_to_bits() -> Script {
+    u31_to_bits_with_width(31)
+}
+
+/// Decompose a canonical element into exactly `bit_width` bits.
+///
+/// The least-significant bit is left on top. The caller must ensure that the
+/// input is smaller than `2^bit_width`; field multiplication should normally
+/// use [`u31_mul_compact`], which derives the safe width from the modulus.
+pub fn u31_to_bits_with_width(bit_width: u32) -> Script {
+    assert!(
+        (1..=31).contains(&bit_width),
+        "u31 bit width must be in 1..=31"
+    );
+
     script! {
-        for i in 0..30 {
+        for bit in (1..bit_width).rev() {
             OP_DUP
-            { (1u32 << (30 - i)) - 1 }
+            { (1u32 << bit) - 1 }
             OP_GREATERTHAN
             OP_SWAP
             OP_OVER
             OP_IF
-                { 1u32 << (30 - i) }
+                { 1u32 << bit }
                 OP_SUB
             OP_ENDIF
         }
     }
 }
 
-pub(crate) fn u31_mul_common<C: U31Config>() -> Script {
+fn u31_mul_common_with_window_pairs<C: U31Config>(window_pairs: u32) -> Script {
     script! {
         0
         OP_SWAP
@@ -203,26 +219,58 @@ pub(crate) fn u31_mul_common<C: U31Config>() -> Script {
             3 OP_PICK
             { u31_add_v31::<C>() }
         OP_ENDIF
-        { u31_double::<C>() }
-        { u31_double::<C>() }
-        for _ in 0..14 {
-            OP_FROMALTSTACK
-            OP_FROMALTSTACK
-            OP_SWAP OP_DUP OP_ADD OP_ADD
-            4 OP_SWAP OP_SUB OP_PICK
-            { u31_add_v31::<C>() }
+        if window_pairs > 0 {
             { u31_double::<C>() }
             { u31_double::<C>() }
+            for pair in 0..window_pairs {
+                OP_FROMALTSTACK
+                OP_DUP OP_ADD
+                OP_FROMALTSTACK OP_ADD
+                4 OP_SWAP OP_SUB OP_PICK
+                { u31_add_v31::<C>() }
+                if pair + 1 < window_pairs {
+                    { u31_double::<C>() }
+                    { u31_double::<C>() }
+                }
+            }
         }
-        OP_FROMALTSTACK
-        OP_FROMALTSTACK
-        OP_SWAP OP_DUP OP_ADD OP_ADD
-        4 OP_SWAP OP_SUB OP_PICK
-        { u31_add_v31::<C>() }
         OP_TOALTSTACK
         OP_2DROP OP_2DROP
         OP_FROMALTSTACK
     }
+}
+
+fn u31_mul_common_with_even_window_pairs<C: U31Config>(window_pairs: u32) -> Script {
+    assert!(window_pairs > 0, "even-width multiplication needs one pair");
+
+    script! {
+        0
+        OP_SWAP
+        { u31_to_v31::<C>() }
+        OP_DUP
+        { v31_double::<C>() }
+        OP_2DUP
+        { v31_add::<C>() }
+        0
+        for pair in 0..window_pairs {
+            OP_FROMALTSTACK
+            OP_DUP OP_ADD
+            OP_FROMALTSTACK OP_ADD
+            4 OP_SWAP OP_SUB OP_PICK
+            { u31_add_v31::<C>() }
+            if pair + 1 < window_pairs {
+                { u31_double::<C>() }
+                { u31_double::<C>() }
+            }
+        }
+        OP_TOALTSTACK
+        OP_2DROP OP_2DROP
+        OP_FROMALTSTACK
+    }
+}
+
+pub(crate) fn u31_mul_common<C: U31Config>() -> Script {
+    u31_mul_common_with_window_pairs::<C>(15)
 }
 
 /// Multiply two canonical field elements.
@@ -236,12 +284,33 @@ pub fn u31_mul<C: U31Config>() -> Script {
     }
 }
 
-/// Multiply a canonical field element by a generation-time constant.
+/// Multiply two canonical field elements using the modulus' minimum safe bit
+/// width instead of always decomposing the right operand into 31 bits.
 ///
-/// A relaxed non-adjacent form minimizes the emitted sequence of doubles,
-/// additions, and subtractions. The resulting script size depends on the
-/// constant.
-pub fn u31_mul_by_constant<C: U31Config>(constant: u32) -> Script {
+/// This is identical in size to [`u31_mul`] for 31-bit fields, but is much
+/// smaller for fields with narrow canonical representations.
+pub fn u31_mul_compact<C: U31Config>() -> Script {
+    assert!(
+        (2..(1 << 31)).contains(&C::MODULUS),
+        "u31 modulus must be in 2..2^31"
+    );
+    let bit_width = 32 - (C::MODULUS - 1).leading_zeros();
+
+    script! {
+        { u31_to_bits_with_width(bit_width) }
+        for _ in 0..bit_width {
+            OP_TOALTSTACK
+        }
+        if bit_width % 2 == 0 {
+            { u31_mul_common_with_even_window_pairs::<C>(bit_width / 2) }
+        } else {
+            { u31_mul_common_with_window_pairs::<C>((bit_width - 1) / 2) }
+        }
+    }
+}
+
+/// Emit the signed addition chain used by the public constant multipliers.
+fn u31_mul_by_signed_constant<C: U31Config>(constant: u32, negative: bool) -> Script {
     let mut naf = ark_ff::biginteger::arithmetic::find_naf(&[constant as u64]);
 
     if naf.len() > 3 {
@@ -250,6 +319,12 @@ pub fn u31_mul_by_constant<C: U31Config>(constant: u32) -> Script {
             naf[len - 3] = 1;
             naf[len - 2] = 1;
             naf.resize(len - 1, 0);
+        }
+    }
+
+    if negative {
+        for digit in &mut naf {
+            *digit = -*digit;
         }
     }
 
@@ -327,12 +402,62 @@ pub fn u31_mul_by_constant<C: U31Config>(constant: u32) -> Script {
         .push_script(ScriptBuf::from_bytes(compiled.to_bytes()))
 }
 
+/// Multiply a canonical field element by a generation-time constant.
+///
+/// A relaxed non-adjacent form minimizes the emitted sequence of doubles,
+/// additions, and subtractions. The resulting script size depends on the
+/// constant.
+pub fn u31_mul_by_constant<C: U31Config>(constant: u32) -> Script {
+    u31_mul_by_signed_constant::<C>(constant, false)
+}
+
+/// Multiply by the shorter of `constant mod p` and its negation.
+///
+/// The choice is made at generation time from the actual serialized sizes.
+/// Special cases for `0`, `1`, and `-1` avoid the addition-chain setup
+/// entirely. The input and output are canonical field elements.
+pub fn u31_mul_by_constant_centered<C: U31Config>(constant: u32) -> Script {
+    assert!(
+        (2..(1 << 31)).contains(&C::MODULUS),
+        "u31 modulus must be in 2..2^31"
+    );
+    let reduced = (constant as u64 % C::MODULUS as u64) as u32;
+
+    match reduced {
+        0 => script! { OP_DROP 0 },
+        1 => script! {},
+        value if value == C::MODULUS - 1 => u31_neg::<C>(),
+        value => {
+            let positive = u31_mul_by_signed_constant::<C>(value, false);
+            let negative = u31_mul_by_signed_constant::<C>(C::MODULUS - value, true);
+
+            if negative.clone().compile().len() < positive.clone().compile().len() {
+                negative
+            } else {
+                positive
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     use super::*;
-    use crate::{execute_script, treepp::script};
+    use crate::{execute_script, script::script};
+
+    struct TestField257;
+
+    impl U31Config for TestField257 {
+        const MODULUS: u32 = 257;
+    }
+
+    struct TestField12289;
+
+    impl U31Config for TestField12289 {
+        const MODULUS: u32 = 12_289;
+    }
 
     fn add_mod(a: u32, b: u32, modulus: u32) -> u32 {
         ((a as u64 + b as u64) % modulus as u64) as u32
@@ -418,16 +543,21 @@ mod tests {
         for value in boundary_values(C::MODULUS) {
             for constant in constants {
                 let expected = mul_mod(value, constant, C::MODULUS);
-                let result = execute_script(script! {
-                    { value }
-                    { u31_mul_by_constant::<C>(constant) }
-                    { expected }
-                    OP_EQUAL
-                });
-                assert!(
-                    result.success,
-                    "constant multiplication failed for value={value}, constant={constant}, expected={expected}: {result}"
-                );
+                for (name, operation) in [
+                    ("naf", u31_mul_by_constant::<C>(constant)),
+                    ("centered", u31_mul_by_constant_centered::<C>(constant)),
+                ] {
+                    let result = execute_script(script! {
+                        { value }
+                        { operation }
+                        { expected }
+                        OP_EQUAL
+                    });
+                    assert!(
+                        result.success,
+                        "{name} constant multiplication failed for value={value}, constant={constant}, expected={expected}: {result}"
+                    );
+                }
             }
         }
     }
@@ -440,6 +570,166 @@ mod tests {
     #[test]
     fn test_babybear_constant_multiplication() {
         test_constant_mul::<BabyBear>();
+    }
+
+    fn test_compact_mul<C: U31Config>() {
+        for a in boundary_values(C::MODULUS) {
+            for b in boundary_values(C::MODULUS) {
+                assert_binary::<C>(a, b, mul_mod(a, b, C::MODULUS), u31_mul_compact::<C>());
+            }
+        }
+
+        let mut rng = StdRng::seed_from_u64(C::MODULUS as u64 ^ 0x0043_4f4d_5041_4354);
+        for _ in 0..100 {
+            let a = rng.gen_range(0..C::MODULUS);
+            let b = rng.gen_range(0..C::MODULUS);
+            assert_binary::<C>(a, b, mul_mod(a, b, C::MODULUS), u31_mul_compact::<C>());
+        }
+    }
+
+    #[test]
+    fn test_small_field_compact_multiplication() {
+        test_compact_mul::<TestField257>();
+        test_compact_mul::<TestField12289>();
+    }
+
+    #[test]
+    fn test_small_field_bit_decomposition() {
+        for value in boundary_values(TestField257::MODULUS) {
+            let bits = (0..9).map(|i| (value >> i) & 1).collect::<Vec<_>>();
+            let result = execute_script(script! {
+                { value }
+                { u31_to_bits_with_width(9) }
+                for bit in bits {
+                    { bit }
+                    OP_EQUALVERIFY
+                }
+                OP_TRUE
+            });
+            assert!(result.success, "9-bit decomposition failed: {result}");
+        }
+    }
+
+    #[test]
+    fn test_small_field_centered_constant_multiplication() {
+        test_constant_mul::<TestField257>();
+        test_constant_mul::<TestField12289>();
+    }
+
+    #[test]
+    fn test_small_field_multiplication_metrics_are_stable() {
+        let constant = 173;
+        let baseline = (1..TestField257::MODULUS)
+            .map(|value| u31_mul_by_constant::<TestField257>(value).compile().len())
+            .sum::<usize>();
+        let centered = (1..TestField257::MODULUS)
+            .map(|value| {
+                u31_mul_by_constant_centered::<TestField257>(value)
+                    .compile()
+                    .len()
+            })
+            .sum::<usize>();
+        assert!(
+            centered < baseline,
+            "signed centering must improve the mean"
+        );
+
+        let fragments = [
+            ("test257_dynamic", u31_mul::<TestField257>(), 1_238),
+            ("test257_compact", u31_mul_compact::<TestField257>(), 345),
+            (
+                "test257_constant",
+                u31_mul_by_constant::<TestField257>(constant),
+                167,
+            ),
+            (
+                "test257_centered_constant",
+                u31_mul_by_constant_centered::<TestField257>(constant),
+                132,
+            ),
+            (
+                "test257_full_lookup_8",
+                u31_mul_by_constant_lookup_batch::<TestField257>(constant, 8),
+                809,
+            ),
+            (
+                "test257_half_lookup_8",
+                u31_mul_by_constant_half_lookup_batch::<TestField257>(constant, 8),
+                573,
+            ),
+            (
+                "test12289_compact",
+                u31_mul_compact::<TestField12289>(),
+                517,
+            ),
+        ];
+        for (name, fragment, expected_size) in fragments {
+            assert_eq!(
+                fragment.compile().len(),
+                expected_size,
+                "{name} size changed"
+            );
+        }
+
+        assert_eq!(
+            u31_push_mul_by_constant_table::<TestField257>(constant)
+                .compile()
+                .len(),
+            626
+        );
+        assert_eq!(
+            u31_drop_mul_by_constant_table::<TestField257>()
+                .compile()
+                .len(),
+            129
+        );
+        assert_eq!(
+            u31_push_half_mul_by_constant_table::<TestField257>(constant)
+                .compile()
+                .len(),
+            248
+        );
+        assert_eq!(
+            u31_drop_half_mul_by_constant_table::<TestField257>()
+                .compile()
+                .len(),
+            65
+        );
+        for (name, operation, value, expected_stack) in [
+            (
+                "test257_compact",
+                u31_mul_compact::<TestField257>(),
+                256,
+                15,
+            ),
+            (
+                "test12289_compact",
+                u31_mul_compact::<TestField12289>(),
+                12_288,
+                20,
+            ),
+            (
+                "test257_centered",
+                u31_mul_by_constant_centered::<TestField257>(constant),
+                256,
+                4,
+            ),
+        ] {
+            let result = execute_script(script! {
+                { value }
+                if name.contains("compact") {
+                    { value }
+                }
+                { operation }
+                OP_DROP
+                OP_TRUE
+            });
+            assert!(result.success, "{name} metric execution failed: {result}");
+            assert_eq!(
+                result.stats.max_nb_stack_items, expected_stack,
+                "{name} stack changed"
+            );
+        }
     }
 
     #[test]
@@ -734,7 +1024,7 @@ mod tests {
         let fragments = [
             ("add", u31_add::<M31>(), 18),
             ("sub", u31_sub::<M31>(), 12),
-            ("mul", u31_mul::<M31>(), 1415),
+            ("mul", u31_mul::<M31>(), 1400),
             (
                 "mul_constant",
                 u31_mul_by_constant::<M31>(representative_constant),
@@ -742,9 +1032,9 @@ mod tests {
             ),
             ("qm31_add", u31ext_add::<QM31>(), 84),
             ("qm31_sub", u31ext_sub::<QM31>(), 63),
-            ("qm31_mul", u31ext_mul::<QM31>(), 13_321),
-            ("babybear4_mul", u31ext_mul::<BabyBear4>(), 13_576),
-            ("qm31_mul_base", u31ext_mul_u31::<QM31>(), 4_702),
+            ("qm31_mul", u31ext_mul::<QM31>(), 13_186),
+            ("babybear4_mul", u31ext_mul::<BabyBear4>(), 13_441),
+            ("qm31_mul_base", u31ext_mul_u31::<QM31>(), 4_642),
             (
                 "qm31_mul_constant",
                 u31ext_mul_u31_by_constant::<QM31>(representative_constant),

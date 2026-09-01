@@ -1,5 +1,5 @@
 use crate::bigint::BigIntImpl;
-use crate::treepp::*;
+use crate::script::*;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
     pub fn equalverify(a: u32, b: u32) -> Script {
@@ -109,7 +109,7 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
 #[cfg(test)]
 mod test {
     use crate::bigint::{U254, U64};
-    use crate::treepp::*;
+    use crate::script::*;
     use core::cmp::Ordering;
     use num_bigint::{BigUint, RandomBits};
     use rand::{Rng, SeedableRng};

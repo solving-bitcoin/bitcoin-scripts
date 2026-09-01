@@ -9,7 +9,11 @@ use std::{env, fs, path::Path};
 use bitcoin::consensus::encode::serialize;
 use bitcoin::Witness;
 use bitcoin_lab::{
-    arithmetic::{bigint::U254, rns, scriptint, u31, u32, u4},
+    arithmetic::{
+        bigint::U254,
+        fields::{f12289, f257},
+        rns, scriptint, u31, u32, u4,
+    },
     ciphers::{aes, prince},
     commitments::{
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
@@ -69,6 +73,74 @@ fn metrics() -> Vec<Metric> {
         { rns::rns_mul() }
         { rns::rns_drop_mul_tables() }
         { rns::rns_fromaltstack() }
+    };
+    let f257_log_memory = script! {
+        { f257::push_log_mul_tables() }
+        { f257::drop_log_mul_tables() }
+    };
+    let f257_square_memory = script! {
+        { f257::push_square_table() }
+        { f257::drop_square_table() }
+    };
+    let f12289_radix128_memory = script! {
+        { f12289::push_radix_mul_tables(10_000, 7) }
+        { f12289::drop_radix_mul_tables(7) }
+    };
+    let f257_log_state_script = script! {
+        { f257::push_log_mul_tables() }
+        for _ in 0..510 {
+            128
+        }
+        127 -128
+        { f257::mul_from_log_tables(510) }
+        -65 OP_EQUALVERIFY
+        for _ in 0..510 {
+            OP_DROP
+        }
+        { f257::drop_log_mul_tables() }
+        OP_TRUE
+    };
+    let f257_log_constant_state_script = script! {
+        { f257::push_log_mul_tables() }
+        for _ in 0..511 {
+            128
+        }
+        -128
+        { f257::mul_by_constant_from_log_tables(173, 511) }
+        -42 OP_EQUALVERIFY
+        for _ in 0..511 {
+            OP_DROP
+        }
+        { f257::drop_log_mul_tables() }
+        OP_TRUE
+    };
+    let f257_square_state_script = script! {
+        { f257::push_square_table() }
+        for _ in 0..511 {
+            128
+        }
+        -128
+        { f257::square_from_table(511) }
+        16384 OP_EQUALVERIFY
+        for _ in 0..511 {
+            OP_DROP
+        }
+        { f257::drop_square_table() }
+        OP_TRUE
+    };
+    let f12289_radix128_state_script = script! {
+        { f12289::push_radix_mul_tables(10_000, 7) }
+        for _ in 0..511 {
+            { 12_288u32 }
+        }
+        { 12_287u32 }
+        { f12289::mul_by_constant_from_radix_tables(7, 511) }
+        { (12_287u64 * 10_000 % 12_289) as u32 } OP_EQUALVERIFY
+        for _ in 0..511 {
+            OP_DROP
+        }
+        { f12289::drop_radix_mul_tables(7) }
+        OP_TRUE
     };
 
     let lamport_preimages: [&[u8]; 4] = [b"secret0", b"secret1", b"secret2", b"secret3"];
@@ -335,6 +407,145 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u31/README.md",
             key: "u31_mul_constant",
             value: script_len(u31::u31_mul_by_constant::<u31::M31>(0x1234_5678)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_mul_baseline",
+            value: script_len(u31::u31_mul::<f257::F257>()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_mul_compact",
+            value: script_len(u31::u31_mul_compact::<f257::F257>()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_mul_compact_stack",
+            value: max_stack_items(
+                u31::u31_mul_compact::<f257::F257>(),
+                vec![scriptnum(256), scriptnum(256)],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_mul_centered_173",
+            value: script_len(u31::u31_mul_by_constant_centered::<f257::F257>(173)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_mul_centered_stack",
+            value: max_stack_items(
+                u31::u31_mul_by_constant_centered::<f257::F257>(173),
+                vec![scriptnum(256)],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_full_lookup_batch8",
+            value: script_len(u31::u31_mul_by_constant_lookup_batch::<f257::F257>(173, 8)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_full_lookup_batch8_stack",
+            value: max_stack_items(
+                script! {
+                    { u31::u31_mul_by_constant_lookup_batch::<f257::F257>(173, 8) }
+                    for _ in 0..4 {
+                        OP_2DROP
+                    }
+                    OP_TRUE
+                },
+                vec![scriptnum(256); 8],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_half_lookup_batch8",
+            value: script_len(u31::u31_mul_by_constant_half_lookup_batch::<f257::F257>(
+                173, 8,
+            )),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_half_lookup_batch8_stack",
+            value: max_stack_items(
+                script! {
+                    { u31::u31_mul_by_constant_half_lookup_batch::<f257::F257>(173, 8) }
+                    for _ in 0..4 {
+                        OP_2DROP
+                    }
+                    OP_TRUE
+                },
+                vec![scriptnum(256); 8],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_log_memory",
+            value: script_len(f257_log_memory),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_log_constant_query",
+            value: script_len(f257::mul_by_constant_from_log_tables(173, 511)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_log_constant_stack",
+            value: max_stack_items(f257_log_constant_state_script, vec![]),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_log_variable_query",
+            value: script_len(f257::mul_from_log_tables(510)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_log_state_stack",
+            value: max_stack_items(f257_log_state_script, vec![]),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_square_memory",
+            value: script_len(f257_square_memory),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_square_query",
+            value: script_len(f257::square_from_table(511)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f257_square_state_stack",
+            value: max_stack_items(f257_square_state_script, vec![]),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f12289_mul_compact",
+            value: script_len(u31::u31_mul_compact::<f12289::F12289>()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f12289_mul_compact_stack",
+            value: max_stack_items(
+                u31::u31_mul_compact::<f12289::F12289>(),
+                vec![scriptnum(12_288), scriptnum(12_288)],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f12289_radix128_memory",
+            value: script_len(f12289_radix128_memory),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f12289_radix128_query",
+            value: script_len(f12289::mul_by_constant_from_radix_tables(7, 511)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "f12289_radix128_state_stack",
+            value: max_stack_items(f12289_radix128_state_script, vec![]),
         },
         Metric {
             readme: "src/arithmetic/u31/README.md",

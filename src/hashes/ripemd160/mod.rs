@@ -1,7 +1,7 @@
 //! RIPEMD-160 implemented over the byte-oriented u32 stack representation.
 
 use crate::pseudo::push_to_stack;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use crate::u32::{
     u32_add::u32_add_drop,
     u32_and::u32_and,

@@ -1,5 +1,5 @@
 use crate::pseudo::{push_to_stack, OP_256MUL, OP_4DUP};
-use crate::treepp::*;
+use crate::script::*;
 
 pub fn u32_push(value: u32) -> Script {
     script! {

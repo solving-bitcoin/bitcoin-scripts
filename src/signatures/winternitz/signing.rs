@@ -2,7 +2,7 @@ use bitcoin::hex::DisplayHex;
 use bitcoin::Witness;
 use serde::{Deserialize, Serialize};
 
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use crate::{
     signatures::winternitz::{
         generate_public_key, BruteforceVerifier, ListpickVerifier, Parameters, PublicKey,

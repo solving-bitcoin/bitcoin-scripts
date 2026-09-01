@@ -1,12 +1,12 @@
 # bitcoin-scripts
 
-Experimental Bitcoin Script arithmetic and cryptographic primitives.
+Library of Bitcoin Script arithmetic and cryptographic primitives.
 
 ## Layout
 
 ```text
 src/
-├── arithmetic/       # ScriptNum, u4, u31 fields, u32, bigint, and RNS
+├── arithmetic/       # Integer backends, concrete fields, bigint, and RNS
 ├── commitments/      # Integer hash-path and preimage-length commitments
 ├── hashes/           # RIPEMD-160, SHA-1, SHA-256, and BLAKE3
 ├── signatures/       # Lamport, HORS, and Winternitz OTS

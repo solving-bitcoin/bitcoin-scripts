@@ -8,7 +8,7 @@ use crate::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
 use crate::bn254::fp254impl::Fp254Impl;
 use crate::bn254::utils::Hint;
-use crate::treepp::*;
+use crate::script::*;
 
 pub struct Fq;
 

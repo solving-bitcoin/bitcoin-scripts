@@ -1,5 +1,5 @@
 use super::utils::*;
-use crate::treepp::*;
+use crate::script::*;
 use bitcoin::{
     hashes::{hash160, Hash},
     Witness,

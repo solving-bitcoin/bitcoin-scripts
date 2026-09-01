@@ -3,7 +3,7 @@ use crate::bigint::U256;
 use crate::bn254::fq::bigint_to_u32_limbs;
 use crate::bn254::fq::Fq;
 use crate::bn254::fr::Fr;
-use crate::treepp::*;
+use crate::script::*;
 use ark_ff::BigInt;
 
 #[derive(Debug, Clone)]

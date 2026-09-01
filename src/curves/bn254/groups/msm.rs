@@ -16,7 +16,7 @@ use crate::bn254::fq2::Fq2;
 use crate::bn254::utils::{fq_to_bits, Hint};
 use crate::bn254::fp254impl::Fp254Impl;
 use crate::bn254::{fr::Fr, g1::G1Affine};
-use crate::treepp::*;
+use crate::script::*;
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{One, PrimeField};
 use itertools::Itertools;

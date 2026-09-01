@@ -14,7 +14,7 @@ pub mod bithash {
         commitments::hash_path::{
             hash_path_commitment, hash_path_script, verify_hash_path, verify_hash_path_to_altstack,
         },
-        treepp::{script, Script},
+        script::{script, Script},
     };
 
     fn legacy_bits(bits: &[u8; 128]) -> Vec<bool> {

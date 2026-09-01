@@ -1,5 +1,5 @@
 use super::u4_std::u4_drop;
-use crate::treepp::*;
+use crate::script::*;
 
 pub fn u4_push_lshift_tables() -> Script {
     script! {

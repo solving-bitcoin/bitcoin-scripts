@@ -4,7 +4,7 @@ use num_bigint::{BigInt, BigUint};
 use num_traits::Num;
 
 use crate::bn254::fp254impl::Fp254Impl;
-use crate::treepp::Script;
+use crate::script::Script;
 
 pub struct Fr;
 
@@ -46,7 +46,7 @@ impl Fr {
 mod test {
     use crate::bn254::fp254impl::Fp254Impl;
     use crate::bn254::fr::Fr;
-    use crate::treepp::*;
+    use crate::script::*;
     use ark_ff::AdditiveGroup;
     use ark_std::UniformRand;
     use core::ops::{Add, Rem, Sub};

@@ -1,6 +1,6 @@
 use core::fmt;
 
-use crate::treepp;
+use crate::script;
 use bitcoin::{
     hashes::Hash,
     hex::DisplayHex,
@@ -96,7 +96,7 @@ impl fmt::Display for ExecuteInfo {
     }
 }
 
-pub fn execute_script(script: treepp::Script) -> ExecuteInfo {
+pub fn execute_script(script: script::Script) -> ExecuteInfo {
     execute_script_buf_optional_stack_limit(script.compile(), true)
 }
 
@@ -104,7 +104,7 @@ pub fn execute_script_buf(script: bitcoin::ScriptBuf) -> ExecuteInfo {
     execute_script_buf_optional_stack_limit(script, true)
 }
 
-pub fn execute_script_without_stack_limit(script: treepp::Script) -> ExecuteInfo {
+pub fn execute_script_without_stack_limit(script: script::Script) -> ExecuteInfo {
     execute_script_buf_optional_stack_limit(script.compile(), false)
 }
 
@@ -199,7 +199,7 @@ pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) ->
     }
 }
 
-pub fn execute_script_with_inputs(script: treepp::Script, witness: Vec<Vec<u8>>) -> ExecuteInfo {
+pub fn execute_script_with_inputs(script: script::Script, witness: Vec<Vec<u8>>) -> ExecuteInfo {
     execute_raw_script_with_inputs(script.compile().to_bytes(), witness)
 }
 
@@ -256,7 +256,7 @@ pub fn dry_run_taproot_input(
     }
 }
 
-pub fn run(script: treepp::Script) {
+pub fn run(script: script::Script) {
     let exec_result = execute_script(script);
     if !exec_result.success {
         println!(

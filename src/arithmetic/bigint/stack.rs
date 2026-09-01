@@ -7,7 +7,7 @@ use std::str::FromStr;
 use crate::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
 use crate::pseudo::push_to_stack;
-use crate::treepp::*;
+use crate::script::*;
 
 /// Struct to store the information of each step in `transform_limbsize` function.
 /// ## Fields:

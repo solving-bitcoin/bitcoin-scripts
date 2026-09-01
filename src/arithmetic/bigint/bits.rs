@@ -1,5 +1,5 @@
 use crate::bigint::BigIntImpl;
-use crate::treepp::{script, Script};
+use crate::script::{script, Script};
 use std::cmp::min;
 
 impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {

@@ -1,5 +1,5 @@
 use super::u4_std::{u4_drop, CalculateOffset};
-use crate::treepp::*;
+use crate::script::*;
 use bitcoin::opcodes::all::*;
 
 pub fn u4_push_quotient_table() -> Script {
@@ -200,7 +200,7 @@ pub fn u4_add(
 
 #[cfg(test)]
 mod tests {
-    use crate::treepp::*;
+    use crate::script::*;
     use crate::u4::{u4_add::*, u4_std::u4_number_to_nibble};
     use rand::Rng;
 
