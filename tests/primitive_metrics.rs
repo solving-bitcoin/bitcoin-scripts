@@ -24,7 +24,7 @@ use bitcoin_lab::{
         groups::{g1::G1Affine, g2::G2Affine},
     },
     execute_script_with_inputs,
-    hashes::{blake3, ripemd160, sha1, sha256},
+    hashes::{blake3, ripemd160, sha1, sha256, shake256},
     signatures::{hors, lamport, Wots, Wots32},
 };
 use bitcoin_script::script;
@@ -616,6 +616,30 @@ fn metrics() -> Vec<Metric> {
             readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
+        },
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_32_1024",
+            value: script_len(shake256::shake256(32)),
+        },
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_witness_32",
+            value: witness_size(&vec![vec![0x42]; 32]),
+        },
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_stack_32_1024",
+            value: max_stack_items(
+                script! {
+                    { shake256::shake256(32) }
+                    for _ in 0..(shake256::OUTPUT_LEN / 2) {
+                        OP_2DROP
+                    }
+                    OP_TRUE
+                },
+                vec![vec![0x42]; 32],
+            ),
         },
         Metric {
             readme: "src/hashes/blake3/README.md",
