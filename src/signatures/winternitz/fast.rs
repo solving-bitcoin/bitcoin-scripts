@@ -177,6 +177,26 @@ impl<const MESSAGE_BYTES: usize> FastSignature<MESSAGE_BYTES> {
         }
         witness
     }
+
+    /// Serializes for the bitwise terminal verifier.
+    ///
+    /// Each chain contributes the four canonical bits of `15 - digit` and the
+    /// selected chain node. From bottom to top a chunk is
+    /// `[bit_8, bit_4, bit_2, chain, bit_1]`, so Script can consume each bit
+    /// with `MINIMALIF` while keeping the chain node on top for hashing.
+    pub fn to_bitwise_size_optimized_witness(&self) -> Witness {
+        debug_assert_eq!(self.chain_values.len(), self.digits.len());
+        let mut witness = Witness::new();
+        for (&digit, chain_value) in self.digits.iter().zip(self.chain_values.iter()) {
+            let remaining = MAX_DIGIT - digit;
+            push_digit(&mut witness, (remaining >> 3) & 1);
+            push_digit(&mut witness, (remaining >> 2) & 1);
+            push_digit(&mut witness, (remaining >> 1) & 1);
+            witness.push(chain_value);
+            push_digit(&mut witness, remaining & 1);
+        }
+        witness
+    }
 }
 
 /// Fixed-message-length, base-16, HASH160 Winternitz operations.
@@ -377,6 +397,35 @@ impl<const MESSAGE_BYTES: usize> FastWinternitz<MESSAGE_BYTES> {
         }
     }
 
+    /// Builds a smaller terminal verifier using a canonical bitwise witness.
+    ///
+    /// The four witness bits encode `15 - digit`. Tapscript `MINIMALIF`
+    /// rejects every encoding except canonical false and true, the selected
+    /// bit branches perform exactly the remaining chain hashes, and the same
+    /// branches accumulate the Winternitz checksum relation. The fragment
+    /// leaves an empty stack; append the surrounding protocol's predicate.
+    pub fn checksig_verify_bitwise_size_optimized_and_clear(
+        public_key: &FastPublicKey<MESSAGE_BYTES>,
+    ) -> Script {
+        Self::assert_public_key(public_key);
+        script! {
+            OP_0 OP_TOALTSTACK
+            for chain_index in (0..Self::TOTAL_DIGITS).rev() {
+                if chain_index < Self::MESSAGE_DIGITS {
+                    { verify_chain_bitwise_and_accumulate(public_key.chain_ends[chain_index], 1) }
+                } else {
+                    { verify_chain_bitwise_and_accumulate(
+                        public_key.chain_ends[chain_index],
+                        1usize << (4 * (chain_index - Self::MESSAGE_DIGITS)),
+                    ) }
+                }
+            }
+            OP_FROMALTSTACK
+            { base16_capacity(Self::CHECKSUM_DIGITS) }
+            OP_EQUALVERIFY
+        }
+    }
+
     fn assert_public_key(public_key: &FastPublicKey<MESSAGE_BYTES>) {
         Self::assert_parameters();
         assert_eq!(
@@ -394,6 +443,16 @@ const fn base16_digits(mut maximum: usize) -> usize {
         digits += 1;
     }
     digits
+}
+
+const fn base16_capacity(digits: usize) -> usize {
+    let mut capacity = 0;
+    let mut index = 0;
+    while index < digits {
+        capacity = capacity * BASE as usize + MAX_DIGIT as usize;
+        index += 1;
+    }
+    capacity
 }
 
 fn derive_chain_namespace<const MESSAGE_BYTES: usize>(seed: &[u8; 32]) -> FastChainValue {
@@ -555,6 +614,54 @@ fn verify_chain_size_optimized(expected: FastChainValue) -> Script {
     }
 }
 
+/// Verifies one chain from four canonical remaining-distance bits and adds
+/// their weighted value to the accumulator on the altstack.
+///
+/// Precondition: `[... bit_8, bit_4, bit_2, chain_value, bit_1]` with the
+/// accumulator at the bottom of the altstack. Postcondition: the five main
+/// stack items are consumed and the updated accumulator remains on altstack.
+fn verify_chain_bitwise_and_accumulate(expected: FastChainValue, place: usize) -> Script {
+    script! {
+        OP_IF
+            OP_HASH160
+            { add_weight_to_altstack(place) }
+        OP_ENDIF
+
+        OP_SWAP
+        OP_IF
+            OP_HASH160 OP_HASH160
+            { add_weight_to_altstack(2 * place) }
+        OP_ENDIF
+
+        OP_SWAP
+        OP_IF
+            for _ in 0..4 {
+                OP_HASH160
+            }
+            { add_weight_to_altstack(4 * place) }
+        OP_ENDIF
+
+        OP_SWAP
+        OP_IF
+            for _ in 0..8 {
+                OP_HASH160
+            }
+            { add_weight_to_altstack(8 * place) }
+        OP_ENDIF
+
+        { expected.to_vec() }
+        OP_EQUALVERIFY
+    }
+}
+
+fn add_weight_to_altstack(weight: usize) -> Script {
+    if weight == 1 {
+        script! { OP_FROMALTSTACK OP_1ADD OP_TOALTSTACK }
+    } else {
+        script! { OP_FROMALTSTACK { weight } OP_ADD OP_TOALTSTACK }
+    }
+}
+
 fn recover_message_and_verify_checksum<const MESSAGE_BYTES: usize>() -> Script {
     script! {
         // Preserve message digits while accumulating max_sum - actual_sum.
@@ -659,6 +766,22 @@ mod tests {
             OP_TRUE
         });
         assert!(result.success, "length {MESSAGE_BYTES}: {result}");
+        assert_eq!(result.final_stack.len(), 1);
+        assert!(result.stats.max_nb_stack_items <= 1000);
+
+        let bitwise_signature = FastWinternitz::<MESSAGE_BYTES>::sign(
+            FastWinternitz::<MESSAGE_BYTES>::signing_key_from_seed(seed),
+            &message,
+        );
+        let result = execute_script(script! {
+            { bitwise_signature.to_bitwise_size_optimized_witness() }
+            { FastWinternitz::<MESSAGE_BYTES>::checksig_verify_bitwise_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "bitwise size profile, length {MESSAGE_BYTES}: {result}"
+        );
         assert_eq!(result.final_stack.len(), 1);
         assert!(result.stats.max_nb_stack_items <= 1000);
 
@@ -951,6 +1074,9 @@ mod tests {
         let size = FastWots32::checksig_verify_size_optimized(&public_key);
         let size_clear = FastWots32::checksig_verify_size_optimized_and_clear(&public_key);
         let size_witness = signature.to_size_optimized_witness();
+        let bitwise_clear =
+            FastWots32::checksig_verify_bitwise_size_optimized_and_clear(&public_key);
+        let bitwise_witness = signature.to_bitwise_size_optimized_witness();
         let exact_result = execute_script_with_inputs(
             script! {
                 { exact.clone() }
@@ -987,11 +1113,16 @@ mod tests {
             script! {{ size_clear.clone() } OP_TRUE},
             size_witness.to_vec(),
         );
+        let bitwise_clear_result = execute_script_with_inputs(
+            script! {{ bitwise_clear.clone() } OP_TRUE},
+            bitwise_witness.to_vec(),
+        );
         assert!(exact_result.success, "{exact_result}");
         assert!(minimal_result.success, "{minimal_result}");
         assert!(clear_result.success, "{clear_result}");
         assert!(size_result.success, "{size_result}");
         assert!(size_clear_result.success, "{size_clear_result}");
+        assert!(bitwise_clear_result.success, "{bitwise_clear_result}");
         let exact_hashes = signature
             .digits()
             .iter()
@@ -1006,6 +1137,7 @@ mod tests {
         assert!(minimal.len() < exact.len());
         assert!(size.len() < minimal.len());
         assert!(size_clear.len() < size.len());
+        assert!(bitwise_clear.len() < size_clear.len());
 
         let legacy_parameters = Parameters::new_by_bit_length(256, 4);
         let legacy_secret = vec![0x42; 20];
@@ -1021,13 +1153,15 @@ mod tests {
         let legacy_compact_witness = Wots32::compact_sign_to_raw_witness(&legacy_secret, &[0; 32]);
 
         eprintln!(
-            "fast-wots32 exact={} minimal={} clear={} size={} size_clear={} witness={} exact_hashes={} minimal_hashes={} exact_ops={} minimal_ops={} clear_ops={} size_ops={} size_clear_ops={} exact_stack={} minimal_stack={} clear_stack={} size_stack={} size_clear_stack={} legacy_list={} legacy_binary={} legacy_bruteforce={} legacy_witness={} legacy_compact_witness={}",
+            "fast-wots32 exact={} minimal={} clear={} size={} size_clear={} bitwise_clear={} witness={} bitwise_witness={} exact_hashes={} minimal_hashes={} exact_ops={} minimal_ops={} clear_ops={} size_ops={} size_clear_ops={} bitwise_clear_ops={} exact_stack={} minimal_stack={} clear_stack={} size_stack={} size_clear_stack={} bitwise_clear_stack={} legacy_list={} legacy_binary={} legacy_bruteforce={} legacy_witness={} legacy_compact_witness={}",
             exact.len(),
             minimal.len(),
             clear.len(),
             size.len(),
             size_clear.len(),
+            bitwise_clear.len(),
             serialize(&witness).len(),
+            serialize(&bitwise_witness).len(),
             exact_hashes,
             minimal_hashes,
             exact_result.stats.opcode_count,
@@ -1035,11 +1169,13 @@ mod tests {
             clear_result.stats.opcode_count,
             size_result.stats.opcode_count,
             size_clear_result.stats.opcode_count,
+            bitwise_clear_result.stats.opcode_count,
             exact_result.stats.max_nb_stack_items,
             minimal_result.stats.max_nb_stack_items,
             clear_result.stats.max_nb_stack_items,
             size_result.stats.max_nb_stack_items,
             size_clear_result.stats.max_nb_stack_items,
+            bitwise_clear_result.stats.max_nb_stack_items,
             legacy_list.len(),
             legacy_binary.len(),
             legacy_bruteforce.len(),
