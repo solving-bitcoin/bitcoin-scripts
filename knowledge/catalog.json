@@ -133,15 +133,17 @@
       ],
       "references": [
         "bitcoin-script-locked",
-        "bitcoin-script-stack-locked"
+        "bitcoin-script-stack-locked",
+        "coins-bitcoin-scripts-8f442e4b"
       ],
       "techniques": [
+        "batch-lookup",
         "digit-arithmetic",
         "lookup-table",
         "tracked-stack"
       ],
-      "security": "No independent cryptographic claim; callers must supply canonical nibbles.",
-      "stack_contract": "Values are expanded into four-bit stack digits; operation-specific ordering is documented beside source.",
+      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -159,13 +161,40 @@
           "metric_keys": [
             "u4_add_tables"
           ]
+        },
+        {
+          "id": "nibble-to-bits-batch32-checked",
+          "label": "Checked 32-nibble staggered-table decomposition",
+          "parameters": {
+            "nibble_count": 32,
+            "check_inputs": true,
+            "table_items": 61
+          },
+          "includes": "fragment-with-memory: 61-item staggered-table setup, 32 checked queries, table cleanup, and restoration of all 128 output bits to the main stack; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 924,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 189,
+          "executed_opcodes": 735,
+          "validation_weight": null,
+          "setup_script_bytes": 61,
+          "per_use_script_bytes": 26,
+          "metric_keys": [
+            "u4_bits_table_push",
+            "u4_bits_checked_batch32",
+            "u4_bits_checked_batch32_stack",
+            "u4_bits_checked_batch32_opcodes"
+          ]
         }
       ],
       "limitations": [
         "Digit expansion increases stack occupancy",
-        "Table coexistence is composition-dependent"
+        "Table coexistence is composition-dependent",
+        "The 32-nibble checked batch exceeds legacy and P2WSH opcode limits",
+        "Numeric range checks do not establish byte-unique ScriptNum encoding"
       ],
       "open_problems": [
+        "OP-002",
         "OP-003"
       ]
     },

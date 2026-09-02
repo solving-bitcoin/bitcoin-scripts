@@ -140,3 +140,14 @@ constraints highlighted by GHSA-76mq-v757-53gr. **Complete when:** the required
 equations are documented, adversarial witnesses are tested, and either the
 checks are proven present or the verifier is fixed. Do not infer local
 vulnerability from the adjacent advisory without this analysis.
+
+## OP-014 — Total-domain ScriptNum right-shift frontier
+
+Determine whether a one-item ScriptNum representation can beat the four-byte
+u32 backend for logical right shifts after all representation costs are
+included. **Complete when:** shifts `1..=31` are correct for every semantic
+32-bit boundary class including `0x80000000`; accepted raw encodings and any
+negative-zero special case are explicit; input/output conversion, shared-table
+setup, script bytes, executed opcodes, and strict stack peaks are compared on
+the same boundary; malformed encodings are rejected; and a complete tapscript
+leaf is differentially validated against a pinned Bitcoin Core revision.

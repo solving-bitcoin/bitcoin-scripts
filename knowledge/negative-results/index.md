@@ -168,3 +168,56 @@ For a fixed digit count, distinct digit strings then produce distinct
 SHA-256/RIPEMD-160 schedules unless an underlying or cross-function collision
 is found. This removes the exact alias but does not turn the non-standard
 mixed-hash construction into a cryptographically reviewed scheme.
+
+## NR-013: The published combined nibble table is misaligned
+
+The combined table in `split-into-bits.md` creates four equal indices and then
+performs four `OP_PICK OP_TOALTSTACK` queries. Because each query consumes one
+index, the first through fourth lookups see three, two, one, and zero remaining
+indices above the table. A direct 64-entry table grouped by nibble does not
+compensate for those offsets; for example, the as-published layout maps nibble
+`2` to four zero bits rather than `0010`.
+
+The retained u4 implementation uses the same equal-index mechanism with a
+corrected 61-item staggered table: table depths `4*x-3 ..= 4*x` hold the four
+big-endian bits of each nonzero nibble, while nibble zero is answered by its
+zero-valued indices. Corrected behavior is `locally-reproduced` exhaustively
+over `0..=15`; the upstream-layout diagnosis is `inspected` source analysis.
+Source: `coins-bitcoin-scripts-8f442e4b` at
+[`split-into-bits.md`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/split-into-bits.md).
+
+## NR-014: The generic roll-table splitter is not a wide-limb improvement
+
+The same upstream page's generic `ROLL` splitter does not directly return
+canonical bits. For each high input bit it leaves zero when the bit is set and
+the corresponding power of two when it is clear; the low bit remains the final
+remainder. Normalizing each high output with `OP_NOT` makes the result
+comparable to the existing branch splitter.
+
+Inspected scratch ports measured normalized roll-table versus existing branch
+fragments at 36/39 bytes for 4 bits, 92/95 for 8, 204/200 for 15, and 468/418
+for 29. The table uses another `2*(n-1)` live items. It saves three bytes only
+at the two smallest tested widths and loses for the local 15- and 29-bit limb
+uses, so it is not retained as a general splitter. This is an `inspected`
+frontier for the tested widths, not a universal domination claim.
+
+## NR-015: The single-ScriptNum right shift omits one 32-bit word
+
+The pinned `op_rshift.md` construction treats ScriptNum's sign as logical bit
+31 and the magnitude as the lower 31 bits. That represents almost every raw
+32-bit word compactly, but `0x80000000` corresponds to Script's negative-zero
+encoding. Numeric comparison sees it as zero, so the construction shifts it to
+zero instead of `0x10000000` for a three-bit shift. A protocol that requires
+all `2^32` words therefore needs a separate representation or explicit raw-byte
+special case.
+
+Inspected scratch ports measured fixed shifts by 3, 7, and 10 at 547, 539, and
+525 script bytes with 224, 216, and 210 static non-push opcodes. The existing
+four-byte u32 fragments were 545, 266, and 610 bytes respectively, excluding
+their shared Boolean-table setup. The ScriptNum method can win for a specific
+shift and saves stack items, but these are not like-for-like workload costs and
+all three inspected variants exceed the 201-opcode legacy/P2WSH consensus
+limit. Tapscript removes that opcode-count limit, but total-domain correctness,
+encoding, conversion, and strict Bitcoin Core validation remain open under
+OP-014. Source: `coins-bitcoin-scripts-8f442e4b` at
+[`op_rshift.md`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/op_rshift.md).

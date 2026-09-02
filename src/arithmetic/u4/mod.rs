@@ -1,4 +1,5 @@
 pub mod add;
+pub mod bits;
 pub mod logic;
 pub mod rotate;
 pub mod shift;

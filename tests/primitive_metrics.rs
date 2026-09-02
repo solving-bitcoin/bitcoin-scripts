@@ -427,6 +427,18 @@ fn metrics() -> Vec<Metric> {
     let length_commitment = preimage_length_commitment(&length_preimage);
 
     let division_witness = vec![scriptnum(14), scriptnum(119)];
+    const U4_BITS_BATCH: u32 = 32;
+    let u4_bits_checked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, true);
+    let u4_bits_unchecked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, false);
+    let u4_bits_branch_batch = script! {
+        for _ in 0..U4_BITS_BATCH {
+            { bitcoin_lab::arithmetic::bigint::bits::limb_to_be_bits_toaltstack(4) }
+        }
+        for _ in 0..4 * U4_BITS_BATCH {
+            OP_FROMALTSTACK
+        }
+    };
+    let u4_bits_inputs = vec![scriptnum(15); U4_BITS_BATCH as usize];
     let aes_zero_key = [0u8; 16];
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
@@ -441,6 +453,63 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_add_tables",
             value: script_len(u4::add::u4_push_add_tables()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_table_push",
+            value: script_len(u4::bits::u4_push_to_be_bits_table()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_table_drop",
+            value: script_len(u4::bits::u4_drop_to_be_bits_table()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_checked_query",
+            value: script_len(u4::bits::u4_nibble_below_bits_table_toaltstack(true)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_checked_batch32",
+            value: script_len(u4_bits_checked_batch.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_checked_batch32_stack",
+            value: max_stack_items(
+                script! {
+                    { u4_bits_checked_batch.clone() }
+                    { u4::stack::u4_drop(4 * U4_BITS_BATCH - 1) }
+                },
+                u4_bits_inputs.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_checked_batch32_opcodes",
+            value: static_non_push_opcodes(u4_bits_checked_batch.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_unchecked_batch32",
+            value: script_len(u4_bits_unchecked_batch),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_branch_batch32",
+            value: script_len(u4_bits_branch_batch.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_branch_batch32_stack",
+            value: max_stack_items(
+                script! {
+                    { u4_bits_branch_batch }
+                    { u4::stack::u4_drop(4 * U4_BITS_BATCH - 1) }
+                },
+                u4_bits_inputs,
+            ),
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",

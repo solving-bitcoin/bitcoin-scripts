@@ -59,6 +59,13 @@
       "revision": "ba96bc2bd76774c9d1b011461cb79d983c2c43a1"
     },
     {
+      "id": "coins-bitcoin-scripts-8f442e4b",
+      "title": "Coins Bitcoin Script construction notes",
+      "kind": "upstream-source",
+      "url": "https://github.com/coins/bitcoin-scripts/tree/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77",
+      "revision": "8f442e4bf8a744dd9bf69b2937bdebcaed5cae77; split-into-bits.md, maps.md, and op_rshift.md reviewed"
+    },
+    {
       "id": "bitvm-repository",
       "title": "BitVM trust-minimized bridge implementation",
       "kind": "upstream-source",

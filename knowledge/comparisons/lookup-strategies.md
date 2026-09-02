@@ -14,6 +14,25 @@ The implementation README estimates byte crossover near four uses for the half
 table, fourteen constant uses or four variable uses for log/exp. Recalculate
 for the actual live stack and cleanup boundary.
 
+## Nibble-to-bit measured frontier
+
+| Strategy, 32 inputs | Total script bytes | Peak items | Boundary and use |
+| --- | ---: | ---: | --- |
+| Existing four-bit branch splitter | 1,376 | 130 | Repeated split-to-altstack plus restoration |
+| Staggered batch table, checked | 924 | 189 | Setup, numeric range checks, cleanup, and restoration |
+| Staggered batch table, unchecked | 764 | 189 | Inputs must already be certified in `0..=15` |
+
+The checked table costs `92 + 26*n` bytes and crosses the `43*n` branch
+baseline at six nibbles. The unchecked form costs `92 + 21*n` and crosses at
+five. Its saving is not free stack-wise: the 61-item table remains live while
+the output expands to four items per input. With no unrelated state, the local
+generator accepts at most 234 inputs and reaches a strict 997-item peak there.
+Callers must lower that count for every preserved main- or altstack item.
+
+The upstream direct 64-entry table that motivated this search is not on the
+frontier because it is incorrect as published for multiple nibble values. The
+local staggered layout is a corrected construction, not a verbatim port.
+
 ## RNS measured frontier
 
 | Strategy | One-shot bytes | Peak items | Reuse behavior |
