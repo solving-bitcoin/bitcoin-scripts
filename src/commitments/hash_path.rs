@@ -1,4 +1,9 @@
 //! Hash-path commitments to bit strings and 1–31-bit Script integers.
+//!
+//! The 20-byte output of one path can be used as the preimage of another. This
+//! gives protocols an ordered, append-like hash-state composition even though
+//! Bitcoin Script cannot concatenate arbitrary byte strings. It is nesting,
+//! not literal concatenation: every nested call adds its own final RIPEMD-160.
 
 use bitcoin::hashes::{ripemd160, sha256, Hash};
 
@@ -10,9 +15,11 @@ pub const MAX_INTEGER_BITS: usize = 31;
 
 /// Compute the hash-path commitment for `bits`, starting from `preimage`.
 ///
-/// Bits are processed least-significant first. A false bit applies SHA-256 and
-/// a true bit applies RIPEMD-160. A final RIPEMD-160 maps both branch output
-/// sizes to the 20-byte commitment.
+/// Bits are processed in slice order; the integer helper supplies them
+/// least-significant first. A false bit applies SHA-256 and a true bit applies
+/// RIPEMD-160. A final RIPEMD-160 maps both branch output sizes to the 20-byte
+/// commitment. That fixed-size result may seed a later path, as in
+/// `hash_path_commitment(&alice_commitment, bob_bits)`.
 pub fn hash_path_commitment(preimage: &[u8], bits: &[bool]) -> [u8; 20] {
     let mut state = preimage.to_vec();
     for bit in bits {
@@ -223,6 +230,40 @@ mod tests {
         witness.push(preimage.to_vec());
 
         let result = execute_script_with_inputs(verify_hash_path(bits.len(), commitment), witness);
+        assert!(result.success, "{result}");
+        assert_eq!(result.final_stack.len(), 1);
+    }
+
+    #[test]
+    fn digest_can_seed_a_later_path() {
+        let alice_preimage = [0x42; 32];
+        let alice_bits = [true, false, false, true];
+        let bob_bits = [false, true, true];
+        let alice_commitment = hash_path_commitment(&alice_preimage, &alice_bits);
+        let bob_commitment = hash_path_commitment(&alice_commitment, &bob_bits);
+
+        // Bob's bits are deepest. Alice's path consumes only Alice's opening,
+        // leaving its digest directly above Bob's bit zero for the next path.
+        let mut witness = bob_bits
+            .iter()
+            .rev()
+            .chain(alice_bits.iter().rev())
+            .map(|bit| if *bit { vec![1] } else { vec![] })
+            .collect::<Vec<_>>();
+        witness.push(alice_preimage.to_vec());
+
+        let result = execute_script_with_inputs(
+            script! {
+                { hash_path_script(alice_bits.len()) }
+                OP_DUP
+                { alice_commitment.to_vec() }
+                OP_EQUALVERIFY
+                { hash_path_script(bob_bits.len()) }
+                { bob_commitment.to_vec() }
+                OP_EQUAL
+            },
+            witness,
+        );
         assert!(result.success, "{result}");
         assert_eq!(result.final_stack.len(), 1);
     }

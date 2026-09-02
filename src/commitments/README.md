@@ -5,15 +5,17 @@ return it to the surrounding Bitcoin Script. They are commitment primitives,
 not general-purpose hash functions.
 
 - **Hash path:** a nonce/preimage is hashed through one of two branches for
-  each committed bit. The verifier authenticates the path and reconstructs a
-  1–31-bit non-negative Script integer.
+  each committed bit. The generic form commits to a bit string and leaves a
+  fixed-size digest; an adapter reconstructs a 1–31-bit non-negative Script
+  integer.
 - **Four-way hash path:** two bits select one of four fixed-length hash
   codewords per base-4 digit, reducing witness items and peak stack usage.
 - **Preimage length:** a SHA-256 preimage is authenticated and its byte length,
   minus a public offset, becomes the committed integer.
 
-All three are experimental. In particular, a hash-path commitment without a secret,
-high-entropy preimage is deterministic and does not hide a small integer.
+All three are experimental. In particular, a hash-path commitment is
+deterministic and does not hide an opening when both its preimage and bits come
+from small enumerable spaces.
 
 ## Parameters
 
@@ -22,8 +24,10 @@ high-entropy preimage is deterministic and does not hide a small integer.
 - `bit_width`: required, with no default. Integer reconstruction accepts
   `1..=31`; the generic bit-path verifier can be wider subject to the enclosing
   script's limits.
-- `preimage`: caller-chosen byte string. Use a secret, high-entropy nonce when
-  hiding is required; it must fit the 520-byte stack-element limit.
+- `preimage`: caller-chosen byte string. A secret, high-entropy nonce is the
+  simplest way to hide short bit strings; sufficiently unpredictable bits can
+  instead supply the opening entropy. The preimage must fit the 520-byte
+  stack-element limit.
 - `commitment`: 20 bytes. A false bit applies SHA-256, a true bit applies
   RIPEMD-160, and a final RIPEMD-160 produces the commitment.
 - Variants consume the path, retain its bits on the altstack, or reconstruct a
@@ -51,6 +55,72 @@ high-entropy preimage is deterministic and does not hide a small integer.
   integer verifier hashes and reconstructs them most-significant first in one
   pass. There is no default variant.
 
+## Rolling composition without byte concatenation
+
+Write SHA-256 as `S`, RIPEMD-160 as `R`, and define `H(0, x) = S(x)` and
+`H(1, x) = R(x)`. For bits processed in the order `b[0], ..., b[n-1]`, the
+binary construction is
+
+```text
+HP(x, b) = R(H(b[n-1], ... H(b[0], x)))
+```
+
+Its interface is therefore usefully summarized as
+`hash_path(preimage, bits) -> 20-byte digest`. The output is a valid stack item
+and a valid preimage for another path. For example, two parties can publish
+
+```text
+h_A = HP(x_A, a)
+h_B = HP(h_A, b)
+```
+
+During verification, Script can evaluate Alice's opening, duplicate and compare
+the resulting `h_A` with the advertised checkpoint, and feed the retained
+20-byte digest directly through Bob's path to check `h_B`. If Bob's witness
+bits are placed below Alice's opening, no serialization or `OP_CAT` is needed
+between the two paths.
+
+This is an append-like composition of hash state, not byte-string
+concatenation. It has several useful properties:
+
+- each participant or round publishes one constant-size 20-byte checkpoint;
+- a later path is ordered and bound to the exact earlier checkpoint used as
+  its preimage;
+- the chain can be extended to more participants without changing old
+  openings; and
+- verification can stream from one path into the next while Script and witness
+  cost still grow linearly with the total number of bits.
+
+The distinction from concatenation matters. In general,
+`HP(HP(x, a), b) != HP(x, a || b)` because the inner call inserts its final
+RIPEMD-160 step. A protocol must pin every advertised checkpoint, participant
+order, bit width, and round boundary; `h_B` alone is not a self-describing
+transcript.
+
+### Joint-randomness use
+
+The nesting can authenticate a commit–reveal transcript for games, lotteries,
+or poker-like protocols. One possible pattern is:
+
+1. Alice samples a contribution `a` and publishes `h_A = HP(x_A, a)`.
+2. After `h_A` is fixed, Bob samples `b` and publishes `h_B = HP(h_A, b)`.
+3. The parties reveal their openings, the chained paths are verified, and a
+   separately specified combiner such as equal-width `a XOR b` derives the
+   joint value.
+
+Because `h_A` is public when Bob commits, Bob's path hides `b` only when the
+unrevealed bit string itself has enough min-entropy to resist enumeration.
+Alice's opening may instead get its hiding entropy from `x_A`, from `a`, or
+from both. At least one contribution must be sampled uniformly and remain
+hidden until the other contributions are bound for XOR to provide unbiased
+joint randomness.
+
+The path commitment supplies authentication and ordered composition, not a
+complete fair-coin or game protocol. If `h_B` itself is treated as the random
+outcome, Bob can grind candidate `b` values after seeing `h_A`. Any
+commit–reveal design must also handle selective aborts by the last revealer,
+typically with transaction-level deadlines, penalties, or an explicit fallback.
+
 ## Script metrics
 
 Sizes are the generated locking fragments. Witness sizes use Bitcoin's
@@ -69,8 +139,11 @@ the tests with the listed witness.
 The hash path ends in a 160-bit digest, capping generic collision resistance at
 80 bits and generic preimage or second-preimage resistance at 160 bits. Binding
 also depends on the security of the mixed SHA-256/RIPEMD-160 path. Hiding is
-only computational and depends on the entropy and secrecy of the initial
-preimage; a public or guessable preimage permits enumeration of small values.
+only computational and depends on the min-entropy of the unrevealed
+`(preimage, bits)` pair. A secret high-entropy preimage can hide a small value;
+with a public or guessable preimage, the bits must provide enough entropy to
+resist enumeration. A public checkpoint used to seed a nested path does not
+transfer the earlier opening's secrecy to the later bits.
 
 The four-way path has the same 160-bit final-digest bounds and additionally
 assumes that mixed SHA-256/RIPEMD-160 schedules remain binding across the four
@@ -136,6 +209,9 @@ remains.
   It temporarily stores all bits on the altstack and empties them before
   returning.
 - `verify_hash_path`: `... bitN-1 ... bit0 preimage -> ... true`.
+- `hash_path_script`: `... bitN-1 ... bit0 preimage -> ... digest`. Unlike
+  `verify_hash_path`, it leaves the raw 20-byte checkpoint so a later path can
+  consume it directly.
 - `verify_hash_path_to_altstack` leaves true on the main stack and the bits on
   the altstack, with bit `N-1` on top.
 - `verify_four_way_hash_path_to_integer`: `... least_significant_digit ...

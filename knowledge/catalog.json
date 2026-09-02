@@ -1015,10 +1015,10 @@
       "id": "commitment/hash-path-integer",
       "name": "Mixed-hash integer path",
       "class": "commitment/integer",
-      "summary": "Authenticates a bit path with SHA-256/RIPEMD-160 branches and reconstructs a 1–31-bit integer.",
+      "summary": "Authenticates a bit path with SHA-256/RIPEMD-160 branches, exposes a 20-byte digest that can seed an ordered later path, and can reconstruct a 1–31-bit integer.",
       "status": "experimental",
       "evidence": "locally-reproduced",
-      "execution": "unclassified",
+      "execution": "research-unlimited",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/hash-path-integer.md",
       "implementation": "src/commitments/hash_path.rs",
@@ -1032,7 +1032,7 @@
       "techniques": [
         "mixed-hash-path"
       ],
-      "security": "Hiding depends on a secret high-entropy preimage; final RIPEMD-160 limits generic collision resistance to 80 bits.",
+      "security": "Hiding depends on min-entropy in the unrevealed preimage and bits; a nested path starting from a public checkpoint needs high-entropy bits. Final RIPEMD-160 limits generic collision resistance to 80 bits.",
       "stack_contract": "... bitN-1 ... bit0 preimage -> ... value",
       "configurations": [
         {
@@ -1060,7 +1060,10 @@
       ],
       "limitations": [
         "Mixed-hash security assumption",
-        "Integer reconstruction limited to 31 bits"
+        "Integer reconstruction limited to 31 bits",
+        "Nested paths are append-like hash-state composition, not byte concatenation; protocols must pin checkpoints, ordering, widths, and round boundaries",
+        "Joint-randomness protocols still require an unbiased combiner plus grinding, replay, and selective-abort defenses",
+        "Witness-input tests disable the stack limit; Bitcoin Core consensus and policy validation not performed"
       ],
       "open_problems": [
         "OP-002",

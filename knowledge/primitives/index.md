@@ -19,7 +19,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Commitments
 
-- [Mixed-hash integer path](hash-path-integer.md)
+- [Mixed-hash path commitment](hash-path-integer.md)
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
 - [Binohash transaction digest](binohash.md)
