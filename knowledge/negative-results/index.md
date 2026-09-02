@@ -405,18 +405,47 @@ non-push counts were 18,471, 16,198, 15,104, 14,504, and 14,695.
 All five paid 1,649 bytes to push and 256 bytes to drop their lookup memory.
 The closest asymmetric candidate also needed 111 incremental hint items (113
 serialized bytes for its sparse `(p-1)^2` witness), compared with 67 items and
-94 bytes for the retained input. The production normalized radix-512 gate is
-21,291 bytes with a 761-item peak and a 1,795-byte table lifecycle.
+94 bytes for the retained ordinary input. A later asymmetric radix-512 split
+reduced the production ordinary gate to 20,524 bytes at a 757-item peak; the
+factor-16 encoded profile is 20,501 bytes at a 719-item peak. Both retain the
+1,795-byte table lifecycle.
 
-A separate 57-slot destructive recombination illustrates why domination
-depends on the workload. It is 21,709 bytes for one multiplication, 418 bytes
-larger than the retained isolated layout, but its lower peak permits a strict
-three-product shared-table batch. Production therefore selects it only for the
-three-gate dispatcher and keeps the smaller 87-slot layout for one and two
-products.
+A historical separate 57-slot destructive recombination illustrates why
+domination depends on the workload. In that search round it was 21,709 bytes
+for one multiplication, 418 bytes larger than the then-retained isolated
+layout, but its lower peak permitted a strict three-product shared-table batch.
+Current production selects a remapped destructive layout only for the
+three-gate dispatcher and keeps the smaller 85-coefficient layout for one and
+two ordinary products.
 
 The radix-256 scratch generators are not retained as deterministic fixtures,
 so those measurements are `inspected` design-search evidence. They establish a
 frontier for the tested radices, quotient layouts, cutoff rules, and stack
 schedules, not a proof that radix 512 or one-level Karatsuba is globally
 optimal.
+
+## NR-024: Additional recursive and one-pass secp256k1 folds are dominated or invalid
+
+The final clean-sheet round tested exact executable schedules around the
+asymmetric 14/15-digit radix-512 product. Adding a second Karatsuba layer to the
+15-digit normalized-difference branch saved 117 bytes in leaf-product code but
+added 176 bytes of recombination and 8 bytes of cleanup, a net 67-byte loss.
+A one-layer radix-256 design measured 24,995 bytes. A centered 32-digit
+radix-256 recursive product with the secp256k1 monic fold measured 24,211 bytes;
+even the impossible lower bound obtained by deleting all 2,261 routing bytes
+would have remained 1,426 bytes above the then-retained 20,524-byte gate.
+
+A direct one-pass factor-16 fold looked attractive because
+`16*512^28 = p + 32*512^3 + 977`, but its honest boundary residual reached
+68,719,492,368 and therefore cannot be consumed by four-byte ScriptNum numeric
+opcodes. The retained factor-16 construction folds the degree-28..31 tail a
+second time, recodes 977 as `-47 + 2*512`, and pipelines shared coefficient
+multiples. It measures 20,501 bytes with a 719-item peak and does not inherit
+the oversized residual.
+
+These scratch variants are `inspected` because their temporary generators are
+not retained as repository fixtures. The 20,524-byte ordinary and 20,501-byte
+factor-16 endpoints are `locally-reproduced` production configurations. The
+factor-16 endpoint is not an ordinary-domain drop-in: it requires stored
+`E(x)=x/16 mod p` values, so omitted conversions can reverse its 23-byte
+one-shot advantage.

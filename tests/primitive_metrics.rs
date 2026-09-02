@@ -389,6 +389,22 @@ fn metrics() -> Vec<Metric> {
     let secp256k1_batch3_input_items = (0..3)
         .flat_map(|_| secp256k1_full_input_items.iter().cloned())
         .collect::<Vec<_>>();
+    let secp256k1_factor16_lhs = secp256k1::factor16::encode(&secp256k1_lhs);
+    let secp256k1_factor16_rhs = secp256k1::factor16::encode(&secp256k1_rhs);
+    let secp256k1_factor16_hints =
+        secp256k1::factor16::hinted_mul(&secp256k1_factor16_lhs, &secp256k1_factor16_rhs);
+    let secp256k1_factor16_mul = secp256k1::factor16::mul_mod_hinted(0);
+    let secp256k1_factor16_cost = secp256k1::factor16::one_shot_cost_breakdown();
+    let secp256k1_factor16_opcodes = static_non_push_opcodes(secp256k1_factor16_mul.clone());
+    let secp256k1_factor16_standalone = secp256k1::factor16::mul_mod_hinted_from_raw_witness(0);
+    let secp256k1_factor16_hint_items = secp256k1_factor16_hints.witness_items();
+    let mut secp256k1_factor16_full_input_items = Vec::new();
+    for value in [&secp256k1_factor16_lhs, &secp256k1_factor16_rhs] {
+        for digit in secp256k1::field_digits(value).iter().rev() {
+            secp256k1_factor16_full_input_items.push(scriptnum(i64::from(*digit)));
+        }
+    }
+    secp256k1_factor16_full_input_items.extend(secp256k1_factor16_hint_items.iter().cloned());
     let secp256k1_square_hints = secp256k1::hinted_square(&secp256k1_lhs);
     let secp256k1_square = secp256k1::square_mod_hinted(0);
     let secp256k1_square_cost = secp256k1::square_one_shot_cost_breakdown();
@@ -1722,6 +1738,94 @@ fn metrics() -> Vec<Metric> {
                     OP_TRUE
                 },
                 secp256k1_batch3_input_items,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_mul",
+            value: script_len(secp256k1_factor16_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_table_setup",
+            value: secp256k1_factor16_cost.table_setup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_table_drop",
+            value: secp256k1_factor16_cost.table_drop,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_product_generation",
+            value: secp256k1_factor16_cost.product_generation,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_relation",
+            value: secp256k1_factor16_cost.folded_relation,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_cleanup",
+            value: secp256k1_factor16_cost.cleanup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_computation",
+            value: secp256k1_factor16_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_opcodes",
+            value: secp256k1_factor16_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_hint_items",
+            value: secp256k1_factor16_hint_items.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_hint_witness",
+            value: witness_size(&secp256k1_factor16_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_factor16_mul.clone() }
+                    for _ in 0..secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_factor16_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_standalone",
+            value: script_len(secp256k1_factor16_standalone.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_standalone_witness",
+            value: witness_size(&secp256k1_factor16_full_input_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_factor16_standalone_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_factor16_standalone }
+                    for _ in 0..secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_factor16_full_input_items.clone(),
             ),
         },
         Metric {

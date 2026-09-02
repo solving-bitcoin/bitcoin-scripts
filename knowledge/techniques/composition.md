@@ -26,9 +26,15 @@ turning per-fragment costs into a circuit total.
 
 The native secp256k1 backend amortizes a different resource: a 513-item
 quarter-square table whose push/drop code is 1,795 bytes. Two preloaded
-multiplications share it at an 886-item peak. Three require a destructive
-57-slot recombination and peak at 996; the smaller isolated-gate layout would
+multiplications share it at an 882-item peak. Three require a destructive
+57-slot recombination and peak at 993; the smaller isolated-gate layout would
 exceed the stack limit when all three witness groups coexist. Five specialized
 squares peak at 998. These are byte wins only for the documented adjacent,
 all-groups-preloaded layout, and the three/five-operation endpoints leave
 essentially no room for unrelated protocol state.
+
+The factor-16 Montgomery profile reduces one multiplication to a 719-item peak
+and 29 hint items, but currently exposes no resident-table or batch API. Its
+stored values mean `E(x)=x/16`, so an ordinary-domain batch estimate cannot be
+transferred to it without also specifying conversions and downstream domain
+compatibility.

@@ -44,3 +44,12 @@ Karatsuba difference branches changes the formal coefficient basis, so the host
 must generate carries from the normalized coefficients actually checked by the
 script. A schoolbook-basis carry vector is not interchangeable even though both
 polynomials evaluate to the same product at radix 512.
+
+Its factor-16 profile changes the reduction basis and the semantic encoding,
+not the hostile-witness rule. Stored values are `E(x)=x/16 mod p`; one signed
+residual plus 28 exact carries binds the degree-28 folded identity for
+`16*lhs*rhs`, and Script derives and certifies `E(xy)`. The representative
+incremental witness has 29 items and serializes to 37 bytes for encoded
+`(p-1)^2` (84–92 bytes across the pinned 256-case random sample). A raw
+canonical digit vector is still not a verified-path certificate, and a caller
+must not reinterpret factor-16 output as an ordinary-domain value.

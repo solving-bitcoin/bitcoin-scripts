@@ -8,26 +8,35 @@ backend verifies an exact integer reduction rather than an RNS congruence;
 ## secp256k1 base field
 
 The secp256k1 construction represents a field element with 29 balanced
-radix-512 digits. A one-level normalized Karatsuba product uses 677 signed
-quarter-square lookups: 225 for the low blocks, 196 for the high blocks, and
-256 for the normalized difference product. Eleven mixed-width quotient digits
-and 56 exact radix-512 carries are witness hints. The remainder is derived by
-Script, range checked, proved smaller than
+radix-512 digits. The ordinary-domain one-level normalized Karatsuba product
+uses 646 signed quarter-square lookups: 196 for the 14-digit low blocks, 225
+for the 15-digit high blocks, and 225 for the normalized difference product.
+Eleven mixed-width quotient digits and 56 exact radix-512 carries are witness
+hints. The remainder is derived by Script, range checked, proved smaller than
 `p = 2^256 - 2^32 - 977`, and returned in the same 29-digit representation.
+
+The separate `factor16` profile stores a logical value as `E(x) = x/16 mod p`.
+It reuses the same 646-product core, folds `16*a*b` to degree 28, and replaces
+the ordinary relation's 67 hints with one signed residual and 28 carries. Its
+output is `E(x*y)`, not an ordinary-domain product; `encode`/`decode` are host
+helpers, and any in-Script conversion or mixed-profile routing is outside the
+reported fragment.
 
 ### Parameters
 
-- The modulus, radix, 15/14-digit Karatsuba split, 513-entry quarter-square
+- The modulus, radix, 14/15-digit Karatsuba split, 513-entry quarter-square
   table, quotient chunk widths, and carry count are fixed.
 - `preserved_items` is the exact number of unrelated live main-plus-altstack
   items. Generators reject a composition whose declared peak exceeds 1,000.
 - `mul_mod_hinted` and `square_mod_hinted` require operand values already
   certified on the same verified path. The `_from_raw_witness` wrappers add
   operand certification at the operation boundary.
-- Preloaded multiplication supports up to three products; the selected
-  dispatcher uses the smallest one-shot path for one product, the 87-slot
+- Ordinary-domain preloaded multiplication supports up to three products; the
+  selected dispatcher uses the smallest one-shot path for one product, the 85-slot
   normalized-Karatsuba relation for two, and a 57-slot destructive
   recombination for three. Pure-square batches support up to five products.
+  The factor-16 profile currently exposes one-shot and raw-wrapper APIs, not a
+  resident-table or batch API.
 
 ### Script metrics
 
@@ -40,10 +49,12 @@ are not maxima.
 
 | Configuration | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
-| Multiply, two certified operands | <!-- metric:secp256k1_field_mul -->21291<!-- /metric:secp256k1_field_mul --> bytes | <!-- metric:secp256k1_field_mul_hint_witness -->94<!-- /metric:secp256k1_field_mul_hint_witness --> bytes / <!-- metric:secp256k1_field_mul_hint_items -->67<!-- /metric:secp256k1_field_mul_hint_items --> incremental hint items | <!-- metric:secp256k1_field_mul_stack -->761<!-- /metric:secp256k1_field_mul_stack --> |
-| Multiply from two raw operand encodings | <!-- metric:secp256k1_field_mul_standalone -->22567<!-- /metric:secp256k1_field_mul_standalone --> bytes | <!-- metric:secp256k1_field_mul_standalone_witness -->160<!-- /metric:secp256k1_field_mul_standalone_witness --> bytes / 125 complete data items | <!-- metric:secp256k1_field_mul_standalone_stack -->761<!-- /metric:secp256k1_field_mul_standalone_stack --> |
-| Two preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch2 -->40924<!-- /metric:secp256k1_field_mul_batch2 --> bytes | <!-- metric:secp256k1_field_mul_batch2_hint_witness -->187<!-- /metric:secp256k1_field_mul_batch2_hint_witness --> bytes / 134 incremental hint items | <!-- metric:secp256k1_field_mul_batch2_stack -->886<!-- /metric:secp256k1_field_mul_batch2_stack --> |
-| Three preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch3 -->61536<!-- /metric:secp256k1_field_mul_batch3 --> bytes | <!-- metric:secp256k1_field_mul_batch3_hint_witness -->280<!-- /metric:secp256k1_field_mul_batch3_hint_witness --> bytes / 201 incremental hint items | <!-- metric:secp256k1_field_mul_batch3_stack -->996<!-- /metric:secp256k1_field_mul_batch3_stack --> |
+| Ordinary multiply, two certified operands | <!-- metric:secp256k1_field_mul -->20524<!-- /metric:secp256k1_field_mul --> bytes | <!-- metric:secp256k1_field_mul_hint_witness -->94<!-- /metric:secp256k1_field_mul_hint_witness --> bytes / <!-- metric:secp256k1_field_mul_hint_items -->67<!-- /metric:secp256k1_field_mul_hint_items --> incremental hint items | <!-- metric:secp256k1_field_mul_stack -->757<!-- /metric:secp256k1_field_mul_stack --> |
+| Ordinary multiply from two raw operand encodings | <!-- metric:secp256k1_field_mul_standalone -->21800<!-- /metric:secp256k1_field_mul_standalone --> bytes | <!-- metric:secp256k1_field_mul_standalone_witness -->160<!-- /metric:secp256k1_field_mul_standalone_witness --> bytes / 125 complete data items | <!-- metric:secp256k1_field_mul_standalone_stack -->757<!-- /metric:secp256k1_field_mul_standalone_stack --> |
+| Factor-16 multiply, two certified encoded operands | <!-- metric:secp256k1_field_factor16_mul -->20501<!-- /metric:secp256k1_field_factor16_mul --> bytes | <!-- metric:secp256k1_field_factor16_hint_witness -->37<!-- /metric:secp256k1_field_factor16_hint_witness --> bytes / <!-- metric:secp256k1_field_factor16_hint_items -->29<!-- /metric:secp256k1_field_factor16_hint_items --> incremental hint items | <!-- metric:secp256k1_field_factor16_stack -->719<!-- /metric:secp256k1_field_factor16_stack --> |
+| Factor-16 multiply from two raw encoded operands | <!-- metric:secp256k1_field_factor16_standalone -->21777<!-- /metric:secp256k1_field_factor16_standalone --> bytes | <!-- metric:secp256k1_field_factor16_standalone_witness -->103<!-- /metric:secp256k1_field_factor16_standalone_witness --> bytes / 87 complete data items | <!-- metric:secp256k1_field_factor16_standalone_stack -->719<!-- /metric:secp256k1_field_factor16_standalone_stack --> |
+| Two ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch2 -->39400<!-- /metric:secp256k1_field_mul_batch2 --> bytes | <!-- metric:secp256k1_field_mul_batch2_hint_witness -->187<!-- /metric:secp256k1_field_mul_batch2_hint_witness --> bytes / 134 incremental hint items | <!-- metric:secp256k1_field_mul_batch2_stack -->882<!-- /metric:secp256k1_field_mul_batch2_stack --> |
+| Three ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch3 -->59163<!-- /metric:secp256k1_field_mul_batch3 --> bytes | <!-- metric:secp256k1_field_mul_batch3_hint_witness -->280<!-- /metric:secp256k1_field_mul_batch3_hint_witness --> bytes / 201 incremental hint items | <!-- metric:secp256k1_field_mul_batch3_stack -->993<!-- /metric:secp256k1_field_mul_batch3_stack --> |
 | Square, one certified operand | <!-- metric:secp256k1_field_square -->14543<!-- /metric:secp256k1_field_square --> bytes | <!-- metric:secp256k1_field_square_hint_witness -->94<!-- /metric:secp256k1_field_square_hint_witness --> bytes / 67 incremental hint items | <!-- metric:secp256k1_field_square_stack -->614<!-- /metric:secp256k1_field_square_stack --> |
 | Five preloaded squares, certified operands | <!-- metric:secp256k1_field_square_batch5 -->65074<!-- /metric:secp256k1_field_square_batch5 --> bytes | <!-- metric:secp256k1_field_square_batch5_hint_witness -->468<!-- /metric:secp256k1_field_square_batch5_hint_witness --> bytes / 335 incremental hint items | <!-- metric:secp256k1_field_square_batch5_stack -->998<!-- /metric:secp256k1_field_square_batch5_stack --> |
 
@@ -54,39 +65,59 @@ The one-shot multiplication is exactly:
 | Push 513-entry table | <!-- metric:secp256k1_field_mul_table_setup -->1538<!-- /metric:secp256k1_field_mul_table_setup --> |
 | Drop table | <!-- metric:secp256k1_field_mul_table_drop -->257<!-- /metric:secp256k1_field_mul_table_drop --> |
 | Low/high raw products | <!-- metric:secp256k1_field_mul_raw_products -->9374<!-- /metric:secp256k1_field_mul_raw_products --> |
-| Normalized-difference products | <!-- metric:secp256k1_field_mul_difference_products -->5694<!-- /metric:secp256k1_field_mul_difference_products --> |
-| Difference normalization | <!-- metric:secp256k1_field_mul_difference_normalization -->1165<!-- /metric:secp256k1_field_mul_difference_normalization --> |
-| Coefficient-array routing | <!-- metric:secp256k1_field_mul_coefficient_routing -->179<!-- /metric:secp256k1_field_mul_coefficient_routing --> |
-| Karatsuba recombination | <!-- metric:secp256k1_field_mul_coefficient_recombination -->540<!-- /metric:secp256k1_field_mul_coefficient_recombination --> |
-| Quotient/carry relation, cleanup, output validation | <!-- metric:secp256k1_field_mul_relation_output -->2544<!-- /metric:secp256k1_field_mul_relation_output --> |
-| **Total** | **21,291** |
+| Normalized-difference products | <!-- metric:secp256k1_field_mul_difference_products -->5008<!-- /metric:secp256k1_field_mul_difference_products --> |
+| Difference normalization | <!-- metric:secp256k1_field_mul_difference_normalization -->1103<!-- /metric:secp256k1_field_mul_difference_normalization --> |
+| Coefficient-array routing | <!-- metric:secp256k1_field_mul_coefficient_routing -->173<!-- /metric:secp256k1_field_mul_coefficient_routing --> |
+| Karatsuba recombination | <!-- metric:secp256k1_field_mul_coefficient_recombination -->532<!-- /metric:secp256k1_field_mul_coefficient_recombination --> |
+| Quotient/carry relation, cleanup, output validation | <!-- metric:secp256k1_field_mul_relation_output -->2539<!-- /metric:secp256k1_field_mul_relation_output --> |
+| **Total** | **20,524** |
 
-Thus the static table lifecycle is 1,795 bytes, or 8.4% of one isolated
+Thus the static table lifecycle is 1,795 bytes, or 8.7% of one isolated
 multiplication. The remaining
-<!-- metric:secp256k1_field_mul_computation -->19496<!-- /metric:secp256k1_field_mul_computation -->
+<!-- metric:secp256k1_field_mul_computation -->18729<!-- /metric:secp256k1_field_mul_computation -->
 bytes are actual per-operation computation and routing. The fragment contains
-<!-- metric:secp256k1_field_mul_opcodes -->13550<!-- /metric:secp256k1_field_mul_opcodes -->
+<!-- metric:secp256k1_field_mul_opcodes -->13043<!-- /metric:secp256k1_field_mul_opcodes -->
 static non-push opcodes. The raw wrapper adds
 <!-- metric:secp256k1_field_operand_certification -->1276<!-- /metric:secp256k1_field_operand_certification -->
 bytes to certify both operands.
 
+The factor-16 profile has a distinct but nearly equal byte split:
+
+| Factor-16 component | Bytes |
+| --- | ---: |
+| Push 513-entry table | <!-- metric:secp256k1_field_factor16_table_setup -->1538<!-- /metric:secp256k1_field_factor16_table_setup --> |
+| Drop table | <!-- metric:secp256k1_field_factor16_table_drop -->257<!-- /metric:secp256k1_field_factor16_table_drop --> |
+| Normalized-Karatsuba product generation | <!-- metric:secp256k1_field_factor16_product_generation -->15615<!-- /metric:secp256k1_field_factor16_product_generation --> |
+| Folded exact relation and derived digits | <!-- metric:secp256k1_field_factor16_relation -->2674<!-- /metric:secp256k1_field_factor16_relation --> |
+| Input/temporary cleanup and output certification | <!-- metric:secp256k1_field_factor16_cleanup -->417<!-- /metric:secp256k1_field_factor16_cleanup --> |
+| **Total** | **20,501** |
+
+Its static table lifecycle is the same 1,795 bytes; the other
+<!-- metric:secp256k1_field_factor16_computation -->18706<!-- /metric:secp256k1_field_factor16_computation -->
+bytes are computation. It contains
+<!-- metric:secp256k1_field_factor16_opcodes -->13122<!-- /metric:secp256k1_field_factor16_opcodes -->
+static non-push opcodes. The 23-byte locking-script advantage over the ordinary
+profile is small; the material difference is 29 rather than 67 hints and 38
+fewer peak stack items. Those savings apply only while values stay in the
+factor-16 domain.
+
 For repeated work, the table's 1,795-byte push/drop cost is paid once. Two
 preloaded products use
-<!-- metric:secp256k1_field_mul_batch2_computation -->39129<!-- /metric:secp256k1_field_mul_batch2_computation -->
+<!-- metric:secp256k1_field_mul_batch2_computation -->37605<!-- /metric:secp256k1_field_mul_batch2_computation -->
 bytes of non-table computation, including
-<!-- metric:secp256k1_field_mul_batch2_relation -->19186<!-- /metric:secp256k1_field_mul_batch2_relation -->
-bytes per normalized-Karatsuba relation, and average 20,462 total bytes each. Three use
-<!-- metric:secp256k1_field_mul_batch3_computation -->59741<!-- /metric:secp256k1_field_mul_batch3_computation -->
+<!-- metric:secp256k1_field_mul_batch2_relation -->18424<!-- /metric:secp256k1_field_mul_batch2_relation -->
+bytes per normalized-Karatsuba relation, and average 19,700 total bytes each. Three use
+<!-- metric:secp256k1_field_mul_batch3_computation -->57368<!-- /metric:secp256k1_field_mul_batch3_computation -->
 non-table bytes, including
-<!-- metric:secp256k1_field_mul_batch3_relation -->19535<!-- /metric:secp256k1_field_mul_batch3_relation -->
-bytes per compact relation, and average 20,512 bytes each; destructive
+<!-- metric:secp256k1_field_mul_batch3_relation -->18744<!-- /metric:secp256k1_field_mul_batch3_relation -->
+bytes per compact relation, and average 19,721 bytes each; destructive
 recombination is slightly larger per gate but is what keeps the strict peak at
-996. A resident-table single gate is
-<!-- metric:secp256k1_field_mul_resident -->20792<!-- /metric:secp256k1_field_mul_resident -->
+993. A resident-table single gate is
+<!-- metric:secp256k1_field_mul_resident -->19963<!-- /metric:secp256k1_field_mul_resident -->
 bytes; setup plus one final result-preserving cleanup of
 <!-- metric:secp256k1_field_mul_resident_cleanup -->315<!-- /metric:secp256k1_field_mul_resident_cleanup -->
 bytes totals
-<!-- metric:secp256k1_field_mul_resident_total -->22645<!-- /metric:secp256k1_field_mul_resident_total -->
+<!-- metric:secp256k1_field_mul_resident_total -->21816<!-- /metric:secp256k1_field_mul_resident_total -->
 bytes. These resident figures do not include circuit-specific scheduling or
 fan-out. Resident lookup memory must be emitted by the locking script through
 `table_setup`; witness-supplied entries are not trusted table state.
@@ -127,11 +158,14 @@ binding; same-shaped raw digit arrays are not certificates. Lower digits are
 checked in `[-256, 256)`, the top digit and exact integer are checked against
 the field modulus, and outputs repeat those checks before becoming reusable.
 
-Hints are hostile. The 11 quotient digits and 56 carries prove the exact
-integer identity `lhs*rhs = q*p + r` coefficient by coefficient. Script derives
-`r`; it is not a witness hint. Quotient digits need not use the host's canonical
-mixed-width encoding because only the represented exact integer matters.
-Oversized encodings fail closed under four-byte ScriptNum arithmetic.
+Hints are hostile. In the ordinary profile, 11 quotient digits and 56 carries
+prove the exact integer identity `lhs*rhs = q*p + r` coefficient by coefficient.
+In the factor-16 profile, one signed residual and 28 carries prove the folded
+identity `G-t*p=r`, where `G` evaluates to `16*lhs*rhs`. Script derives `r` in
+both profiles; it is not a witness hint. Ordinary quotient digits need not use
+the host's canonical mixed-width encoding because only the represented exact
+integer matters. Oversized encodings fail closed under four-byte ScriptNum
+arithmetic.
 
 Carry-normalizing the Karatsuba differences preserves evaluation at radix 512
 but changes the formal coefficient polynomial by multiples of `X-512`.
@@ -155,17 +189,19 @@ output and arrange cleanstack.
 
 ### Witness and stack contract
 
-For multiplication, input is
+For ordinary multiplication, input is
 `preserved | lhs[28..0] | rhs[28..0] | q[10..0] | c[55..0]`, with digit/carry
 zero nearest the top; output is `preserved | r[28..0]`. The 67 incremental hint
 items serialize in reverse quotient order followed by reverse carry order.
-Squaring uses the analogous one-operand layout. Batch group zero is nearest the
-top, is processed first, and its result is returned nearest the top. Both main
-and altstack items count toward `preserved_items` and the declared peak.
+Factor-16 input instead ends in `t | c[27..0]`, and its certified output remains
+factor-16 encoded. Squaring uses the analogous ordinary one-operand layout.
+Batch group zero is nearest the top, is processed first, and its result is
+returned nearest the top. Both main and altstack items count toward
+`preserved_items` and the declared peak.
 
 ### Comparison boundary
 
-The 21,291-byte native gate and the 31,281-byte prime-RNS composable gate both
+The 20,524-byte ordinary native gate and the 31,281-byte prime-RNS composable gate both
 consume two previously certified secp256k1 field values, bind hostile reduction
 hints locally, and return a reusable certified result. Their certificate
 representations differ: 29 balanced radix digits here versus 46 canonical RNS
@@ -174,6 +210,12 @@ RNS carry gate is not comparable: it omits every global integer binding. The
 51,055-byte RNS standalone gate performs four full limb-to-RNS bindings and
 returns both limbs and residues, whereas this raw wrapper certifies two native
 digit operands and derives the native result directly.
+
+The 20,501-byte factor-16 row has the same exact-integer soundness boundary but
+a different semantic encoding. It is like-for-like only when both inputs and
+downstream consumers already use `E(x)=x/16`; the ordinary multiply, specialized
+square, and preloaded ordinary batches do not preserve that domain. Host-side
+`encode`/`decode` do not make an omitted in-Script conversion free.
 
 BN254 `Fq` is a different base field with a different nine-limb multiplication
 backend and certification convention. Its hinted-multiplication size is

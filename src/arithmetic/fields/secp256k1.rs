@@ -25,6 +25,9 @@ use crate::{
     support::script::*,
 };
 
+/// Factor-16 Montgomery-domain multiplication with a 29-item hint witness.
+pub mod factor16;
+
 /// Number of balanced radix-512 digits in a field value.
 pub const FIELD_DIGIT_COUNT: usize = 29;
 
@@ -62,10 +65,10 @@ pub const TABLE_ITEM_COUNT: u32 = 513;
 
 /// Measured combined-stack peak of either multiplication layout with no
 /// unrelated live state. The 1,000-item guard is also enforced at generation.
-pub const HINTED_MUL_STACK_ITEMS: u32 = 761;
+pub const HINTED_MUL_STACK_ITEMS: u32 = 757;
 
 /// Exact combined-stack peak of the compact three-multiplication batch.
-const COMPACT_MUL_BATCH_STACK_ITEMS: u32 = 996;
+const COMPACT_MUL_BATCH_STACK_ITEMS: u32 = 993;
 
 /// Exact combined-stack peak of one hinted square without unrelated state.
 pub const HINTED_SQUARE_STACK_ITEMS: u32 = 614;
@@ -173,11 +176,11 @@ pub struct OneShotCostBreakdown {
     pub table_setup: usize,
     /// Drop the 513 entries after this multiplication.
     pub table_drop: usize,
-    /// The 225 low-block and 196 high-block signed digit products.
+    /// The 196 low-block and 225 high-block signed digit products.
     pub raw_digit_products: usize,
-    /// The 256 signed products of the two normalized block differences.
+    /// The 225 signed products of the two normalized block differences.
     pub difference_digit_products: usize,
-    /// Carry-normalize both signed block differences to 16 balanced digits.
+    /// Carry-normalize both signed block differences to 15 balanced digits.
     pub difference_normalization: usize,
     /// Restore/drop the difference and product coefficient arrays.
     pub coefficient_routing: usize,
@@ -291,7 +294,7 @@ pub enum MulBatchStrategy {
     /// The ordinary private-table gate, optimal for one multiplication.
     #[default]
     OneShot,
-    /// The 87-coefficient resident-table gate, optimal for two multiplications.
+    /// The 85-coefficient resident-table gate, optimal for two multiplications.
     ResidentKaratsuba,
     /// The destructive 57-coefficient schedule required to fit three gates.
     CompactStackKaratsuba,
@@ -478,10 +481,7 @@ fn quotient_terms_at(coefficient_index: usize) -> Vec<(usize, i32)> {
 
 fn normalized_difference(lhs: &[i32], rhs: &[i32]) -> [i32; KARATSUBA_DIFFERENCE_DIGITS] {
     let mut carry = 0i32;
-    std::array::from_fn(|index| {
-        if index == KARATSUBA_SPLIT {
-            return carry;
-        }
+    let result = std::array::from_fn(|index| {
         let coefficient =
             carry + lhs.get(index).copied().unwrap_or(0) - rhs.get(index).copied().unwrap_or(0);
         let (digit, next_carry) = if coefficient >= HALF_RADIX {
@@ -493,7 +493,12 @@ fn normalized_difference(lhs: &[i32], rhs: &[i32]) -> [i32; KARATSUBA_DIFFERENCE
         };
         carry = next_carry;
         digit
-    })
+    });
+    assert_eq!(
+        carry, 0,
+        "asymmetric field split difference must fit 15 digits"
+    );
+    result
 }
 
 fn convolution(lhs: &[i32], rhs: &[i32]) -> Vec<i64> {
@@ -1121,15 +1126,16 @@ fn quotient_correction(terms: &[(usize, i32)], base_depth: u32) -> Script {
     .expect("one quotient-correction strategy")
 }
 
-const KARATSUBA_SPLIT: usize = 15;
+const KARATSUBA_SPLIT: usize = 14;
 const KARATSUBA_LOW_COEFFICIENTS: usize = 2 * KARATSUBA_SPLIT - 1;
 const KARATSUBA_HIGH_DIGITS: usize = FIELD_DIGIT_COUNT - KARATSUBA_SPLIT;
 const KARATSUBA_HIGH_COEFFICIENTS: usize = 2 * KARATSUBA_HIGH_DIGITS - 1;
-const KARATSUBA_DIFFERENCE_DIGITS: usize = KARATSUBA_SPLIT + 1;
+const KARATSUBA_DIFFERENCE_DIGITS: usize = KARATSUBA_HIGH_DIGITS;
 const KARATSUBA_DIFFERENCE_COEFFICIENTS: usize = 2 * KARATSUBA_DIFFERENCE_DIGITS - 1;
 const KARATSUBA_STORED_COEFFICIENTS: usize =
     KARATSUBA_LOW_COEFFICIENTS + KARATSUBA_HIGH_COEFFICIENTS + KARATSUBA_DIFFERENCE_COEFFICIENTS;
 const KARATSUBA_PRODUCT_COEFFICIENTS: usize = 2 * FIELD_DIGIT_COUNT - 1;
+const KARATSUBA_SAVED_LOW_COEFFICIENTS: usize = KARATSUBA_LOW_COEFFICIENTS - KARATSUBA_SPLIT;
 
 fn karatsuba_operand_product_coefficient(
     table_above_inputs: bool,
@@ -1194,9 +1200,9 @@ fn karatsuba_normalize_coefficient() -> Script {
     }
 }
 
-// Normalize lhs_low-lhs_high to 16 balanced digits. The extra digit is the
-// final carry and is necessary because the two blocks can differ by almost
-// one whole block radix.
+// Normalize lhs_low-lhs_high to 15 balanced digits. Canonical field inputs
+// make the 15-digit high block nonnegative and below 2^131, while the
+// 14-digit low block has magnitude below 2^125, so the final carry is zero.
 fn karatsuba_normalize_lhs_difference(
     table_above_inputs: bool,
     dead_items_below_table: u32,
@@ -1211,21 +1217,32 @@ fn karatsuba_normalize_lhs_difference(
         1 + RELATION_CARRY_COUNT as u32 + (QUOTIENT_DIGIT_COUNT + FIELD_DIGIT_COUNT) as u32
     };
     script! {
-        0
-        for index in 0..KARATSUBA_SPLIT {
-            { lhs_base_depth + index as u32 } OP_PICK
-            if index < KARATSUBA_HIGH_DIGITS {
-                { lhs_base_depth + 1 + KARATSUBA_SPLIT as u32 + index as u32 }
+        for index in 0..KARATSUBA_DIFFERENCE_DIGITS {
+            if index < KARATSUBA_SPLIT {
+                { lhs_base_depth + index as u32 - u32::from(index == 0) } OP_PICK
+                { lhs_base_depth + 1 + KARATSUBA_SPLIT as u32 + index as u32
+                    - u32::from(index == 0) }
                 OP_PICK OP_SUB
+            } else {
+                { lhs_base_depth + KARATSUBA_SPLIT as u32 + index as u32 }
+                OP_PICK OP_NEGATE
             }
-            OP_ADD
-            { karatsuba_normalize_coefficient() }
+            if index != 0 {
+                OP_ADD
+            }
+            if index + 1 == KARATSUBA_DIFFERENCE_DIGITS {
+                // The only source digit here is canonical digit 28, hence
+                // 0..=16. Together with carry -1..=1, this coefficient is
+                // already balanced and the outgoing carry is zero.
+                OP_TOALTSTACK
+            } else {
+                { karatsuba_normalize_coefficient() }
+            }
         }
-        OP_TOALTSTACK
     }
 }
 
-// Normalize rhs_high-rhs_low to 16 balanced digits.
+// Normalize rhs_high-rhs_low to 15 balanced digits under the same bound.
 fn karatsuba_normalize_rhs_difference(
     table_above_inputs: bool,
     dead_items_below_table: u32,
@@ -1240,18 +1257,25 @@ fn karatsuba_normalize_rhs_difference(
         1 + RELATION_CARRY_COUNT as u32 + QUOTIENT_DIGIT_COUNT as u32
     };
     script! {
-        0
-        for index in 0..KARATSUBA_SPLIT {
-            if index < KARATSUBA_HIGH_DIGITS {
-                { rhs_base_depth + KARATSUBA_SPLIT as u32 + index as u32 } OP_PICK
-                { rhs_base_depth + 1 + index as u32 } OP_PICK OP_SUB
+        for index in 0..KARATSUBA_DIFFERENCE_DIGITS {
+            if index < KARATSUBA_SPLIT {
+                { rhs_base_depth + KARATSUBA_SPLIT as u32 + index as u32
+                    - u32::from(index == 0) } OP_PICK
+                { rhs_base_depth + 1 + index as u32 - u32::from(index == 0) } OP_PICK OP_SUB
             } else {
-                { rhs_base_depth + index as u32 } OP_PICK OP_NEGATE
+                { rhs_base_depth + KARATSUBA_SPLIT as u32 + index as u32 } OP_PICK
             }
-            OP_ADD
-            { karatsuba_normalize_coefficient() }
+            if index != 0 {
+                OP_ADD
+            }
+            if index + 1 == KARATSUBA_DIFFERENCE_DIGITS {
+                // As above, canonical digit 28 is 0..=16, so this final
+                // coefficient needs neither balancing nor a carry check.
+                OP_TOALTSTACK
+            } else {
+                { karatsuba_normalize_coefficient() }
+            }
         }
-        OP_TOALTSTACK
     }
 }
 
@@ -1453,10 +1477,9 @@ fn hinted_mul_relation(
 }
 
 // Compact three-gate schedule. It starts with one 57-slot direct coefficient
-// array C, where C[0..28]=z0, C[29]=0, and C[30..56]=z2. Each middle target
-// C[15+m] is removed as soon as z0[m]+z2[m]+zd[m] has been accumulated into
-// it. Only z0[15..28] needs a 14-item saved copy, reducing the first gate's
-// exact three-witness peak from 1,011 to 996 combined stack items.
+// array C, where C[0..26]=z0, C[27]=0, and C[28..56]=z2. Each middle target
+// C[14+m] is removed as soon as z0[m]+z2[m]+zd[m] has been accumulated into
+// it. Only z0[14..26] needs a 13-item saved copy.
 fn compact_difference_product_accumulator(coefficient_index: usize) -> Script {
     let first = coefficient_index.saturating_sub(KARATSUBA_DIFFERENCE_DIGITS - 1);
     let last = coefficient_index.min(KARATSUBA_DIFFERENCE_DIGITS - 1);
@@ -1464,10 +1487,10 @@ fn compact_difference_product_accumulator(coefficient_index: usize) -> Script {
         0
         for lhs_index in first..=last {
             { product_into_accumulator(
-                72 - coefficient_index as u32 + lhs_index as u32,
-                89 - coefficient_index as u32
+                71 - coefficient_index as u32 + lhs_index as u32,
+                87 - coefficient_index as u32
                     + (coefficient_index - lhs_index) as u32,
-                105 - coefficient_index as u32,
+                102 - coefficient_index as u32,
             ) }
         }
     }
@@ -1478,23 +1501,23 @@ fn compact_middle_coefficient(coefficient_index: usize) -> Script {
         { compact_difference_product_accumulator(coefficient_index) }
         if coefficient_index < KARATSUBA_LOW_COEFFICIENTS {
             if coefficient_index < KARATSUBA_SPLIT {
-                { 15 + coefficient_index as u32 } OP_PICK OP_ADD
+                { 14 + coefficient_index as u32 } OP_PICK OP_ADD
             } else {
-                // Saved z0[15] is nearest the top; the accumulator adds one.
-                { coefficient_index as u32 - 14 } OP_PICK OP_ADD
+                // Saved z0[14] is nearest the top; the accumulator adds one.
+                { coefficient_index as u32 - 13 } OP_PICK OP_ADD
             }
         }
         if coefficient_index < KARATSUBA_HIGH_COEFFICIENTS {
-            // Removing C[15+m] exactly cancels the increasing z2 index.
-            45 OP_PICK OP_ADD
+            // Removing C[14+m] exactly cancels the increasing z2 index.
+            42 OP_PICK OP_ADD
         }
-        // Direct C[15+m] is always the sixteenth remaining direct slot.
-        30 OP_ROLL OP_ADD OP_TOALTSTACK
+        // Direct C[14+m] is always the fifteenth remaining direct slot.
+        28 OP_ROLL OP_ADD OP_TOALTSTACK
     }
 }
 
 // Output mapping, nearest item first:
-// final[15..45], final[0..14], final[46..56].
+// final[14..42], final[0..13], final[43..56].
 fn compact_karatsuba_product_block(dead_items_below_table: u32) -> Script {
     script! {
         for coefficient_index in 0..KARATSUBA_LOW_COEFFICIENTS {
@@ -1528,17 +1551,20 @@ fn compact_karatsuba_product_block(dead_items_below_table: u32) -> Script {
             OP_FROMALTSTACK
         }
 
-        // Repeated depth-28 copies save C[28], C[27], ..., C[15], leaving
-        // saved C[15] nearest the top.
-        for _ in 0..KARATSUBA_HIGH_DIGITS {
-            28 OP_PICK
+        // Repeated depth-26 copies save C[26], C[25], ..., C[14], leaving
+        // saved C[14] nearest the top.
+        for _ in 0..KARATSUBA_SAVED_LOW_COEFFICIENTS {
+            26 OP_PICK
         }
         for coefficient_index in 0..KARATSUBA_DIFFERENCE_COEFFICIENTS {
             { compact_middle_coefficient(coefficient_index) }
         }
 
-        for _ in 0..KARATSUBA_HIGH_DIGITS / 2 {
+        for _ in 0..KARATSUBA_SAVED_LOW_COEFFICIENTS / 2 {
             OP_2DROP
+        }
+        if KARATSUBA_SAVED_LOW_COEFFICIENTS % 2 != 0 {
+            OP_DROP
         }
         for _ in 0..KARATSUBA_PRODUCT_COEFFICIENTS - KARATSUBA_DIFFERENCE_COEFFICIENTS {
             OP_TOALTSTACK
@@ -1554,9 +1580,9 @@ fn compact_karatsuba_product_block(dead_items_below_table: u32) -> Script {
 
 fn compact_add_product_coefficient(coefficient_index: usize) -> Script {
     let depth = if coefficient_index < KARATSUBA_SPLIT {
-        32 + coefficient_index
+        30 + coefficient_index
     } else if coefficient_index < KARATSUBA_SPLIT + KARATSUBA_DIFFERENCE_COEFFICIENTS {
-        coefficient_index - 14
+        coefficient_index - 13
     } else {
         coefficient_index + 1
     };
@@ -2510,7 +2536,9 @@ mod tests {
             &field_bounds[KARATSUBA_SPLIT..],
         );
         let mut difference_bounds = vec![HALF_RADIX as u64; KARATSUBA_DIFFERENCE_DIGITS];
-        difference_bounds[KARATSUBA_DIFFERENCE_DIGITS - 1] = 1;
+        // The unmatched canonical top digit is 0..=16 and the incoming
+        // balanced-normalization carry is -1..=1.
+        difference_bounds[KARATSUBA_DIFFERENCE_DIGITS - 1] = 17;
         let difference_product_bounds = convolution_bounds(&difference_bounds, &difference_bounds);
         for (name, bounds) in [
             ("z0", &z0_bounds),
@@ -2657,7 +2685,7 @@ mod tests {
             (BigUint::one(), &p - BigUint::one()),
             (&p - BigUint::one(), &p - BigUint::one()),
         ];
-        for _ in 0..64 {
+        for _ in 0..256 {
             cases.push((rng.gen_biguint_below(&p), rng.gen_biguint_below(&p)));
         }
 
@@ -2778,8 +2806,8 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preserved = [111i32, 222, 333];
-        let expected_totals = [21_291usize, 40_924, 61_536];
-        let expected_relations = [19_117usize, 19_186, 19_535];
+        let expected_totals = [20_524usize, 39_400, 59_163];
+        let expected_relations = [18_350usize, 18_424, 18_744];
         let expected_strategies = [
             MulBatchStrategy::OneShot,
             MulBatchStrategy::ResidentKaratsuba,
@@ -2859,11 +2887,11 @@ mod tests {
         }
 
         assert_eq!(batch_cost_breakdown(1).consumed_input_cleanup, 35);
-        assert_eq!(batch_cost_breakdown(1).total(), 21_291);
+        assert_eq!(batch_cost_breakdown(1).total(), 20_524);
         assert_eq!(batch_cost_breakdown(2).consumed_input_cleanup, 69);
-        assert_eq!(batch_cost_breakdown(2).total(), 40_924);
+        assert_eq!(batch_cost_breakdown(2).total(), 39_400);
         assert_eq!(batch_cost_breakdown(3).consumed_input_cleanup, 104);
-        assert_eq!(batch_cost_breakdown(3).total(), 61_536);
+        assert_eq!(batch_cost_breakdown(3).total(), 59_163);
     }
 
     #[test]
@@ -2876,12 +2904,15 @@ mod tests {
             111 222
             333 OP_TOALTSTACK
             444 OP_TOALTSTACK
+            555 OP_TOALTSTACK
+            666 OP_TOALTSTACK
+            777 OP_TOALTSTACK
             for _ in 0..MAX_PRELOADED_BATCH_SIZE {
                 { push_mul_witness(&value, &value, &hints) }
             }
             { mul_mod_hinted_batch_from_raw_witness(
                 MAX_PRELOADED_BATCH_SIZE,
-                4,
+                7,
             ) }
             for _ in 0..MAX_PRELOADED_BATCH_SIZE {
                 for digit in expected {
@@ -2890,6 +2921,9 @@ mod tests {
             }
             222 OP_EQUALVERIFY
             111 OP_EQUALVERIFY
+            OP_FROMALTSTACK 777 OP_EQUALVERIFY
+            OP_FROMALTSTACK 666 OP_EQUALVERIFY
+            OP_FROMALTSTACK 555 OP_EQUALVERIFY
             OP_FROMALTSTACK 444 OP_EQUALVERIFY
             OP_FROMALTSTACK 333 OP_EQUALVERIFY
             OP_TRUE
@@ -2899,7 +2933,7 @@ mod tests {
             result.stats.max_nb_stack_items,
             U31_LOOKUP_STACK_LIMIT as usize
         );
-        assert_eq!(preloaded_batch_stack_items(3), 996);
+        assert_eq!(preloaded_batch_stack_items(3), 993);
     }
 
     #[test]
@@ -3256,7 +3290,7 @@ mod tests {
                 one_shot.coefficient_recombination,
                 one_shot.relation_and_output,
             ],
-            [1_538, 257, 9_374, 5_694, 1_165, 179, 540, 2_544]
+            [1_538, 257, 9_374, 5_008, 1_103, 173, 532, 2_539]
         );
         assert_eq!(one_shot.total(), mul_mod_hinted(0).compile().len());
         assert_eq!(

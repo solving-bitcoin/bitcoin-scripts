@@ -187,13 +187,16 @@ leaf is differentially validated against a pinned Bitcoin Core revision.
 
 ## OP-015 — Native secp256k1 field circuit frontier
 
-Turn the native 21,291-byte multiplication and 14,543-byte square fragments
-into a complete field-circuit cost model. **Complete when:** a scheduler records
+Turn the native 20,524-byte ordinary multiplication, 20,501-byte factor-16
+multiplication, and 14,543-byte square fragments into a complete field-circuit
+cost model. **Complete when:** a scheduler records
 operand introduction, certificate fan-out, all-witness-at-entry routing, table
 lifetime, and output consumption for a deterministic multi-gate circuit;
+factor-16 encode/decode boundaries and domain-compatible addition/squaring are
+charged explicitly;
 representative and maximum witness serialization, executed opcodes, validation
 weight, complete tapleaf/transaction weight, and preserved-state headroom are
 measured; and at least one complete leaf is differentially validated against a
-pinned Bitcoin Core revision. The current three-multiply and five-square
-batches peak at 996 and 998 items, so any claimed larger batch must demonstrate
+pinned Bitcoin Core revision. The current ordinary three-multiply and
+five-square batches peak at 993 and 998 items, so any claimed larger batch must demonstrate
 an explicit strict layout rather than extrapolate byte amortization.
