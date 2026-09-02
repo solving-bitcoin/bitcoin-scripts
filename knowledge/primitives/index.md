@@ -11,6 +11,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [u4 digit arithmetic](u4.md)
 - [u32 word arithmetic](u32.md)
 - [u31 prime-field arithmetic](u31.md)
+- [Native secp256k1 base-field arithmetic](secp256k1-field.md)
 - [F257 lookup arithmetic](f257.md)
 - [F12289 radix arithmetic](f12289.md)
 - [Multi-limb big integers](bigint.md)

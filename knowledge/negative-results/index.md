@@ -340,3 +340,32 @@ therefore the selected locking-size radix among the implementation's supported
 power-of-two parameters. This is a `locally-reproduced` result for the current
 list-pick layout and fixed 256-bit message, not a proof that base 16 is globally
 optimal for every Winternitz verifier, message length, or checksum encoding.
+
+## NR-022: Radix-256 clean-sheet field multipliers lose to normalized radix-512
+
+The native secp256k1 clean-sheet search built executable scratch generators for
+several byte-digit layouts before retaining the 29-digit radix-512 design. Full
+one-shot sizes for radix-256 schoolbook, one-level Karatsuba, recursive
+Karatsuba with cutoff four, a 16-bit quotient layout, and the best asymmetric
+centered layout were respectively 28,002, 26,574, 25,666, 24,874, and 23,870
+bytes. Their measured strict peaks were 710, 799, 810, 794, and 794. Static
+non-push counts were 18,471, 16,198, 15,104, 14,504, and 14,695.
+
+All five paid 1,649 bytes to push and 256 bytes to drop their lookup memory.
+The closest asymmetric candidate also needed 111 incremental hint items (113
+serialized bytes for its sparse `(p-1)^2` witness), compared with 67 items and
+94 bytes for the retained input. The production normalized radix-512 gate is
+21,291 bytes with a 761-item peak and a 1,795-byte table lifecycle.
+
+A separate 57-slot destructive recombination illustrates why domination
+depends on the workload. It is 21,709 bytes for one multiplication, 418 bytes
+larger than the retained isolated layout, but its lower peak permits a strict
+three-product shared-table batch. Production therefore selects it only for the
+three-gate dispatcher and keeps the smaller 87-slot layout for one and two
+products.
+
+The radix-256 scratch generators are not retained as deterministic fixtures,
+so those measurements are `inspected` design-search evidence. They establish a
+frontier for the tested radices, quotient layouts, cutoff rules, and stack
+schedules, not a proof that radix 512 or one-level Karatsuba is globally
+optimal.

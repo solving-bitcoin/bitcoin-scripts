@@ -34,3 +34,13 @@ carry class at every coordinate and reject the classic detached 257-bit CRT
 quotient. The measured gate assumes certified operands and hint groups are
 already adjacent; scheduling all witness items for a larger circuit remains a
 separate routing problem.
+
+The native secp256k1 backend provides a contrasting non-RNS boundary. Its
+multiplication hint is 11 mixed-width quotient coefficients plus 56 exact
+radix-512 carries; the remainder is derived by Script. The compact gate still
+requires lhs/rhs to be verified-path native field certificates, while the raw
+wrapper checks both operand encodings locally. Carry normalization in the
+Karatsuba difference branches changes the formal coefficient basis, so the host
+must generate carries from the normalized coefficients actually checked by the
+script. A schoolbook-basis carry vector is not interchangeable even though both
+polynomials evaluate to the same product at radix 512.

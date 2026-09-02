@@ -349,6 +349,230 @@
       ]
     },
     {
+      "id": "arithmetic/secp256k1-field",
+      "name": "Native secp256k1 base-field arithmetic",
+      "class": "arithmetic/field",
+      "summary": "Balanced-radix secp256k1 multiplication and squaring with normalized Karatsuba quarter-square products and exact witness-carried integer reduction.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/secp256k1-field.md",
+      "implementation": "src/arithmetic/fields/secp256k1.rs",
+      "documentation": "src/arithmetic/fields/README.md",
+      "tests": [
+        "arithmetic::fields::secp256k1::tests"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "witness-hints"
+      ],
+      "security": "Operands passed to compact gates must be verified-path outputs of the native field certificate or an earlier gate. Eleven quotient coefficients and 56 carries are hostile hints; Script derives and certifies the remainder while checking one exact integer relation, so no CRT-wraparound assumption is used.",
+      "stack_contract": "A field value is 29 balanced radix-512 digits with digit zero nearest the top. Multiplication consumes certified lhs[28..0] | rhs[28..0] | q[10..0] | carries[55..0] and returns certified r[28..0]. Preserved-item arguments count unrelated main and altstack state.",
+      "configurations": [
+        {
+          "id": "certified-hinted-multiplication",
+          "label": "Normalized-Karatsuba multiplication of two certified field values",
+          "parameters": {
+            "field_bits": 256,
+            "radix_bits": 9,
+            "field_digits": 29,
+            "karatsuba_split": [
+              15,
+              14
+            ],
+            "quarter_square_entries": 513,
+            "quarter_square_products": 677,
+            "quotient_hint_items": 11,
+            "relation_carry_items": 56,
+            "incremental_witness_item_count": 67,
+            "table_push_script_bytes": 1538,
+            "table_cleanup_script_bytes": 257,
+            "relation_and_output_script_bytes": 2544,
+            "non_table_script_bytes": 19496,
+            "static_non_push_opcodes": 13550
+          },
+          "includes": "fragment-with-memory: consumes two previously certified native secp256k1 field values and 67 q/carry hint items, pushes and drops one 513-entry quarter-square table, verifies the normalized-Karatsuba product and exact integer reduction, derives and certifies the remainder, cleans all inputs, and returns one reusable 29-digit value; excludes operand certification, input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only the incremental q/carry hints for (p-1)^2",
+          "script_bytes": 21291,
+          "witness_bytes": 94,
+          "witness_bytes_max": null,
+          "max_stack_items": 761,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1795,
+          "per_use_script_bytes": 19496,
+          "metric_keys": [
+            "secp256k1_field_mul",
+            "secp256k1_field_mul_computation",
+            "secp256k1_field_mul_hint_witness",
+            "secp256k1_field_mul_stack"
+          ]
+        },
+        {
+          "id": "raw-hinted-multiplication",
+          "label": "Standalone multiplication from two raw native digit vectors",
+          "parameters": {
+            "field_bits": 256,
+            "field_digits_per_operand": 29,
+            "complete_witness_item_count": 125,
+            "operand_certification_script_bytes": 1276,
+            "incremental_hint_items": 67
+          },
+          "includes": "fragment-with-memory: certifies two hostile 29-digit operands in place, then executes the complete certified-operand multiplication gate and returns one certified remainder; excludes input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover both operand vectors and all q/carry hints for (p-1)^2",
+          "script_bytes": 22567,
+          "witness_bytes": 160,
+          "witness_bytes_max": null,
+          "max_stack_items": 761,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1795,
+          "per_use_script_bytes": 20772,
+          "metric_keys": [
+            "secp256k1_field_mul_standalone",
+            "secp256k1_field_mul_standalone_witness",
+            "secp256k1_field_mul_standalone_stack"
+          ]
+        },
+        {
+          "id": "certified-hinted-multiplication-batch-2",
+          "label": "Two preloaded certified multiplications sharing one table",
+          "parameters": {
+            "products": 2,
+            "incremental_witness_item_count": 134,
+            "table_push_script_bytes": 1538,
+            "table_cleanup_script_bytes": 257,
+            "relation_script_bytes_per_product": 19186,
+            "non_table_script_bytes": 39129,
+            "amortized_script_bytes_per_product": 20462
+          },
+          "includes": "fragment-with-memory: consumes two preloaded groups of certified native operands and incremental q/carry hints, shares one quarter-square table, verifies both exact reductions, cleans consumed state, and returns two certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only both incremental q/carry hint groups for repeated (p-1)^2",
+          "script_bytes": 40924,
+          "witness_bytes": 187,
+          "witness_bytes_max": null,
+          "max_stack_items": 886,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1795,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "secp256k1_field_mul_batch2",
+            "secp256k1_field_mul_batch2_hint_witness",
+            "secp256k1_field_mul_batch2_stack"
+          ]
+        },
+        {
+          "id": "certified-hinted-multiplication-batch-3",
+          "label": "Three preloaded certified multiplications sharing one table",
+          "parameters": {
+            "products": 3,
+            "incremental_witness_item_count": 201,
+            "destructive_coefficient_slots": 57,
+            "relation_script_bytes_per_product": 19535,
+            "table_push_script_bytes": 1538,
+            "table_cleanup_script_bytes": 257,
+            "non_table_script_bytes": 59741,
+            "amortized_script_bytes_per_product": 20512
+          },
+          "includes": "fragment-with-memory: consumes three preloaded groups of certified native operands and incremental q/carry hints, shares one quarter-square table, uses destructive coefficient recombination to remain below 1,000 combined stack items, verifies all exact reductions, cleans consumed state, and returns three certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only all three incremental q/carry hint groups for repeated (p-1)^2",
+          "script_bytes": 61536,
+          "witness_bytes": 280,
+          "witness_bytes_max": null,
+          "max_stack_items": 996,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1795,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "secp256k1_field_mul_batch3",
+            "secp256k1_field_mul_batch3_hint_witness",
+            "secp256k1_field_mul_batch3_stack"
+          ]
+        },
+        {
+          "id": "certified-hinted-square",
+          "label": "Specialized square of one certified field value",
+          "parameters": {
+            "field_bits": 256,
+            "radix_bits": 9,
+            "field_digits": 29,
+            "quarter_square_entries": 513,
+            "quarter_square_products": 435,
+            "quotient_hint_items": 11,
+            "relation_carry_items": 56,
+            "incremental_witness_item_count": 67,
+            "table_push_script_bytes": 1538,
+            "table_cleanup_script_bytes": 257,
+            "diagonal_product_script_bytes": 406,
+            "off_diagonal_product_script_bytes": 9744,
+            "product_script_bytes": 10150,
+            "relation_and_output_script_bytes": 2598,
+            "non_table_script_bytes": 12748,
+            "static_non_push_opcodes": 9423
+          },
+          "includes": "fragment-with-memory: consumes one previously certified native secp256k1 field value and 67 q/carry hint items, pushes and drops one quarter-square table, exploits operand equality in the product, verifies the exact integer reduction, derives and certifies the remainder, cleans all inputs, and returns one reusable 29-digit value; excludes operand certification, input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only the incremental q/carry hints for (p-1)^2",
+          "script_bytes": 14543,
+          "witness_bytes": 94,
+          "witness_bytes_max": null,
+          "max_stack_items": 614,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1795,
+          "per_use_script_bytes": 12748,
+          "metric_keys": [
+            "secp256k1_field_square",
+            "secp256k1_field_square_computation",
+            "secp256k1_field_square_hint_witness",
+            "secp256k1_field_square_stack"
+          ]
+        },
+        {
+          "id": "certified-hinted-square-batch-5",
+          "label": "Five preloaded certified squares sharing one table",
+          "parameters": {
+            "squares": 5,
+            "incremental_witness_item_count": 335,
+            "amortized_script_bytes_per_square": 13014.8,
+            "table_encoding": "unbiased quarter-square",
+            "table_push_script_bytes": 1657,
+            "table_cleanup_script_bytes": 257,
+            "relation_script_bytes_per_square": 12268,
+            "non_table_script_bytes": 63160
+          },
+          "includes": "fragment-with-memory: consumes five preloaded groups of one certified native operand plus q/carry hints, shares one unbiased quarter-square table, verifies five exact reductions, cleans consumed state, and returns five certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only all five incremental q/carry hint groups for repeated (p-1)^2",
+          "script_bytes": 65074,
+          "witness_bytes": 468,
+          "witness_bytes_max": null,
+          "max_stack_items": 998,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 1914,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "secp256k1_field_square_batch5",
+            "secp256k1_field_square_batch5_hint_witness",
+            "secp256k1_field_square_batch5_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Tapscript-oriented fragment; legacy and P2WSH limits are exceeded",
+        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "The certified-operand boundary excludes value fan-out, circuit scheduling, and representation conversion",
+        "Witness byte measurements use (p-1)^2 and are not maxima",
+        "Three-product multiplication and five-square batches leave at most four and two stack items of headroom respectively"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-015"
+      ]
+    },
+    {
       "id": "arithmetic/f257",
       "name": "F257 lookup arithmetic",
       "class": "arithmetic/field",

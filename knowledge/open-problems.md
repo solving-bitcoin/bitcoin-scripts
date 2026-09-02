@@ -175,3 +175,16 @@ negative-zero special case are explicit; input/output conversion, shared-table
 setup, script bytes, executed opcodes, and strict stack peaks are compared on
 the same boundary; malformed encodings are rejected; and a complete tapscript
 leaf is differentially validated against a pinned Bitcoin Core revision.
+
+## OP-015 — Native secp256k1 field circuit frontier
+
+Turn the native 21,291-byte multiplication and 14,543-byte square fragments
+into a complete field-circuit cost model. **Complete when:** a scheduler records
+operand introduction, certificate fan-out, all-witness-at-entry routing, table
+lifetime, and output consumption for a deterministic multi-gate circuit;
+representative and maximum witness serialization, executed opcodes, validation
+weight, complete tapleaf/transaction weight, and preserved-state headroom are
+measured; and at least one complete leaf is differentially validated against a
+pinned Bitcoin Core revision. The current three-multiply and five-square
+batches peak at 996 and 998 items, so any claimed larger batch must demonstrate
+an explicit strict layout rather than extrapolate byte amortization.

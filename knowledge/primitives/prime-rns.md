@@ -110,6 +110,12 @@ multiplication can reuse.
   restoring all 450 outputs, at a strict 900-item peak. Seven products cannot
   enter this layout because their 1,050 operands already exceed the stack
   limit.
+- **Native-field comparison:** the separate balanced-radix secp256k1 gate is
+  21,291 bytes with a 94-byte incremental hint and a 761-item peak. Its
+  boundary is closest to the 31,281-byte composable RNS gate because both
+  consume certified operands and return a reusable certificate. It is not a
+  replacement when surrounding state is already represented as RNS residues;
+  conversion and certificate fan-out are excluded from both measurements.
 - **Deployment:** `unclassified`. These are generated fragments rather than
   complete leaves. Terminal predicates, tapleaf and control-block
   serialization, transaction weight, Bitcoin Core consensus comparison, and

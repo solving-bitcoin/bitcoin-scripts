@@ -12,7 +12,7 @@ use bitcoin_lab::arithmetic::rns::prime::carry::{bound, composable};
 use bitcoin_lab::{
     arithmetic::{
         bigint::U254,
-        fields::{f12289, f257},
+        fields::{f12289, f257, secp256k1},
         rns, scriptint, u31, u32, u4,
     },
     ciphers::{aes, prince},
@@ -352,6 +352,62 @@ fn metrics() -> Vec<Metric> {
             prime_rns_batch_input_items.push(scriptnum(i64::from(prime_rns_batch_rhs[coordinate])));
         }
     }
+    let secp256k1_modulus = secp256k1::modulus();
+    let secp256k1_lhs = &secp256k1_modulus - BigUint::one();
+    let secp256k1_rhs = secp256k1_lhs.clone();
+    let secp256k1_hints = secp256k1::hinted_mul(&secp256k1_lhs, &secp256k1_rhs);
+    let secp256k1_mul = secp256k1::mul_mod_hinted(0);
+    let secp256k1_mul_cost = secp256k1::one_shot_cost_breakdown();
+    let secp256k1_mul_opcodes = static_non_push_opcodes(secp256k1_mul.clone());
+    let secp256k1_standalone_mul = secp256k1::mul_mod_hinted_from_raw_witness(0);
+    let secp256k1_resident_cost = secp256k1::resident_cost_breakdown();
+    let secp256k1_batch2 = secp256k1::mul_mod_hinted_batch(2, 0);
+    let secp256k1_batch2_cost = secp256k1::batch_cost_breakdown(2);
+    let secp256k1_batch3 = secp256k1::mul_mod_hinted_batch(3, 0);
+    let secp256k1_batch3_cost = secp256k1::batch_cost_breakdown(3);
+    let secp256k1_hint_items = secp256k1_hints.witness_items();
+    let mut secp256k1_full_input_items = Vec::new();
+    for value in [&secp256k1_lhs, &secp256k1_rhs] {
+        for digit in secp256k1::field_digits(value).iter().rev() {
+            secp256k1_full_input_items.push(scriptnum(i64::from(*digit)));
+        }
+    }
+    secp256k1_full_input_items.extend(secp256k1_hint_items.iter().cloned());
+    let secp256k1_batch2_hint_items = secp256k1_hint_items
+        .iter()
+        .chain(&secp256k1_hint_items)
+        .cloned()
+        .collect::<Vec<_>>();
+    let secp256k1_batch2_input_items = secp256k1_full_input_items
+        .iter()
+        .chain(&secp256k1_full_input_items)
+        .cloned()
+        .collect::<Vec<_>>();
+    let secp256k1_batch3_hint_items = (0..3)
+        .flat_map(|_| secp256k1_hint_items.iter().cloned())
+        .collect::<Vec<_>>();
+    let secp256k1_batch3_input_items = (0..3)
+        .flat_map(|_| secp256k1_full_input_items.iter().cloned())
+        .collect::<Vec<_>>();
+    let secp256k1_square_hints = secp256k1::hinted_square(&secp256k1_lhs);
+    let secp256k1_square = secp256k1::square_mod_hinted(0);
+    let secp256k1_square_cost = secp256k1::square_one_shot_cost_breakdown();
+    let secp256k1_square_opcodes = static_non_push_opcodes(secp256k1_square.clone());
+    let secp256k1_square_hint_items = secp256k1_square_hints.witness_items();
+    let mut secp256k1_square_input_items = secp256k1::field_digits(&secp256k1_lhs)
+        .iter()
+        .rev()
+        .map(|digit| scriptnum(i64::from(*digit)))
+        .collect::<Vec<_>>();
+    secp256k1_square_input_items.extend(secp256k1_square_hint_items.iter().cloned());
+    let secp256k1_square_batch5 = secp256k1::square_mod_hinted_batch(5, 0);
+    let secp256k1_square_batch5_cost = secp256k1::square_batch_cost_breakdown(5);
+    let secp256k1_square_batch5_hint_items = (0..5)
+        .flat_map(|_| secp256k1_square_hint_items.iter().cloned())
+        .collect::<Vec<_>>();
+    let secp256k1_square_batch5_input_items = (0..5)
+        .flat_map(|_| secp256k1_square_input_items.iter().cloned())
+        .collect::<Vec<_>>();
     let f257_log_memory = script! {
         { f257::push_log_mul_tables() }
         { f257::drop_log_mul_tables() }
@@ -1296,6 +1352,300 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u31/README.md",
             key: "u31_mul_constant",
             value: script_len(u31::u31_mul_by_constant::<u31::M31>(0x1234_5678)),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul",
+            value: script_len(secp256k1_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_table_setup",
+            value: secp256k1_mul_cost.table_setup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_table_drop",
+            value: secp256k1_mul_cost.table_drop,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_raw_products",
+            value: secp256k1_mul_cost.raw_digit_products,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_difference_products",
+            value: secp256k1_mul_cost.difference_digit_products,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_difference_normalization",
+            value: secp256k1_mul_cost.difference_normalization,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_coefficient_routing",
+            value: secp256k1_mul_cost.coefficient_routing,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_coefficient_recombination",
+            value: secp256k1_mul_cost.coefficient_recombination,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_relation_output",
+            value: secp256k1_mul_cost.relation_and_output,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_computation",
+            value: secp256k1_mul_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_opcodes",
+            value: secp256k1_mul_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_hint_items",
+            value: secp256k1_hint_items.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_hint_witness",
+            value: witness_size(&secp256k1_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_mul.clone() }
+                    for _ in 0..secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_operand_certification",
+            value: secp256k1::operand_certification_bytes(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_standalone",
+            value: script_len(secp256k1_standalone_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_standalone_witness",
+            value: witness_size(&secp256k1_full_input_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_standalone_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_standalone_mul }
+                    for _ in 0..secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_resident",
+            value: secp256k1_resident_cost.mul_with_table,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_resident_cleanup",
+            value: secp256k1_resident_cost.final_cleanup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_resident_total",
+            value: secp256k1_resident_cost.one_multiplication_total(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch2",
+            value: script_len(secp256k1_batch2.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch2_relation",
+            value: secp256k1_batch2_cost.relation_per_multiplication,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch2_computation",
+            value: secp256k1_batch2_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch2_hint_witness",
+            value: witness_size(&secp256k1_batch2_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch2_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_batch2 }
+                    for _ in 0..2 * secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_batch2_input_items,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch3",
+            value: script_len(secp256k1_batch3.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch3_relation",
+            value: secp256k1_batch3_cost.relation_per_multiplication,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch3_computation",
+            value: secp256k1_batch3_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch3_hint_witness",
+            value: witness_size(&secp256k1_batch3_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_mul_batch3_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_batch3 }
+                    for _ in 0..3 * secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_batch3_input_items,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square",
+            value: script_len(secp256k1_square.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_table_setup",
+            value: secp256k1_square_cost.table_setup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_table_drop",
+            value: secp256k1_square_cost.table_drop,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_diagonals",
+            value: secp256k1_square_cost.diagonal_products,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_off_diagonals",
+            value: secp256k1_square_cost.off_diagonal_products,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_relation_output",
+            value: secp256k1_square_cost.relation_and_output,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_computation",
+            value: secp256k1_square_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_opcodes",
+            value: secp256k1_square_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_hint_witness",
+            value: witness_size(&secp256k1_square_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_square }
+                    for _ in 0..secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_square_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5",
+            value: script_len(secp256k1_square_batch5.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_table_setup",
+            value: secp256k1_square_batch5_cost.unbiased_table_setup,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_table_drop",
+            value: secp256k1_square_batch5_cost.table_drop,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_relation",
+            value: secp256k1_square_batch5_cost.relation_per_square,
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_computation",
+            value: secp256k1_square_batch5_cost.computation(),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_hint_witness",
+            value: witness_size(&secp256k1_square_batch5_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/fields/README.md",
+            key: "secp256k1_field_square_batch5_stack",
+            value: max_stack_items(
+                script! {
+                    { secp256k1_square_batch5 }
+                    for _ in 0..5 * secp256k1::FIELD_DIGIT_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                secp256k1_square_batch5_input_items,
+            ),
         },
         Metric {
             readme: "src/arithmetic/fields/README.md",

@@ -11,6 +11,9 @@ differ. Follow each catalog configuration before comparing numbers.
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Wide add | U254 add | 190 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Very large script |
+| Native secp256k1 base-field multiply | 29 balanced radix-512 digits, normalized Karatsuba | 21,291 | 94-byte/67-item incremental hint; certified operands; 761-item strict peak |
+| Native secp256k1 base-field square | 29 balanced radix-512 digits, symmetry-specialized | 14,543 | 94-byte/67-item incremental hint; certified operand; 614-item strict peak |
+| Three native secp256k1 multiplies | Shared table, destructive third-gate recombination | 61,536 | 280-byte/201-item incremental hint; 996-item strict peak |
 | Bounded RNS add | Legacy RNS add | 219 | Modulo 69,300 |
 | Bounded RNS multiply | Legacy RNS multiply | 1,564 | 903-item peak |
 | Exact 256-bit-product RNS add | 75-prime canonical coordinatewise | 1,134 | 513-bit composite range; 151-item peak |
@@ -27,6 +30,22 @@ but longer expressions remain modular unless their bound is proved below its
 513-bit composite modulus. Range checks and conversion remain outside a row
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
+
+The native 21,291-byte row checks the same field operation as the 31,281-byte
+composable RNS row at a broadly comparable certificate boundary: both consume
+two verified-path secp256k1 values, bind hostile reduction hints locally, and
+return a reusable certified result. They do not share a stack representation,
+so conversion, certificate fan-out, and circuit scheduling remain outside both
+numbers. The native gate's 1,795 bytes of table lifecycle can be shared: two
+preloaded products cost 40,924 bytes at an 886-item peak, while three use a
+slightly larger destructive relation and cost 61,536 bytes at a 996-item peak.
+
+The native square row is a separate operation, not a multiplication estimate.
+It exploits equal operands and uses 435 rather than 677 quarter-square
+products. Five shared-table squares cost 65,074 bytes and peak at 998 items.
+The BN254 `Fq` backend concerns a different modulus and nine-limb
+representation; its hinted-operation size is implementation context, not a
+ratio for secp256k1 base-field work.
 
 All three exact-carry modular rows are `locally-reproduced` and `unclassified`. The
 compact profile's 42-prime product basis is 513 bits. Each packed coordinate

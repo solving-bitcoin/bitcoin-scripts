@@ -33,6 +33,24 @@ The upstream direct 64-entry table that motivated this search is not on the
 frontier because it is incorrect as published for multiple nibble values. The
 local staggered layout is a corrected construction, not a verbatim port.
 
+## Native secp256k1 field frontier
+
+| Strategy | Total bytes | Table lifecycle | Computation | Peak items |
+| --- | ---: | ---: | ---: | ---: |
+| One normalized-Karatsuba multiply | 21,291 | 1,795 | 19,496 | 761 |
+| Two preloaded multiplies | 40,924 | 1,795 | 39,129 | 886 |
+| Three preloaded multiplies, destructive layout | 61,536 | 1,795 | 59,741 | 996 |
+| One specialized square | 14,543 | 1,795 | 12,748 | 614 |
+| Five preloaded squares | 65,074 | 1,914 | 63,160 | 998 |
+
+The 513-entry quarter-square table represents only 8.4% of one multiplication,
+so reuse gives a real but moderate byte saving. Stack coexistence selects the
+three-gate algorithm: the 87-coefficient layout is smaller for one or two
+products, while a 57-slot destructive recombination is needed for three
+preloaded groups to remain below 1,000 items. The five-square endpoint leaves
+only two items for all unrelated state. Neither row includes operand
+certification, fan-out, or circuit-level witness routing.
+
 ## RNS measured frontier
 
 | Strategy | One-shot bytes | Peak items | Reuse behavior |
