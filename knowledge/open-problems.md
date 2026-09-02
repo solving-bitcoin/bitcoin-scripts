@@ -143,13 +143,18 @@ vulnerability from the adjacent advisory without this analysis.
 
 ## OP-013 — BLAKE3 stack-routing frontier
 
-The current fixed-point generator still spends most bytes in nibble additions,
-XOR lookups, and deep stack routing. **Complete when:** separate first, middle,
-and final round schedules plus at least one fused add/rotate layout are
-deterministically evaluated; every retained candidate passes official vectors,
-partial-block boundaries, and malformed-limb tests; and either a smaller
-representative fragment is checked into the metric surface or the dominated
-layouts are recorded as negative results.
+The checked short-input frontier is 62,647 bytes and 580 stack items for 32
+bytes. Length-specific first/middle/final G-call schedules, a physical message
+layout, constant first-round columns, adjacent add-table base reuse, eager
+message expansion, and active-quartet routing have now been evaluated; the
+retained candidates and negative results are recorded. Nibble additions, the
+seven-bit rotation, and deep XOR routing remain dominant.
+
+**Complete when:** at least one fused add/rotate or seven-bit-rotation layout is
+deterministically searched against the 32-byte direct-u4 configuration; every
+retained candidate passes the short-length differential suite, partial-block
+boundaries, and malformed-input tests; and it either improves the checked
+metric or is recorded with a reproducible dominated measurement.
 
 ## OP-014 — Total-domain ScriptNum right-shift frontier
 

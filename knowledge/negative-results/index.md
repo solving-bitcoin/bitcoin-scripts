@@ -247,3 +247,46 @@ a four-byte regression in both cases. The prototype passed a deterministic
 64-byte differential check. This is an `inspected` result for the current
 depth-table lookup scheme; a fused output schedule may have a different
 frontier.
+
+## NR-018: Eager BLAKE3 routing and message expansion increase script size
+
+Sparse 32-byte u4 prototypes tested moving active lanes into an altstack
+quartet, stashing the outputs of early G calls, and pre-expanding permuted
+message schedules. Against a 65,532-byte sparse baseline, stashing the first
+one, two, or three G outputs measured 66,234, 66,232, and 66,963 bytes. A full
+pre-gather search over all 24 quartet layouts bottomed at 71,169 bytes. In a
+separate schedule-expansion harness, the 65,718-byte no-expansion case beat the
+best nonempty expansion mask at 66,060 bytes; expanding every reusable schedule
+reached 68,063 bytes and a peak of 962 items. The retained incremental tracker
+therefore avoids the extra `TOALTSTACK`, `FROMALTSTACK`, and routing work.
+
+The active-quartet candidates and representative no-expansion scripts passed
+local differential checks. These are `inspected` generator results tied to the
+recorded stack layout, not a proof against every fused scheduler. A
+branch-based two-input carry prototype was also dominated by 351 bytes at 32
+bytes.
+
+## NR-019: A preliminary u8 BLAKE3 backend is size-dominated by sparse u4
+
+A byte-radix prototype generated 95,788 bytes before its quick register
+scheduler was made output-correct, already roughly 30 kB above the contemporary
+sparse-u4 result. The u4 backend benefits structurally because rotations by 16,
+12, and 8 bits are nibble permutations and only the seven-bit rotation crosses
+digit boundaries. The u8 experiment was stopped rather than polished because
+correctness cleanup could not erase the existing size gap. This is an
+`inspected` rejected prototype, not a differentially validated u8 construction.
+
+## NR-020: Literal interleaving of BLAKE3 quotient/modulo tables is incorrect
+
+An attempted 96-item table placed `sum % 16` and `sum / 16` at adjacent depths
+so one absolute index could fetch both. The first lookup retained a copy of that
+index, however, shifting the depth seen by the second `OP_PICK`; deterministic
+digest comparison exposed the error. The rejected layout must not be cited as a
+size improvement.
+
+The corrected optimization keeps the existing adjacent 48-item modulo and
+quotient tables. For non-final nibbles it computes the quotient's absolute
+depth once, fetches modulo 49 items below the retained index, and then fetches
+carry from the retained depth. Partial-block, 64-byte, 4/29/31-bit-limb, and
+malformed-limb checks passed locally. The failure and correction are
+`locally-reproduced` for this generator.

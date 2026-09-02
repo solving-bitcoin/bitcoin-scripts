@@ -1431,25 +1431,49 @@
       "stack_contract": "Consumes two selected-limb 256-bit groups per block and returns a 256-bit digest in the helper-defined layout; a wholly padded final second group is ignored rather than authenticated.",
       "configurations": [
         {
+          "id": "message32-limb4",
+          "label": "32-byte input, 4-bit limbs",
+          "parameters": {
+            "message_bytes": 32,
+            "limb_bits": 4,
+            "optimizer": "bitcoin-script-stack fixed point",
+            "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
+            "table_cleanup_script_bytes": 192
+          },
+          "includes": "fragment-with-memory: numeric input-limb range validation, 383-byte full lookup-table setup, sparse hashing, 192-byte cleanup, and digest restoration; excludes input encoding and output verification",
+          "script_bytes": 62953,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 580,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 383,
+          "per_use_script_bytes": 62378,
+          "metric_keys": [
+            "blake3_32_limb4",
+            "blake3_stack_32_limb4"
+          ]
+        },
+        {
           "id": "message64-limb29",
           "label": "64-byte input, 29-bit limbs",
           "parameters": {
             "message_bytes": 64,
             "limb_bits": 29,
             "optimizer": "bitcoin-script-stack fixed point",
-            "static_non_push_opcodes": 46691,
+            "static_non_push_opcodes": 46098,
             "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
             "table_cleanup_script_bytes": 192
           },
           "includes": "fragment-with-memory: numeric input-limb range validation and conversion, 383-byte full lookup-table setup, hashing, 192-byte cleanup, and digest restoration; excludes input encoding and output verification; stack peak is measured by the deterministic host-push/output-check composition",
-          "script_bytes": 76481,
+          "script_bytes": 74049,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 644,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 383,
-          "per_use_script_bytes": 75906,
+          "per_use_script_bytes": 73474,
           "metric_keys": [
             "blake3_64_limb29",
             "blake3_stack_64_limb29"
@@ -1466,14 +1490,14 @@
             "table_cleanup_script_bytes": 192
           },
           "includes": "fragment-with-memory: numeric input-limb range validation, 383-byte full lookup-table setup, hashing, 192-byte cleanup, and digest restoration; excludes input encoding and output verification",
-          "script_bytes": 68287,
+          "script_bytes": 65855,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 644,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 383,
-          "per_use_script_bytes": 67712,
+          "per_use_script_bytes": 65280,
           "metric_keys": [
             "blake3_64_limb4"
           ]
@@ -1484,6 +1508,87 @@
         "Only unkeyed 32-byte output is implemented",
         "Local witness-input and peak-metric execution disables the stack-limit check; Bitcoin Core consensus and policy validation were not performed",
         "A wholly padded final second input group is ignored and not bound"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003",
+        "OP-013"
+      ]
+    },
+    {
+      "id": "hash/blake3-short-u4",
+      "name": "BLAKE3 sparse direct-u4 short-input construction",
+      "class": "hash/fixed",
+      "summary": "Length-specialized unkeyed BLAKE3 for at most 32 witness-backed bytes, with checked u4 input and compile-time omission of zero padding words.",
+      "status": "active",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/blake3-short-u4.md",
+      "implementation": "src/hashes/blake3/mod.rs",
+      "documentation": "src/hashes/blake3/README.md",
+      "tests": [
+        "hashes::blake3::tests::test_short_direct_nibbles_all_lengths",
+        "hashes::blake3::tests::test_short_direct_nibbles_reject_malformed_inputs",
+        "hashes::blake3::tests::test_compute_script_is_optimizer_fixed_point"
+      ],
+      "references": [
+        "blake3-spec",
+        "bitcoin-script-stack-locked"
+      ],
+      "techniques": [
+        "tracked-stack",
+        "lookup-table",
+        "constant-folding",
+        "sparse-state"
+      ],
+      "security": "Security is inherited from BLAKE3 for the supported unkeyed 32-byte-output mode; all witness-backed nibbles are numerically checked in [0,16), omitted words are fixed zero padding, and raw-byte canonicality plus digest binding remain caller obligations.",
+      "stack_contract": "Consumes exactly two numeric nibble items per declared message byte from an otherwise empty main stack and returns 64 digest nibbles; the 32-byte configuration uses the documented physical word permutation.",
+      "configurations": [
+        {
+          "id": "message32-direct-u4",
+          "label": "32-byte input, checked direct u4",
+          "parameters": {
+            "message_bytes": 32,
+            "input_nibbles": 64,
+            "metric_message": "00 01 ... 1f",
+            "optimizer": "bitcoin-script-stack fixed point",
+            "static_non_push_opcodes": 39664,
+            "stack_measurement": "combined main/alt peak from local execute_script with the stack limit enabled",
+            "table_cleanup_script_bytes": 192,
+            "physical_word_order": [
+              2,
+              4,
+              3,
+              7,
+              6,
+              1,
+              0,
+              5
+            ]
+          },
+          "includes": "fragment-with-memory: exact-count u4 input range validation, 383-byte full lookup-table setup, sparse length-specialized hashing, 192-byte cleanup, and digest restoration; excludes input witness serialization and output verification",
+          "script_bytes": 62647,
+          "witness_bytes": 111,
+          "witness_bytes_max": 129,
+          "max_stack_items": 580,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 383,
+          "per_use_script_bytes": 62072,
+          "metric_keys": [
+            "blake3_short_32",
+            "blake3_stack_short_32",
+            "blake3_witness_short_32",
+            "blake3_witness_short_32_max"
+          ]
+        }
+      ],
+      "limitations": [
+        "Messages are limited to 32 bytes and the length is fixed when the script is generated",
+        "Only unkeyed 32-byte output is implemented",
+        "The direct u4 layout uses up to 64 witness items and differs from the selected-limb API",
+        "Bitcoin Core consensus and policy validation were not performed"
       ],
       "open_problems": [
         "OP-001",

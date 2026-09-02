@@ -84,6 +84,23 @@ fn metrics() -> Vec<Metric> {
         {blake3_compute.clone()}
         {blake3_verify.clone()}
     };
+    let blake3_short_message: [u8; 32] = std::array::from_fn(|index| index as u8);
+    let blake3_short_expected = *::blake3::hash(&blake3_short_message).as_bytes();
+    let blake3_short_push = blake3::blake3_push_short_message_script(&blake3_short_message);
+    let blake3_short_compute = blake3::blake3_short_compute_script(32);
+    let blake3_short_verify = blake3::blake3_verify_output_script(blake3_short_expected);
+    let blake3_short_witness = blake3::blake3_short_message_witness(&blake3_short_message);
+    let blake3_short_complete = script! {
+        {blake3_short_push.clone()}
+        {blake3_short_compute.clone()}
+        {blake3_short_verify}
+    };
+    let blake3_32_limb4_compute = blake3::blake3_compute_script_with_limb(32, 4);
+    let blake3_32_limb4_complete = script! {
+        {blake3::blake3_push_message_script_with_limb(&blake3_short_message, 4)}
+        {blake3_32_limb4_compute.clone()}
+        {blake3::blake3_verify_output_script(blake3_short_expected)}
+    };
     let rns_add = script! {
         { rns::rns_push_add_tables() }
         { rns::rns_add() }
@@ -1498,6 +1515,56 @@ fn metrics() -> Vec<Metric> {
             readme: "src/hashes/blake3/README.md",
             key: "blake3_stack_64_limb29",
             value: max_stack_items(blake3_complete, vec![]),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_short_1",
+            value: script_len(blake3::blake3_short_compute_script(1)),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_32_limb4",
+            value: script_len(blake3_32_limb4_compute),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_stack_32_limb4",
+            value: max_stack_items(blake3_32_limb4_complete, vec![]),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_short_32",
+            value: script_len(blake3_short_compute.clone()),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_push_short_32",
+            value: script_len(blake3_short_push),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_complete_short_32",
+            value: script_len(blake3_short_complete.clone()),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_opcodes_short_32",
+            value: static_non_push_opcodes(blake3_short_compute),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_stack_short_32",
+            value: max_stack_items(blake3_short_complete, vec![]),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_witness_short_32",
+            value: witness_size(&blake3_short_witness),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_witness_short_32_max",
+            value: witness_size(&vec![scriptnum(15); 64]),
         },
         Metric {
             readme: "src/commitments/README.md",

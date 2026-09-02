@@ -31,6 +31,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [SHA-256 over u32 bytes](sha256-u32.md)
 - [SHA-256 over u4 digits](sha256-u4.md)
 - [BLAKE3 over tracked limbs](blake3-limb29.md)
+- [BLAKE3 sparse direct-u4 short inputs](blake3-short-u4.md)
 - [SHAKE256 over byte lanes](shake256-byte.md)
 - [AES-128 over u4 digits](aes128-u4.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)

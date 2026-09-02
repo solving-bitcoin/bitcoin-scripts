@@ -12,6 +12,9 @@ pub use bitcoin_script::script;
 use crate::arithmetic::bigint::U256;
 use crate::hashes::blake3::utils::{compress, get_flags_for_block, TablesVars};
 
+const SHORT_32_SEMANTIC_TO_PHYSICAL_WORD: [usize; 8] = [6, 5, 0, 2, 1, 7, 4, 3];
+const SHORT_32_PHYSICAL_TO_SEMANTIC_WORD: [usize; 8] = [2, 4, 3, 7, 6, 1, 0, 5];
+
 fn assert_valid_limb_len(limb_len: u8) {
     assert!(
         (4..32).contains(&limb_len),
@@ -66,6 +69,7 @@ fn blake3(
     );
     let num_blocks = msg_len.div_ceil(64);
     let limb_count = 256u32.div_ceil(u32::from(limb_len));
+    let sparse_short_block = num_blocks == 1 && msg_len <= 32;
 
     if define_var {
         for i in (0..num_blocks).rev() {
@@ -108,15 +112,18 @@ fn blake3(
                         OP_DROP
                     }
 
-                    // This half-block is outside the declared message. Avoid
-                    // validating and unpacking ignored witness values, then
-                    // synthesize the zero padding expected by compression.
-                    OP_0 OP_DUP OP_2DUP
-                    for _ in 0..20 {
-                        OP_3DUP
-                    }
-                    for _ in 0..64 {
-                        OP_TOALTSTACK
+                    if !sparse_short_block {
+                        // This half-block is outside the declared message.
+                        // Avoid validating and unpacking ignored witness
+                        // values, then synthesize the zero padding expected by
+                        // the generic compression path.
+                        OP_0 OP_DUP OP_2DUP
+                        for _ in 0..20 {
+                            OP_3DUP
+                        }
+                        for _ in 0..64 {
+                            OP_TOALTSTACK
+                        }
                     }
                 ),
                 1,
@@ -144,8 +151,10 @@ fn blake3(
             script!(
                 {U256::verify_bigint_on_stack_with_limb_size(u32::from(limb_len))}
                 {U256::transform_limbsize(u32::from(limb_len), 4)}
-                for _ in 0..64{
-                    OP_FROMALTSTACK
+                if !sparse_short_block {
+                    for _ in 0..64{
+                        OP_FROMALTSTACK
+                    }
                 }
             ),
             1,
@@ -154,7 +163,7 @@ fn blake3(
             &format!("unpack msg{}p0", i),
         );
 
-        if i == (num_blocks - 1) && msg_len != 64 {
+        if !sparse_short_block && i == (num_blocks - 1) && msg_len != 64 {
             let j = msg_len % 4;
             let pad_bytes = 64 + j - msg_len - 4;
 
@@ -199,14 +208,54 @@ fn blake3(
             );
         }
 
+        if sparse_short_block {
+            let message_word_count = msg_len.div_ceil(4);
+            let partial_word_bytes = msg_len % 4;
+            let unused_word_nibbles = (8 - message_word_count) * 8;
+            let partial_word_nibbles = partial_word_bytes * 2;
+            let partial_padding_nibbles = 8 - partial_word_nibbles;
+
+            stack.custom(
+                script! {
+                    for _ in 0..unused_word_nibbles / 2 {
+                        OP_2DROP
+                    }
+
+                    if partial_word_bytes != 0 {
+                        for _ in 0..partial_word_nibbles {
+                            OP_TOALTSTACK
+                        }
+                        for _ in 0..partial_padding_nibbles / 2 {
+                            OP_2DROP
+                        }
+                        for _ in 0..partial_padding_nibbles {
+                            OP_0
+                        }
+                        for _ in 0..partial_word_nibbles {
+                            OP_FROMALTSTACK
+                        }
+                    }
+                },
+                0,
+                false,
+                0,
+                "discard sparse short-block padding",
+            );
+        }
+
         let mut original_message = Vec::new();
-        for i in 0..16 {
+        let message_word_count = if sparse_short_block {
+            msg_len.div_ceil(4)
+        } else {
+            16
+        };
+        for i in 0..message_word_count {
             let m = stack.define(8, &format!("msg_{}", i));
             original_message.push(m);
         }
 
         let mut message = HashMap::new();
-        for m in 0..16 {
+        for m in 0..message_word_count {
             message.insert(m as u8, original_message[m as usize]);
         }
 
@@ -340,6 +389,167 @@ pub fn blake3_compute_script(message_len: usize) -> Script {
     blake3_compute_script_with_limb(message_len, 29)
 }
 
+fn blake3_short(stack: &mut StackTracker, message_len: u32) {
+    assert!(
+        (1..=32).contains(&message_len),
+        "short BLAKE3 message length must be in the range [1, 32]"
+    );
+
+    let input_nibbles = message_len * 2;
+    stack.define(input_nibbles, "short message nibbles");
+    stack.custom_ex(
+        script! {
+            for _ in 0..input_nibbles {
+                OP_DUP
+                0
+                16
+                OP_WITHIN
+                OP_VERIFY
+                OP_TOALTSTACK
+            }
+            OP_DEPTH
+            0
+            OP_EQUALVERIFY
+        },
+        1,
+        vec![],
+        input_nibbles,
+    );
+
+    let tables = TablesVars::new(stack, true);
+    let input = stack.from_altstack_joined(input_nibbles, "validated short message nibbles");
+    let message_word_count = message_len.div_ceil(4);
+    let partial_word_bytes = message_len % 4;
+    let partial_word_nibbles = partial_word_bytes * 2;
+    let partial_padding_nibbles = if partial_word_bytes == 0 {
+        0
+    } else {
+        8 - partial_word_nibbles
+    };
+    let output_words = (0..message_word_count)
+        .map(|index| (8, format!("msg_{index}")))
+        .collect();
+    let message_words = stack.custom_ex(
+        script! {
+            if partial_word_bytes != 0 {
+                for _ in 0..partial_word_nibbles {
+                    OP_TOALTSTACK
+                }
+                for _ in 0..partial_padding_nibbles {
+                    OP_0
+                }
+                for _ in 0..partial_word_nibbles {
+                    OP_FROMALTSTACK
+                }
+            }
+        },
+        1,
+        output_words,
+        0,
+    );
+    debug_assert_eq!(input.size(), input_nibbles);
+
+    let message = (0..message_word_count as usize)
+        .map(|semantic_index| {
+            let physical_index = if message_len == 32 {
+                SHORT_32_SEMANTIC_TO_PHYSICAL_WORD[semantic_index]
+            } else {
+                semantic_index
+            };
+            (semantic_index as u8, message_words[physical_index])
+        })
+        .collect();
+    compress(
+        stack,
+        false,
+        0,
+        message_len,
+        get_flags_for_block(0, 1),
+        message,
+        &tables,
+        8,
+        true,
+    );
+
+    for _ in 0..8 {
+        stack.drop(stack.get_var_from_stack(0));
+    }
+    tables.drop(stack);
+    stack.from_altstack_joined(64, "blake3-hash");
+}
+
+fn blake3_short_message_nibbles(message: &[u8]) -> Vec<u8> {
+    assert!(
+        message.len() <= 32,
+        "short BLAKE3 messages must be at most 32 bytes"
+    );
+    let physical_to_semantic = if message.len() == 32 {
+        SHORT_32_PHYSICAL_TO_SEMANTIC_WORD.as_slice()
+    } else {
+        &[]
+    };
+    let word_count = message.len().div_ceil(4);
+    (0..word_count)
+        .map(|physical_index| {
+            physical_to_semantic
+                .get(physical_index)
+                .copied()
+                .unwrap_or(physical_index)
+        })
+        .flat_map(|semantic_index| {
+            let start = semantic_index * 4;
+            let end = (start + 4).min(message.len());
+            message[start..end].iter().rev()
+        })
+        .flat_map(|byte| [byte >> 4, byte & 0x0f])
+        .collect()
+}
+
+/// Returns minimally encoded witness items for [`blake3_short_compute_script`].
+///
+/// Four-byte words use BLAKE3's little-endian byte order. At exactly 32 bytes,
+/// the words are physically permuted to reduce final-round stack routing; this
+/// helper applies that permutation.
+pub fn blake3_short_message_witness(message: &[u8]) -> Vec<Vec<u8>> {
+    blake3_short_message_nibbles(message)
+        .into_iter()
+        .map(|nibble| if nibble == 0 { vec![] } else { vec![nibble] })
+        .collect()
+}
+
+/// Pushes a short message in the same word-oriented nibble layout as
+/// [`blake3_short_message_witness`].
+pub fn blake3_push_short_message_script(message: &[u8]) -> Script {
+    let nibbles = blake3_short_message_nibbles(message);
+
+    script! {
+        for nibble in nibbles {
+            {nibble}
+        }
+    }
+}
+
+/// Computes unkeyed BLAKE3 for a witness-backed message of at most 32 bytes.
+///
+/// The input is two numeric nibble items per message byte in the layout emitted
+/// by [`blake3_push_short_message_script`]. Every nibble is range-checked before
+/// it can address lookup memory. The declared length is fixed in the generated
+/// script, and the main stack must contain exactly those input items.
+pub fn blake3_short_compute_script(message_len: usize) -> Script {
+    if message_len == 0 {
+        return blake3_compute_script(0);
+    }
+    assert!(
+        message_len <= 32,
+        "short BLAKE3 messages must be at most 32 bytes"
+    );
+
+    let mut stack = StackTracker::new();
+    blake3_short(&mut stack, message_len as u32);
+    Script::new("optimized short BLAKE3")
+        .push_script(optimize_to_fixed_point(stack.get_script().compile()))
+}
+
 pub fn blake3_verify_output_script(expected_output: [u8; 32]) -> Script {
     let expected_nibbles = expected_output
         .into_iter()
@@ -362,7 +572,9 @@ pub fn blake3_verify_output_script(expected_output: [u8; 32]) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::{execute_script, execute_script_buf_without_stack_limit};
+    use crate::support::execution::{
+        execute_script, execute_script_buf_without_stack_limit, execute_script_with_inputs,
+    };
     use bitcoin::ScriptBuf;
 
     const USEFUL_LIMB_LENGTHS: [u8; 2] = [4, 29];
@@ -420,6 +632,74 @@ mod tests {
     }
 
     #[test]
+    fn test_short_direct_nibbles_all_lengths() {
+        for message_len in 0..=32 {
+            let message = (0..message_len)
+                .map(|index| ((index * 73 + message_len * 19) & 0xff) as u8)
+                .collect::<Vec<_>>();
+            let expected_hash = *blake3::hash(&message).as_bytes();
+            let compute = blake3_short_compute_script(message_len);
+            let verify = blake3_verify_output_script(expected_hash);
+            let result = execute_script(script! {
+                { blake3_push_short_message_script(&message) }
+                { compute.clone() }
+                { verify.clone() }
+            });
+            assert!(result.success, "length {message_len}: {result}");
+            assert!(
+                result.stats.max_nb_stack_items <= 1000,
+                "length {message_len} peaked at {} stack items",
+                result.stats.max_nb_stack_items
+            );
+
+            let witness_result = execute_script_with_inputs(
+                script! {
+                    { compute }
+                    { verify }
+                },
+                blake3_short_message_witness(&message),
+            );
+            assert!(
+                witness_result.success,
+                "witness length {message_len}: {witness_result}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_short_direct_nibbles_reject_malformed_inputs() {
+        let compute = blake3_short_compute_script(1);
+        for invalid_nibble in [-1, 16] {
+            let result = execute_script(script! {
+                { 0 }
+                { invalid_nibble }
+                { compute.clone() }
+            });
+            assert!(!result.success);
+        }
+
+        let too_few = execute_script(script! {
+            { 0 }
+            { compute.clone() }
+        });
+        assert!(!too_few.success);
+
+        let extra = execute_script(script! {
+            { 0 }
+            { 0 }
+            { 0 }
+            { compute }
+        });
+        assert!(!extra.success);
+    }
+
+    #[test]
+    #[should_panic(expected = "short BLAKE3 messages must be at most 32 bytes")]
+    fn test_short_direct_nibbles_reject_long_messages() {
+        blake3_short_compute_script(33);
+    }
+
+    #[test]
     fn test_max_length() {
         let message = [0x00; 1024];
         let expected_hash = *blake3::hash(&message).as_bytes();
@@ -471,6 +751,12 @@ mod tests {
                 script
             );
         }
+
+        let short = blake3_short_compute_script(32).compile();
+        assert_eq!(
+            bitcoin_script_stack::optimizer::optimize(short.clone()),
+            short
+        );
     }
 
     #[test]

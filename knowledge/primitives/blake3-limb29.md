@@ -5,16 +5,16 @@ u4 and bigint machinery.
 
 - **Position:** locally used to compress intermediate protocol state; supports a
   bounded single-chunk range rather than the full unbounded tree API.
-- **Evidence:** differentially validated against official vectors.
+- **Evidence:** `differentially-validated` against official vectors.
 - **Representative result:** a fixed-point-optimized 64-byte, 29-bit-limb
-  compute fragment with its table memory is 76,481 bytes, contains 46,691
+  compute fragment with its table memory is 74,049 bytes, contains 46,098
   static non-push opcodes, and peaks at 644 combined stack items in the
   deterministic helper composition.
 - **Boundary:** `fragment-with-memory`; the result includes 383 bytes of full
   table setup and 192 bytes of cleanup, but excludes input encoding and digest
   comparison.
 - **Tradeoff:** limb width trades script bytes against retained-message stack
-  items. The same 64-byte fragment is 68,287 bytes with 4-bit limbs, while
+  items. The same 64-byte fragment is 65,855 bytes with 4-bit limbs, while
   larger widths compose with more blocks and unrelated state.
 - **Execution:** the local witness-input executor used by differential tests
   and the peak metric disables the stack-limit check. The observed one-block
@@ -30,4 +30,6 @@ dropped without validation before zero padding is synthesized; callers must
 not rely on that ignored group being bound.
 
 See the [implementation README](../../src/hashes/blake3/README.md) and catalog
-record `hash/blake3-limb29`.
+record `hash/blake3-limb29`. Messages of at most 32 bytes can instead use the
+[sparse direct-u4 profile](blake3-short-u4.md), which removes the selected-limb
+input conversion and compile-time-zero message words.
