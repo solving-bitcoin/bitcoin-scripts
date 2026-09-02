@@ -62,9 +62,9 @@ digest comparison.
 | 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64095<!-- /metric:blake3_64_limb4 --> bytes |
 | 64 bytes, 29-bit limbs | <!-- metric:blake3_64_limb29 -->72293<!-- /metric:blake3_64_limb29 --> bytes |
 
-Rows at or below 64 KiB receive the repository's general optimizer after the
-BLAKE3-specific fixed-point pass. The 72,293-byte 29-bit row exceeds that
-cutoff and receives no additional upstream rewrite passes.
+Every nontrivial row in this table exceeds the repository optimizer's 32 KiB
+input cutoff and receives no additional upstream rewrite passes after the
+BLAKE3-specific fixed-point pass.
 
 For the deterministic 32-byte message `00 01 ... 1f`, direct host-side message
 pushes are <!-- metric:blake3_push_short_32 -->64<!-- /metric:blake3_push_short_32 -->

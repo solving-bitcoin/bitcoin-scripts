@@ -40,7 +40,7 @@ disables the consensus stack limit, so these are `research-unlimited` results.
 | `Fq12` | `hinted_square(a)` | <!-- metric:fq12_square -->2155690<!-- /metric:fq12_square --> bytes | <!-- metric:fq12_square_stack -->684<!-- /metric:fq12_square_stack --> |
 
 The addition rows receive the repository's general optimizer. Every hinted
-multiplication, square, and inversion row exceeds its 64 KiB input cutoff and
+multiplication, square, and inversion row exceeds its 32 KiB input cutoff and
 is reported unoptimized.
 
 These are representative arithmetic paths, not a full hint-producing-operation

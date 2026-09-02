@@ -20,7 +20,7 @@ digest comparison.
 | --- | ---: |
 | 32-byte input | <!-- metric:sha1_u32_32 -->209726<!-- /metric:sha1_u32_32 --> bytes |
 
-This fragment exceeds the repository optimizer's 64 KiB input cutoff and is
+This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
 Maximum stack depth depends on the message length. The implementation uses a

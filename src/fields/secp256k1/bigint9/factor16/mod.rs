@@ -985,14 +985,14 @@ mod tests {
     #[test]
     fn exact_cost_and_witness_metrics_are_stable() {
         let cost = one_shot_cost_breakdown();
-        assert_eq!(cost.table_setup, 1_538);
+        assert_eq!(cost.table_setup, 1_536);
         assert_eq!(cost.table_drop, 257);
-        assert_eq!(cost.product_generation, 15_598);
+        assert_eq!(cost.product_generation, 15_597);
         assert_eq!(cost.folded_relation, 2_642);
         assert_eq!(cost.cleanup, 415);
-        assert_eq!(cost.table_overhead(), 1_795);
-        assert_eq!(cost.computation(), 18_655);
-        assert_eq!(cost.total(), 20_450);
+        assert_eq!(cost.table_overhead(), 1_793);
+        assert_eq!(cost.computation(), 18_654);
+        assert_eq!(cost.total(), 20_447);
 
         let p = modulus();
         let hints = hinted_mul(&(&p - BigUint::from(1u32)), &(&p - BigUint::from(1u32)));

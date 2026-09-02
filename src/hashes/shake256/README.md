@@ -33,7 +33,7 @@ predicate after the measured peak so execution can finish successfully.
 | --- | ---: | ---: | ---: |
 | 32-byte input, 1024-byte output | <!-- metric:shake256_32_1024 -->15927814<!-- /metric:shake256_32_1024 --> bytes | <!-- metric:shake256_witness_32 -->65<!-- /metric:shake256_witness_32 --> bytes | <!-- metric:shake256_stack_32_1024 -->1709<!-- /metric:shake256_stack_32_1024 --> |
 
-This fragment exceeds the repository optimizer's 64 KiB input cutoff and is
+This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
 The large script reflects eight Keccak-f[1600] permutations for the fixed

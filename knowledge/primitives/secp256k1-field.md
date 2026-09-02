@@ -58,42 +58,42 @@ bytes are representative consensus serialization for `(p-1)^2`, not maxima.
 
 | Configuration | Script bytes | Incremental hint witness | Strict peak |
 | --- | ---: | ---: | ---: |
-| One ordinary multiplication | 20,503 | 94 bytes / 67 items | 757 |
-| Raw ordinary two-operand multiplication | 21,775 | 160 bytes / 125 complete items | 757 |
-| One factor-16 multiplication | 20,450 | 37 bytes / 29 items | 719 |
-| Raw factor-16 two-operand multiplication | 21,722 | 103 bytes / 87 complete items | 719 |
-| Two preloaded ordinary multiplications | 39,358 | 187 bytes / 134 items | 882 |
-| Three preloaded ordinary multiplications | 59,145 | 280 bytes / 201 items | 993 |
-| One square | 14,541 | 94 bytes / 67 items | 614 |
-| Five preloaded squares | 65,064 | 468 bytes / 335 hint items | 998 |
+| One ordinary multiplication | 20,500 | 94 bytes / 67 items | 757 |
+| Raw ordinary two-operand multiplication | 21,772 | 160 bytes / 125 complete items | 757 |
+| One factor-16 multiplication | 20,447 | 37 bytes / 29 items | 719 |
+| Raw factor-16 two-operand multiplication | 21,719 | 103 bytes / 87 complete items | 719 |
+| Two preloaded ordinary multiplications | 39,400 (unoptimized) | 187 bytes / 134 items | 882 |
+| Three preloaded ordinary multiplications | 59,163 (unoptimized) | 280 bytes / 201 items | 993 |
+| One square | 14,539 | 94 bytes / 67 items | 614 |
+| Five preloaded squares | 65,074 (unoptimized) | 468 bytes / 335 hint items | 998 |
 
-One ordinary multiplication contains 1,538 bytes of table pushes and 257 bytes
-of table cleanup. The other 18,708 bytes are product, normalization,
+One ordinary multiplication contains 1,536 bytes of table pushes and 257 bytes
+of table cleanup. The other 18,707 bytes are product, normalization,
 recombination, exact-relation, routing, and output-validation work. Its exact
 breakdown is 9,374 low/high product bytes, 4,993 normalized-difference product
-bytes, 1,103 normalization bytes, 173 coefficient-routing bytes, 532
-recombination bytes, and 2,535 relation/output bytes. The 1,795-byte table
-lifecycle is 8.8% of an isolated gate.
+bytes, 1,102 normalization bytes, 173 coefficient-routing bytes, 530
+recombination bytes, and 2,535 relation/output bytes. The 1,793-byte table
+lifecycle is 8.7% of an isolated gate.
 
-The factor-16 gate uses the same 1,795-byte table lifecycle and 18,655 bytes of
-computation. Its exact categories are 15,598 product-generation bytes, 2,642
-folded-relation bytes, and 417 cleanup/output-certification bytes. It is only
+The factor-16 gate uses the same 1,793-byte table lifecycle and 18,654 bytes of
+computation. Its exact categories are 15,597 product-generation bytes, 2,642
+folded-relation bytes, and 415 cleanup/output-certification bytes. It is only
 53 locking-script bytes smaller than the ordinary gate, but removes 38 hints
 and 38 peak stack items. The representative 37-byte factor-16 hint and 103-byte
 raw witness use encoded logical `(p-1)` operands; witness sizes are not maxima.
 
 Preloaded batches pay that table lifecycle once. The retained two-product path
-uses the smaller 85-coefficient layout and averages 19,679 bytes. Three
+uses the smaller 85-coefficient layout and averages 19,700 bytes. Three
 products switch to a 57-slot destructive recombination: it is larger per gate
-but averages 19,715 bytes and reaches a 993-item peak, where three copies of
+but averages 19,721 bytes and reaches a 993-item peak, where three copies of
 the 85-slot path would exceed the consensus stack ceiling. Circuit-specific
 operand scheduling, fan-out, and reordering remain outside these batch
 fragments. No factor-16 resident-table or batch fragment is currently measured.
 
-One square also pays 1,795 table bytes; its remaining 12,746 bytes are
+One square also pays 1,793 table bytes; its remaining 12,746 bytes are
 computation. The five-square batch uses an unbiased shared table: 1,657 bytes
-of setup plus 257 of cleanup, and 63,150 bytes of computation. It averages
-13,012.8 bytes, but its 998-item peak leaves almost no composition headroom.
+of setup plus 257 of cleanup, and 63,160 bytes of computation. It averages
+13,014.8 bytes, but its 998-item peak leaves almost no composition headroom.
 
 ## Trust boundary
 
@@ -116,18 +116,18 @@ reject one additional item.
 
 ## Comparison boundary
 
-The closest RNS comparison is the 31,278-byte 46-prime composable gate: it also
+The closest RNS comparison is the 31,257-byte 46-prime composable gate: it also
 consumes two certified secp256k1 values, binds reduction hints locally, and
-returns a reusable certificate. The 20,503-byte ordinary native gate is 10,775
+returns a reusable certificate. The 20,500-byte ordinary native gate is 10,757
 bytes smaller and its representative incremental witness is 377 bytes smaller,
 but values have different live representations; conversion and certificate
-fan-out are not included in either fragment. The 20,450-byte factor-16 gate is
+fan-out are not included in either fragment. The 20,447-byte factor-16 gate is
 an additional 53 bytes smaller and uses only 29 hints, but is comparable only
 when the caller already keeps the native values factor-16 encoded.
 
-The 10,950-byte 42-prime carry verifier is not globally sound from raw RNS
+The 10,937-byte 42-prime carry verifier is not globally sound from raw RNS
 vectors and excludes every integer binding, so it is not a smaller substitute.
-The 51,047-byte standalone RNS verifier binds four limb values to 47 residue
+The unoptimized 51,055-byte standalone RNS verifier binds four limb values to 47 residue
 vectors and returns both limbs and residues; it closes a materially wider
 boundary than the native raw wrapper.
 

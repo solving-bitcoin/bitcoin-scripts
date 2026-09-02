@@ -61,7 +61,7 @@ include both 75-item operands and count the main and alt stacks together.
 | Canonical | Subtract | <!-- metric:prime_rns_sub -->1138<!-- /metric:prime_rns_sub --> bytes | <!-- metric:prime_rns_sub_stack -->151<!-- /metric:prime_rns_sub_stack --> |
 | Centered | Add | <!-- metric:prime_rns_centered_add -->1859<!-- /metric:prime_rns_centered_add --> bytes | <!-- metric:prime_rns_centered_add_stack -->151<!-- /metric:prime_rns_centered_add_stack --> |
 | Centered | Subtract | <!-- metric:prime_rns_centered_sub -->1934<!-- /metric:prime_rns_centered_sub --> bytes | <!-- metric:prime_rns_centered_sub_stack -->151<!-- /metric:prime_rns_centered_sub_stack --> |
-| Canonical | Multiply | <!-- metric:prime_rns_mul -->15626<!-- /metric:prime_rns_mul --> bytes | <!-- metric:prime_rns_mul_stack -->183<!-- /metric:prime_rns_mul_stack --> |
+| Canonical | Multiply | <!-- metric:prime_rns_mul -->15624<!-- /metric:prime_rns_mul --> bytes | <!-- metric:prime_rns_mul_stack -->183<!-- /metric:prime_rns_mul_stack --> |
 
 Canonical add/sub needs one conditional correction per odd prime. Centered
 add/sub needs upper and lower corrections, so it has the same peak but a larger
@@ -107,7 +107,7 @@ fewer table items to be cleaned up. Table setup and cleanup live wholly inside
 the nonzero branch, so the zero path remains stack-balanced.
 
 The completed multiplication fragment contains
-<!-- metric:prime_rns_mul_opcodes -->10931<!-- /metric:prime_rns_mul_opcodes -->
+<!-- metric:prime_rns_mul_opcodes -->10929<!-- /metric:prime_rns_mul_opcodes -->
 static non-push opcodes.
 
 The locking-script total is split by exact compiled origin, rather than
@@ -117,8 +117,8 @@ treating every byte as a per-product query cost:
 | --- | ---: |
 | Table-entry pushes | <!-- metric:prime_rns_mul_table_push -->392<!-- /metric:prime_rns_mul_table_push --> |
 | Destructive table cleanup | <!-- metric:prime_rns_mul_table_drop -->153<!-- /metric:prime_rns_mul_table_drop --> |
-| Arithmetic, routing, and 75-output restoration | <!-- metric:prime_rns_mul_computation -->15081<!-- /metric:prime_rns_mul_computation --> |
-| **Total** | **15,626** |
+| Arithmetic, routing, and 75-output restoration | <!-- metric:prime_rns_mul_computation -->15079<!-- /metric:prime_rns_mul_computation --> |
+| **Total** | **15,624** |
 
 Thus lookup-memory lifecycle is 545 bytes, or about 3.5% of the one-shot
 fragment. Concatenating ordinary `mul` fragments does not automatically
@@ -140,7 +140,7 @@ requested batch size. For the maximum strict-stack batch of six products:
 | Restore all 450 outputs to main stack | <!-- metric:prime_rns_mul_batch_6_output_restore -->450<!-- /metric:prime_rns_mul_batch_6_output_restore --> |
 | **Comparable returned-output total** | **<!-- metric:prime_rns_mul_batch_6 -->64912<!-- /metric:prime_rns_mul_batch_6 -->** |
 
-That is 10,819 bytes per product after amortization, versus 15,626 bytes for
+That is 10,819 bytes per product after amortization, versus 15,624 bytes for
 each independent one-shot fragment: 64,912 versus 93,756 bytes for six, a
 30.8% reduction. The reproduced combined-stack peak is
 <!-- metric:prime_rns_mul_batch_6_stack -->900<!-- /metric:prime_rns_mul_batch_6_stack -->
@@ -164,26 +164,25 @@ The measured secp256k1-field instance uses
 | Fragment | Locking script | Measured witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | 75-prime, no relation carries | <!-- metric:prime_rns_hinted_mod_mul -->25768<!-- /metric:prime_rns_hinted_mod_mul --> bytes | <!-- metric:prime_rns_hinted_mod_mul_witness -->477<!-- /metric:prime_rns_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_hinted_mod_mul_stack -->384<!-- /metric:prime_rns_hinted_mod_mul_stack --> |
-| 42-prime, exact carries, external bindings | <!-- metric:prime_rns_carry_hinted_mod_mul -->10950<!-- /metric:prime_rns_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_witness -->301<!-- /metric:prime_rns_carry_hinted_mod_mul_witness --> hint bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_stack -->231<!-- /metric:prime_rns_carry_hinted_mod_mul_stack --> |
-| 47-prime, exact carries, standalone global bindings | <!-- metric:prime_rns_bound_carry_hinted_mod_mul -->51047<!-- /metric:prime_rns_bound_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_witness -->868<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_witness --> bytes for all 299 inputs | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_stack -->305<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_stack --> |
+| 42-prime, exact carries, external bindings | <!-- metric:prime_rns_carry_hinted_mod_mul -->10937<!-- /metric:prime_rns_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_witness -->301<!-- /metric:prime_rns_carry_hinted_mod_mul_witness --> hint bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_stack -->231<!-- /metric:prime_rns_carry_hinted_mod_mul_stack --> |
+| 47-prime, exact carries, standalone global bindings | <!-- metric:prime_rns_bound_carry_hinted_mod_mul -->51055<!-- /metric:prime_rns_bound_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_witness -->868<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_witness --> bytes for all 299 inputs | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_stack -->305<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_stack --> |
 
 Their exact one-shot locking-script attribution is:
 
 | Fragment | Table pushes | Table drops | Computation, validation, and routing | Total |
 | --- | ---: | ---: | ---: | ---: |
 | 75-prime, no carries | <!-- metric:prime_rns_hinted_mod_mul_table_push -->123<!-- /metric:prime_rns_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_hinted_mod_mul_table_drop -->60<!-- /metric:prime_rns_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_hinted_mod_mul_computation -->25585<!-- /metric:prime_rns_hinted_mod_mul_computation --> | 25,768 |
-| 42-prime, exact carries | <!-- metric:prime_rns_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_carry_hinted_mod_mul_computation -->10950<!-- /metric:prime_rns_carry_hinted_mod_mul_computation --> | 10,950 |
-| 47-prime, globally bound exact carries | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_drop --> | range <!-- metric:prime_rns_bound_carry_hinted_mod_mul_range_checks -->1057<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_range_checks --> + binding <!-- metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding -->38796<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding --> + relation <!-- metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation -->10794<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_bound_carry_hinted_mod_mul_routing_output -->400<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_routing_output --> | 51,047 |
+| 42-prime, exact carries | <!-- metric:prime_rns_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_carry_hinted_mod_mul_computation -->10937<!-- /metric:prime_rns_carry_hinted_mod_mul_computation --> | 10,937 |
+| 47-prime, globally bound exact carries | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_drop --> | range <!-- metric:prime_rns_bound_carry_hinted_mod_mul_range_checks -->1057<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_range_checks --> + binding <!-- metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding -->38796<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding --> + relation <!-- metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation -->10802<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_bound_carry_hinted_mod_mul_routing_output -->400<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_routing_output --> | 51,055 |
 
 Only 183 bytes, 0.7%, of the no-carry verifier are table lifecycle. The carry
-verifier has no lookup memory at all: its 10,950 bytes consist of 9,593 bytes
-of arithmetic and exact relation checks, 979 bytes of canonical/complement
-validation, and 378 bytes of routing and output handling. Repeating that
-fragment therefore exposes no table setup to amortize; batching must instead
+verifier has no lookup memory at all: all 10,937 bytes are computation,
+validation, routing, and output handling. Repeating that fragment therefore
+exposes no table setup to amortize; batching must instead
 share external bindings or introduce a different arithmetic strategy.
 
 The standalone verifier is also entirely table-free. Its size is not static
-lookup overhead: 38,796 of 51,047 bytes derive and bind four complete RNS
+lookup overhead: 38,796 of 51,055 bytes derive and bind four complete RNS
 vectors to shared 256-bit values, while 10,794 bytes perform the actual
 modular-product relations. The reusable `carry::bound::bind_value` boundary is
 <!-- metric:prime_rns_bind_value -->9773<!-- /metric:prime_rns_bind_value -->
@@ -195,7 +194,7 @@ integer is below `2^256`. `carry::bound::bind_value_below(N)` is
 <!-- metric:prime_rns_bind_value_below -->9860<!-- /metric:prime_rns_bind_value_below -->
 bytes and additionally proves the fixed field bound required for `lhs`, `rhs`,
 or `r` unless that predicate is established elsewhere. A composed program can
-certify persistent values once at their introduction boundary; the 51,047-byte
+certify persistent values once at their introduction boundary; the 51,055-byte
 fused API deliberately rechecks all four values to provide a sound standalone
 operation.
 
@@ -243,7 +242,7 @@ relations, cleanup, and the returned 42-residue remainder. The 144-item hint
 witness for `(N-1)^2` contains 42 quotient residues, 42 remainder residues, 42
 carries, and 18 complement residues; operands, global bindings, and the
 terminal predicate are excluded. The generated fragment has
-<!-- metric:prime_rns_carry_hinted_mod_mul_opcodes -->8135<!-- /metric:prime_rns_carry_hinted_mod_mul_opcodes -->
+<!-- metric:prime_rns_carry_hinted_mod_mul_opcodes -->8122<!-- /metric:prime_rns_carry_hinted_mod_mul_opcodes -->
 static non-push opcodes.
 
 Soundness has an essential non-coordinatewise precondition: `lhs`, `rhs`,

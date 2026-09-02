@@ -37,60 +37,60 @@ are not maxima.
 
 | Configuration | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
-| Ordinary multiply, two certified operands | <!-- metric:secp256k1_field_mul -->20503<!-- /metric:secp256k1_field_mul --> bytes | <!-- metric:secp256k1_field_mul_hint_witness -->94<!-- /metric:secp256k1_field_mul_hint_witness --> bytes / <!-- metric:secp256k1_field_mul_hint_items -->67<!-- /metric:secp256k1_field_mul_hint_items --> incremental hint items | <!-- metric:secp256k1_field_mul_stack -->757<!-- /metric:secp256k1_field_mul_stack --> |
-| Ordinary multiply from two raw operand encodings | <!-- metric:secp256k1_field_mul_standalone -->21775<!-- /metric:secp256k1_field_mul_standalone --> bytes | <!-- metric:secp256k1_field_mul_standalone_witness -->160<!-- /metric:secp256k1_field_mul_standalone_witness --> bytes / 125 complete data items | <!-- metric:secp256k1_field_mul_standalone_stack -->757<!-- /metric:secp256k1_field_mul_standalone_stack --> |
-| Two ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch2 -->39358<!-- /metric:secp256k1_field_mul_batch2 --> bytes | <!-- metric:secp256k1_field_mul_batch2_hint_witness -->187<!-- /metric:secp256k1_field_mul_batch2_hint_witness --> bytes / 134 incremental hint items | <!-- metric:secp256k1_field_mul_batch2_stack -->882<!-- /metric:secp256k1_field_mul_batch2_stack --> |
-| Three ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch3 -->59145<!-- /metric:secp256k1_field_mul_batch3 --> bytes | <!-- metric:secp256k1_field_mul_batch3_hint_witness -->280<!-- /metric:secp256k1_field_mul_batch3_hint_witness --> bytes / 201 incremental hint items | <!-- metric:secp256k1_field_mul_batch3_stack -->993<!-- /metric:secp256k1_field_mul_batch3_stack --> |
-| Square, one certified operand | <!-- metric:secp256k1_field_square -->14541<!-- /metric:secp256k1_field_square --> bytes | <!-- metric:secp256k1_field_square_hint_witness -->94<!-- /metric:secp256k1_field_square_hint_witness --> bytes / 67 incremental hint items | <!-- metric:secp256k1_field_square_stack -->614<!-- /metric:secp256k1_field_square_stack --> |
-| Five preloaded squares, certified operands | <!-- metric:secp256k1_field_square_batch5 -->65064<!-- /metric:secp256k1_field_square_batch5 --> bytes | <!-- metric:secp256k1_field_square_batch5_hint_witness -->468<!-- /metric:secp256k1_field_square_batch5_hint_witness --> bytes / 335 incremental hint items | <!-- metric:secp256k1_field_square_batch5_stack -->998<!-- /metric:secp256k1_field_square_batch5_stack --> |
+| Ordinary multiply, two certified operands | <!-- metric:secp256k1_field_mul -->20500<!-- /metric:secp256k1_field_mul --> bytes | <!-- metric:secp256k1_field_mul_hint_witness -->94<!-- /metric:secp256k1_field_mul_hint_witness --> bytes / <!-- metric:secp256k1_field_mul_hint_items -->67<!-- /metric:secp256k1_field_mul_hint_items --> incremental hint items | <!-- metric:secp256k1_field_mul_stack -->757<!-- /metric:secp256k1_field_mul_stack --> |
+| Ordinary multiply from two raw operand encodings | <!-- metric:secp256k1_field_mul_standalone -->21772<!-- /metric:secp256k1_field_mul_standalone --> bytes | <!-- metric:secp256k1_field_mul_standalone_witness -->160<!-- /metric:secp256k1_field_mul_standalone_witness --> bytes / 125 complete data items | <!-- metric:secp256k1_field_mul_standalone_stack -->757<!-- /metric:secp256k1_field_mul_standalone_stack --> |
+| Two ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch2 -->39400<!-- /metric:secp256k1_field_mul_batch2 --> bytes | <!-- metric:secp256k1_field_mul_batch2_hint_witness -->187<!-- /metric:secp256k1_field_mul_batch2_hint_witness --> bytes / 134 incremental hint items | <!-- metric:secp256k1_field_mul_batch2_stack -->882<!-- /metric:secp256k1_field_mul_batch2_stack --> |
+| Three ordinary preloaded multiplies, certified operands | <!-- metric:secp256k1_field_mul_batch3 -->59163<!-- /metric:secp256k1_field_mul_batch3 --> bytes | <!-- metric:secp256k1_field_mul_batch3_hint_witness -->280<!-- /metric:secp256k1_field_mul_batch3_hint_witness --> bytes / 201 incremental hint items | <!-- metric:secp256k1_field_mul_batch3_stack -->993<!-- /metric:secp256k1_field_mul_batch3_stack --> |
+| Square, one certified operand | <!-- metric:secp256k1_field_square -->14539<!-- /metric:secp256k1_field_square --> bytes | <!-- metric:secp256k1_field_square_hint_witness -->94<!-- /metric:secp256k1_field_square_hint_witness --> bytes / 67 incremental hint items | <!-- metric:secp256k1_field_square_stack -->614<!-- /metric:secp256k1_field_square_stack --> |
+| Five preloaded squares, certified operands | <!-- metric:secp256k1_field_square_batch5 -->65074<!-- /metric:secp256k1_field_square_batch5 --> bytes | <!-- metric:secp256k1_field_square_batch5_hint_witness -->468<!-- /metric:secp256k1_field_square_batch5_hint_witness --> bytes / 335 incremental hint items | <!-- metric:secp256k1_field_square_batch5_stack -->998<!-- /metric:secp256k1_field_square_batch5_stack --> |
 
 The one-shot multiplication is exactly:
 
 | Component | Bytes |
 | --- | ---: |
-| Push 513-entry table | <!-- metric:secp256k1_field_mul_table_setup -->1538<!-- /metric:secp256k1_field_mul_table_setup --> |
+| Push 513-entry table | <!-- metric:secp256k1_field_mul_table_setup -->1536<!-- /metric:secp256k1_field_mul_table_setup --> |
 | Drop table | <!-- metric:secp256k1_field_mul_table_drop -->257<!-- /metric:secp256k1_field_mul_table_drop --> |
 | Low/high raw products | <!-- metric:secp256k1_field_mul_raw_products -->9374<!-- /metric:secp256k1_field_mul_raw_products --> |
 | Normalized-difference products | <!-- metric:secp256k1_field_mul_difference_products -->4993<!-- /metric:secp256k1_field_mul_difference_products --> |
-| Difference normalization | <!-- metric:secp256k1_field_mul_difference_normalization -->1103<!-- /metric:secp256k1_field_mul_difference_normalization --> |
+| Difference normalization | <!-- metric:secp256k1_field_mul_difference_normalization -->1102<!-- /metric:secp256k1_field_mul_difference_normalization --> |
 | Coefficient-array routing | <!-- metric:secp256k1_field_mul_coefficient_routing -->173<!-- /metric:secp256k1_field_mul_coefficient_routing --> |
 | Karatsuba recombination | <!-- metric:secp256k1_field_mul_coefficient_recombination -->530<!-- /metric:secp256k1_field_mul_coefficient_recombination --> |
 | Quotient/carry relation, cleanup, output validation | <!-- metric:secp256k1_field_mul_relation_output -->2535<!-- /metric:secp256k1_field_mul_relation_output --> |
-| **Total** | **20,503** |
+| **Total** | **20,500** |
 
-Thus the static table lifecycle is 1,795 bytes, or 8.8% of one isolated
+Thus the static table lifecycle is 1,793 bytes, or 8.7% of one isolated
 multiplication. The remaining
-<!-- metric:secp256k1_field_mul_computation -->18708<!-- /metric:secp256k1_field_mul_computation -->
+<!-- metric:secp256k1_field_mul_computation -->18707<!-- /metric:secp256k1_field_mul_computation -->
 bytes are actual per-operation computation and routing. The fragment contains
 <!-- metric:secp256k1_field_mul_opcodes -->13039<!-- /metric:secp256k1_field_mul_opcodes -->
 static non-push opcodes. The raw wrapper adds
 <!-- metric:secp256k1_field_operand_certification -->1272<!-- /metric:secp256k1_field_operand_certification -->
 bytes to certify both operands.
 
-For repeated work, the table's 1,795-byte push/drop cost is paid once. Two
+For repeated work, the table's 1,793-byte push/drop cost is paid once. Two
 preloaded products use
-<!-- metric:secp256k1_field_mul_batch2_computation -->37563<!-- /metric:secp256k1_field_mul_batch2_computation -->
+<!-- metric:secp256k1_field_mul_batch2_computation -->37607<!-- /metric:secp256k1_field_mul_batch2_computation -->
 bytes of non-table computation, including
-<!-- metric:secp256k1_field_mul_batch2_relation -->18405<!-- /metric:secp256k1_field_mul_batch2_relation -->
-bytes per normalized-Karatsuba relation, and average 19,679 total bytes each. Three use
-<!-- metric:secp256k1_field_mul_batch3_computation -->57350<!-- /metric:secp256k1_field_mul_batch3_computation -->
+<!-- metric:secp256k1_field_mul_batch2_relation -->18404<!-- /metric:secp256k1_field_mul_batch2_relation -->
+bytes per normalized-Karatsuba relation, and average 19,700 total bytes each. Three use
+<!-- metric:secp256k1_field_mul_batch3_computation -->57370<!-- /metric:secp256k1_field_mul_batch3_computation -->
 non-table bytes, including
-<!-- metric:secp256k1_field_mul_batch3_relation -->18740<!-- /metric:secp256k1_field_mul_batch3_relation -->
-bytes per compact relation, and average 19,715 bytes each; destructive
+<!-- metric:secp256k1_field_mul_batch3_relation -->18739<!-- /metric:secp256k1_field_mul_batch3_relation -->
+bytes per compact relation, and average 19,721 bytes each; destructive
 recombination is slightly larger per gate but is what keeps the strict peak at
 993. A resident-table single gate is
-<!-- metric:secp256k1_field_mul_resident -->19942<!-- /metric:secp256k1_field_mul_resident -->
+<!-- metric:secp256k1_field_mul_resident -->19941<!-- /metric:secp256k1_field_mul_resident -->
 bytes; setup plus one final result-preserving cleanup of
 <!-- metric:secp256k1_field_mul_resident_cleanup -->315<!-- /metric:secp256k1_field_mul_resident_cleanup -->
 bytes totals
-<!-- metric:secp256k1_field_mul_resident_total -->21795<!-- /metric:secp256k1_field_mul_resident_total -->
+<!-- metric:secp256k1_field_mul_resident_total -->21792<!-- /metric:secp256k1_field_mul_resident_total -->
 bytes. These resident figures do not include circuit-specific scheduling or
 fan-out. Resident lookup memory must be emitted by the locking script through
 `table_setup`; witness-supplied entries are not trusted table state.
 
 The specialized square removes the unnecessary second operand and uses 435
-quarter-square products. Its one-shot 14,541 bytes split into
-<!-- metric:secp256k1_field_square_table_setup -->1538<!-- /metric:secp256k1_field_square_table_setup -->
+quarter-square products. Its one-shot 14,539 bytes split into
+<!-- metric:secp256k1_field_square_table_setup -->1536<!-- /metric:secp256k1_field_square_table_setup -->
 setup,
 <!-- metric:secp256k1_field_square_table_drop -->257<!-- /metric:secp256k1_field_square_table_drop -->
 cleanup,
@@ -99,7 +99,7 @@ diagonal-product bytes,
 <!-- metric:secp256k1_field_square_off_diagonals -->9744<!-- /metric:secp256k1_field_square_off_diagonals -->
 off-diagonal-product bytes, and
 <!-- metric:secp256k1_field_square_relation_output -->2596<!-- /metric:secp256k1_field_square_relation_output -->
-relation/output bytes. The table lifecycle is 1,795 bytes and computation is
+relation/output bytes. The table lifecycle is 1,793 bytes and computation is
 <!-- metric:secp256k1_field_square_computation -->12746<!-- /metric:secp256k1_field_square_computation -->
 bytes, with
 <!-- metric:secp256k1_field_square_opcodes -->9421<!-- /metric:secp256k1_field_square_opcodes -->
@@ -112,8 +112,8 @@ bytes, cleanup is
 each relation is
 <!-- metric:secp256k1_field_square_batch5_relation -->12268<!-- /metric:secp256k1_field_square_batch5_relation -->
 bytes, and total non-table computation is
-<!-- metric:secp256k1_field_square_batch5_computation -->63150<!-- /metric:secp256k1_field_square_batch5_computation -->
-bytes. It averages 13,012.8 bytes per square but leaves only two stack items of
+<!-- metric:secp256k1_field_square_batch5_computation -->63160<!-- /metric:secp256k1_field_square_batch5_computation -->
+bytes. It averages 13,014.8 bytes per square but leaves only two stack items of
 consensus headroom.
 
 ### Security and hint binding
@@ -163,13 +163,13 @@ and altstack items count toward `preserved_items` and the declared peak.
 
 ### Comparison boundary
 
-The 20,503-byte ordinary native gate and the 31,278-byte prime-RNS composable gate both
+The 20,500-byte ordinary native gate and the 31,257-byte prime-RNS composable gate both
 consume two previously certified secp256k1 field values, bind hostile reduction
 hints locally, and return a reusable certified result. Their certificate
 representations differ: 29 balanced radix digits here versus 46 canonical RNS
-residues, so conversion and fan-out costs are circuit-specific. The 10,950-byte
+residues, so conversion and fan-out costs are circuit-specific. The 10,937-byte
 RNS carry gate is not comparable: it omits every global integer binding. The
-51,047-byte RNS standalone gate performs four full limb-to-RNS bindings and
+51,055-byte unoptimized RNS standalone gate performs four full limb-to-RNS bindings and
 returns both limbs and residues, whereas this raw wrapper certifies two native
 digit operands and derives the native result directly.
 

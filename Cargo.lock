@@ -291,7 +291,7 @@ dependencies = [
 [[package]]
 name = "bitcoin-script"
 version = "0.4.0"
-source = "git+https://github.com/BitVM/rust-bitcoin-script#db35a66350de98c4dfac245bdc971819d09f3c4f"
+source = "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180"
 dependencies = [
  "bitcoin",
  "script-macro",
@@ -818,7 +818,7 @@ checksum = "cf54715a573b99ac80df0bc206da022bcd442c974952c7b9720069370852e21f"
 [[package]]
 name = "script-macro"
 version = "0.4.0"
-source = "git+https://github.com/BitVM/rust-bitcoin-script#db35a66350de98c4dfac245bdc971819d09f3c4f"
+source = "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180"
 dependencies = [
  "bitcoin",
  "proc-macro-error",

@@ -5,9 +5,9 @@ Two implementations share the modulus
 
 | Backend | Representation | Certified multiplication | Use when |
 | --- | --- | ---: | --- |
-| [`bigint9`](bigint9/) | 29 balanced radix-512 digits, ordinary domain | 20,503 bytes | values stay in the native digit representation |
-| [`bigint9::factor16`](bigint9/factor16/) | 29 balanced radix-512 digits, `x/16` domain | 20,450 bytes | an entire multiplication region stays factor-16 encoded |
-| [`rns`](rns/) | 46 canonical prime residues | 31,278 bytes | an RNS certificate can be reused across a larger residue circuit |
+| [`bigint9`](bigint9/) | 29 balanced radix-512 digits, ordinary domain | 20,500 bytes | values stay in the native digit representation |
+| [`bigint9::factor16`](bigint9/factor16/) | 29 balanced radix-512 digits, `x/16` domain | 20,447 bytes | an entire multiplication region stays factor-16 encoded |
+| [`rns`](rns/) | 46 canonical prime residues | 31,257 bytes | an RNS certificate can be reused across a larger residue circuit |
 
 The sizes are orientation only. Conversion, certificate fan-out, setup,
 cleanup, and circuit routing must be included before treating them as a

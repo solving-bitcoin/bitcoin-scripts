@@ -23,8 +23,7 @@ cleanup. The short-profile executor enforces the 1,000-item local limit, but it
 is not a pinned Bitcoin Core consensus run, so the result remains
 `research-unlimited` rather than consensus-validated.
 
-The 59,529-byte short BLAKE3 row receives the repository's general optimizer.
-The 72,293-byte BLAKE3 row and every SHA-1, RIPEMD-160, SHA-256, and SHAKE256
-row exceed its 64 KiB input cutoff and are unoptimized by those upstream
-passes. BLAKE3 still applies its separately documented pinned peephole pass
-before the repository compilation policy.
+Every nontrivial row in the table exceeds the repository optimizer's 32 KiB
+input cutoff and is unoptimized by those upstream passes. BLAKE3 still applies
+its separately documented pinned peephole pass before the repository
+compilation policy.

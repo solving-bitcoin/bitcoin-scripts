@@ -714,12 +714,25 @@ pub fn mul_cost_breakdown() -> ScriptCostBreakdown {
         let coordinate = selected_mul_table_bytes(index);
         (total.0 + coordinate.0, total.1 + coordinate.1)
     });
-    let total = mul(0).compile_with_policy().len() + from_altstack().compile_with_policy().len();
-    ScriptCostBreakdown {
+    let independently_compiled_total =
+        mul(0).compile_with_policy().len() + from_altstack().compile_with_policy().len();
+    let final_script_bytes = script! {
+        { mul(0) }
+        { from_altstack() }
+    }
+    .compile_with_policy()
+    .len();
+    let mut cost = ScriptCostBreakdown {
         table_push,
         table_drop,
-        computation: total - table_push - table_drop,
-    }
+        computation: independently_compiled_total - table_push - table_drop,
+    };
+    attribute_compilation_delta(
+        &mut cost.computation,
+        independently_compiled_total,
+        final_script_bytes,
+    );
+    cost
 }
 
 fn canonical_add_reduce(modulus: u32) -> Script {
@@ -2496,7 +2509,7 @@ mod tests {
             ScriptCostBreakdown {
                 table_push: 392,
                 table_drop: 153,
-                computation: 15_081,
+                computation: 15_079,
             }
         );
 

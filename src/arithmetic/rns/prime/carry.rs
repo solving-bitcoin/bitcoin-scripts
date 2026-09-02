@@ -970,8 +970,8 @@ mod tests {
         let cost = mul_mod_hinted_cost_breakdown(&secp256k1_modulus());
         assert_eq!(cost.table_push, 0);
         assert_eq!(cost.table_drop, 0);
-        assert_eq!(cost.computation, 10_950);
-        assert_eq!(cost.total(), 10_950);
+        assert_eq!(cost.computation, 10_937);
+        assert_eq!(cost.total(), 10_937);
     }
 
     #[test]

@@ -27,7 +27,7 @@ Frobenius operations.
 The measured `Fq::hinted_inv` fragment is 67,832 bytes with a 306-item peak.
 The addition rows use the repository's general optimizer. Every hinted
 multiplication, square, and inversion measurement in this table exceeds its
-64 KiB input cutoff and is therefore unoptimized.
+32 KiB input cutoff and is therefore unoptimized.
 Sparse multiplication, Frobenius maps, retained-operand variants, validity
 predicates, and witness-byte costs remain in the open inventory.
 

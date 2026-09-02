@@ -20,7 +20,7 @@ two live operand certificates are excluded.
 | Fragment | Locking script | Witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | Introduce one certified value | <!-- metric:prime_rns_composable_bind_value -->9832<!-- /metric:prime_rns_composable_bind_value --> bytes | <!-- metric:prime_rns_composable_bind_value_witness -->195<!-- /metric:prime_rns_composable_bind_value_witness --> bytes | <!-- metric:prime_rns_composable_bind_value_stack -->72<!-- /metric:prime_rns_composable_bind_value_stack --> |
-| Multiply two certified values | <!-- metric:prime_rns_composable_hinted_mod_mul -->31278<!-- /metric:prime_rns_composable_hinted_mod_mul --> bytes | <!-- metric:prime_rns_composable_hinted_mod_mul_witness -->471<!-- /metric:prime_rns_composable_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_composable_hinted_mod_mul_stack -->267<!-- /metric:prime_rns_composable_hinted_mod_mul_stack --> |
+| Multiply two certified values | <!-- metric:prime_rns_composable_hinted_mod_mul -->31257<!-- /metric:prime_rns_composable_hinted_mod_mul --> bytes | <!-- metric:prime_rns_composable_hinted_mod_mul_witness -->471<!-- /metric:prime_rns_composable_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_composable_hinted_mod_mul_stack -->267<!-- /metric:prime_rns_composable_hinted_mod_mul_stack --> |
 
 Binder attribution: validation
 <!-- metric:prime_rns_composable_bind_value_validation -->247<!-- /metric:prime_rns_composable_bind_value_validation -->
@@ -37,17 +37,17 @@ Multiplication attribution: table push
 table drop
 <!-- metric:prime_rns_composable_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_composable_hinted_mod_mul_table_drop -->,
 validation
-<!-- metric:prime_rns_composable_hinted_mod_mul_validation -->443<!-- /metric:prime_rns_composable_hinted_mod_mul_validation -->,
+<!-- metric:prime_rns_composable_hinted_mod_mul_validation -->427<!-- /metric:prime_rns_composable_hinted_mod_mul_validation -->,
 quotient binding
 <!-- metric:prime_rns_composable_hinted_mod_mul_quotient_binding -->9851<!-- /metric:prime_rns_composable_hinted_mod_mul_quotient_binding -->,
 remainder binding
 <!-- metric:prime_rns_composable_hinted_mod_mul_remainder_binding -->9663<!-- /metric:prime_rns_composable_hinted_mod_mul_remainder_binding -->,
 modular relations
-<!-- metric:prime_rns_composable_hinted_mod_mul_modular_relation -->10799<!-- /metric:prime_rns_composable_hinted_mod_mul_modular_relation -->,
+<!-- metric:prime_rns_composable_hinted_mod_mul_modular_relation -->10794<!-- /metric:prime_rns_composable_hinted_mod_mul_modular_relation -->,
 and routing
 <!-- metric:prime_rns_composable_hinted_mod_mul_routing_output -->522<!-- /metric:prime_rns_composable_hinted_mod_mul_routing_output -->
 bytes. It contains
-<!-- metric:prime_rns_composable_hinted_mod_mul_opcodes -->20799<!-- /metric:prime_rns_composable_hinted_mod_mul_opcodes -->
+<!-- metric:prime_rns_composable_hinted_mod_mul_opcodes -->20778<!-- /metric:prime_rns_composable_hinted_mod_mul_opcodes -->
 static non-push opcodes.
 
 ## Witness and validity contract
@@ -61,7 +61,7 @@ gate consumes both operand certificates and all hints, returning only `r[46]`.
 Raw residue vectors are not certificates. Both operands must originate from
 this binder, an earlier multiplication on the same verified path, or an
 equivalent global proof. Duplicating a certificate for fan-out or squaring
-costs extra script and stack; the 31,278-byte figure assumes the two required
+costs extra script and stack; the 31,257-byte figure assumes the two required
 certificates are already adjacent. Tests corrupt every carry class, exercise a
 two-gate chain, preserve unrelated state, and enforce the 1,000-item generator
 guard. Evidence is `locally-reproduced`; deployment is `unclassified`.

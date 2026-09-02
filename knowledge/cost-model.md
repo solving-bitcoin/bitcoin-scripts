@@ -38,8 +38,8 @@ and witness serialization are included.
 
 Repository measurements compile generated scripts through
 `support::script::ScriptCompilation::compile_with_policy()`. With the
-`rust-bitcoin-script` revision pinned in `Cargo.lock` (`db35a663`), the policy
-applies `CompileOptions::ALL` to an unoptimized serialization of at most 64 KiB.
+`rust-bitcoin-script` revision pinned in `Cargo.lock` (`124b561e`), the policy
+applies `CompileOptions::ALL` to an unoptimized serialization of at most 32 KiB.
 It applies `CompileOptions::NONE` above that cutoff because the optimizer's
 fixpoint passes are prohibitively slow on multi-megabyte scripts.
 

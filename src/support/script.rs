@@ -8,7 +8,7 @@ pub use bitcoin_script::{script, Script};
 ///
 /// Larger scripts remain byte-for-byte as generated because the optimizer's
 /// fixpoint passes are prohibitively expensive at those sizes.
-pub const MAX_OPTIMIZER_INPUT_BYTES: usize = 64 * 1024;
+pub const MAX_OPTIMIZER_INPUT_BYTES: usize = 32 * 1024;
 
 /// Apply the repository-wide compilation policy to a generated script.
 pub trait ScriptCompilation {

@@ -22,7 +22,7 @@ operation and operand placement.
 | `U254::mul()` | <!-- metric:u254_mul -->111466<!-- /metric:u254_mul --> bytes |
 
 The 176-byte addition uses the repository's general optimizer. The 111,466-byte
-multiplication exceeds its 64 KiB input cutoff and is reported unoptimized.
+multiplication exceeds its 32 KiB input cutoff and is reported unoptimized.
 
 ## Security
 

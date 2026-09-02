@@ -18,7 +18,7 @@ multiplication can reuse.
   `2^512`. Each coordinate verifies
   `lhs_i * center(rhs_i) - q_i * center(N_i) - r_i = carry_i * p_i`.
   Eighteen selected coordinates also bind `c = N - 1 - r`; their subbasis
-  product exceeds `2^257`. The fragment is 10,950 locking-script bytes with a
+  product exceeds `2^257`. The fragment is 10,937 locking-script bytes with a
   301-byte, 144-item hint and a strict 231-item peak.
 - **Conditional binding obligation:** the 42-prime fragment assumes every
   supplied `lhs`, `rhs`, `q`, `r`, and partial-complement coordinate is tied to
@@ -35,10 +35,10 @@ multiplication can reuse.
   64 limbs, 188 residue-binding carries, and 47 relation carries. For
   `(N-1)^2` it serializes to 868 bytes. The fragment returns the 16 centered
   remainder limbs beneath its 47 canonical residues.
-- **Standalone metrics:** `carry::bound::mul_mod_hinted` is 51,047
+- **Standalone metrics:** `carry::bound::mul_mod_hinted` is an unoptimized 51,055
   locking-script bytes, contains 32,772 static non-push opcodes, and reaches a
   strict combined-stack peak of 305 items. Its bytes split into 1,057 for
-  range checks, 38,796 for four residue bindings, 10,794 for modular
+  range checks, 38,796 for four residue bindings, 10,802 for modular
   relations, and 400 for routing and output. It uses no lookup tables, so the
   static table-push/drop overhead is zero. Relative to the previous 88,225-byte
   exact-dot profile, the locking fragment is 37,178 bytes (42.1%) smaller.
@@ -63,10 +63,10 @@ multiplication can reuse.
   carries, consumes both operand certificates, and returns only a certified
   canonical remainder vector. Raw witness residues or independent
   coordinate-local checks do not satisfy the operand precondition.
-- **Composable metrics:** the gate is 31,278 locking-script bytes, contains
-  20,799 static non-push opcodes, and has a strict 267-item combined-stack
-  peak. Its bytes split into 443 of limb/field validation, 9,851 of quotient
-  binding, 9,663 of remainder binding, 10,799 of modular relations, and 522 of
+- **Composable metrics:** the gate is 31,257 locking-script bytes, contains
+  20,778 static non-push opcodes, and has a strict 267-item combined-stack
+  peak. Its bytes split into 427 of limb/field validation, 9,851 of quotient
+  binding, 9,663 of remainder binding, 10,794 of modular relations, and 522 of
   routing/output. Its table push and cleanup are both zero. For `(N-1)^2`, the
   170 incremental q/r limb-and-carry items serialize to 471 bytes; the two
   live 46-residue operand certificates are excluded.
@@ -100,7 +100,7 @@ multiplication can reuse.
   shared-integer provenance; the counterexamples remain valid against the
   smaller conditional API and raw inputs passed across the composable API.
 - **No-carry baseline:** the 75-prime per-coordinate table/Horner hybrid is
-  15,626 bytes at a 183-item peak. Its 392 bytes of table pushes and 153 bytes
+  15,624 bytes at a 183-item peak. Its 392 bytes of table pushes and 153 bytes
   of cleanup contrast with the table-free carry profiles. The no-carry
   modular verifier is 25,768 bytes, of which only 183 bytes are table
   lifecycle; like the 42-prime verifier, it excludes the required global
@@ -111,19 +111,19 @@ multiplication can reuse.
   enter this layout because their 1,050 operands already exceed the stack
   limit.
 - **Native-field comparison:** the separate ordinary-domain balanced-radix
-  secp256k1 gate is 20,503 bytes with a 94-byte incremental hint and a
+  secp256k1 gate is 20,500 bytes with a 94-byte incremental hint and a
   757-item peak. Its
-  boundary is closest to the 31,278-byte composable RNS gate because both
+  boundary is closest to the 31,257-byte composable RNS gate because both
   consume certified operands and return a reusable certificate. It is not a
   replacement when surrounding state is already represented as RNS residues;
   conversion and certificate fan-out are excluded from both measurements. A
-  20,450-byte factor-16 native profile reduces the hint to 29 items and peaks
+  20,447-byte factor-16 native profile reduces the hint to 29 items and peaks
   at 719, but requires the distinct stored encoding `E(x)=x/16`; its conversion
   boundary is likewise excluded.
 - **Deployment:** `unclassified`. These are generated fragments rather than
   complete leaves. Terminal predicates, tapleaf and control-block
   serialization, transaction weight, Bitcoin Core consensus comparison, and
-  relay-policy acceptance remain unmeasured. The 32,772, 20,799, and 6,168
+  relay-policy acceptance remain unmeasured. The 32,772, 20,778, and 6,168
   figures are static opcode counts, not executed-opcode or validation-budget
   measurements.
 - **Research need:** implement and measure an all-witness-at-entry scheduler

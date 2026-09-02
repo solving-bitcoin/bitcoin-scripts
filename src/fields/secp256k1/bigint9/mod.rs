@@ -2229,7 +2229,7 @@ pub fn square_batch_cost_breakdown(square_count: usize) -> SquareBatchCostBreakd
             "supported square-batch positions must have identical relation size"
         );
     }
-    SquareBatchCostBreakdown {
+    let mut breakdown = SquareBatchCostBreakdown {
         square_count,
         unbiased_table_setup: square_batch_table_setup_unchecked()
             .compile_with_policy()
@@ -2242,7 +2242,18 @@ pub fn square_batch_cost_breakdown(square_count: usize) -> SquareBatchCostBreakd
         output_restore_and_validation: batch_output_restore_and_validation(square_count)
             .compile_with_policy()
             .len(),
-    }
+    };
+    let independently_compiled_total = breakdown.total();
+    let final_script_bytes = square_mod_hinted_batch(square_count, 0)
+        .compile_with_policy()
+        .len();
+    attribute_compilation_delta(
+        &mut breakdown.output_restore_and_validation,
+        independently_compiled_total,
+        final_script_bytes,
+    );
+    debug_assert_eq!(breakdown.total(), final_script_bytes);
+    breakdown
 }
 
 /// Exact bytes for certifying every operand in a raw square-only batch.
@@ -2384,7 +2395,7 @@ pub fn batch_cost_breakdown(multiplication_count: usize) -> BatchCostBreakdown {
         }
         _ => unreachable!("batch size was checked"),
     };
-    let breakdown = BatchCostBreakdown {
+    let mut breakdown = BatchCostBreakdown {
         multiplication_count,
         strategy,
         table_setup,
@@ -2393,12 +2404,16 @@ pub fn batch_cost_breakdown(multiplication_count: usize) -> BatchCostBreakdown {
         consumed_input_cleanup,
         output_restore_and_validation,
     };
-    debug_assert_eq!(
-        breakdown.total(),
-        mul_mod_hinted_batch(multiplication_count, 0)
-            .compile_with_policy()
-            .len()
+    let independently_compiled_total = breakdown.total();
+    let final_script_bytes = mul_mod_hinted_batch(multiplication_count, 0)
+        .compile_with_policy()
+        .len();
+    attribute_compilation_delta(
+        &mut breakdown.output_restore_and_validation,
+        independently_compiled_total,
+        final_script_bytes,
     );
+    debug_assert_eq!(breakdown.total(), final_script_bytes);
     breakdown
 }
 
@@ -2826,8 +2841,8 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preserved = [111i32, 222, 333];
-        let expected_totals = [20_503usize, 39_358, 59_145];
-        let expected_relations = [18_331usize, 18_405, 18_740];
+        let expected_totals = [20_500usize, 39_400, 59_163];
+        let expected_relations = [18_330usize, 18_404, 18_739];
         let expected_strategies = [
             MulBatchStrategy::OneShot,
             MulBatchStrategy::ResidentKaratsuba,
@@ -2888,7 +2903,7 @@ mod tests {
                     .compile_with_policy()
                     .len()
             );
-            assert_eq!(cost.table_setup, 1_538);
+            assert_eq!(cost.table_setup, 1_536);
             assert_eq!(cost.strategy, expected_strategies[multiplication_count - 1]);
             assert_eq!(
                 cost.relation_per_multiplication,
@@ -2907,11 +2922,11 @@ mod tests {
         }
 
         assert_eq!(batch_cost_breakdown(1).consumed_input_cleanup, 35);
-        assert_eq!(batch_cost_breakdown(1).total(), 20_503);
+        assert_eq!(batch_cost_breakdown(1).total(), 20_500);
         assert_eq!(batch_cost_breakdown(2).consumed_input_cleanup, 69);
-        assert_eq!(batch_cost_breakdown(2).total(), 39_358);
+        assert_eq!(batch_cost_breakdown(2).total(), 39_400);
         assert_eq!(batch_cost_breakdown(3).consumed_input_cleanup, 104);
-        assert_eq!(batch_cost_breakdown(3).total(), 59_145);
+        assert_eq!(batch_cost_breakdown(3).total(), 59_163);
     }
 
     #[test]
@@ -2993,7 +3008,7 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preserved = [111i32, 222];
-        let expected_totals = [27_174usize, 39_804, 52_434, 65_064];
+        let expected_totals = [27_174usize, 39_810, 52_442, 65_074];
         let expected_peaks = [710usize, 806, 902, 998];
 
         for square_count in 2..=MAX_PRELOADED_SQUARE_BATCH_SIZE {
@@ -3316,7 +3331,7 @@ mod tests {
                 one_shot.coefficient_recombination,
                 one_shot.relation_and_output,
             ],
-            [1_538, 257, 9_374, 4_993, 1_103, 173, 530, 2_535]
+            [1_536, 257, 9_374, 4_993, 1_102, 173, 530, 2_535]
         );
         assert_eq!(
             one_shot.total(),
@@ -3348,14 +3363,14 @@ mod tests {
                 square.off_diagonal_products,
                 square.relation_and_output,
             ],
-            [1_538, 257, 406, 9_744, 2_596]
+            [1_536, 257, 406, 9_744, 2_596]
         );
         assert_eq!(
             square.total(),
             square_mod_hinted(0).compile_with_policy().len()
         );
-        assert_eq!(square.total(), 14_541);
-        assert_eq!(square.table_overhead(), 1_795);
+        assert_eq!(square.total(), 14_539);
+        assert_eq!(square.table_overhead(), 1_793);
         assert_eq!(square.computation(), 12_746);
         assert_eq!(
             standalone_square_bytes(),
@@ -3363,7 +3378,7 @@ mod tests {
         );
 
         let square_resident = square_resident_cost_breakdown();
-        assert_eq!(square_resident.table_setup, 1_538);
+        assert_eq!(square_resident.table_setup, 1_536);
         assert_eq!(
             square_resident.square_with_table,
             square_mod_hinted_with_table(0).compile_with_policy().len()

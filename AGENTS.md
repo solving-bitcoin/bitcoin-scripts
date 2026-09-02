@@ -87,7 +87,7 @@ only for an intentional metric change. Do not silently refresh measurements.
   upstream `Script::compile()`, `compile_optimized()`, or
   `compile_with_options()` directly outside the centralized policy.
 - The policy applies `CompileOptions::ALL` to generated scripts whose
-  unoptimized serialization is at most 64 KiB. Larger scripts use
+  unoptimized serialization is at most 32 KiB. Larger scripts use
   `CompileOptions::NONE` because the optimizer's fixpoint passes are too slow
   at that scale. Keep execution, byte metrics, opcode metrics, Tapleaf hashes,
   signatures, and byte-level vectors on the same policy-produced `ScriptBuf`.
