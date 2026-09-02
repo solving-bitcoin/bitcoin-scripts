@@ -31,16 +31,16 @@ against a pinned Bitcoin Core revision, complete witness/weight and validation
 behavior are recorded, and prime-major batch crossover curves are measured for
 stated reuse counts and live operand-state budgets.
 
-Progress: the 15,628-byte, 183-item no-carry 75-prime table/Horner hybrid
+Progress: the 15,626-byte, 183-item no-carry 75-prime table/Horner hybrid
 remains the baseline. The current `locally-reproduced` flagship instead uses a
 42-prime carry-optimized basis whose product is 513 bits. Packed coordinate
 groups verify exact signed carry equations, and an
 18-coordinate remainder-complement subbasis with product greater than
 `2^257` establishes `r < N` once its values are globally bounded. For the
-secp256k1 field modulus, the fragment is 10,952 locking-script bytes with a
+secp256k1 field modulus, the fragment is 10,950 locking-script bytes with a
 301-byte serialized hint and a strict 231-item peak. The 144 hint items are 42
 quotient residues, 42 remainder residues, 42 relation carries, and 18
-complement residues. It is table-free, so none of those 10,952 bytes is
+complement residues. It is table-free, so none of those 10,950 bytes is
 amortizable lookup setup.
 
 A second `locally-reproduced` profile now supplies the previously missing
@@ -48,22 +48,22 @@ global binding inside the arithmetic fragment. It represents `lhs`, `rhs`,
 quotient, and remainder with 16 centered base-`2^16` limbs each, derives four
 canonical RNS vectors with exact binding carries, proves `lhs`, `rhs`, and
 remainder below the target, and checks the modular relation over a 47-prime,
-513-bit basis. It is 51,055 locking-script bytes with an 868-byte complete
+513-bit basis. It is 51,047 locking-script bytes with an 868-byte complete
 299-item data witness, 32,772 static non-push opcodes, and a strict 305-item
-peak. The script is table-free: 38,801 bytes are the four residue bindings,
-10,794 are modular relations, 1,060 are range checks, and 400 are routing.
+peak. The script is table-free: 38,796 bytes are the four residue bindings,
+10,794 are modular relations, 1,057 are range checks, and 400 are routing.
 For programs that retain certified values, the separate one-value binder costs
-9,777 bytes and returns both the 16 limbs and 47 residues, proving the value
-is below `2^256`. Its `bind_value_below(N)` variant costs 9,864 bytes and also
+9,773 bytes and returns both the 16 limbs and 47 residues, proving the value
+is below `2^256`. Its `bind_value_below(N)` variant costs 9,860 bytes and also
 proves the field bound required for operands and remainders.
 
 A third `locally-reproduced` 46-prime profile makes that certificate boundary
-composable. Its 9,835-byte binder consumes a 195-byte, 62-item `N-1` witness
-and returns only 46 certified field residues at a 72-item peak. A 31,281-byte
+composable. Its 9,832-byte binder consumes a 195-byte, 62-item `N-1` witness
+and returns only 46 certified field residues at a 72-item peak. A 31,278-byte
 multiplication consumes two such verified-path certificates, locally binds q
 and r, and returns a new certificate. The `(N-1)^2` incremental witness is 471
 bytes/170 items, the gate peak is 267, and its 20,799 static non-push opcodes
-split across 444 bytes of validation, 9,852 q binding, 9,664 r binding, 10,799
+split across 443 bytes of validation, 9,851 q binding, 9,663 r binding, 10,799
 relation, and 522 routing/output. Both fragments are table-free. The basis
 product is 513 bits and 1.01865 times `2^512`.
 
@@ -73,14 +73,14 @@ or 64,912 after restoring all 450 outputs, at a strict 900-item peak. This is
 30.8% below six independent returned-output fragments. Seven products begin
 with 1,050 operands and are impossible under the current stack limit. A
 two-proof no-carry modular batch was also executed and is dominated: 52,048
-bytes versus 51,554 independently because routing exceeded table savings.
+bytes versus 51,536 independently because routing exceeded table savings.
 
-All profiles remain `unclassified`. The 10,952-byte profile is still
+All profiles remain `unclassified`. The 10,950-byte profile is still
 conditional: all supplied coordinates must be externally tied to canonical
 encodings of corresponding unsigned integers below `2^256`, and operands must
-be below the target. The 51,055-byte profile closes that binding boundary for
+be below the target. The 51,047-byte profile closes that binding boundary for
 one operation, but it is still a fragment rather than a complete tapleaf or
-transaction. The 31,281-byte composable gate closes q/r locally and inherits
+transaction. The 31,278-byte composable gate closes q/r locally and inherits
 lhs/rhs certificates, but assumes those vectors and its hints are already
 adjacent. Its two-gate unit test inserts later inputs as script constants and
 therefore establishes certificate-state reuse, not an all-witness-at-entry
@@ -157,7 +157,7 @@ vulnerability from the adjacent advisory without this analysis.
 
 ## OP-013 — BLAKE3 circuit-superoptimization frontier
 
-The checked short-input frontier is 59,534 bytes and 527 stack items for 32
+The checked short-input frontier is 59,529 bytes and 527 stack items for 32
 bytes. The preceding digit-routing criterion is bounded: a
 shortest-common-superstring DP reduced the XOR table, row-zero suffixes fused
 the modulo table, table-lifetime search delayed shift/addition memory, and an
@@ -173,7 +173,7 @@ the representative short configuration.
 superoptimizer covers a precisely stated space of digit lifetimes, G-stage
 fusion, lookup layouts, and per-call schedules on the same checked
 `fragment-with-memory` boundary; every retained candidate passes all short
-lengths and malformed inputs; and it either beats 59,534 bytes below the
+lengths and malformed inputs; and it either beats 59,529 bytes below the
 1,000-item peak or records a machine-checkable lower bound for that search
 space.
 
@@ -190,8 +190,8 @@ leaf is differentially validated against a pinned Bitcoin Core revision.
 
 ## OP-015 — Native secp256k1 field circuit frontier
 
-Turn the native 20,524-byte ordinary multiplication, 20,501-byte factor-16
-multiplication, and 14,543-byte square fragments into a complete field-circuit
+Turn the native 20,503-byte ordinary multiplication, 20,450-byte factor-16
+multiplication, and 14,541-byte square fragments into a complete field-circuit
 cost model. **Complete when:** a scheduler records
 operand introduction, certificate fan-out, all-witness-at-entry routing, table
 lifetime, and output consumption for a deterministic multi-gate circuit;

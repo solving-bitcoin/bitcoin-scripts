@@ -615,13 +615,13 @@ pub fn mul_mod_hinted_from_raw_witness(preserved_items: u32) -> Script {
 
 /// Compile the exact certified-input one-shot byte categories.
 pub fn one_shot_cost_breakdown() -> OneShotCostBreakdown {
-    let table_drop = table_drop().compile().len();
+    let table_drop = table_drop().compile_with_policy().len();
     OneShotCostBreakdown {
-        table_setup: table_setup_unchecked().compile().len(),
+        table_setup: table_setup_unchecked().compile_with_policy().len(),
         table_drop,
-        product_generation: product_arrays().compile().len() - table_drop,
-        folded_relation: coefficient_relation().compile().len(),
-        cleanup: cleanup().compile().len(),
+        product_generation: product_arrays().compile_with_policy().len() - table_drop,
+        folded_relation: coefficient_relation().compile_with_policy().len(),
+        cleanup: cleanup().compile_with_policy().len(),
     }
 }
 
@@ -987,12 +987,12 @@ mod tests {
         let cost = one_shot_cost_breakdown();
         assert_eq!(cost.table_setup, 1_538);
         assert_eq!(cost.table_drop, 257);
-        assert_eq!(cost.product_generation, 15_615);
-        assert_eq!(cost.folded_relation, 2_674);
-        assert_eq!(cost.cleanup, 417);
+        assert_eq!(cost.product_generation, 15_598);
+        assert_eq!(cost.folded_relation, 2_642);
+        assert_eq!(cost.cleanup, 415);
         assert_eq!(cost.table_overhead(), 1_795);
-        assert_eq!(cost.computation(), 18_706);
-        assert_eq!(cost.total(), 20_501);
+        assert_eq!(cost.computation(), 18_655);
+        assert_eq!(cost.total(), 20_450);
 
         let p = modulus();
         let hints = hinted_mul(&(&p - BigUint::from(1u32)), &(&p - BigUint::from(1u32)));

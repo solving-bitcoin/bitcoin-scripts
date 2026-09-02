@@ -34,6 +34,24 @@ Use one of these phrases as the start of every `includes` value:
 Then state whether inputs, constants, hints, tables, cleanup, output comparison,
 and witness serialization are included.
 
+## Compilation policy
+
+Repository measurements compile generated scripts through
+`support::script::ScriptCompilation::compile_with_policy()`. With the
+`rust-bitcoin-script` revision pinned in `Cargo.lock` (`db35a663`), the policy
+applies `CompileOptions::ALL` to an unoptimized serialization of at most 64 KiB.
+It applies `CompileOptions::NONE` above that cutoff because the optimizer's
+fixpoint passes are prohibitively slow on multi-megabyte scripts.
+
+Locking-script bytes and static opcodes refer to the final policy-produced
+`ScriptBuf`. Tapleaf hashes, signatures, and byte-level vectors must use that
+same final serialization. A measurement above the cutoff must be labeled
+unoptimized; it must not be compared as though it received the same rewrite
+passes as a smaller row. Independently compiled cost components can differ
+from whole-script compilation because the optimizer rewrites across component
+boundaries; attribute that delta explicitly so the reported components sum to
+the final serialized size.
+
 ## Setup and amortization
 
 For reusable lookup memory, report setup/cleanup and per-query costs separately.

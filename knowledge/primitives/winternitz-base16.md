@@ -10,7 +10,7 @@ typed message sizes, and list-pick, brute-force, or binary-search verifiers.
   independent differential implementation.
 - **Representative result:** Wots32 list-pick uses 4,908 script bytes and a
   1,477-byte serialized witness. The Fast bitwise profile reduces the like-for-
-  like recovery fragment to 4,327 bytes, or 4,208 bytes when the message is
+  like recovery fragment to 4,325 bytes, or 4,208 bytes when the message is
   cleared, with a documented witness-size/stack tradeoff and relaxed raw
   chain-item length relation.
 - **Tradeoff:** compact witnesses increase verification work; verifier choice

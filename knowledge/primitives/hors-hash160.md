@@ -7,7 +7,7 @@ explicit witness indices.
   scheme because message-to-index derivation is caller responsibility.
 - **Evidence:** locally reproduced with boundary, ordering, and malformed
   witnesses.
-- **Representative result:** `n=32,t=8` uses 833 script bytes and a 280-byte
+- **Representative result:** `n=32,t=8` uses 809 script bytes and a 280-byte
   witness with 32-byte preimages.
 - **Security:** strictly one-time; concrete forgery probability depends on
   parameters, index derivation, disclosures, and HASH160.

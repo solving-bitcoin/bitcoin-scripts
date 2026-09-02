@@ -1,7 +1,8 @@
 # BN254
 
-BN254 field, group, multi-scalar multiplication, and pairing-verification
-building blocks. The implementation is independent of the RNS module.
+BN254 group, multi-scalar multiplication, and pairing-verification building
+blocks. They use the
+[`fields::bn254::bigint29`](../../fields/bn254/bigint29/) backend.
 
 ## Parameters
 
@@ -11,7 +12,8 @@ building blocks. The implementation is independent of the RNS module.
 - Pairing entry point is currently specialized to a four-pair Groth16-style
   Miller loop with three fixed G2 inputs and one witness-supplied G2 input.
 
-Detailed parameters and metrics are split across [`fields`](fields/README.md),
+Detailed parameters and metrics are split across the
+[`bigint29` field backend](../../fields/bn254/bigint29/),
 [`groups`](groups/README.md), and [`pairing`](pairing/README.md).
 
 ## Security

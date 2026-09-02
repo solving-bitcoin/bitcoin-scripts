@@ -6,8 +6,8 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use crate::arithmetic::bigint::BigIntImpl;
 use crate::arithmetic::scriptint::mul_by_constant;
-use crate::curves::bn254::fields::fp254::Fp254Impl;
-use crate::curves::bn254::hints::Hint;
+use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+use crate::fields::bn254::bigint29::hints::Hint;
 use crate::support::script::*;
 
 pub struct Fq;
@@ -801,9 +801,9 @@ fp_lc_mul!(Mul4LC, 3, 3, [true, true, true, true]);
 mod test {
     use super::*;
     use crate::arithmetic::bigint::U254;
-    use crate::curves::bn254::fields::fq::Fq;
+    use crate::fields::bn254::bigint29::fq::Fq;
     use crate::{
-        curves::bn254::fields::fp254::Fp254Impl,
+        fields::bn254::bigint29::fp254::Fp254Impl,
         support::execution::{execute_script, run, ExecuteInfo},
     };
     use ark_ff::AdditiveGroup;

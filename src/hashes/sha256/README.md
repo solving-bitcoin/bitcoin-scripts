@@ -24,6 +24,9 @@ output comparison.
 | `sha2_u32` | <!-- metric:sha2_u32_32 -->512428<!-- /metric:sha2_u32_32 --> bytes |
 | `sha2_u4` | <!-- metric:sha2_u4_32 -->332942<!-- /metric:sha2_u4_32 --> bytes |
 
+Both fragments exceed the repository optimizer's 64 KiB input cutoff and are
+reported unoptimized.
+
 Maximum stack depth depends on input length and implementation. The
 `sha2_u4_stack` generator records it with `StackTracker`; executable hash tests
 cover the u32 and u4 layouts.

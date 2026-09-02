@@ -20,6 +20,9 @@ digest comparison.
 | --- | ---: |
 | 32-byte input | <!-- metric:ripemd160_u32_32 -->244063<!-- /metric:ripemd160_u32_32 --> bytes |
 
+This fragment exceeds the repository optimizer's 64 KiB input cutoff and is
+reported unoptimized.
+
 Maximum stack depth depends on message length. The implementation uses a
 256-item bitwise lookup table, the active 16-word message block, two five-word
 branch states, and temporary feed-forward state.

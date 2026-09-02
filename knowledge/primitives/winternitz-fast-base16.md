@@ -17,12 +17,12 @@ exact-hash verifier, and terminal variants.
   authenticated nibble. A `[8, 8, 16]` mixed-radix checksum minimizes checksum
   chain and Horner bytes for the 0–960 `FastWots32` range. The terminal profile
   accumulates remaining distances directly and avoids digit reconstruction.
-- **Representative result:** `FastWots32` bitwise recovery is 4,327 bytes, or
+- **Representative result:** `FastWots32` bitwise recovery is 4,325 bytes, or
   4,208 bytes when the message is consumed, with 1,680-byte and 1,938-byte
   deterministic zero-message witnesses and a 334-item measured peak. Numeric
   lookup recovery is 4,605 bytes; strict-chain lookup is 5,013 bytes and
-  exact-hash recovery is 5,409 bytes.
-- **Legacy comparison:** bitwise recovery is 581 bytes (11.8%) smaller than the
+  exact-hash recovery is 5,342 bytes.
+- **Legacy comparison:** bitwise recovery is 583 bytes (11.9%) smaller than the
   4,908-byte legacy list-pick path and preserves the recovered-message
   contract. The terminal profile is 700 bytes (14.3%) smaller. Both use
   canonical `MINIMALIF` bits. They omit explicit chain-item length checks;

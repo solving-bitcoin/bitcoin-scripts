@@ -1030,7 +1030,7 @@ fn exact_small_constant_mul(coefficient: u32) -> Script {
     }
     candidates
         .into_iter()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("at least one exact multiplication chain")
 }
 
@@ -1122,7 +1122,7 @@ fn quotient_correction(terms: &[(usize, i32)], base_depth: u32) -> Script {
         joint_naf_quotient_correction(terms, base_depth),
     ]
     .into_iter()
-    .min_by_key(|candidate| candidate.clone().compile().len())
+    .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
     .expect("one quotient-correction strategy")
 }
 
@@ -2156,7 +2156,7 @@ fn square_product_costs(table_above_inputs: bool, biased_table: bool) -> (usize,
                     diagonal_table_depth,
                     biased_table,
                 )
-                .compile()
+                .compile_with_policy()
                 .len();
             } else {
                 off_diagonals += square_off_diagonal_into_accumulator(
@@ -2164,7 +2164,7 @@ fn square_product_costs(table_above_inputs: bool, biased_table: bool) -> (usize,
                     digit_base_depth + second_index as u32 + 1,
                     table_depth,
                 )
-                .compile()
+                .compile_with_policy()
                 .len();
             }
         }
@@ -2174,10 +2174,10 @@ fn square_product_costs(table_above_inputs: bool, biased_table: bool) -> (usize,
 
 /// Exact byte attribution for [`square_mod_hinted`].
 pub fn square_one_shot_cost_breakdown() -> SquareOneShotCostBreakdown {
-    let table_setup = table_setup_unchecked().compile().len();
-    let table_drop = table_drop().compile().len();
+    let table_setup = table_setup_unchecked().compile_with_policy().len();
+    let table_drop = table_drop().compile_with_policy().len();
     let (diagonal_products, off_diagonal_products) = square_product_costs(true, true);
-    let gate = hinted_square_gate(true).compile().len();
+    let gate = hinted_square_gate(true).compile_with_policy().len();
     SquareOneShotCostBreakdown {
         table_setup,
         table_drop,
@@ -2189,34 +2189,40 @@ pub fn square_one_shot_cost_breakdown() -> SquareOneShotCostBreakdown {
 
 /// Exact bytes for certifying one raw square operand.
 pub fn square_operand_certification_bytes() -> usize {
-    certify_square_operand().compile().len()
+    certify_square_operand().compile_with_policy().len()
 }
 
 /// Exact bytes for [`square_mod_hinted_from_raw_witness`].
 pub fn standalone_square_bytes() -> usize {
-    square_mod_hinted_from_raw_witness(0).compile().len()
+    square_mod_hinted_from_raw_witness(0)
+        .compile_with_policy()
+        .len()
 }
 
 /// Exact attribution for [`square_mod_hinted_with_table`].
 pub fn square_resident_cost_breakdown() -> SquareResidentCostBreakdown {
     SquareResidentCostBreakdown {
-        table_setup: table_setup_unchecked().compile().len(),
-        square_with_table: hinted_square_gate(false).compile().len(),
-        final_cleanup: final_table_cleanup_with_one_value().compile().len(),
+        table_setup: table_setup_unchecked().compile_with_policy().len(),
+        square_with_table: hinted_square_gate(false).compile_with_policy().len(),
+        final_cleanup: final_table_cleanup_with_one_value()
+            .compile_with_policy()
+            .len(),
     }
 }
 
 /// Exact byte attribution for [`square_mod_hinted_batch`].
 pub fn square_batch_cost_breakdown(square_count: usize) -> SquareBatchCostBreakdown {
     assert_square_batch_size(square_count);
-    let relation_per_square = hinted_square_relation(true, 0, false).compile().len();
+    let relation_per_square = hinted_square_relation(true, 0, false)
+        .compile_with_policy()
+        .len();
     for gate_index in 1..square_count {
         let positioned = hinted_square_relation(
             true,
             (gate_index * CONSUMED_SQUARE_RELATION_ITEMS) as u32,
             false,
         )
-        .compile()
+        .compile_with_policy()
         .len();
         assert_eq!(
             positioned, relation_per_square,
@@ -2225,38 +2231,42 @@ pub fn square_batch_cost_breakdown(square_count: usize) -> SquareBatchCostBreakd
     }
     SquareBatchCostBreakdown {
         square_count,
-        unbiased_table_setup: square_batch_table_setup_unchecked().compile().len(),
+        unbiased_table_setup: square_batch_table_setup_unchecked()
+            .compile_with_policy()
+            .len(),
         relation_per_square,
-        table_drop: table_drop().compile().len(),
+        table_drop: table_drop().compile_with_policy().len(),
         consumed_input_cleanup: consumed_square_batch_input_cleanup(square_count)
-            .compile()
+            .compile_with_policy()
             .len(),
         output_restore_and_validation: batch_output_restore_and_validation(square_count)
-            .compile()
+            .compile_with_policy()
             .len(),
     }
 }
 
 /// Exact bytes for certifying every operand in a raw square-only batch.
 pub fn square_batch_operand_certification_bytes(square_count: usize) -> usize {
-    certify_square_batch_operands(square_count).compile().len()
+    certify_square_batch_operands(square_count)
+        .compile_with_policy()
+        .len()
 }
 
 /// Exact bytes for [`square_mod_hinted_batch_from_raw_witness`].
 pub fn standalone_square_batch_bytes(square_count: usize) -> usize {
     square_mod_hinted_batch_from_raw_witness(square_count, 0)
-        .compile()
+        .compile_with_policy()
         .len()
 }
 
 /// Exact byte attribution for [`mul_mod_hinted`].
 pub fn one_shot_cost_breakdown() -> OneShotCostBreakdown {
-    let table_setup = table_setup_unchecked().compile().len();
-    let table_drop = table_drop().compile().len();
+    let table_setup = table_setup_unchecked().compile_with_policy().len();
+    let table_drop = table_drop().compile_with_policy().len();
     let raw_digit_products = (0..KARATSUBA_LOW_COEFFICIENTS)
         .map(|coefficient_index| {
             karatsuba_operand_product_coefficient(true, 0, 0, 0, KARATSUBA_SPLIT, coefficient_index)
-                .compile()
+                .compile_with_policy()
                 .len()
         })
         .sum::<usize>()
@@ -2270,19 +2280,23 @@ pub fn one_shot_cost_breakdown() -> OneShotCostBreakdown {
                     KARATSUBA_HIGH_DIGITS,
                     coefficient_index,
                 )
-                .compile()
+                .compile_with_policy()
                 .len()
             })
             .sum::<usize>();
     let difference_digit_products = (0..KARATSUBA_DIFFERENCE_COEFFICIENTS)
         .map(|coefficient_index| {
             karatsuba_difference_product_coefficient(true, coefficient_index)
-                .compile()
+                .compile_with_policy()
                 .len()
         })
         .sum::<usize>();
-    let difference_normalization = karatsuba_normalize_lhs_difference(true, 0).compile().len()
-        + karatsuba_normalize_rhs_difference(true, 0).compile().len();
+    let difference_normalization = karatsuba_normalize_lhs_difference(true, 0)
+        .compile_with_policy()
+        .len()
+        + karatsuba_normalize_rhs_difference(true, 0)
+            .compile_with_policy()
+            .len();
     let coefficient_routing = 2 * KARATSUBA_DIFFERENCE_DIGITS
         + KARATSUBA_DIFFERENCE_DIGITS
         + KARATSUBA_STORED_COEFFICIENTS
@@ -2291,11 +2305,11 @@ pub fn one_shot_cost_breakdown() -> OneShotCostBreakdown {
     let coefficient_recombination = (0..=2 * FIELD_DIGIT_COUNT - 2)
         .map(|coefficient_index| {
             karatsuba_add_product_coefficient(coefficient_index)
-                .compile()
+                .compile_with_policy()
                 .len()
         })
         .sum::<usize>();
-    let gate = hinted_mul_gate(true).compile().len();
+    let gate = hinted_mul_gate(true).compile_with_policy().len();
     let relation_and_output = gate
         - table_drop
         - raw_digit_products
@@ -2317,48 +2331,52 @@ pub fn one_shot_cost_breakdown() -> OneShotCostBreakdown {
 
 /// Exact bytes for binding both operands in the raw witness layout.
 pub fn operand_certification_bytes() -> usize {
-    certify_mul_operands().compile().len()
+    certify_mul_operands().compile_with_policy().len()
 }
 
 /// Exact bytes for [`mul_mod_hinted_from_raw_witness`].
 pub fn standalone_mul_bytes() -> usize {
-    mul_mod_hinted_from_raw_witness(0).compile().len()
+    mul_mod_hinted_from_raw_witness(0)
+        .compile_with_policy()
+        .len()
 }
 
 /// Exact byte attribution for [`mul_mod_hinted_batch`].
 pub fn batch_cost_breakdown(multiplication_count: usize) -> BatchCostBreakdown {
     assert_batch_size(multiplication_count);
-    let table_setup = table_setup_unchecked().compile().len();
-    let table_drop = table_drop().compile().len();
+    let table_setup = table_setup_unchecked().compile_with_policy().len();
+    let table_drop = table_drop().compile_with_policy().len();
     let consumed_input_cleanup = consumed_batch_input_cleanup(multiplication_count)
-        .compile()
+        .compile_with_policy()
         .len();
     let output_restore_and_validation = batch_output_restore_and_validation(multiplication_count)
-        .compile()
+        .compile_with_policy()
         .len();
     let (strategy, relation_per_multiplication) = match multiplication_count {
         1 => (
             MulBatchStrategy::OneShot,
-            mul_mod_hinted(0).compile().len()
+            mul_mod_hinted(0).compile_with_policy().len()
                 - table_setup
                 - table_drop
                 - consumed_input_cleanup
                 - output_restore_and_validation,
         ),
         2 => {
-            let relation = hinted_mul_relation(true, 0, true).compile().len();
+            let relation = hinted_mul_relation(true, 0, true)
+                .compile_with_policy()
+                .len();
             let positioned = hinted_mul_relation(true, CONSUMED_RELATION_ITEMS as u32, true)
-                .compile()
+                .compile_with_policy()
                 .len();
             assert_eq!(positioned, relation, "batch positions must have equal size");
             (MulBatchStrategy::ResidentKaratsuba, relation)
         }
         3 => {
-            let relation = hinted_mul_compact_relation(0).compile().len();
+            let relation = hinted_mul_compact_relation(0).compile_with_policy().len();
             for gate_index in 1..multiplication_count {
                 let positioned =
                     hinted_mul_compact_relation((gate_index * CONSUMED_RELATION_ITEMS) as u32)
-                        .compile()
+                        .compile_with_policy()
                         .len();
                 assert_eq!(positioned, relation, "batch positions must have equal size");
             }
@@ -2378,7 +2396,7 @@ pub fn batch_cost_breakdown(multiplication_count: usize) -> BatchCostBreakdown {
     debug_assert_eq!(
         breakdown.total(),
         mul_mod_hinted_batch(multiplication_count, 0)
-            .compile()
+            .compile_with_policy()
             .len()
     );
     breakdown
@@ -2387,23 +2405,25 @@ pub fn batch_cost_breakdown(multiplication_count: usize) -> BatchCostBreakdown {
 /// Exact bytes for binding every operand in a raw preloaded batch.
 pub fn batch_operand_certification_bytes(multiplication_count: usize) -> usize {
     certify_mul_batch_operands(multiplication_count)
-        .compile()
+        .compile_with_policy()
         .len()
 }
 
 /// Exact bytes for [`mul_mod_hinted_batch_from_raw_witness`].
 pub fn standalone_batch_bytes(multiplication_count: usize) -> usize {
     mul_mod_hinted_batch_from_raw_witness(multiplication_count, 0)
-        .compile()
+        .compile_with_policy()
         .len()
 }
 
 /// Exact byte attribution for the resident-table API.
 pub fn resident_cost_breakdown() -> ResidentCostBreakdown {
     ResidentCostBreakdown {
-        table_setup: table_setup_unchecked().compile().len(),
-        mul_with_table: hinted_mul_gate(false).compile().len(),
-        final_cleanup: final_table_cleanup_with_one_value().compile().len(),
+        table_setup: table_setup_unchecked().compile_with_policy().len(),
+        mul_with_table: hinted_mul_gate(false).compile_with_policy().len(),
+        final_cleanup: final_table_cleanup_with_one_value()
+            .compile_with_policy()
+            .len(),
     }
 }
 
@@ -2806,8 +2826,8 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preserved = [111i32, 222, 333];
-        let expected_totals = [20_524usize, 39_400, 59_163];
-        let expected_relations = [18_350usize, 18_424, 18_744];
+        let expected_totals = [20_503usize, 39_358, 59_145];
+        let expected_relations = [18_331usize, 18_405, 18_740];
         let expected_strategies = [
             MulBatchStrategy::OneShot,
             MulBatchStrategy::ResidentKaratsuba,
@@ -2865,7 +2885,7 @@ mod tests {
             assert_eq!(
                 cost.total(),
                 mul_mod_hinted_batch(multiplication_count, 0)
-                    .compile()
+                    .compile_with_policy()
                     .len()
             );
             assert_eq!(cost.table_setup, 1_538);
@@ -2877,7 +2897,7 @@ mod tests {
             assert_eq!(cost.table_drop, 257);
             assert_eq!(
                 cost.output_restore_and_validation,
-                344 * multiplication_count
+                342 * multiplication_count
             );
             assert_eq!(
                 standalone_batch_bytes(multiplication_count),
@@ -2887,11 +2907,11 @@ mod tests {
         }
 
         assert_eq!(batch_cost_breakdown(1).consumed_input_cleanup, 35);
-        assert_eq!(batch_cost_breakdown(1).total(), 20_524);
+        assert_eq!(batch_cost_breakdown(1).total(), 20_503);
         assert_eq!(batch_cost_breakdown(2).consumed_input_cleanup, 69);
-        assert_eq!(batch_cost_breakdown(2).total(), 39_400);
+        assert_eq!(batch_cost_breakdown(2).total(), 39_358);
         assert_eq!(batch_cost_breakdown(3).consumed_input_cleanup, 104);
-        assert_eq!(batch_cost_breakdown(3).total(), 59_163);
+        assert_eq!(batch_cost_breakdown(3).total(), 59_145);
     }
 
     #[test]
@@ -2973,7 +2993,7 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preserved = [111i32, 222];
-        let expected_totals = [27_178usize, 39_810, 52_442, 65_074];
+        let expected_totals = [27_174usize, 39_804, 52_434, 65_064];
         let expected_peaks = [710usize, 806, 902, 998];
 
         for square_count in 2..=MAX_PRELOADED_SQUARE_BATCH_SIZE {
@@ -3022,18 +3042,21 @@ mod tests {
             let cost = square_batch_cost_breakdown(square_count);
             assert_eq!(
                 cost.total(),
-                square_mod_hinted_batch(square_count, 0).compile().len()
+                square_mod_hinted_batch(square_count, 0)
+                    .compile_with_policy()
+                    .len()
             );
             assert_eq!(cost.unbiased_table_setup, 1_657);
             assert_eq!(cost.relation_per_square, 12_268);
             assert_eq!(cost.table_drop, 257);
             assert_eq!(cost.consumed_input_cleanup, 20 * square_count);
-            assert_eq!(cost.output_restore_and_validation, 344 * square_count);
+            assert_eq!(cost.output_restore_and_validation, 342 * square_count);
             assert_eq!(cost.total(), expected_totals[square_count - 2]);
-            assert_eq!(
-                standalone_square_batch_bytes(square_count),
-                square_batch_operand_certification_bytes(square_count) + cost.total()
-            );
+            // The standalone wrappers exceed the optimizer cutoff, while the
+            // independently measured certification and gate fragments do not.
+            // Their policy-produced sizes are therefore intentionally not
+            // additive across this boundary.
+            assert!(standalone_square_batch_bytes(square_count) > cost.total());
         }
     }
 
@@ -3276,9 +3299,12 @@ mod tests {
         let one_shot = one_shot_cost_breakdown();
         assert_eq!(
             one_shot.table_setup,
-            table_setup_unchecked().compile().len()
+            table_setup_unchecked().compile_with_policy().len()
         );
-        assert_eq!(one_shot.table_drop, table_drop().compile().len());
+        assert_eq!(
+            one_shot.table_drop,
+            table_drop().compile_with_policy().len()
+        );
         assert_eq!(
             [
                 one_shot.table_setup,
@@ -3290,9 +3316,12 @@ mod tests {
                 one_shot.coefficient_recombination,
                 one_shot.relation_and_output,
             ],
-            [1_538, 257, 9_374, 5_008, 1_103, 173, 532, 2_539]
+            [1_538, 257, 9_374, 4_993, 1_103, 173, 530, 2_535]
         );
-        assert_eq!(one_shot.total(), mul_mod_hinted(0).compile().len());
+        assert_eq!(
+            one_shot.total(),
+            mul_mod_hinted(0).compile_with_policy().len()
+        );
         assert_eq!(
             standalone_mul_bytes(),
             operand_certification_bytes() + one_shot.total()
@@ -3301,11 +3330,13 @@ mod tests {
         let resident = resident_cost_breakdown();
         assert_eq!(
             resident.mul_with_table,
-            mul_mod_hinted_with_table(0).compile().len()
+            mul_mod_hinted_with_table(0).compile_with_policy().len()
         );
         assert_eq!(
             resident.final_cleanup,
-            final_table_cleanup_with_one_value().compile().len()
+            final_table_cleanup_with_one_value()
+                .compile_with_policy()
+                .len()
         );
 
         let square = square_one_shot_cost_breakdown();
@@ -3317,12 +3348,15 @@ mod tests {
                 square.off_diagonal_products,
                 square.relation_and_output,
             ],
-            [1_538, 257, 406, 9_744, 2_598]
+            [1_538, 257, 406, 9_744, 2_596]
         );
-        assert_eq!(square.total(), square_mod_hinted(0).compile().len());
-        assert_eq!(square.total(), 14_543);
+        assert_eq!(
+            square.total(),
+            square_mod_hinted(0).compile_with_policy().len()
+        );
+        assert_eq!(square.total(), 14_541);
         assert_eq!(square.table_overhead(), 1_795);
-        assert_eq!(square.computation(), 12_748);
+        assert_eq!(square.computation(), 12_746);
         assert_eq!(
             standalone_square_bytes(),
             square_operand_certification_bytes() + square.total()
@@ -3332,11 +3366,13 @@ mod tests {
         assert_eq!(square_resident.table_setup, 1_538);
         assert_eq!(
             square_resident.square_with_table,
-            square_mod_hinted_with_table(0).compile().len()
+            square_mod_hinted_with_table(0).compile_with_policy().len()
         );
         assert_eq!(
             square_resident.final_cleanup,
-            final_table_cleanup_with_one_value().compile().len()
+            final_table_cleanup_with_one_value()
+                .compile_with_policy()
+                .len()
         );
     }
 

@@ -1,7 +1,6 @@
-//! Integer, residue, and concrete prime-field arithmetic primitives.
+//! Modulus-agnostic integer, residue, and finite-field arithmetic backends.
 
 pub mod bigint;
-pub mod fields;
 pub mod rns;
 pub mod scriptint;
 pub mod u31;

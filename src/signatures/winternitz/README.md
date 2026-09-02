@@ -85,37 +85,37 @@ execution ends cleanly.
 | `Wots32` configuration | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | Legacy list-pick, recover message | <!-- metric:wots32_lock -->4908<!-- /metric:wots32_lock --> bytes | <!-- metric:wots32_witness -->1477<!-- /metric:wots32_witness --> bytes | not previously measured |
-| Fast bitwise, recover message | <!-- metric:fast_wots32_bitwise_lock -->4327<!-- /metric:fast_wots32_bitwise_lock --> bytes | <!-- metric:fast_wots32_bitwise_witness_zero -->1680<!-- /metric:fast_wots32_bitwise_witness_zero --> bytes | <!-- metric:fast_wots32_bitwise_stack -->334<!-- /metric:fast_wots32_bitwise_stack --> |
+| Fast bitwise, recover message | <!-- metric:fast_wots32_bitwise_lock -->4325<!-- /metric:fast_wots32_bitwise_lock --> bytes | <!-- metric:fast_wots32_bitwise_witness_zero -->1680<!-- /metric:fast_wots32_bitwise_witness_zero --> bytes | <!-- metric:fast_wots32_bitwise_stack -->334<!-- /metric:fast_wots32_bitwise_stack --> |
 | Fast bitwise, clear message | <!-- metric:fast_wots32_bitwise_clear_lock -->4208<!-- /metric:fast_wots32_bitwise_clear_lock --> bytes | <!-- metric:fast_wots32_bitwise_terminal_witness_zero -->1938<!-- /metric:fast_wots32_bitwise_terminal_witness_zero --> bytes | <!-- metric:fast_wots32_bitwise_clear_stack -->334<!-- /metric:fast_wots32_bitwise_clear_stack --> |
 | Fast size lookup, recover message | <!-- metric:fast_wots32_size_lock -->4605<!-- /metric:fast_wots32_size_lock --> bytes | same | <!-- metric:fast_wots32_size_stack -->141<!-- /metric:fast_wots32_size_stack --> |
 | Fast size lookup, clear message | <!-- metric:fast_wots32_size_clear_lock -->4543<!-- /metric:fast_wots32_size_clear_lock --> bytes | same | <!-- metric:fast_wots32_size_clear_stack -->141<!-- /metric:fast_wots32_size_clear_stack --> |
-| Fast exact-hash, recover message | <!-- metric:fast_wots32_exact_lock -->5409<!-- /metric:fast_wots32_exact_lock --> bytes | <!-- metric:fast_wots32_witness_zero -->1476<!-- /metric:fast_wots32_witness_zero --> bytes | <!-- metric:fast_wots32_exact_stack -->137<!-- /metric:fast_wots32_exact_stack --> |
+| Fast exact-hash, recover message | <!-- metric:fast_wots32_exact_lock -->5342<!-- /metric:fast_wots32_exact_lock --> bytes | <!-- metric:fast_wots32_witness_zero -->1476<!-- /metric:fast_wots32_witness_zero --> bytes | <!-- metric:fast_wots32_exact_stack -->137<!-- /metric:fast_wots32_exact_stack --> |
 | Fast eight-value lookup, recover message | <!-- metric:fast_wots32_minimal_lock -->5013<!-- /metric:fast_wots32_minimal_lock --> bytes | same | <!-- metric:fast_wots32_minimal_stack -->143<!-- /metric:fast_wots32_minimal_stack --> |
-| Fast exact-hash, clear message | <!-- metric:fast_wots32_clear_lock -->5477<!-- /metric:fast_wots32_clear_lock --> bytes | same | <!-- metric:fast_wots32_clear_stack -->137<!-- /metric:fast_wots32_clear_stack --> |
+| Fast exact-hash, clear message | <!-- metric:fast_wots32_clear_lock -->5408<!-- /metric:fast_wots32_clear_lock --> bytes | same | <!-- metric:fast_wots32_clear_stack -->137<!-- /metric:fast_wots32_clear_stack --> |
 
 The Fast maximum serialized witness is
 <!-- metric:fast_wots32_witness_max -->1542<!-- /metric:fast_wots32_witness_max -->
 bytes. The exact, lookup, and clear fragments contain respectively
-<!-- metric:fast_wots32_exact_static_opcodes -->3400<!-- /metric:fast_wots32_exact_static_opcodes -->,
+<!-- metric:fast_wots32_exact_static_opcodes -->3333<!-- /metric:fast_wots32_exact_static_opcodes -->,
 <!-- metric:fast_wots32_minimal_static_opcodes -->3268<!-- /metric:fast_wots32_minimal_static_opcodes -->,
-and <!-- metric:fast_wots32_clear_static_opcodes -->3467<!-- /metric:fast_wots32_clear_static_opcodes -->
+and <!-- metric:fast_wots32_clear_static_opcodes -->3398<!-- /metric:fast_wots32_clear_static_opcodes -->
 static non-push opcodes. The size recovery and terminal fragments contain
 <!-- metric:fast_wots32_size_static_opcodes -->3061<!-- /metric:fast_wots32_size_static_opcodes -->
 and <!-- metric:fast_wots32_size_clear_static_opcodes -->2999<!-- /metric:fast_wots32_size_clear_static_opcodes -->
 respectively.
 
 The bitwise recovery and terminal fragments contain
-<!-- metric:fast_wots32_bitwise_static_opcodes -->2718<!-- /metric:fast_wots32_bitwise_static_opcodes -->
+<!-- metric:fast_wots32_bitwise_static_opcodes -->2716<!-- /metric:fast_wots32_bitwise_static_opcodes -->
 and <!-- metric:fast_wots32_bitwise_clear_static_opcodes -->2588<!-- /metric:fast_wots32_bitwise_clear_static_opcodes -->
 static non-push opcodes. Their signer-node witness upper bound is
 <!-- metric:fast_wots32_bitwise_witness_max -->1942<!-- /metric:fast_wots32_bitwise_witness_max -->
 bytes.
 
-The 4,327-byte bitwise recovery fragment is 581 bytes (11.8%) smaller than the
+The 4,325-byte bitwise recovery fragment is 583 bytes (11.9%) smaller than the
 4,908-byte legacy list-pick fragment while preserving the same 64-nibble output
-contract. The 4,208-byte terminal profile saves another 119 bytes when the
+contract. The 4,208-byte terminal profile saves another 117 bytes when the
 surrounding protocol does not need the recovered message on the stack. Against
-the previous Fast size records, these save 313 and 367 bytes respectively.
+the previous Fast size records, these save 315 and 367 bytes respectively.
 
 For the deterministic balanced message
 `00112233445566778899aabbccddeeff0f1e2d3c4b5a69788796a5b4c3d2e1f0`,

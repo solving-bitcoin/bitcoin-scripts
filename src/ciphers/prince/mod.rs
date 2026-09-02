@@ -1662,7 +1662,7 @@ pub fn u64_to_nibbles_msb(v: u64) -> [u8; 16] {
 mod tests {
     use super::*;
     use crate::support::execution::execute_script;
-    use crate::support::script::script;
+    use crate::support::script::{script, ScriptCompilation};
     use sha2::{Digest, Sha256};
 
     fn execute_encryption(key: u128, plaintext: u64, expected: u64) -> usize {
@@ -1877,7 +1877,7 @@ mod tests {
         let key = (k1 as u128) << 64 | k0 as u128;
 
         let encrypt_script = prince_encrypt(key);
-        let engine = optimized::engine().compile();
+        let engine = optimized::engine().compile_with_policy();
         assert_eq!(engine.len(), 7547);
         assert_eq!(
             Sha256::digest(engine.as_bytes()).as_slice(),
@@ -1887,7 +1887,7 @@ mod tests {
                 0xe0, 0x33, 0x2b, 0x44,
             ]
         );
-        assert_eq!(encrypt_script.compile().len(), 7735);
+        assert_eq!(encrypt_script.compile_with_policy().len(), 7_685);
         assert_eq!(execute_encryption(key, plaintext, expected), 681);
     }
 

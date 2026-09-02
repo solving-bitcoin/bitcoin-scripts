@@ -7,22 +7,22 @@ differ. Follow each catalog configuration before comparing numbers.
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
 | Small-field add | M31 u31 add | 18 | Canonical field input |
-| Small-field variable multiply | M31 u31 multiply | 1,400 | Witness quotient relation |
+| Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
-| Wide add | U254 add | 190 | Nine limbs |
-| Wide multiply | U254 multiply | 111,466 | Very large script |
-| Native secp256k1 ordinary-domain multiply | 29 balanced radix-512 digits, normalized Karatsuba | 20,524 | 94-byte/67-item incremental hint; certified operands; 757-item strict peak |
-| Native secp256k1 factor-16 multiply | `E(x)=x/16`, folded normalized Karatsuba | 20,501 | 37-byte/29-item incremental hint; certified encoded operands; 719-item strict peak |
-| Native secp256k1 base-field square | 29 balanced radix-512 digits, symmetry-specialized | 14,543 | 94-byte/67-item incremental hint; certified operand; 614-item strict peak |
-| Three native secp256k1 ordinary multiplies | Shared table, destructive third-gate recombination | 59,163 | 280-byte/201-item incremental hint; 993-item strict peak |
-| Bounded RNS add | Legacy RNS add | 219 | Modulo 69,300 |
-| Bounded RNS multiply | Legacy RNS multiply | 1,564 | 903-item peak |
-| Exact 256-bit-product RNS add | 75-prime canonical coordinatewise | 1,134 | 513-bit composite range; 151-item peak |
-| Exact 256-by-256-bit RNS multiply baseline | 75-prime table/Horner hybrid | 15,628 | No relation carries; 183-item peak |
+| Wide add | U254 add | 176 | Nine limbs |
+| Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
+| Native secp256k1 ordinary-domain multiply | 29 balanced radix-512 digits, normalized Karatsuba | 20,503 | 94-byte/67-item incremental hint; certified operands; 757-item strict peak |
+| Native secp256k1 factor-16 multiply | `E(x)=x/16`, folded normalized Karatsuba | 20,450 | 37-byte/29-item incremental hint; certified encoded operands; 719-item strict peak |
+| Native secp256k1 base-field square | 29 balanced radix-512 digits, symmetry-specialized | 14,541 | 94-byte/67-item incremental hint; certified operand; 614-item strict peak |
+| Three native secp256k1 ordinary multiplies | Shared table, destructive third-gate recombination | 59,145 | 280-byte/201-item incremental hint; 993-item strict peak |
+| Bounded RNS add | Legacy RNS add | 216 | Modulo 69,300 |
+| Bounded RNS multiply | Legacy RNS multiply | 1,561 | 903-item peak |
+| Exact 256-bit-product RNS add | 75-prime canonical coordinatewise | 1,131 | 513-bit composite range; 151-item peak |
+| Exact 256-by-256-bit RNS multiply baseline | 75-prime table/Horner hybrid | 15,626 | No relation carries; 183-item peak |
 | Six independent 256-by-256-bit RNS products | Coordinate-major table batch | 64,912 | Includes 450-byte output restoration; 900-item peak |
-| Hinted secp256k1 modular multiply, conditional | 42-prime exact-carry verifier | 10,952 | 301 hint bytes; 231-item strict peak; external bindings excluded |
-| Hinted secp256k1 modular multiply, standalone-bound | 47-prime limb-bound exact-carry verifier | 51,055 | 868-byte complete data witness; 305-item strict peak; global bindings included |
-| Hinted secp256k1 modular multiply, composable | 46-prime reusable-certificate verifier | 31,281 | 471 incremental hint bytes; 267-item peak; two adjacent certified operands required |
+| Hinted secp256k1 modular multiply, conditional | 42-prime exact-carry verifier | 10,950 | 301 hint bytes; 231-item strict peak; external bindings excluded |
+| Hinted secp256k1 modular multiply, standalone-bound | 47-prime limb-bound exact-carry verifier | 51,047 | 868-byte complete data witness; 305-item strict peak; global bindings included |
+| Hinted secp256k1 modular multiply, composable | 46-prime reusable-certificate verifier | 31,278 | 471 incremental hint bytes; 267-item peak; two adjacent certified operands required |
 
 Selection order: choose semantics and range, then representation compatibility,
 then consensus feasibility, and only then minimize bytes. The prime-log profile
@@ -32,17 +32,17 @@ but longer expressions remain modular unless their bound is proved below its
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
 
-The native 20,524-byte ordinary row checks the same field operation as the 31,281-byte
+The native 20,503-byte ordinary row checks the same field operation as the 31,278-byte
 composable RNS row at a broadly comparable certificate boundary: both consume
 two verified-path secp256k1 values, bind hostile reduction hints locally, and
 return a reusable certified result. They do not share a stack representation,
 so conversion, certificate fan-out, and circuit scheduling remain outside both
 numbers. The ordinary native gate's 1,795 bytes of table lifecycle can be
-shared: two preloaded products cost 39,400 bytes at an 882-item peak, while
-three use a slightly larger destructive relation and cost 59,163 bytes at a
+shared: two preloaded products cost 39,358 bytes at an 882-item peak, while
+three use a slightly larger destructive relation and cost 59,145 bytes at a
 993-item peak.
 
-The 20,501-byte factor-16 row is an exact field multiplication only under its
+The 20,450-byte factor-16 row is an exact field multiplication only under its
 documented encoding invariant: stored `a=E(x)` and `b=E(y)` produce `E(xy)`.
 It has no measured resident-table or batch API, and mixing it with the ordinary
 multiply or specialized square requires an explicit conversion strategy whose
@@ -50,7 +50,7 @@ Script cost is outside the row.
 
 The native square row is a separate operation, not a multiplication estimate.
 It exploits equal operands and uses 435 rather than 646 quarter-square
-products. Five shared-table squares cost 65,074 bytes and peak at 998 items.
+products. Five shared-table squares cost 65,064 bytes and peak at 998 items.
 The BN254 `Fq` backend concerns a different modulus and nine-limb
 representation; its hinted-operation size is implementation context, not a
 ratio for secp256k1 base-field work.
@@ -72,37 +72,37 @@ The 47-prime row includes that missing work. Its 299 witness items are 64
 centered base-`2^16` limbs, 188 residue-binding carries, and 47 relation
 carries. The script range-checks all limbs, proves `lhs`, `rhs`, and remainder
 below the target, derives four canonical RNS vectors from the shared limbs,
-and checks the product over a 513-bit basis. It needs no complement. Its 51,055
-bytes split into 1,060 bytes of range checks, 38,801 of residue binding,
+and checks the product over a 513-bit basis. It needs no complement. Its 51,047
+bytes split into 1,057 bytes of range checks, 38,796 of residue binding,
 10,794 of modular relations, and 400 of routing and output. The 868-byte
 witness covers all 299 consumed data items for `(N-1)^2`, not merely the
 derived carries. The fragment returns both the 16 remainder limbs and 47
-residues. A reusable one-value binding costs 9,777 bytes when a larger program
+residues. A reusable one-value binding costs 9,773 bytes when a larger program
 can certify persistent values at their introduction boundary, but that plain
 binder proves only `<2^256`. The `bind_value_below(N)` variant needed for an
-otherwise-unchecked field value costs 9,864 bytes. Shared joint-NAF doubling
+otherwise-unchecked field value costs 9,860 bytes. Shared joint-NAF doubling
 chains are the main binding reduction; target-aware centering enables the two
 widest basis primes while retaining checked ScriptNum prefix bounds.
 
 The 46-prime composable row moves only the operand part of that proof to a
-reusable certificate boundary. Its gate spends 444 bytes on q/r limb and field
-validation, 9,852 binding q, 9,664 binding r, 10,799 on product relations, and
+reusable certificate boundary. Its gate spends 443 bytes on q/r limb and field
+validation, 9,851 binding q, 9,663 binding r, 10,799 on product relations, and
 522 on routing/output. The 170-item, 471-byte `(N-1)^2` witness is incremental:
 it excludes the two already-live 46-residue certificates. The matching
-field-value binder is 9,835 bytes with a 195-byte, 62-item `N-1` witness and a
+field-value binder is 9,832 bytes with a 195-byte, 62-item `N-1` witness and a
 72-item peak; the gate contains 20,799 static non-push opcodes and peaks at 267.
 Both fragments have zero table push/drop bytes.
 
-The 10,952, 31,281, and 51,055 sizes are not direct optimization comparisons.
+The 10,950, 31,278, and 51,047 sizes are not direct optimization comparisons.
 The first excludes every global proof; the second requires two certified
 operands already adjacent to its hints and excludes certificate fan-out and
 all-witness-at-entry routing; the third closes all four value bindings inside
 one operation and additionally returns remainder limbs. The 75-prime
-15,628-byte no-carry path remains the baseline when relation carries are
+15,626-byte no-carry path remains the baseline when relation carries are
 unavailable.
 
 The one-shot ordinary product contains 392 bytes of table pushes, 153 bytes of
-table cleanup, and 15,083 bytes of computation/routing/output code. The
+table cleanup, and 15,081 bytes of computation/routing/output code. The
 coordinate-major six-product fragment re-optimizes the table choice for the
 batch: 25,510 bytes push tables once per selected coordinate, 6,521 bytes drop
 them, 30,229 bytes execute the arithmetic queries, 2,202 bytes route operands

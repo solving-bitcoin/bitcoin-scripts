@@ -8,29 +8,30 @@ use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
 use bitcoin::{script::Instruction, Witness};
-use bitcoin_lab::arithmetic::rns::prime::carry::{bound, composable};
+use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
-    arithmetic::{
-        bigint::U254,
-        fields::{f12289, f257, secp256k1},
-        rns, scriptint, u31, u32, u4,
-    },
+    arithmetic::{bigint::U254, rns, scriptint, u31, u32, u4},
     ciphers::{aes, prince},
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
         verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
     },
-    curves::bn254::{
-        fields::{fp254::Fp254Impl, fq::Fq, fq12::Fq12, fq2::Fq2, fq6::Fq6, fr::Fr},
-        groups::{g1::G1Affine, g2::G2Affine},
+    curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
+    fields::{
+        babybear::babybear4::BabyBear4,
+        bn254::bigint29::{fp254::Fp254Impl, fq::Fq, fq12::Fq12, fq2::Fq2, fq6::Fq6, fr::Fr},
+        f12289::{radix as f12289_radix, u31::F12289},
+        f257::{lookup as f257_lookup, u31::F257},
+        m31::{qm31::QM31, u31::M31},
+        secp256k1::{bigint9 as secp256k1, rns as composable},
     },
     hashes::{blake3, ripemd160, sha1, sha256, shake256},
     signatures::{
         hors, lamport,
         winternitz::{FastWots32, Wots, Wots32},
     },
-    support::execution::execute_script_with_inputs,
+    support::{execution::execute_script_with_inputs, script::ScriptCompilation},
 };
 use bitcoin_script::script;
 use num_bigint::{BigInt, BigUint};
@@ -43,12 +44,12 @@ struct Metric {
 }
 
 fn script_len(script: bitcoin_script::Script) -> usize {
-    script.compile().len()
+    script.compile_with_policy().len()
 }
 
 fn static_non_push_opcodes(script: bitcoin_script::Script) -> usize {
     script
-        .compile()
+        .compile_with_policy()
         .instructions()
         .map(|instruction| instruction.expect("generated metric script must parse"))
         .filter(
@@ -425,71 +426,71 @@ fn metrics() -> Vec<Metric> {
         .flat_map(|_| secp256k1_square_input_items.iter().cloned())
         .collect::<Vec<_>>();
     let f257_log_memory = script! {
-        { f257::push_log_mul_tables() }
-        { f257::drop_log_mul_tables() }
+        { f257_lookup::push_log_mul_tables() }
+        { f257_lookup::drop_log_mul_tables() }
     };
     let f257_square_memory = script! {
-        { f257::push_square_table() }
-        { f257::drop_square_table() }
+        { f257_lookup::push_square_table() }
+        { f257_lookup::drop_square_table() }
     };
     let f12289_radix128_memory = script! {
-        { f12289::push_radix_mul_tables(10_000, 7) }
-        { f12289::drop_radix_mul_tables(7) }
+        { f12289_radix::push_radix_mul_tables(10_000, 7) }
+        { f12289_radix::drop_radix_mul_tables(7) }
     };
     let f257_log_state_script = script! {
-        { f257::push_log_mul_tables() }
+        { f257_lookup::push_log_mul_tables() }
         for _ in 0..510 {
             128
         }
         127 -128
-        { f257::mul_from_log_tables(510) }
+        { f257_lookup::mul_from_log_tables(510) }
         -65 OP_EQUALVERIFY
         for _ in 0..510 {
             OP_DROP
         }
-        { f257::drop_log_mul_tables() }
+        { f257_lookup::drop_log_mul_tables() }
         OP_TRUE
     };
     let f257_log_constant_state_script = script! {
-        { f257::push_log_mul_tables() }
+        { f257_lookup::push_log_mul_tables() }
         for _ in 0..511 {
             128
         }
         -128
-        { f257::mul_by_constant_from_log_tables(173, 511) }
+        { f257_lookup::mul_by_constant_from_log_tables(173, 511) }
         -42 OP_EQUALVERIFY
         for _ in 0..511 {
             OP_DROP
         }
-        { f257::drop_log_mul_tables() }
+        { f257_lookup::drop_log_mul_tables() }
         OP_TRUE
     };
     let f257_square_state_script = script! {
-        { f257::push_square_table() }
+        { f257_lookup::push_square_table() }
         for _ in 0..511 {
             128
         }
         -128
-        { f257::square_from_table(511) }
+        { f257_lookup::square_from_table(511) }
         16384 OP_EQUALVERIFY
         for _ in 0..511 {
             OP_DROP
         }
-        { f257::drop_square_table() }
+        { f257_lookup::drop_square_table() }
         OP_TRUE
     };
     let f12289_radix128_state_script = script! {
-        { f12289::push_radix_mul_tables(10_000, 7) }
+        { f12289_radix::push_radix_mul_tables(10_000, 7) }
         for _ in 0..511 {
             { 12_288u32 }
         }
         { 12_287u32 }
-        { f12289::mul_by_constant_from_radix_tables(7, 511) }
+        { f12289_radix::mul_by_constant_from_radix_tables(7, 511) }
         { (12_287u64 * 10_000 % 12_289) as u32 } OP_EQUALVERIFY
         for _ in 0..511 {
             OP_DROP
         }
-        { f12289::drop_radix_mul_tables(7) }
+        { f12289_radix::drop_radix_mul_tables(7) }
         OP_TRUE
     };
 
@@ -1365,57 +1366,57 @@ fn metrics() -> Vec<Metric> {
             value: prime_rns_bind_value_cost.routing_output,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul",
             value: script_len(prime_rns_composable_mul.clone()),
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_table_push",
             value: prime_rns_composable_cost.table_push,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_table_drop",
             value: prime_rns_composable_cost.table_drop,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_validation",
             value: prime_rns_composable_cost.field_validation,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_quotient_binding",
             value: prime_rns_composable_cost.quotient_binding,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_remainder_binding",
             value: prime_rns_composable_cost.remainder_binding,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_modular_relation",
             value: prime_rns_composable_cost.modular_relation,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_routing_output",
             value: prime_rns_composable_cost.routing_output,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_opcodes",
             value: prime_rns_composable_opcodes,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_witness",
             value: witness_size(&prime_rns_composable_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_hinted_mod_mul_stack",
             value: max_stack_items(
                 script! {
@@ -1429,37 +1430,37 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value",
             value: script_len(prime_rns_composable_bind.clone()),
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_validation",
             value: prime_rns_composable_bind_cost.limb_and_field_validation,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_binding",
             value: prime_rns_composable_bind_cost.residue_binding,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_routing",
             value: prime_rns_composable_bind_cost.routing_output,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_opcodes",
             value: prime_rns_composable_bind_opcodes,
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_witness",
             value: witness_size(&prime_rns_composable_bind_items),
         },
         Metric {
-            readme: "src/arithmetic/rns/README.md",
+            readme: "src/fields/secp256k1/rns/README.md",
             key: "prime_rns_composable_bind_value_stack",
             value: max_stack_items(
                 script! {
@@ -1567,92 +1568,92 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_add",
-            value: script_len(u31::u31_add::<u31::M31>()),
+            value: script_len(u31::u31_add::<M31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_sub",
-            value: script_len(u31::u31_sub::<u31::M31>()),
+            value: script_len(u31::u31_sub::<M31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_mul",
-            value: script_len(u31::u31_mul::<u31::M31>()),
+            value: script_len(u31::u31_mul::<M31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_mul_constant",
-            value: script_len(u31::u31_mul_by_constant::<u31::M31>(0x1234_5678)),
+            value: script_len(u31::u31_mul_by_constant::<M31>(0x1234_5678)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul",
             value: script_len(secp256k1_mul.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_table_setup",
             value: secp256k1_mul_cost.table_setup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_table_drop",
             value: secp256k1_mul_cost.table_drop,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_raw_products",
             value: secp256k1_mul_cost.raw_digit_products,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_difference_products",
             value: secp256k1_mul_cost.difference_digit_products,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_difference_normalization",
             value: secp256k1_mul_cost.difference_normalization,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_coefficient_routing",
             value: secp256k1_mul_cost.coefficient_routing,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_coefficient_recombination",
             value: secp256k1_mul_cost.coefficient_recombination,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_relation_output",
             value: secp256k1_mul_cost.relation_and_output,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_computation",
             value: secp256k1_mul_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_opcodes",
             value: secp256k1_mul_opcodes,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_hint_items",
             value: secp256k1_hint_items.len(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_hint_witness",
             value: witness_size(&secp256k1_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_stack",
             value: max_stack_items(
                 script! {
@@ -1666,22 +1667,22 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_operand_certification",
             value: secp256k1::operand_certification_bytes(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_standalone",
             value: script_len(secp256k1_standalone_mul.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_standalone_witness",
             value: witness_size(&secp256k1_full_input_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_standalone_stack",
             value: max_stack_items(
                 script! {
@@ -1695,42 +1696,42 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_resident",
             value: secp256k1_resident_cost.mul_with_table,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_resident_cleanup",
             value: secp256k1_resident_cost.final_cleanup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_resident_total",
             value: secp256k1_resident_cost.one_multiplication_total(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch2",
             value: script_len(secp256k1_batch2.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch2_relation",
             value: secp256k1_batch2_cost.relation_per_multiplication,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch2_computation",
             value: secp256k1_batch2_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch2_hint_witness",
             value: witness_size(&secp256k1_batch2_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch2_stack",
             value: max_stack_items(
                 script! {
@@ -1744,27 +1745,27 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch3",
             value: script_len(secp256k1_batch3.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch3_relation",
             value: secp256k1_batch3_cost.relation_per_multiplication,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch3_computation",
             value: secp256k1_batch3_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch3_hint_witness",
             value: witness_size(&secp256k1_batch3_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul_batch3_stack",
             value: max_stack_items(
                 script! {
@@ -1778,57 +1779,57 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_mul",
             value: script_len(secp256k1_factor16_mul.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_table_setup",
             value: secp256k1_factor16_cost.table_setup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_table_drop",
             value: secp256k1_factor16_cost.table_drop,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_product_generation",
             value: secp256k1_factor16_cost.product_generation,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_relation",
             value: secp256k1_factor16_cost.folded_relation,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_cleanup",
             value: secp256k1_factor16_cost.cleanup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_computation",
             value: secp256k1_factor16_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_opcodes",
             value: secp256k1_factor16_opcodes,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_hint_items",
             value: secp256k1_factor16_hint_items.len(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_hint_witness",
             value: witness_size(&secp256k1_factor16_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_stack",
             value: max_stack_items(
                 script! {
@@ -1842,17 +1843,17 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_standalone",
             value: script_len(secp256k1_factor16_standalone.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_standalone_witness",
             value: witness_size(&secp256k1_factor16_full_input_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/factor16/README.md",
             key: "secp256k1_field_factor16_standalone_stack",
             value: max_stack_items(
                 script! {
@@ -1866,52 +1867,52 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square",
             value: script_len(secp256k1_square.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_table_setup",
             value: secp256k1_square_cost.table_setup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_table_drop",
             value: secp256k1_square_cost.table_drop,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_diagonals",
             value: secp256k1_square_cost.diagonal_products,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_off_diagonals",
             value: secp256k1_square_cost.off_diagonal_products,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_relation_output",
             value: secp256k1_square_cost.relation_and_output,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_computation",
             value: secp256k1_square_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_opcodes",
             value: secp256k1_square_opcodes,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_hint_witness",
             value: witness_size(&secp256k1_square_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_stack",
             value: max_stack_items(
                 script! {
@@ -1925,37 +1926,37 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5",
             value: script_len(secp256k1_square_batch5.clone()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_table_setup",
             value: secp256k1_square_batch5_cost.unbiased_table_setup,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_table_drop",
             value: secp256k1_square_batch5_cost.table_drop,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_relation",
             value: secp256k1_square_batch5_cost.relation_per_square,
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_computation",
             value: secp256k1_square_batch5_cost.computation(),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_hint_witness",
             value: witness_size(&secp256k1_square_batch5_hint_items),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_square_batch5_stack",
             value: max_stack_items(
                 script! {
@@ -1969,47 +1970,47 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_mul_baseline",
-            value: script_len(u31::u31_mul::<f257::F257>()),
+            value: script_len(u31::u31_mul::<F257>()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_mul_compact",
-            value: script_len(u31::u31_mul_compact::<f257::F257>()),
+            value: script_len(u31::u31_mul_compact::<F257>()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_mul_compact_stack",
             value: max_stack_items(
-                u31::u31_mul_compact::<f257::F257>(),
+                u31::u31_mul_compact::<F257>(),
                 vec![scriptnum(256), scriptnum(256)],
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_mul_centered_173",
-            value: script_len(u31::u31_mul_by_constant_centered::<f257::F257>(173)),
+            value: script_len(u31::u31_mul_by_constant_centered::<F257>(173)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_mul_centered_stack",
             value: max_stack_items(
-                u31::u31_mul_by_constant_centered::<f257::F257>(173),
+                u31::u31_mul_by_constant_centered::<F257>(173),
                 vec![scriptnum(256)],
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_full_lookup_batch8",
-            value: script_len(u31::u31_mul_by_constant_lookup_batch::<f257::F257>(173, 8)),
+            value: script_len(u31::u31_mul_by_constant_lookup_batch::<F257>(173, 8)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_full_lookup_batch8_stack",
             value: max_stack_items(
                 script! {
-                    { u31::u31_mul_by_constant_lookup_batch::<f257::F257>(173, 8) }
+                    { u31::u31_mul_by_constant_lookup_batch::<F257>(173, 8) }
                     for _ in 0..4 {
                         OP_2DROP
                     }
@@ -2019,18 +2020,16 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_half_lookup_batch8",
-            value: script_len(u31::u31_mul_by_constant_half_lookup_batch::<f257::F257>(
-                173, 8,
-            )),
+            value: script_len(u31::u31_mul_by_constant_half_lookup_batch::<F257>(173, 8)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/u31/README.md",
             key: "f257_half_lookup_batch8_stack",
             value: max_stack_items(
                 script! {
-                    { u31::u31_mul_by_constant_half_lookup_batch::<f257::F257>(173, 8) }
+                    { u31::u31_mul_by_constant_half_lookup_batch::<F257>(173, 8) }
                     for _ in 0..4 {
                         OP_2DROP
                     }
@@ -2040,120 +2039,120 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_log_memory",
             value: script_len(f257_log_memory),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_log_constant_query",
-            value: script_len(f257::mul_by_constant_from_log_tables(173, 511)),
+            value: script_len(f257_lookup::mul_by_constant_from_log_tables(173, 511)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_log_constant_stack",
             value: max_stack_items(f257_log_constant_state_script, vec![]),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_log_variable_query",
-            value: script_len(f257::mul_from_log_tables(510)),
+            value: script_len(f257_lookup::mul_from_log_tables(510)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_log_state_stack",
             value: max_stack_items(f257_log_state_script, vec![]),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_square_memory",
             value: script_len(f257_square_memory),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_square_query",
-            value: script_len(f257::square_from_table(511)),
+            value: script_len(f257_lookup::square_from_table(511)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f257/lookup/README.md",
             key: "f257_square_state_stack",
             value: max_stack_items(f257_square_state_script, vec![]),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f12289/u31/README.md",
             key: "f12289_mul_compact",
-            value: script_len(u31::u31_mul_compact::<f12289::F12289>()),
+            value: script_len(u31::u31_mul_compact::<F12289>()),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f12289/u31/README.md",
             key: "f12289_mul_compact_stack",
             value: max_stack_items(
-                u31::u31_mul_compact::<f12289::F12289>(),
+                u31::u31_mul_compact::<F12289>(),
                 vec![scriptnum(12_288), scriptnum(12_288)],
             ),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f12289/radix/README.md",
             key: "f12289_radix128_memory",
             value: script_len(f12289_radix128_memory),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f12289/radix/README.md",
             key: "f12289_radix128_query",
-            value: script_len(f12289::mul_by_constant_from_radix_tables(7, 511)),
+            value: script_len(f12289_radix::mul_by_constant_from_radix_tables(7, 511)),
         },
         Metric {
-            readme: "src/arithmetic/fields/README.md",
+            readme: "src/fields/f12289/radix/README.md",
             key: "f12289_radix128_state_stack",
             value: max_stack_items(f12289_radix128_state_script, vec![]),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_witness_min",
             value: witness_size(&vec![Vec::new(); 2]),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31_witness_max",
             value: witness_size(&vec![vec![1; 4]; 2]),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "qm31_add",
-            value: script_len(u31::u31ext_add::<u31::QM31>()),
+            value: script_len(u31::u31ext_add::<QM31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "qm31_sub",
-            value: script_len(u31::u31ext_sub::<u31::QM31>()),
+            value: script_len(u31::u31ext_sub::<QM31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "qm31_mul",
-            value: script_len(u31::u31ext_mul::<u31::QM31>()),
+            value: script_len(u31::u31ext_mul::<QM31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/babybear/README.md",
             key: "babybear4_mul",
-            value: script_len(u31::u31ext_mul::<u31::BabyBear4>()),
+            value: script_len(u31::u31ext_mul::<BabyBear4>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "qm31_mul_base",
-            value: script_len(u31::u31ext_mul_u31::<u31::QM31>()),
+            value: script_len(u31::u31ext_mul_u31::<QM31>()),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "qm31_mul_constant",
-            value: script_len(u31::u31ext_mul_u31_by_constant::<u31::QM31>(0x1234_5678)),
+            value: script_len(u31::u31ext_mul_u31_by_constant::<QM31>(0x1234_5678)),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31ext_witness_min",
             value: witness_size(&vec![Vec::new(); 8]),
         },
         Metric {
-            readme: "src/arithmetic/u31/README.md",
+            readme: "src/fields/m31/README.md",
             key: "u31ext_witness_max",
             value: witness_size(&vec![vec![1; 4]; 8]),
         },
@@ -2572,142 +2571,142 @@ fn metrics() -> Vec<Metric> {
             value: max_stack_items(aes_stack_script, vec![Vec::new(); 32]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_add",
             value: script_len(bn254_fq_add),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_add_stack",
             value: max_stack_items(bn254_fq_add_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fr_add",
             value: script_len(bn254_fr_add),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fr_add_stack",
             value: max_stack_items(bn254_fr_add_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_mul",
             value: script_len(bn254_fq_mul),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_mul_stack",
             value: max_stack_items(bn254_fq_mul_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_square",
             value: script_len(bn254_fq_square),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_square_stack",
             value: max_stack_items(bn254_fq_square_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_inv",
             value: script_len(bn254_fq_inv),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq_inv_stack",
             value: max_stack_items(bn254_fq_inv_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_add",
             value: script_len(bn254_fq2_add),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_add_stack",
             value: max_stack_items(bn254_fq2_add_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_mul",
             value: script_len(bn254_fq2_mul),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_mul_stack",
             value: max_stack_items(bn254_fq2_mul_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_square",
             value: script_len(bn254_fq2_square),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq2_square_stack",
             value: max_stack_items(bn254_fq2_square_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_add",
             value: script_len(bn254_fq6_add),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_add_stack",
             value: max_stack_items(bn254_fq6_add_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_mul",
             value: script_len(bn254_fq6_mul),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_mul_stack",
             value: max_stack_items(bn254_fq6_mul_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_square",
             value: script_len(bn254_fq6_square),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq6_square_stack",
             value: max_stack_items(bn254_fq6_square_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_add",
             value: script_len(bn254_fq12_add),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_add_stack",
             value: max_stack_items(bn254_fq12_add_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_mul",
             value: script_len(bn254_fq12_mul),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_mul_stack",
             value: max_stack_items(bn254_fq12_mul_stack_script, vec![]),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_square",
             value: script_len(bn254_fq12_square),
         },
         Metric {
-            readme: "src/curves/bn254/fields/README.md",
+            readme: "src/fields/bn254/bigint29/README.md",
             key: "fq12_square_stack",
             value: max_stack_items(bn254_fq12_square_stack_script, vec![]),
         },

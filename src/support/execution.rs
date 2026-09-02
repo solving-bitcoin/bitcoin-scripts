@@ -1,6 +1,6 @@
 use core::fmt;
 
-use crate::support::script;
+use crate::support::script::{self, ScriptCompilation};
 use bitcoin::{
     hashes::Hash,
     hex::DisplayHex,
@@ -97,7 +97,7 @@ impl fmt::Display for ExecuteInfo {
 }
 
 pub fn execute_script(script: script::Script) -> ExecuteInfo {
-    execute_script_buf_optional_stack_limit(script.compile(), true)
+    execute_script_buf_optional_stack_limit(script.compile_with_policy(), true)
 }
 
 pub fn execute_script_buf(script: bitcoin::ScriptBuf) -> ExecuteInfo {
@@ -105,7 +105,7 @@ pub fn execute_script_buf(script: bitcoin::ScriptBuf) -> ExecuteInfo {
 }
 
 pub fn execute_script_without_stack_limit(script: script::Script) -> ExecuteInfo {
-    execute_script_buf_optional_stack_limit(script.compile(), false)
+    execute_script_buf_optional_stack_limit(script.compile_with_policy(), false)
 }
 
 pub fn execute_script_buf_without_stack_limit(script: bitcoin::ScriptBuf) -> ExecuteInfo {
@@ -200,7 +200,7 @@ pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) ->
 }
 
 pub fn execute_script_with_inputs(script: script::Script, witness: Vec<Vec<u8>>) -> ExecuteInfo {
-    execute_raw_script_with_inputs(script.compile().to_bytes(), witness)
+    execute_raw_script_with_inputs(script.compile_with_policy().to_bytes(), witness)
 }
 
 pub fn dry_run_taproot_input(

@@ -7,7 +7,7 @@ constant-base G1 multi-scalar multiplication.
   protocol map.
 - **Evidence:** differentially validated against arkworks for representative
   deterministic points.
-- **Representative results:** G1 zero test 77 bytes; G2 zero-keep test 260.
+- **Representative results:** G1 zero test 59 bytes; G2 zero-keep test 224.
 - **Trust boundary:** canonical coordinates, on-curve checks, identity handling,
   and required subgroup constraints are protocol obligations.
 - **Deployment:** full MSM and hinted point operations are oversized research

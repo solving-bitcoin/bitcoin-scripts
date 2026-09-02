@@ -278,14 +278,14 @@
       "id": "arithmetic/u31",
       "name": "u31 prime-field arithmetic",
       "class": "arithmetic/field",
-      "summary": "Single-ScriptNum prime fields and degree-four extensions with hinted modular reduction.",
+      "summary": "Generic Single-ScriptNum prime-field and extension-field machinery, measured with M31 and QM31 configurations.",
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/u31.md",
       "implementation": "src/arithmetic/u31/mod.rs",
-      "documentation": "src/arithmetic/u31/README.md",
+      "documentation": "src/fields/m31/README.md",
       "tests": [
         "arithmetic::u31::tests"
       ],
@@ -294,10 +294,9 @@
         "bitcoin-scriptexec-locked"
       ],
       "techniques": [
-        "witness-hints",
         "addition-chain"
       ],
-      "security": "Inputs must be canonical field elements and every quotient hint must be constrained.",
+      "security": "Inputs must be canonical field elements; these fragments do not range-check hostile coefficients.",
       "stack_contract": "One item per base-field coefficient; four coefficients per degree-four extension element.",
       "configurations": [
         {
@@ -307,14 +306,14 @@
             "field": "M31"
           },
           "includes": "fragment-only: operation fragments; excludes inputs, hints, and output checks",
-          "script_bytes": 1400,
+          "script_bytes": 1370,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 37,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 1400,
+          "per_use_script_bytes": 1370,
           "metric_keys": [
             "u31_mul"
           ]
@@ -327,14 +326,14 @@
             "degree": 4
           },
           "includes": "fragment-only: extension multiplication; excludes operands, hints, and result check",
-          "script_bytes": 13186,
+          "script_bytes": 12901,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 52,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 13186,
+          "per_use_script_bytes": 12901,
           "metric_keys": [
             "qm31_mul"
           ]
@@ -358,11 +357,11 @@
       "execution": "unclassified",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/secp256k1-field.md",
-      "implementation": "src/arithmetic/fields/secp256k1.rs",
-      "documentation": "src/arithmetic/fields/README.md",
+      "implementation": "src/fields/secp256k1/bigint9/mod.rs",
+      "documentation": "src/fields/secp256k1/README.md",
       "tests": [
-        "arithmetic::fields::secp256k1::tests",
-        "arithmetic::fields::secp256k1::factor16::tests"
+        "fields::secp256k1::bigint9::tests",
+        "fields::secp256k1::bigint9::factor16::tests"
       ],
       "references": [
         "bip-342",
@@ -395,18 +394,18 @@
             "table_push_script_bytes": 1538,
             "table_cleanup_script_bytes": 257,
             "relation_and_output_script_bytes": 2539,
-            "non_table_script_bytes": 18729,
+            "non_table_script_bytes": 18708,
             "static_non_push_opcodes": 13043
           },
           "includes": "fragment-with-memory: consumes two previously certified native secp256k1 field values and 67 q/carry hint items, pushes and drops one 513-entry quarter-square table, verifies the normalized-Karatsuba product and exact integer reduction, derives and certifies the remainder, cleans all inputs, and returns one reusable 29-digit value; excludes operand certification, input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only the incremental q/carry hints for (p-1)^2",
-          "script_bytes": 20524,
+          "script_bytes": 20503,
           "witness_bytes": 94,
           "witness_bytes_max": null,
           "max_stack_items": 757,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 1795,
-          "per_use_script_bytes": 18729,
+          "per_use_script_bytes": 18708,
           "metric_keys": [
             "secp256k1_field_mul",
             "secp256k1_field_mul_computation",
@@ -425,7 +424,7 @@
             "incremental_hint_items": 67
           },
           "includes": "fragment-with-memory: certifies two hostile 29-digit operands in place, then executes the complete certified-operand multiplication gate and returns one certified remainder; excludes input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover both operand vectors and all q/carry hints for (p-1)^2",
-          "script_bytes": 21800,
+          "script_bytes": 21775,
           "witness_bytes": 160,
           "witness_bytes_max": null,
           "max_stack_items": 757,
@@ -457,18 +456,18 @@
             "product_generation_script_bytes": 15615,
             "folded_relation_script_bytes": 2674,
             "cleanup_and_output_script_bytes": 417,
-            "non_table_script_bytes": 18706,
+            "non_table_script_bytes": 18655,
             "static_non_push_opcodes": 13122
           },
           "includes": "fragment-with-memory: consumes two previously certified native secp256k1 values encoded as E(x)=x/16 and 29 residual/carry hint items, pushes and drops one 513-entry quarter-square table, verifies the normalized-Karatsuba product and exact degree-28 folded integer reduction, derives and certifies E(x*y), cleans all inputs, and returns one reusable 29-digit encoded value; excludes operand certification, input pushes, encode/decode conversion, mixed-domain routing, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only the incremental hints for encoded logical (p-1)^2",
-          "script_bytes": 20501,
+          "script_bytes": 20450,
           "witness_bytes": 37,
           "witness_bytes_max": null,
           "max_stack_items": 719,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 1795,
-          "per_use_script_bytes": 18706,
+          "per_use_script_bytes": 18655,
           "metric_keys": [
             "secp256k1_field_factor16_mul",
             "secp256k1_field_factor16_computation",
@@ -488,7 +487,7 @@
             "incremental_hint_items": 29
           },
           "includes": "fragment-with-memory: certifies two hostile 29-digit factor-16 encoded operands in place, then executes the complete certified-operand folded multiplication gate and returns one certified E(x*y) remainder; excludes input pushes, encode/decode conversion, mixed-domain routing, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover both encoded operand vectors and all residual/carry hints for logical (p-1)^2",
-          "script_bytes": 21777,
+          "script_bytes": 21722,
           "witness_bytes": 103,
           "witness_bytes_max": null,
           "max_stack_items": 719,
@@ -515,7 +514,7 @@
             "amortized_script_bytes_per_product": 19700
           },
           "includes": "fragment-with-memory: consumes two preloaded groups of certified native operands and incremental q/carry hints, shares one quarter-square table, verifies both exact reductions, cleans consumed state, and returns two certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only both incremental q/carry hint groups for repeated (p-1)^2",
-          "script_bytes": 39400,
+          "script_bytes": 39358,
           "witness_bytes": 187,
           "witness_bytes_max": null,
           "max_stack_items": 882,
@@ -543,7 +542,7 @@
             "amortized_script_bytes_per_product": 19721
           },
           "includes": "fragment-with-memory: consumes three preloaded groups of certified native operands and incremental q/carry hints, shares one quarter-square table, uses destructive coefficient recombination to remain below 1,000 combined stack items, verifies all exact reductions, cleans consumed state, and returns three certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only all three incremental q/carry hint groups for repeated (p-1)^2",
-          "script_bytes": 59163,
+          "script_bytes": 59145,
           "witness_bytes": 280,
           "witness_bytes_max": null,
           "max_stack_items": 993,
@@ -575,18 +574,18 @@
             "off_diagonal_product_script_bytes": 9744,
             "product_script_bytes": 10150,
             "relation_and_output_script_bytes": 2598,
-            "non_table_script_bytes": 12748,
+            "non_table_script_bytes": 12746,
             "static_non_push_opcodes": 9423
           },
           "includes": "fragment-with-memory: consumes one previously certified native secp256k1 field value and 67 q/carry hint items, pushes and drops one quarter-square table, exploits operand equality in the product, verifies the exact integer reduction, derives and certifies the remainder, cleans all inputs, and returns one reusable 29-digit value; excludes operand certification, input pushes, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only the incremental q/carry hints for (p-1)^2",
-          "script_bytes": 14543,
+          "script_bytes": 14541,
           "witness_bytes": 94,
           "witness_bytes_max": null,
           "max_stack_items": 614,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 1795,
-          "per_use_script_bytes": 12748,
+          "per_use_script_bytes": 12746,
           "metric_keys": [
             "secp256k1_field_square",
             "secp256k1_field_square_computation",
@@ -608,7 +607,7 @@
             "non_table_script_bytes": 63160
           },
           "includes": "fragment-with-memory: consumes five preloaded groups of one certified native operand plus q/carry hints, shares one unbiased quarter-square table, verifies five exact reductions, cleans consumed state, and returns five certified results in group order; excludes operand certification, input pushes, all-witness circuit scheduling beyond the documented adjacent group layout, terminal predicate/output comparison, tapleaf/control-block serialization, and transaction context; witness bytes cover only all five incremental q/carry hint groups for repeated (p-1)^2",
-          "script_bytes": 65074,
+          "script_bytes": 65064,
           "witness_bytes": 468,
           "witness_bytes_max": null,
           "max_stack_items": 998,
@@ -646,10 +645,10 @@
       "execution": "unclassified",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/f257.md",
-      "implementation": "src/arithmetic/fields/f257.rs",
-      "documentation": "src/arithmetic/fields/README.md",
+      "implementation": "src/fields/f257/mod.rs",
+      "documentation": "src/fields/f257/README.md",
       "tests": [
-        "arithmetic::fields::f257::tests"
+        "fields::f257::lookup::tests"
       ],
       "references": [
         "bitcoin-scriptexec-locked"
@@ -670,14 +669,14 @@
             "constant": 173
           },
           "includes": "fragment-only: signed addition chain; excludes input and output check",
-          "script_bytes": 132,
+          "script_bytes": 129,
           "witness_bytes": 0,
           "witness_bytes_max": 0,
           "max_stack_items": 4,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 132,
+          "per_use_script_bytes": 129,
           "metric_keys": [
             "f257_mul_centered_173",
             "f257_mul_centered_stack"
@@ -697,7 +696,7 @@
           "max_stack_items": 900,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": 1196,
+          "setup_script_bytes": 1004,
           "per_use_script_bytes": 44,
           "metric_keys": [
             "f257_log_memory",
@@ -724,10 +723,10 @@
       "execution": "unclassified",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/f12289.md",
-      "implementation": "src/arithmetic/fields/f12289.rs",
-      "documentation": "src/arithmetic/fields/README.md",
+      "implementation": "src/fields/f12289/mod.rs",
+      "documentation": "src/fields/f12289/README.md",
       "tests": [
-        "arithmetic::fields::f12289::tests"
+        "fields::f12289::radix::tests"
       ],
       "references": [
         "bitcoin-scriptexec-locked"
@@ -748,14 +747,14 @@
             "preserved_items": 511
           },
           "includes": "fragment-only: query preserves 511 live items; setup is reported separately and cleanup is excluded",
-          "script_bytes": 135,
+          "script_bytes": 134,
           "witness_bytes": 0,
           "witness_bytes_max": 0,
           "max_stack_items": 740,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 781,
-          "per_use_script_bytes": 135,
+          "per_use_script_bytes": 134,
           "metric_keys": [
             "f12289_radix128_memory",
             "f12289_radix128_query",
@@ -866,7 +865,7 @@
             ]
           },
           "includes": "fragment-with-memory: setup, operation, cleanup, and return from altstack; excludes operands and final check",
-          "script_bytes": 1564,
+          "script_bytes": 1561,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 903,
@@ -906,7 +905,7 @@
         "arithmetic::rns::prime::batch::tests",
         "arithmetic::rns::prime::carry::tests",
         "arithmetic::rns::prime::carry::bound::tests",
-        "arithmetic::rns::prime::carry::composable::tests"
+        "fields::secp256k1::rns::tests"
       ],
       "references": [
         "bip-342",
@@ -930,14 +929,14 @@
             "modulus_bits": 513
           },
           "includes": "fragment-only: operation and return from altstack; excludes operand pushes and final verification; witness fields cover only the serialized 150-item operand vector",
-          "script_bytes": 1134,
+          "script_bytes": 1131,
           "witness_bytes": 332,
           "witness_bytes_max": 391,
           "max_stack_items": 151,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 1134,
+          "per_use_script_bytes": 1131,
           "metric_keys": [
             "prime_rns_add",
             "prime_rns_add_stack",
@@ -953,14 +952,14 @@
             "modulus_bits": 513
           },
           "includes": "fragment-only: operation and return from altstack; excludes operand pushes and final verification; witness fields cover only the serialized 150-item operand vector",
-          "script_bytes": 1140,
+          "script_bytes": 1138,
           "witness_bytes": 332,
           "witness_bytes_max": 391,
           "max_stack_items": 151,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 1140,
+          "per_use_script_bytes": 1138,
           "metric_keys": [
             "prime_rns_sub",
             "prime_rns_sub_stack",
@@ -977,17 +976,17 @@
             "modulus_bits": 513,
             "table_push_script_bytes": 392,
             "table_cleanup_script_bytes": 153,
-            "non_table_script_bytes": 15083
+            "non_table_script_bytes": 15081
           },
           "includes": "fragment-with-memory: 392 bytes of selected per-coordinate table pushes, shortest-choice table or centered/plain binary-Horner queries, 153 bytes of destructive cleanup, and final return from altstack; excludes operand pushes, range checks, and final verification; witness fields cover only the serialized 150-item operand vector",
-          "script_bytes": 15628,
+          "script_bytes": 15626,
           "witness_bytes": 332,
           "witness_bytes_max": 391,
           "max_stack_items": 183,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 15628,
+          "per_use_script_bytes": 15626,
           "metric_keys": [
             "prime_rns_mul",
             "prime_rns_mul_stack",
@@ -1036,17 +1035,17 @@
             "target_modulus_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
             "table_push_script_bytes": 123,
             "table_cleanup_script_bytes": 60,
-            "non_table_script_bytes": 25594
+            "non_table_script_bytes": 25585
           },
           "includes": "fragment-with-memory: quotient/remainder/complement coordinate validation, remainder-bound equation, per-coordinate shortest-choice shared-table or centered/plain binary-Horner products, shortest generated modular constant chains, 75 modular-product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, global 256-bit bindings for all five vectors, terminal predicate, and all witness bytes except the 225 quotient/remainder/complement residue items for (N-1)^2",
-          "script_bytes": 25777,
+          "script_bytes": 25768,
           "witness_bytes": 477,
           "witness_bytes_max": null,
           "max_stack_items": 384,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 25777,
+          "per_use_script_bytes": 25768,
           "metric_keys": [
             "prime_rns_hinted_mod_mul",
             "prime_rns_hinted_mod_mul_witness",
@@ -1068,14 +1067,14 @@
             "routing_output_script_bytes": 378
           },
           "includes": "fragment-only: quotient/remainder/partial-complement coordinate validation, the >2^257 partial-complement equation, 42 exact signed-carry product equations, cleanup, and returned remainder; excludes operand pushes, operand coordinate checks, external coordinate and global 256-bit bindings, terminal predicate, and all witness bytes except the 144 quotient/remainder/partial-complement/carry items for (N-1)^2",
-          "script_bytes": 10952,
+          "script_bytes": 10950,
           "witness_bytes": 301,
           "witness_bytes_max": null,
           "max_stack_items": 231,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 10952,
+          "per_use_script_bytes": 10950,
           "metric_keys": [
             "prime_rns_carry_hinted_mod_mul",
             "prime_rns_carry_hinted_mod_mul_table_push",
@@ -1116,14 +1115,14 @@
             "reusable_value_routing_output_script_bytes": 94
           },
           "includes": "fragment-only: four 16-limb range and global-binding checks, fixed-target comparisons for lhs, rhs, and remainder, 47 four-vector canonical-residue derivations, 47 exact signed-carry modular-product equations, cleanup, and returned remainder limbs and residues; excludes input pushes, terminal predicate and output comparison, tapleaf and control-block serialization, and transaction context; witness bytes cover all 299 consumed limb and carry items for (N-1)^2",
-          "script_bytes": 51055,
+          "script_bytes": 51047,
           "witness_bytes": 868,
           "witness_bytes_max": null,
           "max_stack_items": 305,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 51055,
+          "per_use_script_bytes": 51047,
           "metric_keys": [
             "prime_rns_bound_carry_hinted_mod_mul",
             "prime_rns_bound_carry_hinted_mod_mul_witness",
@@ -1140,7 +1139,7 @@
             "certified_operand_vectors": 2,
             "residue_count": 46,
             "product_modulus_bits": 513,
-            "product_modulus_over_2_pow_512": 1.0186502082282759,
+            "product_modulus_over_2_pow_512": 1.018650208228276,
             "coordinate_hint_items": 3,
             "incremental_witness_item_count": 170,
             "quotient_and_remainder_limb_items": 32,
@@ -1158,14 +1157,14 @@
             "static_non_push_opcodes": 20799
           },
           "includes": "fragment-only: consumes two previously certified 46-residue secp256k1 field values, validates centered quotient/remainder limb ranges and remainder < N, binds q and r to all 46 canonical coordinates, checks 46 exact product relations, cleans up, and returns a reusable certified remainder vector; excludes operand-certification fragments, input pushes, multi-gate all-witness-at-entry scheduling, certificate duplication/reordering, terminal predicate and output comparison, tapleaf and control-block serialization, and transaction context; witness bytes cover only the 170 incremental q/r limb and carry items for (N-1)^2 and exclude both live certified operand vectors",
-          "script_bytes": 31281,
+          "script_bytes": 31278,
           "witness_bytes": 471,
           "witness_bytes_max": null,
           "max_stack_items": 267,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 31281,
+          "per_use_script_bytes": 31278,
           "metric_keys": [
             "prime_rns_composable_hinted_mod_mul",
             "prime_rns_composable_hinted_mod_mul_witness",
@@ -1192,14 +1191,14 @@
             "static_non_push_opcodes": 6168
           },
           "includes": "fragment-only: validates one hostile 16-limb value below the secp256k1 modulus, binds it to all 46 canonical residues, consumes the limbs and carries, and returns only a reusable certified residue vector; excludes the input push, terminal predicate, circuit-level witness routing, tapleaf and control-block serialization, and transaction context; witness bytes cover the 62 limb and carry items for N-1",
-          "script_bytes": 9835,
+          "script_bytes": 9832,
           "witness_bytes": 195,
           "witness_bytes_max": null,
           "max_stack_items": 72,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 9835,
+          "per_use_script_bytes": 9832,
           "metric_keys": [
             "prime_rns_composable_bind_value",
             "prime_rns_composable_bind_value_witness",
@@ -1213,14 +1212,14 @@
             "residue_count": 75
           },
           "includes": "fragment-only: preserves and range-checks one encoded value; excludes the value push and terminal predicate; witness fields cover only the serialized 75-item value vector",
-          "script_bytes": 621,
+          "script_bytes": 620,
           "witness_bytes": 167,
           "witness_bytes_max": 196,
           "max_stack_items": 78,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 621,
+          "per_use_script_bytes": 620,
           "metric_keys": [
             "prime_rns_verify",
             "prime_rns_verify_stack",
@@ -1246,7 +1245,7 @@
       "id": "commitment/four-way-hash-path-integer",
       "name": "Four-way mixed-hash integer path",
       "class": "commitment/integer",
-      "summary": "Authenticates base-4 digits with fixed-length SHA-256/RIPEMD-160 codewords and reconstructs a 1–31-bit integer.",
+      "summary": "Authenticates base-4 digits with fixed-length SHA-256/RIPEMD-160 codewords and reconstructs a 1\u201331-bit integer.",
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
@@ -1275,14 +1274,14 @@
             "preimage_bytes": 32
           },
           "includes": "fragment-only: verifier and base-4 integer reconstruction; witness includes serialized digits and preimage",
-          "script_bytes": 453,
+          "script_bytes": 438,
           "witness_bytes": 61,
           "witness_bytes_max": 61,
           "max_stack_items": 19,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 453,
+          "per_use_script_bytes": 438,
           "metric_keys": [
             "four_way_hash_path_integer_31",
             "four_way_hash_path_integer_witness_31",
@@ -1303,7 +1302,7 @@
       "id": "commitment/hash-path-integer",
       "name": "Mixed-hash integer path",
       "class": "commitment/integer",
-      "summary": "Authenticates a bit path with SHA-256/RIPEMD-160 branches, exposes a 20-byte digest that can seed an ordered later path, and can reconstruct a 1–31-bit integer.",
+      "summary": "Authenticates a bit path with SHA-256/RIPEMD-160 branches, exposes a 20-byte digest that can seed an ordered later path, and can reconstruct a 1\u201331-bit integer.",
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
@@ -1737,7 +1736,7 @@
             "table_cleanup_script_bytes": 166
           },
           "includes": "fragment-with-memory: numeric input-limb range validation, 353-byte packed lookup-table setup, sparse hashing, 166-byte cleanup, and digest restoration; excludes input encoding and output verification",
-          "script_bytes": 61207,
+          "script_bytes": 61204,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 527,
@@ -1786,7 +1785,7 @@
             "table_cleanup_script_bytes": 166
           },
           "includes": "fragment-with-memory: numeric input-limb range validation, 353-byte packed lookup-table setup, hashing, 166-byte cleanup, and digest restoration; excludes input encoding and output verification",
-          "script_bytes": 64099,
+          "script_bytes": 64095,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 591,
@@ -1880,7 +1879,7 @@
             ]
           },
           "includes": "fragment-with-memory: exact-count u4 input range validation, split 353-byte packed lookup-table setup, sparse length-specialized hashing, destructive 165-byte cleanup, and digest restoration; excludes input witness serialization and output verification",
-          "script_bytes": 59534,
+          "script_bytes": 59529,
           "witness_bytes": 111,
           "witness_bytes_max": 129,
           "max_stack_items": 527,
@@ -1998,14 +1997,14 @@
             "key_hex": "00000000000000000000000000000000"
           },
           "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
-          "script_bytes": 25515,
+          "script_bytes": 25388,
           "witness_bytes": 33,
           "witness_bytes_max": 65,
           "max_stack_items": 908,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": null,
-          "per_use_script_bytes": 25515,
+          "per_use_script_bytes": 25388,
           "metric_keys": [
             "aes128_encrypt",
             "aes128_witness_min",
@@ -2057,14 +2056,14 @@
             "key": 0
           },
           "includes": "fragment-with-memory: full encryption fragment; witness serializes plaintext nibbles",
-          "script_bytes": 7735,
+          "script_bytes": 7685,
           "witness_bytes": 17,
           "witness_bytes_max": 33,
           "max_stack_items": null,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": null,
-          "per_use_script_bytes": 7735,
+          "per_use_script_bytes": 7685,
           "metric_keys": [
             "prince_encrypt",
             "prince_witness_min",
@@ -2167,14 +2166,14 @@
             "preimage_bytes": 32
           },
           "includes": "fragment-only: locking verifier and serialized subset witness",
-          "script_bytes": 833,
+          "script_bytes": 809,
           "witness_bytes": 280,
           "witness_bytes_max": 280,
           "max_stack_items": null,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 833,
+          "per_use_script_bytes": 809,
           "metric_keys": [
             "hors_lock_n32_t8",
             "hors_witness_n32_t8"
@@ -2295,14 +2294,14 @@
             "balanced_vector_hash160_calls": 498
           },
           "includes": "fragment-only: 67 embedded endpoints, canonical bit checks, relaxed raw chain-item length, mixed-radix checksum verification, and 64 recovered message nibbles; script excludes a terminal consumer, witness is complete serialized zero-message data and witness maximum covers 20-byte signer nodes with every bit item one byte",
-          "script_bytes": 4327,
+          "script_bytes": 4325,
           "witness_bytes": 1680,
           "witness_bytes_max": 1942,
           "max_stack_items": 334,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 4327,
+          "per_use_script_bytes": 4325,
           "metric_keys": [
             "fast_wots32_bitwise_lock",
             "fast_wots32_bitwise_witness_zero",
@@ -2407,14 +2406,14 @@
             "balanced_vector_hash160_calls": 498
           },
           "includes": "fragment-only: 67 embedded endpoints, chain-value size checks, tapscript MINIMALIF digit bounds, checksum verification, and 64 recovered message nibbles; script excludes a terminal consumer, witness is complete serialized zero-message data",
-          "script_bytes": 5409,
+          "script_bytes": 5342,
           "witness_bytes": 1476,
           "witness_bytes_max": 1542,
           "max_stack_items": 137,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 5409,
+          "per_use_script_bytes": 5342,
           "metric_keys": [
             "fast_wots32_exact_lock",
             "fast_wots32_witness_zero",
@@ -2461,14 +2460,14 @@
             "balanced_vector_hash160_calls": 498
           },
           "includes": "fragment-only: 67 embedded endpoints, chain-value size checks, tapscript MINIMALIF digit bounds, fused checksum accumulation, and message cleanup; terminal truthy predicate excluded, witness is complete serialized zero-message data",
-          "script_bytes": 5477,
+          "script_bytes": 5408,
           "witness_bytes": 1476,
           "witness_bytes_max": 1542,
           "max_stack_items": 137,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 5477,
+          "per_use_script_bytes": 5408,
           "metric_keys": [
             "fast_wots32_clear_lock",
             "fast_wots32_witness_zero",
@@ -2503,10 +2502,10 @@
       "execution": "research-unlimited",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/bn254-fields.md",
-      "implementation": "src/curves/bn254/fields/mod.rs",
-      "documentation": "src/curves/bn254/fields/README.md",
+      "implementation": "src/fields/bn254/bigint29/mod.rs",
+      "documentation": "src/fields/bn254/bigint29/README.md",
       "tests": [
-        "curves::bn254::fields"
+        "fields::bn254::bigint29"
       ],
       "references": [
         "arkworks-algebra-0.5",
@@ -2533,14 +2532,14 @@
             "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
           "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both nine-limb operands",
-          "script_bytes": 415,
+          "script_bytes": 404,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 22,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 415,
+          "per_use_script_bytes": 404,
           "metric_keys": [
             "fq_add",
             "fq_add_stack"
@@ -2559,14 +2558,14 @@
             "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
           "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both nine-limb operands",
-          "script_bytes": 415,
+          "script_bytes": 404,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 22,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 415,
+          "per_use_script_bytes": 404,
           "metric_keys": [
             "fr_add",
             "fr_add_stack"
@@ -2656,14 +2655,14 @@
             "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
           "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 18-item operands",
-          "script_bytes": 846,
+          "script_bytes": 824,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 40,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 846,
+          "per_use_script_bytes": 824,
           "metric_keys": [
             "fq2_add",
             "fq2_add_stack"
@@ -2733,14 +2732,14 @@
             "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
           "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 54-item operands",
-          "script_bytes": 2538,
+          "script_bytes": 2472,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 112,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 2538,
+          "per_use_script_bytes": 2472,
           "metric_keys": [
             "fq6_add",
             "fq6_add_stack"
@@ -2810,14 +2809,14 @@
             "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
           "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 108-item operands",
-          "script_bytes": 5166,
+          "script_bytes": 5034,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": 220,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 5166,
+          "per_use_script_bytes": 5034,
           "metric_keys": [
             "fq12_add",
             "fq12_add_stack"
@@ -2919,14 +2918,14 @@
             "group": "G1"
           },
           "includes": "fragment-only: stack predicate; excludes point push and terminal clean-stack logic",
-          "script_bytes": 77,
+          "script_bytes": 59,
           "witness_bytes": null,
           "witness_bytes_max": null,
           "max_stack_items": null,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 77,
+          "per_use_script_bytes": 59,
           "metric_keys": [
             "g1_is_zero"
           ]

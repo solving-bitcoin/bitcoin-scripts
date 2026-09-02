@@ -16,8 +16,8 @@ operations and MSM are input-dependent and substantially larger.
 
 | Fragment | Script size |
 | --- | ---: |
-| `G1Affine::is_zero()` | <!-- metric:g1_is_zero -->77<!-- /metric:g1_is_zero --> bytes |
-| `G2Affine::is_zero_keep_element()` | <!-- metric:g2_is_zero -->260<!-- /metric:g2_is_zero --> bytes |
+| `G1Affine::is_zero()` | <!-- metric:g1_is_zero -->59<!-- /metric:g1_is_zero --> bytes |
+| `G2Affine::is_zero_keep_element()` | <!-- metric:g2_is_zero -->224<!-- /metric:g2_is_zero --> bytes |
 
 Maximum stack depth depends on the point operation and MSM batch. MSM tests use
 the no-stack-limit executor for oversized research compositions.

@@ -3,13 +3,7 @@
 use crate::support::script::*;
 
 use crate::arithmetic::u31::{u31_add, U31Config, U31_LOOKUP_STACK_LIMIT};
-
-/// The prime field with modulus `12,289`.
-pub struct F12289;
-
-impl U31Config for F12289 {
-    const MODULUS: u32 = 12_289;
-}
+use crate::fields::f12289::u31::F12289;
 
 fn radix_parameters(radix_bits: u32) -> (u32, u32, u32) {
     assert!(

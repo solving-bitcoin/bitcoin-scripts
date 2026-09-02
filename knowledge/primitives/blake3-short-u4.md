@@ -10,7 +10,7 @@ checked 32-byte, 4-bit-limb generator on the same
 
 ## Result
 
-The 32-byte direct-u4 compute fragment is 59,534 bytes, contains 41,135 static
+The 32-byte direct-u4 compute fragment is 59,529 bytes, contains 41,134 static
 non-push opcodes, and peaks at 527 combined stack items. It includes numeric
 input validation, 353 bytes of lookup-table setup, compression, 165 bytes of
 table cleanup, and digest restoration. Setup is split into 241 bytes of packed
@@ -18,7 +18,7 @@ depth/XOR memory before message staging and 112 bytes of shift/addition memory
 afterward. It excludes input serialization and the terminal digest predicate.
 
 The deterministic `00 01 ... 1f` helper composition adds 64 bytes of input
-pushes and 128 bytes of digest comparison, for 59,726 bytes total. Its canonical
+pushes and 128 bytes of digest comparison, for 59,721 bytes total. Its canonical
 64-item witness encoding would serialize to 111 bytes; the maximum over valid
 numeric nibbles is 129 bytes.
 
@@ -31,7 +31,7 @@ a peak of 644, so the selected result saves 8,440 bytes (12.42%) and 117 stack
 items. Relative to the preceding 60,866-byte checked direct-u4 frontier, fused
 table memory, delayed table introduction, peepholes, and rescheduled digit
 routing save 1,332 bytes and 16 stack items. The final generic 32-byte
-selected-limb fragment is 61,207 bytes; the direct layout and specialized digit
+selected-limb fragment is 61,204 bytes; the direct layout and specialized digit
 backend account for the remaining 1,673-byte compute reduction and halve the
 host-push fixture from 128 to 64 bytes.
 

@@ -21,7 +21,6 @@ use crate::{
 };
 
 pub mod bound;
-pub mod composable;
 
 /// Carry-optimized prime basis in stack-coordinate order.
 pub const MODULI: [u32; 42] = [
@@ -137,14 +136,16 @@ fn canonical_add_reduce(modulus: u32) -> Script {
             OP_DROP
         OP_ENDIF
     };
-    if hold_modulus.clone().compile().len() < compare_limit.clone().compile().len() {
+    if hold_modulus.clone().compile_with_policy().len()
+        < compare_limit.clone().compile_with_policy().len()
+    {
         hold_modulus
     } else {
         compare_limit
     }
 }
 
-fn exact_centered_multiplier_mul(modulus: u32) -> Script {
+pub(crate) fn exact_centered_multiplier_mul(modulus: u32) -> Script {
     let half = modulus / 2;
     let highest_power = 1u32 << (31 - half.leading_zeros());
     let powers = (0..32 - highest_power.leading_zeros())
@@ -242,10 +243,10 @@ fn exact_naf_mul(coefficient: i32) -> Script {
 // Every generated accumulator coefficient stays in this interval. With the
 // largest basis residue as input, the resulting Script number remains within
 // the four-byte arithmetic domain; the test below locks that bound down.
-const EXACT_CHAIN_BOUND: i32 = 1 << 16;
+pub(crate) const EXACT_CHAIN_BOUND: i32 = 1 << 16;
 
 #[derive(Clone, Copy, Debug)]
-enum ExactChainOp {
+pub(crate) enum ExactChainOp {
     Double,
     DoublePlusInput,
     DoubleMinusInput,
@@ -325,11 +326,11 @@ impl ExactChainOp {
     }
 }
 
-fn exact_chain_index(coefficient: i32) -> usize {
+pub(crate) fn exact_chain_index(coefficient: i32) -> usize {
     (coefficient + EXACT_CHAIN_BOUND) as usize
 }
 
-fn exact_chain_predecessors() -> &'static [Option<(i32, ExactChainOp)>] {
+pub(crate) fn exact_chain_predecessors() -> &'static [Option<(i32, ExactChainOp)>] {
     // Script generation reuses one byte-optimal path tree rooted at x. Edge
     // weights are the exact serialized opcode lengths of their transitions.
     static PREDECESSORS: OnceLock<Vec<Option<(i32, ExactChainOp)>>> = OnceLock::new();
@@ -363,7 +364,7 @@ fn exact_chain_predecessors() -> &'static [Option<(i32, ExactChainOp)>] {
     })
 }
 
-fn exact_chain_mul(coefficient: i32) -> Script {
+pub(crate) fn exact_chain_mul(coefficient: i32) -> Script {
     assert!(
         (-EXACT_CHAIN_BOUND..=EXACT_CHAIN_BOUND).contains(&coefficient),
         "exact multiplication coefficient exceeds the chain table"
@@ -409,7 +410,7 @@ fn exact_constant_mul(coefficient: i32) -> Script {
     let chain = exact_chain_mul(coefficient);
     [binary, naf, chain]
         .into_iter()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("constant multiplication has candidates")
 }
 
@@ -616,7 +617,9 @@ pub fn mul_mod_hinted_cost_breakdown(target_modulus: &BigUint) -> super::ScriptC
     super::ScriptCostBreakdown {
         table_push: 0,
         table_drop: 0,
-        computation: mul_mod_hinted(target_modulus, 0).compile().len(),
+        computation: mul_mod_hinted(target_modulus, 0)
+            .compile_with_policy()
+            .len(),
     }
 }
 
@@ -643,7 +646,10 @@ mod tests {
     #[test]
     fn exact_chain_operations_match_their_affine_transitions() {
         for operation in ExactChainOp::ALL {
-            assert_eq!(operation.script().compile().len(), operation.byte_len());
+            assert_eq!(
+                operation.script().compile_with_policy().len(),
+                operation.byte_len()
+            );
             for coefficient in [-257, -1, 0, 1, 257] {
                 let input = 1_234i64;
                 let next = operation.next(coefficient);
@@ -964,8 +970,8 @@ mod tests {
         let cost = mul_mod_hinted_cost_breakdown(&secp256k1_modulus());
         assert_eq!(cost.table_push, 0);
         assert_eq!(cost.table_drop, 0);
-        assert_eq!(cost.computation, 10_952);
-        assert_eq!(cost.total(), 10_952);
+        assert_eq!(cost.computation, 10_950);
+        assert_eq!(cost.total(), 10_950);
     }
 
     #[test]

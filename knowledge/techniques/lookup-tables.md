@@ -38,7 +38,7 @@ bits per input. Its locking-script boundary is `92 + 26*n` bytes: 61 bytes of
 setup, 31 bytes of cleanup, a 22-byte checked query, and four bytes of output
 restoration per nibble. The existing branch splitter is `43*n` on the same
 boundary, so the checked table wins from six inputs. For 32 nibbles the checked
-batch is 924 bytes versus 1,376, while peak combined stack grows from 130 to
+batch is 924 bytes versus 1,374, while peak combined stack grows from 130 to
 189 items.
 
 Unchecked lookup removes five bytes per query and crosses over at five inputs,

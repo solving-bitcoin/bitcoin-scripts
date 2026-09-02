@@ -7,17 +7,7 @@
 
 use crate::support::script::*;
 
-use crate::arithmetic::u31::{U31Config, U31_LOOKUP_STACK_LIMIT};
-
-/// The prime field with modulus `257`.
-///
-/// This small field is useful for lookup-table experiments and incomplete
-/// NTTs whose base cases are degree-four extensions.
-pub struct F257;
-
-impl U31Config for F257 {
-    const MODULUS: u32 = 257;
-}
+use crate::arithmetic::u31::U31_LOOKUP_STACK_LIMIT;
 
 /// Number of stack items occupied by the shared F257 log/exp memory.
 pub const LOG_MUL_TABLE_ITEMS: u32 = 385;
@@ -334,11 +324,17 @@ mod tests {
     #[test]
     fn lookup_tables_fit_beside_a_512_coefficient_state() {
         assert_eq!(
-            push_log_mul_tables().compile().instructions().count(),
+            push_log_mul_tables()
+                .compile_with_policy()
+                .instructions()
+                .count(),
             LOG_MUL_TABLE_ITEMS as usize
         );
         assert_eq!(
-            push_square_table().compile().instructions().count(),
+            push_square_table()
+                .compile_with_policy()
+                .instructions()
+                .count(),
             SQUARE_TABLE_ITEMS as usize
         );
 

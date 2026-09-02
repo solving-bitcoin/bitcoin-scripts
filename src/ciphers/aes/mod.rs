@@ -576,7 +576,10 @@ pub fn aes128_encrypt(key: [u8; 16]) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::{execution::execute_script, script::script};
+    use crate::support::{
+        execution::execute_script,
+        script::{script, ScriptCompilation},
+    };
 
     fn execute_vector(key: [u8; 16], plaintext: [u8; 16], ciphertext: [u8; 16]) -> usize {
         let plaintext = bytes_to_nibbles(plaintext);
@@ -654,8 +657,8 @@ mod tests {
         ];
         let ciphertext = aes128_encrypt_ref(key, plaintext);
         let max_stack = execute_vector(key, plaintext, ciphertext);
-        let size = aes128_encrypt(key).compile().len();
-        let zero_key_size = aes128_encrypt([0; 16]).compile().len();
+        let size = aes128_encrypt(key).compile_with_policy().len();
+        let zero_key_size = aes128_encrypt([0; 16]).compile_with_policy().len();
         let zero_stack = execute_vector(
             [0; 16],
             [0; 16],
@@ -667,7 +670,7 @@ mod tests {
         eprintln!(
             "AES-128 script size: {size} bytes ({zero_key_size} with zero key); max stack: {max_stack}/{zero_stack}"
         );
-        assert_eq!(zero_key_size, 25_515);
+        assert_eq!(zero_key_size, 25_388);
         assert_eq!(max_stack, 908);
         assert_eq!(zero_stack, 908);
     }

@@ -33,6 +33,8 @@ pub struct CostBreakdown {
     /// Bytes that drop every item of each selected table after its last query.
     pub table_drop: usize,
     /// Table-query or table-free field-arithmetic bytes.
+    /// This category also absorbs whole-script optimizer effects that cross
+    /// the independently measured fragment boundaries.
     pub arithmetic: usize,
     /// Operand parking/restoration and result-to-altstack bytes.
     pub routing_output: usize,
@@ -153,7 +155,7 @@ fn reusable_query(index: usize, selected: MulStrategy, offset: u32) -> Script {
 
 fn table_free_plan(modulus: u32, products: u32) -> CoordinatePlan {
     let core = compact_binary_horner_coordinate_mul(modulus);
-    let arithmetic = products as usize * core.clone().compile().len();
+    let arithmetic = products as usize * core.clone().compile_with_policy().len();
     CoordinatePlan {
         script: script! {
             for _ in 0..products {
@@ -178,11 +180,11 @@ fn table_plan(index: usize, selected: MulStrategy, products: u32) -> CoordinateP
     let queries = (0..products)
         .map(|product| reusable_query(index, selected, 2 * (products - product - 1)))
         .collect::<Vec<_>>();
-    let table_push = push_table_entries(&entries).compile().len();
-    let table_drop = drop_items(items).compile().len();
+    let table_push = push_table_entries(&entries).compile_with_policy().len();
+    let table_drop = drop_items(items).compile_with_policy().len();
     let arithmetic = queries
         .iter()
-        .map(|query| query.clone().compile().len())
+        .map(|query| query.clone().compile_with_policy().len())
         .sum();
     CoordinatePlan {
         script: script! {
@@ -240,7 +242,7 @@ fn coordinate_plan(index: usize, products: u32) -> CoordinatePlan {
                     }
                 },
                 cost: CostBreakdown {
-                    arithmetic: products as usize * query.compile().len(),
+                    arithmetic: products as usize * query.compile_with_policy().len(),
                     routing_output: products as usize,
                     ..CostBreakdown::default()
                 },
@@ -294,12 +296,17 @@ fn calculated_peak(products: u32, plans: &[CoordinatePlan]) -> u64 {
 /// Return the exact byte decomposition selected for `products` products.
 pub fn cost_breakdown(products: u32) -> CostBreakdown {
     validate_products(products);
-    plans(products)
-        .into_iter()
-        .fold(CostBreakdown::default(), |mut total, plan| {
-            total += plan.cost;
-            total
-        })
+    let mut total =
+        plans(products)
+            .into_iter()
+            .fold(CostBreakdown::default(), |mut total, plan| {
+                total += plan.cost;
+                total
+            });
+    let independent_total = total.total();
+    let final_script_bytes = mul(products, 0).compile_with_policy().len();
+    attribute_compilation_delta(&mut total.arithmetic, independent_total, final_script_bytes);
+    total
 }
 
 /// Return the moduli whose generated batch coordinates reuse a lookup table.
@@ -412,7 +419,7 @@ mod tests {
             assert_eq!(cost.routing_output, routing);
             assert_eq!(cost.table_coordinates, coordinates);
             assert_eq!(cost.total(), total);
-            assert_eq!(mul(products, 0).compile().len(), total);
+            assert_eq!(mul(products, 0).compile_with_policy().len(), total);
         }
     }
 

@@ -252,7 +252,7 @@ mod tests {
     use super::*;
     use crate::support::{execution::execute_script, script::script};
 
-    use super::super::M31;
+    use crate::fields::m31::u31::M31;
 
     struct TestField257;
 

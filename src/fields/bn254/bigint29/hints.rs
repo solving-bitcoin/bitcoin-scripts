@@ -1,8 +1,8 @@
 use crate::arithmetic::bigint::BigIntImpl;
 use crate::arithmetic::bigint::U256;
-use crate::curves::bn254::fields::fq::bigint_to_u32_limbs;
-use crate::curves::bn254::fields::fq::Fq;
-use crate::curves::bn254::fields::fr::Fr;
+use crate::fields::bn254::bigint29::fq::bigint_to_u32_limbs;
+use crate::fields::bn254::bigint29::fq::Fq;
+use crate::fields::bn254::bigint29::fr::Fr;
 use crate::support::script::*;
 use ark_ff::BigInt;
 

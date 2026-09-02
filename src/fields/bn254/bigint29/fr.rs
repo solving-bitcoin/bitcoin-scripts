@@ -3,7 +3,7 @@ use bitcoin_script::script;
 use num_bigint::{BigInt, BigUint};
 use num_traits::Num;
 
-use crate::curves::bn254::fields::fp254::Fp254Impl;
+use crate::fields::bn254::bigint29::fp254::Fp254Impl;
 use crate::support::script::Script;
 
 pub struct Fr;
@@ -44,8 +44,8 @@ impl Fr {
 
 #[cfg(test)]
 mod test {
-    use crate::curves::bn254::fields::fp254::Fp254Impl;
-    use crate::curves::bn254::fields::fr::Fr;
+    use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+    use crate::fields::bn254::bigint29::fr::Fr;
     use crate::support::execution::run;
     use crate::support::script::*;
     use ark_ff::AdditiveGroup;

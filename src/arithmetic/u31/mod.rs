@@ -26,20 +26,6 @@ pub trait U31Config {
     const MODULUS: u32;
 }
 
-/// The Mersenne prime field with modulus `2^31 - 1`.
-pub struct M31;
-
-impl U31Config for M31 {
-    const MODULUS: u32 = (1 << 31) - 1;
-}
-
-/// The BabyBear field with modulus `15 * 2^27 + 1`.
-pub struct BabyBear;
-
-impl U31Config for BabyBear {
-    const MODULUS: u32 = 15 * (1 << 27) + 1;
-}
-
 /// Convert canonical `x` into the negative representative `x - p`.
 pub fn u31_to_v31<C: U31Config>() -> Script {
     script! {
@@ -397,7 +383,7 @@ fn u31_mul_by_signed_constant<C: U31Config>(constant: u32, negative: bool) -> Sc
 
     // Keep the same raw-fragment behavior as the upstream generator while
     // returning this repository's StructuredScript type.
-    let compiled = script! { { output } OP_DROP }.compile();
+    let compiled = script! { { output } OP_DROP }.compile_with_policy();
     Script::new("u31 multiplication by constant")
         .push_script(ScriptBuf::from_bytes(compiled.to_bytes()))
 }
@@ -431,7 +417,9 @@ pub fn u31_mul_by_constant_centered<C: U31Config>(constant: u32) -> Script {
             let positive = u31_mul_by_signed_constant::<C>(value, false);
             let negative = u31_mul_by_signed_constant::<C>(C::MODULUS - value, true);
 
-            if negative.clone().compile().len() < positive.clone().compile().len() {
+            if negative.clone().compile_with_policy().len()
+                < positive.clone().compile_with_policy().len()
+            {
                 negative
             } else {
                 positive
@@ -445,6 +433,10 @@ mod tests {
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     use super::*;
+    use crate::fields::{
+        babybear::{babybear4::BabyBear4, u31::BabyBear},
+        m31::{qm31::QM31, u31::M31},
+    };
     use crate::support::{execution::execute_script, script::script};
 
     struct TestField257;
@@ -620,12 +612,16 @@ mod tests {
     fn test_small_field_multiplication_metrics_are_stable() {
         let constant = 173;
         let baseline = (1..TestField257::MODULUS)
-            .map(|value| u31_mul_by_constant::<TestField257>(value).compile().len())
+            .map(|value| {
+                u31_mul_by_constant::<TestField257>(value)
+                    .compile_with_policy()
+                    .len()
+            })
             .sum::<usize>();
         let centered = (1..TestField257::MODULUS)
             .map(|value| {
                 u31_mul_by_constant_centered::<TestField257>(value)
-                    .compile()
+                    .compile_with_policy()
                     .len()
             })
             .sum::<usize>();
@@ -635,37 +631,37 @@ mod tests {
         );
 
         let fragments = [
-            ("test257_dynamic", u31_mul::<TestField257>(), 1_238),
-            ("test257_compact", u31_mul_compact::<TestField257>(), 345),
+            ("test257_dynamic", u31_mul::<TestField257>(), 1_208),
+            ("test257_compact", u31_mul_compact::<TestField257>(), 337),
             (
                 "test257_constant",
                 u31_mul_by_constant::<TestField257>(constant),
-                167,
+                162,
             ),
             (
                 "test257_centered_constant",
                 u31_mul_by_constant_centered::<TestField257>(constant),
-                132,
+                129,
             ),
             (
                 "test257_full_lookup_8",
                 u31_mul_by_constant_lookup_batch::<TestField257>(constant, 8),
-                809,
+                808,
             ),
             (
                 "test257_half_lookup_8",
                 u31_mul_by_constant_half_lookup_batch::<TestField257>(constant, 8),
-                573,
+                571,
             ),
             (
                 "test12289_compact",
                 u31_mul_compact::<TestField12289>(),
-                517,
+                504,
             ),
         ];
         for (name, fragment, expected_size) in fragments {
             assert_eq!(
-                fragment.compile().len(),
+                fragment.compile_with_policy().len(),
                 expected_size,
                 "{name} size changed"
             );
@@ -673,25 +669,25 @@ mod tests {
 
         assert_eq!(
             u31_push_mul_by_constant_table::<TestField257>(constant)
-                .compile()
+                .compile_with_policy()
                 .len(),
             626
         );
         assert_eq!(
             u31_drop_mul_by_constant_table::<TestField257>()
-                .compile()
+                .compile_with_policy()
                 .len(),
             129
         );
         assert_eq!(
             u31_push_half_mul_by_constant_table::<TestField257>(constant)
-                .compile()
+                .compile_with_policy()
                 .len(),
             248
         );
         assert_eq!(
             u31_drop_half_mul_by_constant_table::<TestField257>()
-                .compile()
+                .compile_with_policy()
                 .len(),
             65
         );
@@ -1024,27 +1020,27 @@ mod tests {
         let fragments = [
             ("add", u31_add::<M31>(), 18),
             ("sub", u31_sub::<M31>(), 12),
-            ("mul", u31_mul::<M31>(), 1400),
+            ("mul", u31_mul::<M31>(), 1_370),
             (
                 "mul_constant",
                 u31_mul_by_constant::<M31>(representative_constant),
-                736,
+                725,
             ),
-            ("qm31_add", u31ext_add::<QM31>(), 84),
-            ("qm31_sub", u31ext_sub::<QM31>(), 63),
-            ("qm31_mul", u31ext_mul::<QM31>(), 13_186),
-            ("babybear4_mul", u31ext_mul::<BabyBear4>(), 13_441),
-            ("qm31_mul_base", u31ext_mul_u31::<QM31>(), 4_642),
+            ("qm31_add", u31ext_add::<QM31>(), 83),
+            ("qm31_sub", u31ext_sub::<QM31>(), 62),
+            ("qm31_mul", u31ext_mul::<QM31>(), 12_901),
+            ("babybear4_mul", u31ext_mul::<BabyBear4>(), 13_158),
+            ("qm31_mul_base", u31ext_mul_u31::<QM31>(), 4_612),
             (
                 "qm31_mul_constant",
                 u31ext_mul_u31_by_constant::<QM31>(representative_constant),
-                2_950,
+                2_906,
             ),
         ];
 
         for (name, fragment, expected_size) in fragments {
             assert_eq!(
-                fragment.compile().len(),
+                fragment.compile_with_policy().len(),
                 expected_size,
                 "{name} size changed"
             );

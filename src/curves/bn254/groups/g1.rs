@@ -1,7 +1,7 @@
-use crate::curves::bn254::fields::fp254::Fp254Impl;
-use crate::curves::bn254::fields::fq::Fq;
-use crate::curves::bn254::fields::fq2::Fq2;
-use crate::curves::bn254::hints::Hint;
+use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+use crate::fields::bn254::bigint29::fq::Fq;
+use crate::fields::bn254::bigint29::fq2::Fq2;
+use crate::fields::bn254::bigint29::hints::Hint;
 use crate::support::script::{script, Script};
 use ark_ec::AffineRepr;
 use ark_ff::{AdditiveGroup, Field};
@@ -602,10 +602,10 @@ pub fn hinted_from_eval_points(p: ark_bn254::G1Affine) -> (Script, Vec<Hint>) {
 
 #[cfg(test)]
 mod test {
-    use crate::curves::bn254::fields::fp254::Fp254Impl;
-    use crate::curves::bn254::fields::fq::Fq;
-    use crate::curves::bn254::fields::fq2::Fq2;
     use crate::curves::bn254::groups::g1::G1Affine;
+    use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+    use crate::fields::bn254::bigint29::fq::Fq;
+    use crate::fields::bn254::bigint29::fq2::Fq2;
 
     use super::*;
     use crate::support::{

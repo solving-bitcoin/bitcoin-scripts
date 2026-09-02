@@ -8,7 +8,7 @@ addition, subtraction, and multiplication with lookup tables.
 - **Evidence:** locally reproduced with boundary, random, and exhaustive table
   checks.
 - **Representative basis:** `[4, 9, 25, 7, 11]`, product 69,300.
-- **Representative results:** add 219 bytes, subtract 221, multiply 1,564 with
+- **Representative results:** add 216 bytes, subtract 219, multiply 1,561 with
   a 903-item peak.
 - **Tradeoff:** multiplication is close to the consensus stack ceiling and uses
   an asymmetric indexed-row/ordinary operand encoding.

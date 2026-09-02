@@ -22,7 +22,7 @@ APIs but requires strict one-time key management and can make state transport
 witness-heavy.
 
 The Fast Winternitz path makes the transport boundary more explicit. Numeric
-profiles use 134 digit/chain items; the 4,327-byte bitwise recovery profile uses
+profiles use 134 digit/chain items; the 4,325-byte bitwise recovery profile uses
 333 items, peaks at 334, and returns the same 64 high/low nibbles. Its canonical
 bits and the exact verifier depend on tapscript `MINIMALIF`. The 4,208-byte
 terminal profile clears the message when transport is unnecessary. The

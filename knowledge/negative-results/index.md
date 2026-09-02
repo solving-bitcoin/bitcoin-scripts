@@ -81,9 +81,9 @@ inside its fragment. It range-checks four shared 16-limb values, derives every
 canonical coordinate through exact binding carries, proves `lhs`, `rhs`, and
 `r` below the target, and only then checks the product relation over a 513-bit
 basis. It therefore rejects detached coordinate representatives and needs no
-remainder complement. That standalone work costs 51,055 script bytes with an
+remainder complement. That standalone work costs 51,047 script bytes with an
 868-byte, 299-item data witness and a strict 305-item peak. This does not erase
-the counterexamples above: they still apply to the smaller 10,952-byte
+the counterexamples above: they still apply to the smaller 10,950-byte
 coordinate-only API and any equivalent verifier that omits global binding.
 
 ## NR-009: Square tables and no-hint radix-4 lose to binary carry arithmetic
@@ -104,7 +104,7 @@ that square tables or wider radices are universally inferior.
 ## NR-010: Two no-carry modular proofs do not amortize their tables
 
 After binary-Horner endpoint optimization, one 75-prime no-carry secp256k1
-modular-product verifier is 25,777 bytes. It contains only 123 bytes of table
+modular-product verifier is 25,768 bytes. It contains only 123 bytes of table
 pushes and 60 bytes of cleanup. A global two-proof strategy search selected
 shared tables for 25 coordinates and had an ideal zero-relayout lower bound of
 50,657 bytes, 897 below two independent fragments.
@@ -112,7 +112,7 @@ shared tables for 25 coordinates and had an ideal zero-relayout lower bound of
 The executable proof-major, coordinate-lockstep prototype instead measured
 52,048 locking-script bytes, 955 serialized hint-witness bytes, and a strict
 753-item peak. Offset-aware table queries and proof-to-coordinate routing added
-1,391 bytes, making it 494 bytes larger than the independent 51,554-byte
+1,391 bytes, making it 512 bytes larger than the independent 51,536-byte
 locking scripts. Three proofs cannot enter this layout because their five
 75-coordinate input vectors require 1,125 items before any transient. This is
 a `locally-reproduced` negative result for the current layout, not a general
@@ -126,20 +126,20 @@ all four values produced roughly 623–647 kB of aggregate generated binding
 script across the tested layouts. A tighter 34-prime mixed-radix construction
 reduced the complete modular-product verifier to 238,885 bytes, but remained
 well above both the former 88,225-byte exact-dot verifier and the current
-51,055-byte, 47-prime verifier.
+51,047-byte, 47-prime verifier.
 
 The later capped-basis search also rejected two closer alternatives. Its best
 centered mixed-radix layout was estimated at 52,352 intrinsic bytes before
 range validation and routing, or more than approximately 53.5 kB as a complete
 standalone fragment. An unsigned base-`2^15` hybrid was 53,517 intrinsic bytes
-before range validation and routing. Both already exceed the retained 51,055-
+before range validation and routing. Both already exceed the retained 51,047-
 byte standalone verifier before their missing boundary work is added.
 
 For the composable profile, a direct fused-`qN` construction derived each
 `q*N mod p_i` term from the quotient limbs inside the product relation, using
 grouped equal/opposite coefficients plus joint-NAF and common-factor choices.
 Its best executable scratch result was 31,953 bytes, 672 bytes larger than the
-retained 31,281-byte separate quotient-binding gate. Eliminating the explicit
+retained 31,278-byte separate quotient-binding gate. Eliminating the explicit
 q binding therefore reduced witness structure but did not minimize locking
 script bytes for the searched bases.
 
@@ -147,7 +147,7 @@ The discarded generators are not retained as public deterministic fixtures.
 The early Horner/mixed-radix measurements, capped centered/unsigned estimates,
 and fused-`qN` scratch execution are therefore recorded as `inspected`
 design-search evidence rather than cataloged `locally-reproduced`
-configurations. The retained 51,055-byte standalone and 31,281-byte composable
+configurations. The retained 51,047-byte standalone and 31,278-byte composable
 profiles are `locally-reproduced` by source, tests, and checked metrics. These
 comparisons show domination for the tested bases, representations, and stack
 layouts; they do not establish global optimality of centered limbs, explicit q
@@ -379,7 +379,7 @@ BLAKE3 implementation, and an exhaustive sum test covers table indices 0
 through 47. The rejected unadjusted form and retained correction are therefore
 `locally-reproduced` for this generator. Subsequent XOR/modulo fusion, delayed
 table introduction, peepholes, and independent-digit scheduling reduce the
-combined frontier to 59,534 bytes; the 61,074-byte figure remains the
+combined frontier to 59,529 bytes; the 61,074-byte figure remains the
 like-for-like measurement of the addition change itself.
 
 ## NR-021: Higher Winternitz radices lose locking-script bytes
@@ -408,8 +408,8 @@ All five paid 1,649 bytes to push and 256 bytes to drop their lookup memory.
 The closest asymmetric candidate also needed 111 incremental hint items (113
 serialized bytes for its sparse `(p-1)^2` witness), compared with 67 items and
 94 bytes for the retained ordinary input. A later asymmetric radix-512 split
-reduced the production ordinary gate to 20,524 bytes at a 757-item peak; the
-factor-16 encoded profile is 20,501 bytes at a 719-item peak. Both retain the
+reduced the production ordinary gate to 20,503 bytes at a 757-item peak; the
+factor-16 encoded profile is 20,450 bytes at a 719-item peak. Both retain the
 1,795-byte table lifecycle.
 
 A historical separate 57-slot destructive recombination illustrates why
@@ -452,18 +452,18 @@ added 176 bytes of recombination and 8 bytes of cleanup, a net 67-byte loss.
 A one-layer radix-256 design measured 24,995 bytes. A centered 32-digit
 radix-256 recursive product with the secp256k1 monic fold measured 24,211 bytes;
 even the impossible lower bound obtained by deleting all 2,261 routing bytes
-would have remained 1,426 bytes above the then-retained 20,524-byte gate.
+would have remained 1,426 bytes above the then-retained 20,503-byte gate.
 
 A direct one-pass factor-16 fold looked attractive because
 `16*512^28 = p + 32*512^3 + 977`, but its honest boundary residual reached
 68,719,492,368 and therefore cannot be consumed by four-byte ScriptNum numeric
 opcodes. The retained factor-16 construction folds the degree-28..31 tail a
 second time, recodes 977 as `-47 + 2*512`, and pipelines shared coefficient
-multiples. It measures 20,501 bytes with a 719-item peak and does not inherit
+multiples. It measures 20,450 bytes with a 719-item peak and does not inherit
 the oversized residual.
 
 These scratch variants are `inspected` because their temporary generators are
-not retained as repository fixtures. The 20,524-byte ordinary and 20,501-byte
+not retained as repository fixtures. The 20,503-byte ordinary and 20,450-byte
 factor-16 endpoints are `locally-reproduced` production configurations. The
 factor-16 endpoint is not an ordinary-domain drop-in: it requires stored
 `E(x)=x/16 mod p` values, so omitted conversions can reverse its 23-byte

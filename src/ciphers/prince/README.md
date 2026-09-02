@@ -19,7 +19,7 @@ nibbles; it varies only with the number of zero nibbles.
 
 | Fragment | Script size |
 | --- | ---: |
-| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->7735<!-- /metric:prince_encrypt --> bytes |
+| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->7685<!-- /metric:prince_encrypt --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:prince_witness_min -->17<!-- /metric:prince_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:prince_witness_max -->33<!-- /metric:prince_witness_max --> bytes |
 

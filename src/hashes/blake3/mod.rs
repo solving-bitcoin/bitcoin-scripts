@@ -18,6 +18,7 @@ use crate::arithmetic::bigint::U256;
 use crate::hashes::blake3::utils::{
     compress, compress_short_digits, get_flags_for_block, DigitWord, TablesVars,
 };
+use crate::support::script::ScriptCompilation;
 
 const SHORT_32_SEMANTIC_TO_PHYSICAL_WORD: [usize; 8] = [6, 0, 5, 2, 1, 7, 4, 3];
 const SHORT_32_PHYSICAL_TO_SEMANTIC_WORD: [usize; 8] = [1, 4, 3, 7, 6, 2, 0, 5];
@@ -433,8 +434,9 @@ pub fn blake3_compute_script_with_limb(message_len: usize, limb_len: u8) -> Scri
     let use_full_tables = true;
     let message_len = message_len as u32;
     blake3(&mut stack, message_len, true, use_full_tables, limb_len);
-    Script::new("optimized BLAKE3")
-        .push_script(optimize_to_fixed_point(stack.get_script().compile()))
+    Script::new("optimized BLAKE3").push_script(optimize_to_fixed_point(
+        stack.get_script().compile_with_policy(),
+    ))
 }
 
 pub fn blake3_compute_script(message_len: usize) -> Script {
@@ -644,8 +646,9 @@ pub fn blake3_short_compute_script(message_len: usize) -> Script {
 
     let mut stack = StackTracker::new();
     blake3_short(&mut stack, message_len as u32);
-    Script::new("optimized short BLAKE3")
-        .push_script(optimize_to_fixed_point(stack.get_script().compile()))
+    Script::new("optimized short BLAKE3").push_script(optimize_to_fixed_point(
+        stack.get_script().compile_with_policy(),
+    ))
 }
 
 pub fn blake3_verify_output_script(expected_output: [u8; 32]) -> Script {
@@ -753,28 +756,31 @@ mod tests {
                 { 3 } OP_PICK { 3 } OP_PICK
                 OP_DUP { 2 } OP_PICK
             }
-            .compile(),
+            .compile_with_policy(),
         );
-        assert_eq!(once, script! { OP_2OVER OP_2DUP OP_SWAP }.compile());
+        assert_eq!(
+            once,
+            script! { OP_2OVER OP_2DUP OP_SWAP }.compile_with_policy()
+        );
         assert_eq!(optimize_stack_identities(once.clone()), once);
 
-        let exact32 = blake3_short_compute_script(32).compile();
+        let exact32 = blake3_short_compute_script(32).compile_with_policy();
         assert_eq!(optimize_to_fixed_point(exact32.clone()), exact32);
     }
 
     fn verify_blake_output_with_limbs(message: &[u8], expected_hash: [u8; 32], limb_lens: &[u8]) {
         for limb_len in limb_lens.iter().copied() {
             let mut bytes = blake3_push_message_script_with_limb(message, limb_len)
-                .compile()
+                .compile_with_policy()
                 .to_bytes();
             bytes.extend(
                 blake3_compute_script_with_limb(message.len(), limb_len)
-                    .compile()
+                    .compile_with_policy()
                     .to_bytes(),
             );
             bytes.extend(
                 blake3_verify_output_script(expected_hash)
-                    .compile()
+                    .compile_with_policy()
                     .to_bytes(),
             );
             let script = ScriptBuf::from_bytes(bytes);
@@ -789,16 +795,16 @@ mod tests {
     ) {
         assert_eq!(messages.len(), expected_hashes.len());
         for limb_len in limb_lens.iter().copied() {
-            let compute = blake3_compute_script_with_limb(LEN, limb_len).compile();
+            let compute = blake3_compute_script_with_limb(LEN, limb_len).compile_with_policy();
             for (i, message) in messages.iter().enumerate() {
                 let expected_hash = expected_hashes[i];
                 let mut bytes = blake3_push_message_script_with_limb(message, limb_len)
-                    .compile()
+                    .compile_with_policy()
                     .to_bytes();
                 bytes.extend_from_slice(compute.as_bytes());
                 bytes.extend(
                     blake3_verify_output_script(expected_hash)
-                        .compile()
+                        .compile_with_policy()
                         .to_bytes(),
                 );
                 let script = ScriptBuf::from_bytes(bytes);
@@ -928,11 +934,11 @@ mod tests {
     #[test]
     fn test_compute_script_is_optimizer_fixed_point() {
         for message_len in [64, 1024] {
-            let script = blake3_compute_script_with_limb(message_len, 29).compile();
+            let script = blake3_compute_script_with_limb(message_len, 29).compile_with_policy();
             assert_eq!(optimize_to_fixed_point(script.clone()), script);
         }
 
-        let short = blake3_short_compute_script(32).compile();
+        let short = blake3_short_compute_script(32).compile_with_policy();
         assert_eq!(optimize_to_fixed_point(short.clone()), short);
     }
 

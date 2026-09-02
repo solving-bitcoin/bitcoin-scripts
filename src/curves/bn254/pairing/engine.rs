@@ -1,11 +1,11 @@
 #![allow(non_snake_case)]
-use crate::curves::bn254::fields::fp254::Fp254Impl;
-use crate::curves::bn254::fields::fq::Fq;
-use crate::curves::bn254::fields::fq12::Fq12;
-use crate::curves::bn254::fields::fq2::Fq2;
 use crate::curves::bn254::groups::g2::*;
-use crate::curves::bn254::hints::Hint;
 use crate::curves::bn254::pairing::coefficients::G2Prepared;
+use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+use crate::fields::bn254::bigint29::fq::Fq;
+use crate::fields::bn254::bigint29::fq12::Fq12;
+use crate::fields::bn254::bigint29::fq2::Fq2;
+use crate::fields::bn254::bigint29::hints::Hint;
 use crate::support::script::*;
 use ark_ec::bn::BnConfig;
 use ark_ff::{AdditiveGroup, Field};
@@ -724,13 +724,13 @@ impl Pairing {
 
 #[cfg(test)]
 mod test {
-    use crate::curves::bn254::fields::fp254::Fp254Impl;
-    use crate::curves::bn254::fields::fq::Fq;
-    use crate::curves::bn254::fields::fq12::Fq12;
-    use crate::curves::bn254::fields::fq2::Fq2;
     use crate::curves::bn254::groups::g1::hinted_from_eval_point;
     use crate::curves::bn254::pairing::coefficients::{AffinePairing, BnAffinePairing, G2Prepared};
     use crate::curves::bn254::pairing::Pairing;
+    use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+    use crate::fields::bn254::bigint29::fq::Fq;
+    use crate::fields::bn254::bigint29::fq12::Fq12;
+    use crate::fields::bn254::bigint29::fq2::Fq2;
     use crate::support::{execution::execute_script_without_stack_limit, script::*};
 
     use ark_ff::Field;

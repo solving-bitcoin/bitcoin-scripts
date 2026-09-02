@@ -433,7 +433,8 @@ fn reduce_projective_sum(half: u32) -> Script {
             OP_FROMALTSTACK OP_NOT OP_TOALTSTACK
         OP_ENDIF
     };
-    if threshold.clone().compile().len() < held_half.clone().compile().len() {
+    if threshold.clone().compile_with_policy().len() < held_half.clone().compile_with_policy().len()
+    {
         threshold
     } else {
         held_half
@@ -615,7 +616,9 @@ fn selected_coordinate_mul(index: usize) -> (Script, u32, u64) {
                 { compact_binary_horner_coordinate_mul(modulus) }
                 OP_TOALTSTACK
             };
-            if table_free.clone().compile().len() < table.clone().compile().len() {
+            if table_free.clone().compile_with_policy().len()
+                < table.clone().compile_with_policy().len()
+            {
                 (table_free, 0, 4)
             } else {
                 (table, table_items(modulus, strategy), 2)
@@ -635,7 +638,9 @@ fn selected_coordinate_mul(index: usize) -> (Script, u32, u64) {
                 { compact_binary_horner_coordinate_mul(modulus) }
                 OP_TOALTSTACK
             };
-            if table_free.clone().compile().len() < table.clone().compile().len() {
+            if table_free.clone().compile_with_policy().len()
+                < table.clone().compile_with_policy().len()
+            {
                 (table_free, 0, 4)
             } else {
                 (table, table_items(modulus, strategy), 4)
@@ -695,8 +700,10 @@ fn selected_mul_table_bytes(index: usize) -> (usize, usize) {
         MulStrategy::Binary | MulStrategy::Ternary => unreachable!(),
     };
     (
-        push_table_entries(&entries).compile().len(),
-        drop_items(cleanup_items(modulus, selected)).compile().len(),
+        push_table_entries(&entries).compile_with_policy().len(),
+        drop_items(cleanup_items(modulus, selected))
+            .compile_with_policy()
+            .len(),
     )
 }
 
@@ -707,7 +714,7 @@ pub fn mul_cost_breakdown() -> ScriptCostBreakdown {
         let coordinate = selected_mul_table_bytes(index);
         (total.0 + coordinate.0, total.1 + coordinate.1)
     });
-    let total = mul(0).compile().len() + from_altstack().compile().len();
+    let total = mul(0).compile_with_policy().len() + from_altstack().compile_with_policy().len();
     ScriptCostBreakdown {
         table_push,
         table_drop,
@@ -730,7 +737,9 @@ fn canonical_add_reduce(modulus: u32) -> Script {
             OP_DROP
         OP_ENDIF
     };
-    if hold_modulus.clone().compile().len() < compare_limit.clone().compile().len() {
+    if hold_modulus.clone().compile_with_policy().len()
+        < compare_limit.clone().compile_with_policy().len()
+    {
         hold_modulus
     } else {
         compare_limit
@@ -949,7 +958,7 @@ fn mul_by_constant_modular_chain(constant: u32, modulus: u32) -> Script {
     let mut predecessors = vec![None; modulus as usize];
     let mut frontier = BinaryHeap::new();
     let operations = ModularChainOp::ALL.map(|operation| {
-        let byte_len = operation.script(modulus).compile().len();
+        let byte_len = operation.script(modulus).compile_with_policy().len();
         (operation, byte_len)
     });
     distances[1] = 0;
@@ -1096,7 +1105,7 @@ fn mul_by_constant_mod(constant: u32, modulus: u32) -> Script {
     ];
     candidates
         .into_iter()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("constant multiplication has candidates")
 }
 
@@ -1208,7 +1217,7 @@ fn compact_binary_horner_coordinate_mul(modulus: u32) -> Script {
         centered_binary_horner_coordinate_mul(modulus),
     ]
     .into_iter()
-    .min_by_key(|candidate| candidate.clone().compile().len())
+    .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
     .expect("binary coordinate multiplication has candidates")
 }
 
@@ -1303,8 +1312,11 @@ fn hinted_coordinate_table_bytes(index: usize, target_residue: u32) -> (usize, u
         OP_TOALTSTACK
         { mul_by_constant_mod(target_residue, modulus) }
     };
-    if shared_table.compile().len() <= table_free.compile().len() {
-        (table_push.compile().len(), table_drop.compile().len())
+    if shared_table.compile_with_policy().len() <= table_free.compile_with_policy().len() {
+        (
+            table_push.compile_with_policy().len(),
+            table_drop.compile_with_policy().len(),
+        )
     } else {
         (0, 0)
     }
@@ -1451,7 +1463,7 @@ pub fn mul_mod_hinted(target_modulus: &BigUint, preserved_items: u32) -> Script 
                     };
                     [shared_table, table_free]
                         .into_iter()
-                        .min_by_key(|candidate| candidate.clone().compile().len())
+                        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
                         .expect("hinted coordinate has candidates")
                 }
                 strategy @ (MulStrategy::ProjectiveCanonical | MulStrategy::ProjectiveCentered) => {
@@ -1481,7 +1493,7 @@ pub fn mul_mod_hinted(target_modulus: &BigUint, preserved_items: u32) -> Script 
                     };
                     [shared_table, table_free]
                         .into_iter()
-                        .min_by_key(|candidate| candidate.clone().compile().len())
+                        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
                         .expect("hinted coordinate has candidates")
                 }
             }
@@ -1512,7 +1524,9 @@ pub fn mul_mod_hinted_cost_breakdown(target_modulus: &BigUint) -> ScriptCostBrea
                 let coordinate = hinted_coordinate_table_bytes(index, residue);
                 (total.0 + coordinate.0, total.1 + coordinate.1)
             });
-    let total = mul_mod_hinted(target_modulus, 0).compile().len();
+    let total = mul_mod_hinted(target_modulus, 0)
+        .compile_with_policy()
+        .len();
     ScriptCostBreakdown {
         table_push,
         table_drop,
@@ -1658,7 +1672,9 @@ fn centered_reduce(modulus: u32) -> Script {
             OP_ADD
         OP_ENDIF
     };
-    if absolute_bound.clone().compile().len() < two_bounds.clone().compile().len() {
+    if absolute_bound.clone().compile_with_policy().len()
+        < two_bounds.clone().compile_with_policy().len()
+    {
         absolute_bound
     } else {
         two_bounds
@@ -2480,7 +2496,7 @@ mod tests {
             ScriptCostBreakdown {
                 table_push: 392,
                 table_drop: 153,
-                computation: 15_083,
+                computation: 15_081,
             }
         );
 
@@ -2490,7 +2506,7 @@ mod tests {
             ScriptCostBreakdown {
                 table_push: 123,
                 table_drop: 60,
-                computation: 25_594,
+                computation: 25_585,
             }
         );
     }

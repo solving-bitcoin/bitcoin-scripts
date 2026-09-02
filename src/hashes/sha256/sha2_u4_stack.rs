@@ -729,6 +729,7 @@ mod tests {
     use super::*;
     use crate::arithmetic::u4::stack::u4_drop;
     use crate::support::execution::execute_script;
+    use crate::support::script::ScriptCompilation;
     use bitcoin::hex::{DisplayHex, FromHex};
     use bitcoin_script::Script as StructuredScript;
     use bitcoin_script_stack::stack::{script, Script, StackTracker};
@@ -813,7 +814,7 @@ mod tests {
         assert!(res.success);
         let s = stack.get_script();
         println!("{}", s.len());
-        let res = execute_script(StructuredScript::new("").push_script(s.compile()));
+        let res = execute_script(StructuredScript::new("").push_script(s.compile_with_policy()));
         assert!(res.success);
     }
     #[test]
@@ -884,7 +885,8 @@ mod tests {
             OP_TRUE
         };
 
-        let res = execute_script(StructuredScript::new("").push_script(script.compile()));
+        let res =
+            execute_script(StructuredScript::new("").push_script(script.compile_with_policy()));
         assert!(res.success);
     }
 
@@ -911,7 +913,8 @@ mod tests {
                 OP_TRUE
             };
 
-            let res = execute_script(StructuredScript::new("").push_script(script.compile()));
+            let res =
+                execute_script(StructuredScript::new("").push_script(script.compile_with_policy()));
             assert!(res.success);
         }
     }
@@ -966,7 +969,8 @@ mod tests {
 
 
         };
-        let res = execute_script(StructuredScript::new("").push_script(script.compile()));
+        let res =
+            execute_script(StructuredScript::new("").push_script(script.compile_with_policy()));
         assert!(res.success);
     }
 }

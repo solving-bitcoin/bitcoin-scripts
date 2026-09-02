@@ -56,22 +56,26 @@ digest comparison.
 | Configuration | Compute script |
 | --- | ---: |
 | Empty message, 29-bit API | <!-- metric:blake3_empty_limb29 -->64<!-- /metric:blake3_empty_limb29 --> bytes |
-| 1 byte, direct checked u4 | <!-- metric:blake3_short_1 -->56131<!-- /metric:blake3_short_1 --> bytes |
-| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->59534<!-- /metric:blake3_short_32 --> bytes |
-| 32 bytes, selected 4-bit limbs | <!-- metric:blake3_32_limb4 -->61207<!-- /metric:blake3_32_limb4 --> bytes |
-| 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64099<!-- /metric:blake3_64_limb4 --> bytes |
+| 1 byte, direct checked u4 | <!-- metric:blake3_short_1 -->56124<!-- /metric:blake3_short_1 --> bytes |
+| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->59529<!-- /metric:blake3_short_32 --> bytes |
+| 32 bytes, selected 4-bit limbs | <!-- metric:blake3_32_limb4 -->61204<!-- /metric:blake3_32_limb4 --> bytes |
+| 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64095<!-- /metric:blake3_64_limb4 --> bytes |
 | 64 bytes, 29-bit limbs | <!-- metric:blake3_64_limb29 -->72293<!-- /metric:blake3_64_limb29 --> bytes |
+
+Rows at or below 64 KiB receive the repository's general optimizer after the
+BLAKE3-specific fixed-point pass. The 72,293-byte 29-bit row exceeds that
+cutoff and receives no additional upstream rewrite passes.
 
 For the deterministic 32-byte message `00 01 ... 1f`, direct host-side message
 pushes are <!-- metric:blake3_push_short_32 -->64<!-- /metric:blake3_push_short_32 -->
 bytes. The push, compute fragment, and 128-byte digest comparison compose to
-<!-- metric:blake3_complete_short_32 -->59726<!-- /metric:blake3_complete_short_32 -->
+<!-- metric:blake3_complete_short_32 -->59721<!-- /metric:blake3_complete_short_32 -->
 bytes. Encoding the same nibbles as canonical witness items takes
 <!-- metric:blake3_witness_short_32 -->111<!-- /metric:blake3_witness_short_32 -->
 serialized bytes; the valid 64-item maximum is
 <!-- metric:blake3_witness_short_32_max -->129<!-- /metric:blake3_witness_short_32_max -->
 bytes. The compute fragment contains
-<!-- metric:blake3_opcodes_short_32 -->41135<!-- /metric:blake3_opcodes_short_32 -->
+<!-- metric:blake3_opcodes_short_32 -->41134<!-- /metric:blake3_opcodes_short_32 -->
 static non-push opcodes, and the executable composition peaks at
 <!-- metric:blake3_stack_short_32 -->527<!-- /metric:blake3_stack_short_32 -->
 combined main/altstack items.

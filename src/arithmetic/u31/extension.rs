@@ -1,8 +1,7 @@
 use crate::support::script::*;
 
 use super::{
-    karatsuba_big, karatsuba_complex_big, u31_add, u31_double, u31_mul_by_constant, u31_mul_common,
-    u31_sub, u31_to_bits, BabyBear, U31Config, M31,
+    u31_add, u31_double, u31_mul_by_constant, u31_mul_common, u31_sub, u31_to_bits, U31Config,
 };
 
 /// Configuration for a degree-`DEGREE` extension over a 31-bit base field.
@@ -11,83 +10,6 @@ pub trait U31ExtConfig {
     const DEGREE: u32;
 
     fn mul_impl() -> Script;
-}
-
-/// Degree-four M31 extension built as `F_(p²)[y]/(y² - 2 - i)` over
-/// `F_p[i]/(i² + 1)`.
-pub struct QM31;
-
-impl U31ExtConfig for QM31 {
-    type BaseFieldConfig = M31;
-    const DEGREE: u32 = 4;
-
-    fn mul_impl() -> Script {
-        script! {
-            { karatsuba_complex_big::<M31>() }
-            4 OP_ROLL
-            OP_DUP
-            { u31_double::<M31>() }
-            6 OP_ROLL
-            OP_DUP
-            { u31_double::<M31>() }
-            OP_ROT
-            OP_ROT
-            { u31_sub::<M31>() }
-            3 OP_ROLL
-            { u31_add::<M31>() }
-            OP_ROT
-            OP_ROT
-            { u31_add::<M31>() }
-            OP_ROT
-            { u31_add::<M31>() }
-            OP_SWAP
-        }
-    }
-}
-
-/// Degree-four BabyBear extension using the RISC Zero polynomial `x^4 + 11`.
-pub struct BabyBear4;
-
-impl BabyBear4 {
-    fn mul_minus_11() -> Script {
-        script! {
-            OP_DUP
-            { u31_double::<BabyBear>() }
-            { u31_double::<BabyBear>() }
-            OP_DUP
-            { u31_double::<BabyBear>() }
-            { u31_add::<BabyBear>() }
-            { u31_sub::<BabyBear>() }
-        }
-    }
-}
-
-impl U31ExtConfig for BabyBear4 {
-    type BaseFieldConfig = BabyBear;
-    const DEGREE: u32 = 4;
-
-    fn mul_impl() -> Script {
-        script! {
-            { karatsuba_big::<BabyBear>() }
-            6 OP_ROLL
-            6 OP_ROLL
-            { u31_add::<BabyBear>() }
-            { Self::mul_minus_11() }
-            { u31_add::<BabyBear>() }
-            5 OP_ROLL
-            { Self::mul_minus_11() }
-            2 OP_ROLL
-            { u31_add::<BabyBear>() }
-            5 OP_ROLL
-            { Self::mul_minus_11() }
-            3 OP_ROLL
-            4 OP_ROLL
-            { u31_add::<BabyBear>() }
-            { u31_add::<BabyBear>() }
-            OP_SWAP
-            OP_ROT
-        }
-    }
 }
 
 /// Add two extension-field elements coefficient-wise.

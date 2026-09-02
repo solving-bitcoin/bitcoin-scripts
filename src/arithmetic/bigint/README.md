@@ -18,8 +18,11 @@ operation and operand placement.
 
 | Fragment | Script size |
 | --- | ---: |
-| `U254::add(1, 0)` | <!-- metric:u254_add -->190<!-- /metric:u254_add --> bytes |
+| `U254::add(1, 0)` | <!-- metric:u254_add -->176<!-- /metric:u254_add --> bytes |
 | `U254::mul()` | <!-- metric:u254_mul -->111466<!-- /metric:u254_mul --> bytes |
+
+The 176-byte addition uses the repository's general optimizer. The 111,466-byte
+multiplication exceeds its 64 KiB input cutoff and is reported unoptimized.
 
 ## Security
 

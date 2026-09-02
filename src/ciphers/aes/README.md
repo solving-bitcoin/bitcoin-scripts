@@ -21,7 +21,7 @@ and Script-number push widths vary.
 
 | Fragment | Size/depth |
 | --- | ---: |
-| `aes128_encrypt([0; 16])` | <!-- metric:aes128_encrypt -->25515<!-- /metric:aes128_encrypt --> bytes |
+| `aes128_encrypt([0; 16])` | <!-- metric:aes128_encrypt -->25388<!-- /metric:aes128_encrypt --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:aes128_witness_min -->33<!-- /metric:aes128_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:aes128_witness_max -->65<!-- /metric:aes128_witness_max --> bytes |
 | Maximum combined main/alt-stack depth | <!-- metric:aes128_stack -->908<!-- /metric:aes128_stack --> items |

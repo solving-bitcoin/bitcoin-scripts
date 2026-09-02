@@ -17,7 +17,11 @@ use num_bigint::BigUint;
 use num_traits::{One, ToPrimitive};
 
 use crate::{
-    arithmetic::{scriptint, u31::U31_LOOKUP_STACK_LIMIT},
+    arithmetic::{
+        rns::prime::carry::{self, bound},
+        scriptint,
+        u31::U31_LOOKUP_STACK_LIMIT,
+    },
     support::script::*,
 };
 
@@ -33,13 +37,13 @@ pub const MODULI: [u32; 46] = [
 ];
 
 /// Number of centered base-`2^16` limbs in one shared integer.
-pub const LIMB_COUNT: u32 = super::bound::LIMB_COUNT;
+pub const LIMB_COUNT: u32 = bound::LIMB_COUNT;
 
 /// Radix bit width of one shared-integer limb.
-pub const LIMB_BITS: u32 = super::bound::LIMB_BITS;
+pub const LIMB_BITS: u32 = bound::LIMB_BITS;
 
 /// Offset used to turn a centered limb into its unsigned base-`2^16` digit.
-pub const LIMB_OFFSET: i32 = super::bound::LIMB_OFFSET;
+pub const LIMB_OFFSET: i32 = bound::LIMB_OFFSET;
 
 /// Number of residues in one certified value.
 pub const RESIDUE_COUNT: u32 = MODULI.len() as u32;
@@ -70,6 +74,7 @@ pub struct CostBreakdown {
     pub field_validation: usize,
     pub quotient_binding: usize,
     pub remainder_binding: usize,
+    /// Includes whole-script optimizer effects across component boundaries.
     pub modular_relation: usize,
     pub routing_output: usize,
 }
@@ -97,6 +102,7 @@ pub struct BindValueCostBreakdown {
     pub table_drop: usize,
     /// Limb ranges plus the `value < secp256k1` check.
     pub limb_and_field_validation: usize,
+    /// Includes whole-script optimizer effects across component boundaries.
     pub residue_binding: usize,
     pub routing_output: usize,
 }
@@ -154,12 +160,12 @@ pub fn encode(value: &BigUint) -> [u32; MODULI.len()] {
 
 /// Return the centered base-`2^16` representation of a 256-bit integer.
 pub fn centered_limbs(value: &BigUint) -> [i32; LIMB_COUNT as usize] {
-    super::bound::centered_limbs(value)
+    bound::centered_limbs(value)
 }
 
 /// Push centered limbs with limb zero on top.
 pub fn push_centered_limbs(limbs: &[i32; LIMB_COUNT as usize]) -> Script {
-    super::bound::push_centered_limbs(limbs)
+    bound::push_centered_limbs(limbs)
 }
 
 /// Push canonical residues with coordinate zero on top.
@@ -205,21 +211,21 @@ fn safe_chain_mul(coefficient: i32, max_abs_input: u32) -> Option<Script> {
     if coefficient == 0 {
         return Some(script! { OP_DROP 0 });
     }
-    if coefficient.unsigned_abs() > super::EXACT_CHAIN_BOUND as u32 {
+    if coefficient.unsigned_abs() > carry::EXACT_CHAIN_BOUND as u32 {
         return None;
     }
-    let predecessors = super::exact_chain_predecessors();
+    let predecessors = carry::exact_chain_predecessors();
     let mut cursor = coefficient;
     let mut maximum = cursor.unsigned_abs();
     while cursor != 1 {
-        let (previous, _) = predecessors[super::exact_chain_index(cursor)]?;
+        let (previous, _) = predecessors[carry::exact_chain_index(cursor)]?;
         maximum = maximum.max(previous.unsigned_abs());
         cursor = previous;
     }
     if u64::from(maximum) * u64::from(max_abs_input) > u64::from(scriptint::MAX_SCRIPTNUM) {
         return None;
     }
-    Some(super::exact_chain_mul(coefficient))
+    Some(carry::exact_chain_mul(coefficient))
 }
 
 fn safe_exact_constant_mul(coefficient: i32, max_abs_input: u32) -> Script {
@@ -235,7 +241,7 @@ fn safe_exact_constant_mul(coefficient: i32, max_abs_input: u32) -> Script {
     }
     candidates
         .into_iter()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("constant multiplication has a safe candidate")
 }
 
@@ -366,13 +372,13 @@ fn dot_sum(
     [Some(independent), Some(joint), factored]
         .into_iter()
         .flatten()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("dot sum has candidates")
 }
 
 fn centered_both_variable_mul(modulus: u32) -> Script {
     if modulus <= 32_767 {
-        return super::exact_centered_multiplier_mul(modulus);
+        return carry::exact_centered_multiplier_mul(modulus);
     }
     script! {
         OP_SWAP
@@ -381,7 +387,7 @@ fn centered_both_variable_mul(modulus: u32) -> Script {
             { modulus } OP_SUB
         OP_ENDIF
         OP_SWAP
-        { super::exact_centered_multiplier_mul(modulus) }
+        { carry::exact_centered_multiplier_mul(modulus) }
     }
 }
 
@@ -720,46 +726,60 @@ pub fn mul_mod_hinted(preserved_items: u32) -> Script {
 pub fn cost_breakdown() -> CostBreakdown {
     let target = encode(&target_modulus());
     let mut cost = CostBreakdown {
-        field_validation: verify_below_secp256k1(0).compile().len(),
-        routing_output: route_all_hints().compile().len()
-            + drop_limbs_and_restore_output().compile().len(),
+        field_validation: verify_below_secp256k1(0).compile_with_policy().len(),
+        routing_output: route_all_hints().compile_with_policy().len()
+            + drop_limbs_and_restore_output().compile_with_policy().len(),
         ..CostBreakdown::default()
     };
     for (index, residue) in target.into_iter().enumerate().rev() {
         let coordinate = coordinate_parts(index, residue);
         let unchecked = coordinate_parts_with_limb_checks(index, residue, false);
-        cost.routing_output += coordinate.route_operands.compile().len();
-        let checked_quotient = coordinate.quotient_binding.compile().len();
-        let unchecked_quotient = unchecked.quotient_binding.compile().len();
-        let checked_remainder = coordinate.remainder_binding.compile().len();
-        let unchecked_remainder = unchecked.remainder_binding.compile().len();
+        cost.routing_output += coordinate.route_operands.compile_with_policy().len();
+        let checked_quotient = coordinate.quotient_binding.compile_with_policy().len();
+        let unchecked_quotient = unchecked.quotient_binding.compile_with_policy().len();
+        let checked_remainder = coordinate.remainder_binding.compile_with_policy().len();
+        let unchecked_remainder = unchecked.remainder_binding.compile_with_policy().len();
         cost.field_validation += checked_quotient - unchecked_quotient;
         cost.field_validation += checked_remainder - unchecked_remainder;
         cost.quotient_binding += unchecked_quotient;
         cost.remainder_binding += unchecked_remainder;
-        cost.modular_relation += coordinate.relation.compile().len();
+        cost.modular_relation += coordinate.relation.compile_with_policy().len();
     }
-    debug_assert_eq!(cost.total(), mul_mod_hinted(0).compile().len());
+    let independent_total = cost.total();
+    let final_script_bytes = mul_mod_hinted(0).compile_with_policy().len();
+    attribute_compilation_delta(
+        &mut cost.modular_relation,
+        independent_total,
+        final_script_bytes,
+    );
+    debug_assert_eq!(cost.total(), mul_mod_hinted(0).compile_with_policy().len());
     cost
 }
 
 /// Return exact byte attribution for [`bind_value`].
 pub fn bind_value_cost_breakdown() -> BindValueCostBreakdown {
     let mut cost = BindValueCostBreakdown {
-        limb_and_field_validation: verify_below_secp256k1(0).compile().len(),
-        routing_output: (LIMB_COUNT / 2) as usize + restore_residues().compile().len(),
+        limb_and_field_validation: verify_below_secp256k1(0).compile_with_policy().len(),
+        routing_output: (LIMB_COUNT / 2) as usize + restore_residues().compile_with_policy().len(),
         ..BindValueCostBreakdown::default()
     };
     for index in 0..MODULI.len() {
         let (route, binding) = bind_value_coordinate(index, index == 0);
         let (_, unchecked) = bind_value_coordinate(index, false);
-        cost.routing_output += route.compile().len();
-        let checked_bytes = binding.compile().len();
-        let unchecked_bytes = unchecked.compile().len();
+        cost.routing_output += route.compile_with_policy().len();
+        let checked_bytes = binding.compile_with_policy().len();
+        let unchecked_bytes = unchecked.compile_with_policy().len();
         cost.limb_and_field_validation += checked_bytes - unchecked_bytes;
         cost.residue_binding += unchecked_bytes;
     }
-    debug_assert_eq!(cost.total(), bind_value(0).compile().len());
+    let independent_total = cost.total();
+    let final_script_bytes = bind_value(0).compile_with_policy().len();
+    attribute_compilation_delta(
+        &mut cost.residue_binding,
+        independent_total,
+        final_script_bytes,
+    );
+    debug_assert_eq!(cost.total(), bind_value(0).compile_with_policy().len());
     cost
 }
 
@@ -1306,7 +1326,7 @@ mod tests {
         let cost = cost_breakdown();
         assert_eq!(cost.table_push, 0);
         assert_eq!(cost.table_drop, 0);
-        assert_eq!(cost.total(), mul_mod_hinted(0).compile().len());
+        assert_eq!(cost.total(), mul_mod_hinted(0).compile_with_policy().len());
         eprintln!(
             "composable multiplication cost: {cost:?}, total={}",
             cost.total()
@@ -1315,7 +1335,7 @@ mod tests {
         let bind_cost = bind_value_cost_breakdown();
         assert_eq!(bind_cost.table_push, 0);
         assert_eq!(bind_cost.table_drop, 0);
-        assert_eq!(bind_cost.total(), bind_value(0).compile().len());
+        assert_eq!(bind_cost.total(), bind_value(0).compile_with_policy().len());
         eprintln!(
             "composable binder cost: {bind_cost:?}, total={}",
             bind_cost.total()

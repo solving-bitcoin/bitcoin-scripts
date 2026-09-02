@@ -767,15 +767,19 @@ mod test {
         );
         if desired_outcome == true {
             assert!(
-                execute_script(standard_script.push_script(message_checker.clone().compile()))
-                    .success
+                execute_script(
+                    standard_script.push_script(message_checker.clone().compile_with_policy())
+                )
+                .success
                     == true
             );
         } else {
             assert!(
                 execute_script(standard_script.clone()).success == false
-                    || execute_script(standard_script.push_script(message_checker.compile()))
-                        .success
+                    || execute_script(
+                        standard_script.push_script(message_checker.compile_with_policy())
+                    )
+                    .success
                         == true
             );
         }

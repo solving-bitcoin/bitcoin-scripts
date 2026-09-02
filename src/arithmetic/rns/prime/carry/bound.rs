@@ -58,6 +58,7 @@ pub struct CostBreakdown {
     pub table_drop: usize,
     pub range_checks: usize,
     pub residue_binding: usize,
+    /// Includes whole-script optimizer effects across component boundaries.
     pub modular_relation: usize,
     pub routing_output: usize,
 }
@@ -69,6 +70,7 @@ pub struct BindValueCostBreakdown {
     pub table_push: usize,
     pub table_drop: usize,
     pub limb_validation: usize,
+    /// Includes whole-script optimizer effects across component boundaries.
     pub residue_binding: usize,
     pub routing_output: usize,
 }
@@ -235,7 +237,7 @@ fn safe_exact_constant_mul(coefficient: i32, max_abs_input: u32) -> Script {
     }
     candidates
         .into_iter()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("constant multiplication has a safe candidate")
 }
 
@@ -426,7 +428,8 @@ fn verify_vector_below_fixed(
         OP_VERIFY
     };
 
-    if specialized.clone().compile().len() < generic.clone().compile().len() {
+    if specialized.clone().compile_with_policy().len() < generic.clone().compile_with_policy().len()
+    {
         specialized
     } else {
         generic
@@ -560,7 +563,7 @@ fn dot_sum(
     [Some(independent), Some(joint), factored]
         .into_iter()
         .flatten()
-        .min_by_key(|candidate| candidate.clone().compile().len())
+        .min_by_key(|candidate| candidate.clone().compile_with_policy().len())
         .expect("dot sum has candidates")
 }
 
@@ -803,16 +806,23 @@ pub fn bind_value_below(bound: &BigUint, preserved_items: u32) -> Script {
 /// Exact cost split for [`bind_value`].
 pub fn bind_value_cost_breakdown() -> BindValueCostBreakdown {
     let mut cost = BindValueCostBreakdown {
-        limb_validation: bind_value_limb_validation().compile().len(),
-        routing_output: restore_bound_value_residues().compile().len(),
+        limb_validation: bind_value_limb_validation().compile_with_policy().len(),
+        routing_output: restore_bound_value_residues().compile_with_policy().len(),
         ..BindValueCostBreakdown::default()
     };
     for index in 0..MODULI.len() {
         let (route, binding) = bind_value_coordinate(index);
-        cost.routing_output += route.compile().len();
-        cost.residue_binding += binding.compile().len();
+        cost.routing_output += route.compile_with_policy().len();
+        cost.residue_binding += binding.compile_with_policy().len();
     }
-    debug_assert_eq!(cost.total(), bind_value(0).compile().len());
+    let independent_total = cost.total();
+    let final_script_bytes = bind_value(0).compile_with_policy().len();
+    attribute_compilation_delta(
+        &mut cost.residue_binding,
+        independent_total,
+        final_script_bytes,
+    );
+    debug_assert_eq!(cost.total(), bind_value(0).compile_with_policy().len());
     cost
 }
 
@@ -875,20 +885,35 @@ pub fn cost_breakdown(target_modulus: &BigUint) -> CostBreakdown {
     );
     let target = encode(target_modulus);
     let mut cost = CostBreakdown {
-        range_checks: range_checks(target_modulus).compile().len(),
-        routing_output: move_coordinate_hints_to_altstack().compile().len()
-            + drop_consumed_limbs_and_restore_residues().compile().len(),
+        range_checks: range_checks(target_modulus).compile_with_policy().len(),
+        routing_output: move_coordinate_hints_to_altstack()
+            .compile_with_policy()
+            .len()
+            + drop_consumed_limbs_and_restore_residues()
+                .compile_with_policy()
+                .len(),
         ..CostBreakdown::default()
     };
     for (index, residue) in target.into_iter().enumerate().rev() {
         let coordinate = coordinate_parts(index, residue);
-        cost.residue_binding += coordinate.binding.compile().len();
-        cost.modular_relation += coordinate.relation.compile().len();
-        cost.routing_output += coordinate.route_output.compile().len();
+        cost.residue_binding += coordinate.binding.compile_with_policy().len();
+        cost.modular_relation += coordinate.relation.compile_with_policy().len();
+        cost.routing_output += coordinate.route_output.compile_with_policy().len();
     }
+    let independent_total = cost.total();
+    let final_script_bytes = mul_mod_hinted(target_modulus, 0)
+        .compile_with_policy()
+        .len();
+    attribute_compilation_delta(
+        &mut cost.modular_relation,
+        independent_total,
+        final_script_bytes,
+    );
     debug_assert_eq!(
         cost.total(),
-        mul_mod_hinted(target_modulus, 0).compile().len()
+        mul_mod_hinted(target_modulus, 0)
+            .compile_with_policy()
+            .len()
     );
     cost
 }
@@ -1556,13 +1581,16 @@ mod tests {
         let cost = cost_breakdown(&target);
         assert_eq!(cost.table_push, 0);
         assert_eq!(cost.table_drop, 0);
-        assert_eq!(cost.total(), mul_mod_hinted(&target, 0).compile().len());
+        assert_eq!(
+            cost.total(),
+            mul_mod_hinted(&target, 0).compile_with_policy().len()
+        );
         eprintln!("bound carry cost: {cost:?}, total={}", cost.total());
 
         let bind_cost = bind_value_cost_breakdown();
         assert_eq!(bind_cost.table_push, 0);
         assert_eq!(bind_cost.table_drop, 0);
-        assert_eq!(bind_cost.total(), bind_value(0).compile().len());
+        assert_eq!(bind_cost.total(), bind_value(0).compile_with_policy().len());
         eprintln!(
             "one-value bind cost: {bind_cost:?}, total={}",
             bind_cost.total()

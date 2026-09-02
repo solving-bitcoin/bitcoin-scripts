@@ -1,3 +1,4 @@
+use crate::curves::bn254::groups::g1::G1Affine;
 /// Compute MSM = [a]P + [b]Q
 /// Binary decomposition of scalar 'a' is given by an addition-chain like a = a0 + 2.a1 + 4.a2 + ..
 /// W-windowed decomposition of the same expression is given by a = a0 + 2^(w.1) a1 + 2 ^(w.2) a2 + ...
@@ -12,10 +13,9 @@
 ///
 /// As such a batch of double+addition terms is implemented on a chunk, thus a single point-scalar multiplication requires around 32/8 = 4 chunks
 /// This number increases linearly as the number of scalar grows.
-use crate::curves::bn254::fields::fp254::Fp254Impl;
-use crate::curves::bn254::fields::{fq2::Fq2, fr::Fr};
-use crate::curves::bn254::groups::g1::G1Affine;
-use crate::curves::bn254::hints::{fq_to_bits, Hint};
+use crate::fields::bn254::bigint29::fp254::Fp254Impl;
+use crate::fields::bn254::bigint29::hints::{fq_to_bits, Hint};
+use crate::fields::bn254::bigint29::{fq2::Fq2, fr::Fr};
 use crate::support::script::*;
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::{One, PrimeField};

@@ -77,14 +77,44 @@ the stack limit. Record that distinction in every result that uses it.
    cargo test --locked
    ```
 
-Use `UPDATE_PRIMITIVE_METRICS=1 cargo test --test primitive_metrics` only for an
-intentional metric change. Do not silently refresh measurements.
+Use `UPDATE_PRIMITIVE_METRICS=1 cargo test --locked --test primitive_metrics`
+only for an intentional metric change. Do not silently refresh measurements.
+
+## Script compilation and optimization
+
+- Compile repository scripts through
+  `support::script::ScriptCompilation::compile_with_policy()`. Do not call
+  upstream `Script::compile()`, `compile_optimized()`, or
+  `compile_with_options()` directly outside the centralized policy.
+- The policy applies `CompileOptions::ALL` to generated scripts whose
+  unoptimized serialization is at most 64 KiB. Larger scripts use
+  `CompileOptions::NONE` because the optimizer's fixpoint passes are too slow
+  at that scale. Keep execution, byte metrics, opcode metrics, Tapleaf hashes,
+  signatures, and byte-level vectors on the same policy-produced `ScriptBuf`.
+- Report the final policy-produced serialized size. When a script exceeds the
+  cutoff, say explicitly that its size is unoptimized. Cost breakdowns may
+  compile components independently; attribute any cross-component optimizer
+  delta so the breakdown total equals the final whole-script size.
+- Write the clearest semantically correct script and let the optimizer perform
+  routine local rewrites. Do not complicate generators with manual opcode
+  substitutions, symbolic stack cancellations, `VERIFY`/hash fusion,
+  dead-result cleanup, constant folding, branch cleanup, or similar peepholes
+  already covered by `CompileOptions::ALL`.
+- Hand optimization is still appropriate when it changes the algorithm,
+  representation, witness shape, table layout, or stack bound, or when the
+  script exceeds the optimizer cutoff. Before adding a local peephole, confirm
+  that upstream does not already produce the same final bytecode and retain a
+  focused correctness test.
+- Never rely on the optimizer to supply validation, canonicalization, terminal
+  predicates, clean-stack behavior, or consensus/policy compliance.
 
 ## Repository conventions
 
-- Public implementation paths are domain-oriented (`arithmetic`, `hashes`,
-  `signatures`, `commitments`, `ciphers`, `curves`, and `support`). Do not add
-  flat aliases or legacy-path compatibility re-exports.
+- Public implementation paths are domain-oriented (`arithmetic`, `fields`,
+  `hashes`, `signatures`, `commitments`, `ciphers`, `curves`, and `support`).
+  `arithmetic` contains modulus-agnostic machinery; `fields` contains concrete
+  fields under field-first, backend-second paths. Do not add flat aliases or
+  legacy-path compatibility re-exports.
 - A primitive fragment is not necessarily a complete locking script. Document
   required terminal predicates and clean-stack behavior.
 - Values supplied by a witness are hostile unless the script validates them.

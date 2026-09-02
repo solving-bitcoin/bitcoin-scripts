@@ -26,12 +26,13 @@ inspected, locally reproduced, or differentially validated.
 
 ```text
 src/
-├── arithmetic/       # Integer backends, concrete fields, bigint, and RNS
+├── arithmetic/       # Modulus-agnostic bigint, u31, u32, u4, and RNS machinery
+├── fields/           # Concrete fields, grouped by field and then backend
 ├── commitments/      # Integer hash-path and preimage-length commitments
 ├── hashes/           # RIPEMD-160, SHA-1, SHA-256, SHAKE256, and BLAKE3
 ├── signatures/       # Lamport, HORS, and Winternitz OTS
 ├── ciphers/          # AES-128 and PRINCEv2
-├── curves/           # BN254 fields, groups, and pairing
+├── curves/           # Curve groups, MSM, and pairing
 └── support/          # Script execution and shared pseudo-op helpers
 ```
 
@@ -42,15 +43,19 @@ in [`docs/script-types.md`](docs/script-types.md) and
 [`docs/standardness.md`](docs/standardness.md).
 
 The domain-oriented hierarchy is the only public organization. Use paths such
-as `arithmetic::u4`, `hashes::sha256`, `curves::bn254`, and
-`support::execution`; flat aliases are intentionally not provided.
+as `arithmetic::u4`, `fields::secp256k1::bigint9`, `hashes::sha256`,
+`curves::bn254`, and `support::execution`; flat aliases and legacy-path
+compatibility re-exports are intentionally not provided. Concrete field paths
+name the mathematical field first and the implementation backend second.
 
 ## Metric snapshots
 
-`tests/primitive_metrics.rs` computes documented script/witness sizes. Normal
-tests fail if a snapshot is stale. After an intentional script change, update
-the numeric README markers with:
+`tests/primitive_metrics.rs` computes documented script/witness sizes through
+the bounded optimization policy described in
+[`knowledge/cost-model.md`](knowledge/cost-model.md). Normal tests fail if a
+snapshot is stale. After an intentional script change, update the numeric
+README markers with:
 
 ```sh
-UPDATE_PRIMITIVE_METRICS=1 cargo test --test primitive_metrics
+UPDATE_PRIMITIVE_METRICS=1 cargo test --locked --test primitive_metrics
 ```

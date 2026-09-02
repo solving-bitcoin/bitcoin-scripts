@@ -1297,26 +1297,30 @@ pub(crate) fn compress_short_digits(
 mod tests {
     use super::*;
     use crate::support::execution::execute_script;
+    use crate::support::script::ScriptCompilation;
 
     #[test]
     fn packed_table_lifecycle_metrics() {
         let mut stack = StackTracker::new();
         let tables = TablesVars::new(&mut stack, true);
-        let setup_bytes = stack.get_script().compile().len();
+        let setup_bytes = stack.get_script().compile_with_policy().len();
         tables.drop(&mut stack);
         assert_eq!(setup_bytes, 353);
-        assert_eq!(stack.get_script().compile().len() - setup_bytes, 166);
+        assert_eq!(
+            stack.get_script().compile_with_policy().len() - setup_bytes,
+            166
+        );
 
         let mut stack = StackTracker::new();
         let mut tables = TablesVars::new_late(&mut stack);
-        let initial_setup_bytes = stack.get_script().compile().len();
+        let initial_setup_bytes = stack.get_script().compile_with_policy().len();
         tables.push_late_tables(&mut stack);
-        let complete_setup_bytes = stack.get_script().compile().len();
+        let complete_setup_bytes = stack.get_script().compile_with_policy().len();
         tables.drop(&mut stack);
         assert_eq!(initial_setup_bytes, 241);
         assert_eq!(complete_setup_bytes - initial_setup_bytes, 112);
         assert_eq!(
-            stack.get_script().compile().len() - complete_setup_bytes,
+            stack.get_script().compile_with_policy().len() - complete_setup_bytes,
             166
         );
     }

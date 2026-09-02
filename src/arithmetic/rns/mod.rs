@@ -355,19 +355,34 @@ mod tests {
             RNS_MUL_TABLE_SIZE
         );
         assert_eq!(
-            rns_push_add_tables().compile().instructions().count(),
+            rns_push_add_tables()
+                .compile_with_policy()
+                .instructions()
+                .count(),
             RNS_ADD_TABLE_SIZE as usize
         );
         assert_eq!(
-            rns_push_sub_tables().compile().instructions().count(),
+            rns_push_sub_tables()
+                .compile_with_policy()
+                .instructions()
+                .count(),
             RNS_SUB_TABLE_SIZE as usize
         );
         assert_eq!(
-            rns_push_mul_tables().compile().instructions().count(),
+            rns_push_mul_tables()
+                .compile_with_policy()
+                .instructions()
+                .count(),
             RNS_MUL_TABLE_SIZE as usize
         );
-        for operation in [rns_add(), rns_sub(), rns_mul()] {
-            assert_eq!(operation.compile().instructions().count(), 35);
+        for (operation, expected_opcodes) in [rns_add(), rns_sub(), rns_mul()]
+            .into_iter()
+            .zip([32, 33, 32])
+        {
+            assert_eq!(
+                operation.compile_with_policy().instructions().count(),
+                expected_opcodes
+            );
         }
     }
 
