@@ -100,6 +100,12 @@ Catalog full costs and binding equations for every hint-producing field and
 group operation. **Complete when:** each has adversarial-hint tests, witness
 bytes, script bytes, stack peak, and reference comparison.
 
+Progress: deterministic fragment bytes and combined main-plus-alt stack peaks
+are recorded for addition across `Fq`, `Fr`, `Fq2`, `Fq6`, and `Fq12`, for
+hinted multiplication and square across `Fq`, `Fq2`, `Fq6`, and `Fq12`, and
+for `Fq` inversion. Witness bytes, adversarial-hint coverage, sparse and
+Frobenius variants, retained-operand paths, and the group inventory remain.
+
 ## OP-007 — Pairing/Groth16 reproducible configuration
 
 Define one stable four-pair verification instance. **Complete when:** script,

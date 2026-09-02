@@ -22,7 +22,7 @@ use bitcoin_lab::{
         verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
     },
     curves::bn254::{
-        fields::{fp254::Fp254Impl, fq::Fq, fq2::Fq2, fr::Fr},
+        fields::{fp254::Fp254Impl, fq::Fq, fq12::Fq12, fq2::Fq2, fq6::Fq6, fr::Fr},
         groups::{g1::G1Affine, g2::G2Affine},
     },
     hashes::{blake3, ripemd160, sha1, sha256, shake256},
@@ -583,6 +583,186 @@ fn metrics() -> Vec<Metric> {
             OP_2DROP
         }
         OP_1
+    };
+
+    let bn254_fq_a = ark_bn254::Fq::from(0x1234_5678u64);
+    let bn254_fq_b = ark_bn254::Fq::from(0x8765_4321u64);
+    let bn254_fq2_a = ark_bn254::Fq2 {
+        c0: bn254_fq_a,
+        c1: bn254_fq_b,
+    };
+    let bn254_fq2_b = ark_bn254::Fq2 {
+        c0: ark_bn254::Fq::from(0x1357_2468u64),
+        c1: ark_bn254::Fq::from(0x8642_7531u64),
+    };
+    let bn254_fq6_a = ark_bn254::Fq6 {
+        c0: bn254_fq2_a,
+        c1: bn254_fq2_b,
+        c2: ark_bn254::Fq2 {
+            c0: ark_bn254::Fq::from(0x1111_2222u64),
+            c1: ark_bn254::Fq::from(0x3333_4444u64),
+        },
+    };
+    let bn254_fq6_b = ark_bn254::Fq6 {
+        c0: ark_bn254::Fq2 {
+            c0: ark_bn254::Fq::from(0x5555_6666u64),
+            c1: ark_bn254::Fq::from(0x7777_8888u64),
+        },
+        c1: ark_bn254::Fq2 {
+            c0: ark_bn254::Fq::from(0x9999_aaaau64),
+            c1: ark_bn254::Fq::from(0xbbbb_ccccu64),
+        },
+        c2: ark_bn254::Fq2 {
+            c0: ark_bn254::Fq::from(0xdddd_eeeeu64),
+            c1: ark_bn254::Fq::from(0xffff_0001u64),
+        },
+    };
+    let bn254_fq12_a = ark_bn254::Fq12 {
+        c0: bn254_fq6_a,
+        c1: bn254_fq6_b,
+    };
+    let bn254_fq12_b = ark_bn254::Fq12 {
+        c0: bn254_fq6_b,
+        c1: bn254_fq6_a,
+    };
+
+    let bn254_fq_add = Fq::add(1, 0);
+    let bn254_fq_add_stack_script = script! {
+        { Fq::push(bn254_fq_a) }
+        { Fq::push(bn254_fq_b) }
+        { bn254_fq_add.clone() }
+        { Fq::drop() }
+        OP_TRUE
+    };
+    let bn254_fr_add = Fr::add(1, 0);
+    let bn254_fr_add_stack_script = script! {
+        { Fr::push(ark_bn254::Fr::from(0x1234_5678u64)) }
+        { Fr::push(ark_bn254::Fr::from(0x8765_4321u64)) }
+        { bn254_fr_add.clone() }
+        { Fr::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq_mul, bn254_fq_mul_hints) = Fq::hinted_mul(1, bn254_fq_a, 0, bn254_fq_b);
+    let bn254_fq_mul_stack_script = script! {
+        for hint in bn254_fq_mul_hints {
+            { hint.push() }
+        }
+        { Fq::push(bn254_fq_a) }
+        { Fq::push(bn254_fq_b) }
+        { bn254_fq_mul.clone() }
+        { Fq::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq_square, bn254_fq_square_hints) = Fq::hinted_square(bn254_fq_a);
+    let bn254_fq_square_stack_script = script! {
+        for hint in bn254_fq_square_hints {
+            { hint.push() }
+        }
+        { Fq::push(bn254_fq_a) }
+        { bn254_fq_square.clone() }
+        { Fq::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq_inv, bn254_fq_inv_hints) = Fq::hinted_inv(bn254_fq_a);
+    let bn254_fq_inv_stack_script = script! {
+        for hint in bn254_fq_inv_hints {
+            { hint.push() }
+        }
+        { Fq::push(bn254_fq_a) }
+        { bn254_fq_inv.clone() }
+        { Fq::drop() }
+        OP_TRUE
+    };
+
+    let bn254_fq2_add = Fq2::add(2, 0);
+    let bn254_fq2_add_stack_script = script! {
+        { Fq2::push(bn254_fq2_a) }
+        { Fq2::push(bn254_fq2_b) }
+        { bn254_fq2_add.clone() }
+        { Fq2::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq2_mul, bn254_fq2_mul_hints) = Fq2::hinted_mul(2, bn254_fq2_a, 0, bn254_fq2_b);
+    let bn254_fq2_mul_stack_script = script! {
+        for hint in bn254_fq2_mul_hints {
+            { hint.push() }
+        }
+        { Fq2::push(bn254_fq2_a) }
+        { Fq2::push(bn254_fq2_b) }
+        { bn254_fq2_mul.clone() }
+        { Fq2::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq2_square, bn254_fq2_square_hints) = Fq2::hinted_square(bn254_fq2_a);
+    let bn254_fq2_square_stack_script = script! {
+        for hint in bn254_fq2_square_hints {
+            { hint.push() }
+        }
+        { Fq2::push(bn254_fq2_a) }
+        { bn254_fq2_square.clone() }
+        { Fq2::drop() }
+        OP_TRUE
+    };
+
+    let bn254_fq6_add = Fq6::add(6, 0);
+    let bn254_fq6_add_stack_script = script! {
+        { Fq6::push(bn254_fq6_a) }
+        { Fq6::push(bn254_fq6_b) }
+        { bn254_fq6_add.clone() }
+        { Fq6::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq6_mul, bn254_fq6_mul_hints) = Fq6::hinted_mul(6, bn254_fq6_a, 0, bn254_fq6_b);
+    let bn254_fq6_mul_stack_script = script! {
+        for hint in bn254_fq6_mul_hints {
+            { hint.push() }
+        }
+        { Fq6::push(bn254_fq6_a) }
+        { Fq6::push(bn254_fq6_b) }
+        { bn254_fq6_mul.clone() }
+        { Fq6::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq6_square, bn254_fq6_square_hints) = Fq6::hinted_square(bn254_fq6_a);
+    let bn254_fq6_square_stack_script = script! {
+        for hint in bn254_fq6_square_hints {
+            { hint.push() }
+        }
+        { Fq6::push(bn254_fq6_a) }
+        { bn254_fq6_square.clone() }
+        { Fq6::drop() }
+        OP_TRUE
+    };
+
+    let bn254_fq12_add = Fq12::add(12, 0);
+    let bn254_fq12_add_stack_script = script! {
+        { Fq12::push(bn254_fq12_a) }
+        { Fq12::push(bn254_fq12_b) }
+        { bn254_fq12_add.clone() }
+        { Fq12::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq12_mul, bn254_fq12_mul_hints) =
+        Fq12::hinted_mul(12, bn254_fq12_a, 0, bn254_fq12_b);
+    let bn254_fq12_mul_stack_script = script! {
+        for hint in bn254_fq12_mul_hints {
+            { hint.push() }
+        }
+        { Fq12::push(bn254_fq12_a) }
+        { Fq12::push(bn254_fq12_b) }
+        { bn254_fq12_mul.clone() }
+        { Fq12::drop() }
+        OP_TRUE
+    };
+    let (bn254_fq12_square, bn254_fq12_square_hints) = Fq12::hinted_square(bn254_fq12_a);
+    let bn254_fq12_square_stack_script = script! {
+        for hint in bn254_fq12_square_hints {
+            { hint.push() }
+        }
+        { Fq12::push(bn254_fq12_a) }
+        { bn254_fq12_square.clone() }
+        { Fq12::drop() }
+        OP_TRUE
     };
 
     vec![
@@ -2202,17 +2382,142 @@ fn metrics() -> Vec<Metric> {
         Metric {
             readme: "src/curves/bn254/fields/README.md",
             key: "fq_add",
-            value: script_len(Fq::add(1, 0)),
+            value: script_len(bn254_fq_add),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_add_stack",
+            value: max_stack_items(bn254_fq_add_stack_script, vec![]),
         },
         Metric {
             readme: "src/curves/bn254/fields/README.md",
             key: "fr_add",
-            value: script_len(Fr::add(1, 0)),
+            value: script_len(bn254_fr_add),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fr_add_stack",
+            value: max_stack_items(bn254_fr_add_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_mul",
+            value: script_len(bn254_fq_mul),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_mul_stack",
+            value: max_stack_items(bn254_fq_mul_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_square",
+            value: script_len(bn254_fq_square),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_square_stack",
+            value: max_stack_items(bn254_fq_square_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_inv",
+            value: script_len(bn254_fq_inv),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq_inv_stack",
+            value: max_stack_items(bn254_fq_inv_stack_script, vec![]),
         },
         Metric {
             readme: "src/curves/bn254/fields/README.md",
             key: "fq2_add",
-            value: script_len(Fq2::add(2, 0)),
+            value: script_len(bn254_fq2_add),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq2_add_stack",
+            value: max_stack_items(bn254_fq2_add_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq2_mul",
+            value: script_len(bn254_fq2_mul),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq2_mul_stack",
+            value: max_stack_items(bn254_fq2_mul_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq2_square",
+            value: script_len(bn254_fq2_square),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq2_square_stack",
+            value: max_stack_items(bn254_fq2_square_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_add",
+            value: script_len(bn254_fq6_add),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_add_stack",
+            value: max_stack_items(bn254_fq6_add_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_mul",
+            value: script_len(bn254_fq6_mul),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_mul_stack",
+            value: max_stack_items(bn254_fq6_mul_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_square",
+            value: script_len(bn254_fq6_square),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq6_square_stack",
+            value: max_stack_items(bn254_fq6_square_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_add",
+            value: script_len(bn254_fq12_add),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_add_stack",
+            value: max_stack_items(bn254_fq12_add_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_mul",
+            value: script_len(bn254_fq12_mul),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_mul_stack",
+            value: max_stack_items(bn254_fq12_mul_stack_script, vec![]),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_square",
+            value: script_len(bn254_fq12_square),
+        },
+        Metric {
+            readme: "src/curves/bn254/fields/README.md",
+            key: "fq12_square_stack",
+            value: max_stack_items(bn254_fq12_square_stack_script, vec![]),
         },
         Metric {
             readme: "src/curves/bn254/groups/README.md",

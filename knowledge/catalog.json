@@ -2363,39 +2363,374 @@
       ],
       "references": [
         "arkworks-algebra-0.5",
-        "on-proving-pairings"
+        "on-proving-pairings",
+        "bitcoin-scriptexec-locked"
       ],
       "techniques": [
         "limb-arithmetic",
         "witness-hints"
       ],
       "security": "Canonical field range and every hinted equation must be checked; field arithmetic alone has no protocol security claim.",
-      "stack_contract": "Base fields use nine limbs; extension elements concatenate tower coefficients in source-defined order.",
+      "stack_contract": "Base fields use nine limbs; extension elements concatenate tower coefficients in source-defined order, and hinted calls place their returned ordered hints below the operands.",
       "configurations": [
         {
           "id": "fq-add",
           "label": "Fq::add(1,0)",
           "parameters": {
             "field": "Fq",
-            "limb_bits": 29
+            "limb_bits": 29,
+            "operand_depths": [
+              1,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
           },
-          "includes": "fragment-only: addition fragment; excludes operands, hints, and result check",
+          "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both nine-limb operands",
           "script_bytes": 415,
           "witness_bytes": null,
           "witness_bytes_max": null,
-          "max_stack_items": null,
+          "max_stack_items": 22,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
           "per_use_script_bytes": 415,
           "metric_keys": [
-            "fq_add"
+            "fq_add",
+            "fq_add_stack"
+          ]
+        },
+        {
+          "id": "fr-add",
+          "label": "Fr::add(1,0)",
+          "parameters": {
+            "field": "Fr",
+            "limb_bits": 29,
+            "operand_depths": [
+              1,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both nine-limb operands",
+          "script_bytes": 415,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 22,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 415,
+          "metric_keys": [
+            "fr_add",
+            "fr_add_stack"
+          ]
+        },
+        {
+          "id": "fq-hinted-mul",
+          "label": "Fq::hinted_mul(1,a,0,b)",
+          "parameters": {
+            "field": "Fq",
+            "limb_bits": 29,
+            "operand_depths": [
+              1,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted multiplication fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and both operands",
+          "script_bytes": 67744,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 297,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67744,
+          "metric_keys": [
+            "fq_mul",
+            "fq_mul_stack"
+          ]
+        },
+        {
+          "id": "fq-hinted-square",
+          "label": "Fq::hinted_square(a)",
+          "parameters": {
+            "field": "Fq",
+            "limb_bits": 29,
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted square fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and the operand",
+          "script_bytes": 67735,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 297,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67735,
+          "metric_keys": [
+            "fq_square",
+            "fq_square_stack"
+          ]
+        },
+        {
+          "id": "fq-hinted-inv",
+          "label": "Fq::hinted_inv(a)",
+          "parameters": {
+            "field": "Fq",
+            "limb_bits": 29,
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted inversion fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and the operand",
+          "script_bytes": 67832,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 306,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67832,
+          "metric_keys": [
+            "fq_inv",
+            "fq_inv_stack"
+          ]
+        },
+        {
+          "id": "fq2-add",
+          "label": "Fq2::add(2,0)",
+          "parameters": {
+            "field": "Fq2",
+            "degree": 2,
+            "limb_bits": 29,
+            "operand_depths": [
+              2,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 18-item operands",
+          "script_bytes": 846,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 40,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 846,
+          "metric_keys": [
+            "fq2_add",
+            "fq2_add_stack"
+          ]
+        },
+        {
+          "id": "fq2-hinted-mul",
+          "label": "Fq2::hinted_mul(2,a,0,b)",
+          "parameters": {
+            "field": "Fq2",
+            "degree": 2,
+            "limb_bits": 29,
+            "operand_depths": [
+              2,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted multiplication fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and both operands",
+          "script_bytes": 190619,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 270,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 190619,
+          "metric_keys": [
+            "fq2_mul",
+            "fq2_mul_stack"
+          ]
+        },
+        {
+          "id": "fq2-hinted-square",
+          "label": "Fq2::hinted_square(a)",
+          "parameters": {
+            "field": "Fq2",
+            "degree": 2,
+            "limb_bits": 29,
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted square fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and the operand",
+          "script_bytes": 136834,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 342,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 136834,
+          "metric_keys": [
+            "fq2_square",
+            "fq2_square_stack"
+          ]
+        },
+        {
+          "id": "fq6-add",
+          "label": "Fq6::add(6,0)",
+          "parameters": {
+            "field": "Fq6",
+            "degree": 6,
+            "limb_bits": 29,
+            "operand_depths": [
+              6,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 54-item operands",
+          "script_bytes": 2538,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 112,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2538,
+          "metric_keys": [
+            "fq6_add",
+            "fq6_add_stack"
+          ]
+        },
+        {
+          "id": "fq6-hinted-mul",
+          "label": "Fq6::hinted_mul(6,a,0,b)",
+          "parameters": {
+            "field": "Fq6",
+            "degree": 6,
+            "limb_bits": 29,
+            "operand_depths": [
+              6,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted multiplication fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and both operands",
+          "script_bytes": 1066421,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 486,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1066421,
+          "metric_keys": [
+            "fq6_mul",
+            "fq6_mul_stack"
+          ]
+        },
+        {
+          "id": "fq6-hinted-square",
+          "label": "Fq6::hinted_square(a)",
+          "parameters": {
+            "field": "Fq6",
+            "degree": 6,
+            "limb_bits": 29,
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted square fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and the operand",
+          "script_bytes": 766199,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 468,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 766199,
+          "metric_keys": [
+            "fq6_square",
+            "fq6_square_stack"
+          ]
+        },
+        {
+          "id": "fq12-add",
+          "label": "Fq12::add(12,0)",
+          "parameters": {
+            "field": "Fq12",
+            "degree": 12,
+            "limb_bits": 29,
+            "operand_depths": [
+              12,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: addition fragment bytes exclude operand pushes, result check, and terminal predicate; stack peak includes both 108-item operands",
+          "script_bytes": 5166,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 220,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 5166,
+          "metric_keys": [
+            "fq12_add",
+            "fq12_add_stack"
+          ]
+        },
+        {
+          "id": "fq12-hinted-mul",
+          "label": "Fq12::hinted_mul(12,a,0,b)",
+          "parameters": {
+            "field": "Fq12",
+            "degree": 12,
+            "limb_bits": 29,
+            "operand_depths": [
+              12,
+              0
+            ],
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted multiplication fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and both operands",
+          "script_bytes": 3217947,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 882,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3217947,
+          "metric_keys": [
+            "fq12_mul",
+            "fq12_mul_stack"
+          ]
+        },
+        {
+          "id": "fq12-hinted-square",
+          "label": "Fq12::hinted_square(a)",
+          "parameters": {
+            "field": "Fq12",
+            "degree": 12,
+            "limb_bits": 29,
+            "fixture": "tests/primitive_metrics.rs bn254 deterministic fixture"
+          },
+          "includes": "fragment-only: hinted square fragment bytes exclude operand and hint pushes, result check, and terminal predicate; stack peak includes every hint and the operand",
+          "script_bytes": 2155690,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 684,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2155690,
+          "metric_keys": [
+            "fq12_square",
+            "fq12_square_stack"
           ]
         }
       ],
       "limitations": [
-        "Hint inventory incomplete",
-        "Expensive Fq6 path ignored by default"
+        "Representative matrix omits sparse multiplication, Frobenius maps, retained-operand variants, and validity predicates",
+        "Expensive Fq6 retained-operand path ignored by default",
+        "Witness bytes, executed opcodes, and validation weight are not yet measured"
       ],
       "open_problems": [
         "OP-003",
