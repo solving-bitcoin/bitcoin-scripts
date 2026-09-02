@@ -424,6 +424,23 @@ frontier for the tested radices, quotient layouts, cutoff rules, and stack
 schedules, not a proof that radix 512 or one-level Karatsuba is globally
 optimal.
 
+## NR-023: Other bounded bitwise checksum partitions do not beat 3+3+4
+
+For the 0–960 `FastWots32` checksum range, a deterministic local search
+enumerates one through five power-of-two checksum digits, with one through six
+canonical bits per digit and total capacity of at least ten bits. It measures
+the exact current bit-branch verifier fragment, including positional
+accumulator constants and embedded endpoints. The selected low-to-high widths
+`[3, 3, 4]` cost 169 locking bytes and match the minimum of that search; common
+`[5, 5]`, `[2, 4, 4]`, and four-or-more-digit layouts are dominated once hash
+blocks, endpoint pushes, and ScriptNum constant sizes are included.
+
+This is `locally-reproduced` by
+`bitwise_checksum_partition_search_selects_three_three_four`. It establishes an
+optimum only within the enumerated canonical-bit branch model and bounds. It is
+not a proof against non-positional checksums, Taproot leaf specialization,
+different message encodings, or future opcodes.
+
 ## NR-024: Additional recursive and one-pass secp256k1 folds are dominated or invalid
 
 The final clean-sheet round tested exact executable schedules around the

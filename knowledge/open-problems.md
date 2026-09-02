@@ -126,8 +126,9 @@ multi-target bounds, message encoding, and end-to-end state transport costs.
 
 Progress: `FastWinternitz` now fixes chain-start domain separation, typed
 message/checksum encoding, a consuming in-process key API, numeric witness
-bounds, and measured Wots32 time/size/stack profiles, including the explicit
-raw-chain-length tradeoff in the locking-size profile. Durable crash-safe and
+bounds, mixed-radix checksum encoding, canonical bitwise witnesses, and
+measured Wots32 time/size/stack profiles, including the explicit
+script-size/witness-size and raw-chain-length tradeoffs. Durable crash-safe and
 distributed one-time state, concrete multi-target bounds, raw ScriptNum
 canonicality, and complete state-transport transaction costs remain open.
 

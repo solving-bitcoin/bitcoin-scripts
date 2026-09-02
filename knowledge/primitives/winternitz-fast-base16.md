@@ -1,9 +1,9 @@
 # Fast base-16 Winternitz signatures
 
-Implements a new fixed-message-length HASH160 Winternitz path with a consuming
+Implements a fixed-message-length HASH160 Winternitz path with a consuming
 one-time key API, domain-separated chain starts, canonical host-side message
-encoding, a locking-size-oriented lookup verifier, a strict-chain-encoding
-lookup verifier, a speed-oriented exact-hash verifier, and terminal variants.
+encoding, bitwise locking-size verifiers, lookup verifiers, a speed-oriented
+exact-hash verifier, and terminal variants.
 
 - **Question:** for 32-byte messages and 20-byte public endpoints fixed in the
   locking fragment, can tapscript verification execute exactly the required
@@ -12,18 +12,21 @@ lookup verifier, a speed-oriented exact-hash verifier, and terminal variants.
 - **Comparison objective:** first minimize locking-script bytes; then separately
   report serialized witness bytes, executed HASH160 calls, static non-push
   opcodes, combined stack peak, and any accepted-relation tradeoff.
-- **Position:** the exact profile shares 8/4/2/1 conditional blocks and executes
-  `15 - d` hashes for digit `d`. The lookup profile executes 15 hashes below 8
-  and seven otherwise, trading latency for 402 fewer locking bytes.
-- **Representative result:** `FastWots32` size recovery is 4,640 bytes, or 4,575
-  bytes when the message is consumed, with a 1,477-byte deterministic zero-
-  message witness and a 143-item measured peak. Strict-chain lookup is 5,050
-  bytes and exact-hash recovery is 5,452 bytes.
-- **Legacy comparison:** size recovery is 268 bytes (5.5%) smaller than the
-  4,908-byte legacy list-pick path and rejects numeric digits above 15 instead
-  of clamping them. It omits explicit chain-item length checks; strict-chain
-  lookup retains those checks. The exact path remains 126 bytes smaller than
-  the 5,578-byte legacy binary verifier at the same exact-chain objective.
+- **Position:** the smallest recovery profile supplies canonical digit bits,
+  shares complementary 8/4/2/1 conditional hashes, and reconstructs each
+  authenticated nibble. A `[8, 8, 16]` mixed-radix checksum minimizes checksum
+  chain and Horner bytes for the 0–960 `FastWots32` range. The terminal profile
+  accumulates remaining distances directly and avoids digit reconstruction.
+- **Representative result:** `FastWots32` bitwise recovery is 4,327 bytes, or
+  4,208 bytes when the message is consumed, with 1,680-byte and 1,938-byte
+  deterministic zero-message witnesses and a 334-item measured peak. Numeric
+  lookup recovery is 4,605 bytes; strict-chain lookup is 5,013 bytes and
+  exact-hash recovery is 5,409 bytes.
+- **Legacy comparison:** bitwise recovery is 581 bytes (11.8%) smaller than the
+  4,908-byte legacy list-pick path and preserves the recovered-message
+  contract. The terminal profile is 700 bytes (14.3%) smaller. Both use
+  canonical `MINIMALIF` bits. They omit explicit chain-item length checks;
+  strict-chain lookup retains those checks.
 - **Evidence:** `locally-reproduced` by host key/signature generation, two Script
   verifier strategies, a separately generated fixed Python HASH160 vector,
   malformed-input tests, checksum mutation with recomputed valid chains, and
@@ -38,12 +41,17 @@ lookup verifier, a speed-oriented exact-hash verifier, and terminal variants.
   strictly one-time, raw in-range ScriptNum canonicality is a caller obligation,
   and durable prevention of seed reuse is outside the consuming Rust type.
 - **Size-profile boundary:** signer-produced chain nodes are 20 bytes, but the
-  size verifier also accepts arbitrary-length HASH160 preimages for digits below
-  15. Digit 15 compares directly with the 20-byte endpoint. This changes raw
-  signature canonicality, not the strict `0..=15` numeric digit relation.
-- **Stack contract:** the recovery profiles consume 134 witness items and leave
-  64 message nibbles in high/low byte order. The terminal profile consumes the
-  message and checksum and requires a caller-supplied final predicate.
+  bitwise and numeric size verifiers accept arbitrary-length HASH160 preimages
+  whenever at least one hash executes. A maximum digit compares directly with
+  its 20-byte endpoint. This changes raw signature canonicality, not the
+  authenticated digit relation.
+- **Compatibility:** `[8,8,16]` checksum endpoints replace the earlier Fast
+  draft's three full base-16 checksum chains. Persisted public keys and
+  signatures from that draft require regeneration and are not wire-compatible.
+- **Stack contract:** numeric profiles consume 134 witness items. Bitwise
+  profiles consume 333 items and peak at 334, below the 1,000-item local strict
+  ceiling. Recovery leaves 64 message nibbles in high/low byte order; terminal
+  verification consumes them and requires a caller-supplied final predicate.
 
 See the [implementation README](../../src/signatures/winternitz/README.md),
 [legacy Winternitz page](winternitz-base16.md),
