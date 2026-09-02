@@ -10,10 +10,14 @@ pub use bitcoin_script::builder::StructuredScript as Script;
 pub use bitcoin_script::script;
 
 use crate::arithmetic::bigint::U256;
-use crate::hashes::blake3::utils::{compress, get_flags_for_block, TablesVars};
+use crate::hashes::blake3::utils::{
+    compress, compress_short_digits, get_flags_for_block, DigitWord, TablesVars,
+};
 
 const SHORT_32_SEMANTIC_TO_PHYSICAL_WORD: [usize; 8] = [6, 5, 0, 2, 1, 7, 4, 3];
 const SHORT_32_PHYSICAL_TO_SEMANTIC_WORD: [usize; 8] = [2, 4, 3, 7, 6, 1, 0, 5];
+// Each entry maps a physical position within a word to its semantic nibble.
+const SHORT_32_PHYSICAL_TO_SEMANTIC_DIGIT: [usize; 8] = [7, 6, 5, 0, 1, 2, 3, 4];
 
 fn assert_valid_limb_len(limb_len: u8) {
     assert!(
@@ -352,7 +356,7 @@ pub fn blake3_push_message_script_with_limb(message_bytes: &[u8], limb_len: u8) 
     }
 }
 
-const SUM_OF_FULL_TABLES: usize = 432;
+const SUM_OF_FULL_TABLES: usize = 347;
 const UNPACKED_BLOCK: usize = 128;
 const MAX_BLAKE3_ELEMENT_COUNT: usize = SUM_OF_FULL_TABLES + UNPACKED_BLOCK + 132;
 
@@ -427,9 +431,15 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
     } else {
         8 - partial_word_nibbles
     };
-    let output_words = (0..message_word_count)
-        .map(|index| (8, format!("msg_{index}")))
-        .collect();
+    let output_words = if message_word_count == 8 {
+        (0..message_word_count * 8)
+            .map(|index| (1, format!("msg_digit_{index}")))
+            .collect()
+    } else {
+        (0..message_word_count)
+            .map(|index| (8, format!("msg_{index}")))
+            .collect()
+    };
     let message_words = stack.custom_ex(
         script! {
             if partial_word_bytes != 0 {
@@ -450,28 +460,46 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
     );
     debug_assert_eq!(input.size(), input_nibbles);
 
-    let message = (0..message_word_count as usize)
-        .map(|semantic_index| {
-            let physical_index = if message_len == 32 {
-                SHORT_32_SEMANTIC_TO_PHYSICAL_WORD[semantic_index]
-            } else {
-                semantic_index
-            };
-            (semantic_index as u8, message_words[physical_index])
-        })
-        .collect();
-    compress(
-        stack,
-        false,
-        0,
-        message_len,
-        get_flags_for_block(0, 1),
-        message,
-        &tables,
-        8,
-        true,
-        true,
-    );
+    if message_word_count == 8 {
+        let digit_order = if message_len == 32 {
+            SHORT_32_PHYSICAL_TO_SEMANTIC_DIGIT
+        } else {
+            [0, 1, 2, 3, 4, 5, 6, 7]
+        };
+        let physical_words = message_words
+            .chunks_exact(8)
+            .map(|digits| DigitWord::from_physical_slice(digits, &digit_order))
+            .collect::<Vec<_>>();
+        let message = (0..message_word_count as usize)
+            .map(|semantic_index| {
+                (
+                    semantic_index as u8,
+                    physical_words[if message_len == 32 {
+                        SHORT_32_SEMANTIC_TO_PHYSICAL_WORD[semantic_index]
+                    } else {
+                        semantic_index
+                    }],
+                )
+            })
+            .collect();
+        compress_short_digits(stack, message_len, message, &tables);
+    } else {
+        let message = (0..message_word_count as usize)
+            .map(|semantic_index| (semantic_index as u8, message_words[semantic_index]))
+            .collect();
+        compress(
+            stack,
+            false,
+            0,
+            message_len,
+            get_flags_for_block(0, 1),
+            message,
+            &tables,
+            8,
+            true,
+            true,
+        );
+    }
 
     for _ in 0..8 {
         stack.drop(stack.get_var_from_stack(0));
@@ -491,7 +519,7 @@ fn blake3_short_message_nibbles(message: &[u8]) -> Vec<u8> {
         &[]
     };
     let word_count = message.len().div_ceil(4);
-    (0..word_count)
+    let semantic_nibbles = (0..word_count)
         .map(|physical_index| {
             physical_to_semantic
                 .get(physical_index)
@@ -504,14 +532,26 @@ fn blake3_short_message_nibbles(message: &[u8]) -> Vec<u8> {
             message[start..end].iter().rev()
         })
         .flat_map(|byte| [byte >> 4, byte & 0x0f])
-        .collect()
+        .collect::<Vec<_>>();
+    if message.len() == 32 {
+        semantic_nibbles
+            .chunks_exact(8)
+            .flat_map(|word| {
+                SHORT_32_PHYSICAL_TO_SEMANTIC_DIGIT
+                    .iter()
+                    .map(|index| word[*index])
+            })
+            .collect()
+    } else {
+        semantic_nibbles
+    }
 }
 
 /// Returns minimally encoded witness items for [`blake3_short_compute_script`].
 ///
 /// Four-byte words use BLAKE3's little-endian byte order. At exactly 32 bytes,
-/// the words are physically permuted to reduce final-round stack routing; this
-/// helper applies that permutation.
+/// words and their nibble registers are physically permuted to reduce stack
+/// routing; this helper applies both permutations.
 pub fn blake3_short_message_witness(message: &[u8]) -> Vec<Vec<u8>> {
     blake3_short_message_nibbles(message)
         .into_iter()
@@ -519,7 +559,7 @@ pub fn blake3_short_message_witness(message: &[u8]) -> Vec<Vec<u8>> {
         .collect()
 }
 
-/// Pushes a short message in the same word-oriented nibble layout as
+/// Pushes a short message in the same routed nibble layout as
 /// [`blake3_short_message_witness`].
 pub fn blake3_push_short_message_script(message: &[u8]) -> Script {
     let nibbles = blake3_short_message_nibbles(message);

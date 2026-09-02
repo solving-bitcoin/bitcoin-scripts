@@ -1644,6 +1644,9 @@
         "hashes::blake3::tests::test_failure_on_oversized_input_limb",
         "hashes::blake3::tests::test_full_block_and_31_bit_limbs",
         "hashes::blake3::utils::tests::interleaved_addition_table_covers_every_sum",
+        "hashes::blake3::utils::tests::packed_table_lifecycle_metrics",
+        "hashes::blake3::utils::tests::packed_xor_table_covers_every_pair",
+        "hashes::blake3::utils::tests::packed_xor_table_has_minimum_fixed_row_length",
         "arithmetic::bigint::stack::test::test_dynamic_limb_size_validation_boundaries"
       ],
       "references": [
@@ -1666,16 +1669,16 @@
             "limb_bits": 4,
             "optimizer": "bitcoin-script-stack fixed point",
             "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
-            "table_cleanup_script_bytes": 216
+            "table_cleanup_script_bytes": 174
           },
-          "includes": "fragment-with-memory: numeric input-limb range validation, 458-byte full lookup-table setup, sparse hashing, 216-byte cleanup, and digest restoration; excludes input encoding and output verification",
-          "script_bytes": 61383,
+          "includes": "fragment-with-memory: numeric input-limb range validation, 369-byte packed lookup-table setup, sparse hashing, 174-byte cleanup, and digest restoration; excludes input encoding and output verification",
+          "script_bytes": 61252,
           "witness_bytes": null,
           "witness_bytes_max": null,
-          "max_stack_items": 628,
+          "max_stack_items": 543,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": 458,
+          "setup_script_bytes": 369,
           "per_use_script_bytes": 60709,
           "metric_keys": [
             "blake3_32_limb4",
@@ -1689,18 +1692,18 @@
             "message_bytes": 64,
             "limb_bits": 29,
             "optimizer": "bitcoin-script-stack fixed point",
-            "static_non_push_opcodes": 47624,
+            "static_non_push_opcodes": 47582,
             "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
-            "table_cleanup_script_bytes": 216
+            "table_cleanup_script_bytes": 174
           },
-          "includes": "fragment-with-memory: numeric input-limb range validation and conversion, 458-byte full lookup-table setup, hashing, 216-byte cleanup, and digest restoration; excludes input encoding and output verification; stack peak is measured by the deterministic host-push/output-check composition",
-          "script_bytes": 72469,
+          "includes": "fragment-with-memory: numeric input-limb range validation and conversion, 369-byte packed lookup-table setup, hashing, 174-byte cleanup, and digest restoration; excludes input encoding and output verification; stack peak is measured by the deterministic host-push/output-check composition",
+          "script_bytes": 72338,
           "witness_bytes": null,
           "witness_bytes_max": null,
-          "max_stack_items": 692,
+          "max_stack_items": 607,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": 458,
+          "setup_script_bytes": 369,
           "per_use_script_bytes": 71795,
           "metric_keys": [
             "blake3_64_limb29",
@@ -1715,16 +1718,16 @@
             "limb_bits": 4,
             "optimizer": "bitcoin-script-stack fixed point",
             "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
-            "table_cleanup_script_bytes": 216
+            "table_cleanup_script_bytes": 174
           },
-          "includes": "fragment-with-memory: numeric input-limb range validation, 458-byte full lookup-table setup, hashing, 216-byte cleanup, and digest restoration; excludes input encoding and output verification",
-          "script_bytes": 64275,
+          "includes": "fragment-with-memory: numeric input-limb range validation, 369-byte packed lookup-table setup, hashing, 174-byte cleanup, and digest restoration; excludes input encoding and output verification",
+          "script_bytes": 64144,
           "witness_bytes": null,
           "witness_bytes_max": null,
-          "max_stack_items": 692,
+          "max_stack_items": 607,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": 458,
+          "setup_script_bytes": 369,
           "per_use_script_bytes": 63601,
           "metric_keys": [
             "blake3_64_limb4"
@@ -1759,7 +1762,10 @@
         "hashes::blake3::tests::test_short_direct_nibbles_all_lengths",
         "hashes::blake3::tests::test_short_direct_nibbles_reject_malformed_inputs",
         "hashes::blake3::tests::test_compute_script_is_optimizer_fixed_point",
-        "hashes::blake3::utils::tests::interleaved_addition_table_covers_every_sum"
+        "hashes::blake3::utils::tests::interleaved_addition_table_covers_every_sum",
+        "hashes::blake3::utils::tests::packed_table_lifecycle_metrics",
+        "hashes::blake3::utils::tests::packed_xor_table_covers_every_pair",
+        "hashes::blake3::utils::tests::packed_xor_table_has_minimum_fixed_row_length"
       ],
       "references": [
         "blake3-spec",
@@ -1772,7 +1778,7 @@
         "sparse-state"
       ],
       "security": "Security is inherited from BLAKE3 for the supported unkeyed 32-byte-output mode; all witness-backed nibbles are numerically checked in [0,16), omitted words are fixed zero padding, and raw-byte canonicality plus digest binding remain caller obligations.",
-      "stack_contract": "Consumes exactly two numeric nibble items per declared message byte from an otherwise empty main stack and returns 64 digest nibbles; the 32-byte configuration uses the documented physical word permutation.",
+      "stack_contract": "Consumes exactly two numeric nibble items per declared message byte from an otherwise empty main stack and returns 64 digest nibbles; the 32-byte configuration uses the documented physical word and digit permutations.",
       "configurations": [
         {
           "id": "message32-direct-u4",
@@ -1782,9 +1788,9 @@
             "input_nibbles": 64,
             "metric_message": "00 01 ... 1f",
             "optimizer": "bitcoin-script-stack fixed point",
-            "static_non_push_opcodes": 41190,
+            "static_non_push_opcodes": 41148,
             "stack_measurement": "combined main/alt peak from local execute_script with the stack limit enabled",
-            "table_cleanup_script_bytes": 216,
+            "table_cleanup_script_bytes": 174,
             "physical_word_order": [
               2,
               4,
@@ -1794,17 +1800,27 @@
               1,
               0,
               5
+            ],
+            "physical_digit_order": [
+              7,
+              6,
+              5,
+              0,
+              1,
+              2,
+              3,
+              4
             ]
           },
-          "includes": "fragment-with-memory: exact-count u4 input range validation, 458-byte full lookup-table setup, sparse length-specialized hashing, 216-byte cleanup, and digest restoration; excludes input witness serialization and output verification",
-          "script_bytes": 61074,
+          "includes": "fragment-with-memory: exact-count u4 input range validation, 369-byte packed lookup-table setup, sparse length-specialized hashing, 174-byte cleanup, and digest restoration; excludes input witness serialization and output verification",
+          "script_bytes": 60866,
           "witness_bytes": 111,
           "witness_bytes_max": 129,
-          "max_stack_items": 628,
+          "max_stack_items": 543,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": 458,
-          "per_use_script_bytes": 60400,
+          "setup_script_bytes": 369,
+          "per_use_script_bytes": 60323,
           "metric_keys": [
             "blake3_short_32",
             "blake3_stack_short_32",

@@ -26,8 +26,14 @@ with the live input and fixed XOR-table rows. Addition queries reuse one
 absolute index against an interleaved modulo/carry table; a separate
 modulo-only table handles the discarded most-significant carry. Constant
 first-column additions fold literal nibbles into the table address. G-call
-order is selected at generation time, and the 32-byte layout permutes physical
-input words to match the final consuming round.
+order is selected at generation time.
+
+The full XOR matrix is stored as a 171-item shortest common superstring of its
+16 fixed-orientation rows rather than as 256 separate items. For inputs with
+eight live words (29 through 32 bytes), an independent-nibble register backend
+also selects physical digit emission order and the seven-bit-rotation stream
+origin without runtime normalization. The exact-32-byte layout additionally
+permutes physical input words and digits to match the consuming schedule.
 
 These are generator transformations: they do not change BLAKE3's seven-round
 compression function or remove validation from witness-backed digits.
@@ -35,36 +41,36 @@ compression function or remove validation from witness-backed digits.
 ## Script metrics
 
 The compute metrics are `fragment-with-memory`. They include input range
-validation and any representation conversion, 458 bytes of lookup-table setup,
-hashing, 216 bytes of table cleanup, and digest restoration. They exclude
-input pushes or witness serialization and digest comparison.
+validation and any representation conversion, 369 bytes of lookup-table setup,
+hashing, 174 bytes of table cleanup, and digest restoration. They exclude input
+pushes or witness serialization and digest comparison.
 
 | Configuration | Compute script |
 | --- | ---: |
 | Empty message, 29-bit API | <!-- metric:blake3_empty_limb29 -->64<!-- /metric:blake3_empty_limb29 --> bytes |
-| 1 byte, direct checked u4 | <!-- metric:blake3_short_1 -->56292<!-- /metric:blake3_short_1 --> bytes |
-| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->61074<!-- /metric:blake3_short_32 --> bytes |
-| 32 bytes, selected 4-bit limbs | <!-- metric:blake3_32_limb4 -->61383<!-- /metric:blake3_32_limb4 --> bytes |
-| 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64275<!-- /metric:blake3_64_limb4 --> bytes |
-| 64 bytes, 29-bit limbs | <!-- metric:blake3_64_limb29 -->72469<!-- /metric:blake3_64_limb29 --> bytes |
+| 1 byte, direct checked u4 | <!-- metric:blake3_short_1 -->56161<!-- /metric:blake3_short_1 --> bytes |
+| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->60866<!-- /metric:blake3_short_32 --> bytes |
+| 32 bytes, selected 4-bit limbs | <!-- metric:blake3_32_limb4 -->61252<!-- /metric:blake3_32_limb4 --> bytes |
+| 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64144<!-- /metric:blake3_64_limb4 --> bytes |
+| 64 bytes, 29-bit limbs | <!-- metric:blake3_64_limb29 -->72338<!-- /metric:blake3_64_limb29 --> bytes |
 
 For the deterministic 32-byte message `00 01 ... 1f`, direct host-side message
 pushes are <!-- metric:blake3_push_short_32 -->64<!-- /metric:blake3_push_short_32 -->
 bytes. The push, compute fragment, and 128-byte digest comparison compose to
-<!-- metric:blake3_complete_short_32 -->61266<!-- /metric:blake3_complete_short_32 -->
+<!-- metric:blake3_complete_short_32 -->61058<!-- /metric:blake3_complete_short_32 -->
 bytes. Encoding the same nibbles as canonical witness items takes
 <!-- metric:blake3_witness_short_32 -->111<!-- /metric:blake3_witness_short_32 -->
 serialized bytes; the valid 64-item maximum is
 <!-- metric:blake3_witness_short_32_max -->129<!-- /metric:blake3_witness_short_32_max -->
 bytes. The compute fragment contains
-<!-- metric:blake3_opcodes_short_32 -->41190<!-- /metric:blake3_opcodes_short_32 -->
+<!-- metric:blake3_opcodes_short_32 -->41148<!-- /metric:blake3_opcodes_short_32 -->
 static non-push opcodes, and the executable composition peaks at
-<!-- metric:blake3_stack_short_32 -->628<!-- /metric:blake3_stack_short_32 -->
+<!-- metric:blake3_stack_short_32 -->543<!-- /metric:blake3_stack_short_32 -->
 combined main/altstack items.
 
 The corresponding 32-byte selected-limb helper composition peaks at
-<!-- metric:blake3_stack_32_limb4 -->628<!-- /metric:blake3_stack_32_limb4 -->
-items. Direct u4 therefore saves 309 compute bytes on the final shared core and
+<!-- metric:blake3_stack_32_limb4 -->543<!-- /metric:blake3_stack_32_limb4 -->
+items. Direct u4 therefore saves 386 compute bytes on the final shared core and
 uses 64 rather than 128 host-push bytes.
 
 For the deterministic 64-byte message `00 01 ... 3f`, host-side 29-bit message
@@ -72,11 +78,11 @@ packing is <!-- metric:blake3_push_64_limb29 -->87<!-- /metric:blake3_push_64_li
 bytes and digest comparison is
 <!-- metric:blake3_verify_output -->128<!-- /metric:blake3_verify_output -->
 bytes. Their executable composition with the 64-byte compute fragment is
-<!-- metric:blake3_complete_64_limb29 -->72684<!-- /metric:blake3_complete_64_limb29 -->
+<!-- metric:blake3_complete_64_limb29 -->72553<!-- /metric:blake3_complete_64_limb29 -->
 bytes. The compute fragment contains
-<!-- metric:blake3_opcodes_64_limb29 -->47624<!-- /metric:blake3_opcodes_64_limb29 -->
+<!-- metric:blake3_opcodes_64_limb29 -->47582<!-- /metric:blake3_opcodes_64_limb29 -->
 static non-push opcodes; the composition peaks at
-<!-- metric:blake3_stack_64_limb29 -->692<!-- /metric:blake3_stack_64_limb29 -->
+<!-- metric:blake3_stack_64_limb29 -->607<!-- /metric:blake3_stack_64_limb29 -->
 items.
 
 The helper compositions embed messages and expected digests in the script;
@@ -94,11 +100,12 @@ then low nibble. Within each four-byte BLAKE3 word, bytes are supplied in revers
 order. For lengths below 32 bytes, words remain in semantic order.
 
 For exactly 32 bytes, let `w0..w7` be the consecutive four-byte words. Their
-physical push order is `w2,w4,w3,w7,w6,w1,w0,w5`; this is an internal
-stack-routing optimization. `blake3_short_message_witness` emits minimally
-encoded witness items, and `blake3_push_short_message_script` emits the same
-layout as script constants; either helper should be preferred over hand
-encoding.
+physical push order is `w2,w4,w3,w7,w6,w1,w0,w5`. Within each word, number the
+otherwise canonical nibble items `d0..d7`; their physical order is
+`d7,d6,d5,d0,d1,d2,d3,d4`. These are internal stack-routing optimizations.
+`blake3_short_message_witness` emits minimally encoded witness items, and
+`blake3_push_short_message_script` emits the same layout as script constants;
+either helper should be preferred over hand encoding.
 
 Every supplied item is checked as a ScriptNum in `[0, 16)` before it can address
 lookup memory. This establishes numeric bounds, not a protocol-level byte

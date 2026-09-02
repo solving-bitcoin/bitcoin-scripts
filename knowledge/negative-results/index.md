@@ -234,6 +234,12 @@ smaller setup. This is an `inspected` generator result for the current lookup
 layout, not a universal claim that half tables are inferior when stack items
 are the primary objective.
 
+The retained full-lookup semantics no longer require a rectangular 256-item
+matrix. Overlapping the 16 fixed-orientation rows produces a 171-item shortest
+common superstring; exhaustive subset DP proves 171 minimal for those rows.
+Together with its 16-item selector, it is smaller than the half-table design
+without adding symmetry-recovery work to any query.
+
 ## NR-017: Consuming both BLAKE3 output halves does not save bytes
 
 Compression finalization currently consumes the first eight state words,
@@ -247,6 +253,12 @@ a four-byte regression in both cases. The prototype passed a deterministic
 64-byte differential check. This is an `inspected` result for the current
 depth-table lookup scheme; a fused output schedule may have a different
 frontier.
+
+The same consume-both idea was retested after short-input specialization. It
+passed every length from 0 through 32 but measured 61,083 bytes versus the
+61,074-byte copy-and-drop comparison point, a nine-byte regression at the same
+peak. This is `locally-reproduced` confirmation that the result persisted on
+the later layout.
 
 ## NR-018: Eager BLAKE3 routing and message expansion increase script size
 
@@ -284,7 +296,16 @@ bound above its 62,647-byte comparison point. The expanded-witness and
 stage-chunk results are `locally-reproduced`; the unfinished streamed lower
 bound is `inspected` design-search evidence.
 
-## NR-019: A preliminary u8 BLAKE3 backend is size-dominated by sparse u4
+On the later independent-digit scheduler, exhaustively restoring the next
+message pair before each first-round column bottomed at 61,055 bytes versus
+61,026 for retaining the message, a 29-byte regression. Seven witness-supplied
+message schedules would fit after packed-table reduction at a projected
+927-item peak, but binding six hostile duplicates costs at least 896 bytes
+while destructive use can save at most 384 copy bytes. The resulting
+512-byte lower-bound regression rules out that expansion before layout and
+range-check overhead.
+
+## NR-019: Alternate BLAKE3 digit representations are size-dominated by sparse u4
 
 A byte-radix prototype generated 95,788 bytes before its quick register
 scheduler was made output-correct, already roughly 30 kB above the contemporary
@@ -304,6 +325,33 @@ byte-to-u4 input bridge alone was 1,168 bytes versus 451 for direct u4 input.
 These results are `differentially-validated` local generator evidence: smaller
 tables do not repay doubled or quadrupled digit routing, while byte and wider
 radices lose the free 12-bit nibble rotation.
+
+Later clean-sheet kernel searches extended the comparison against the
+60,866-byte, 543-item checked direct-u4 frontier. A correct radix-u3 XOR word
+costs 132 bytes with 51 table items, versus 88 bytes and 187 items for u4;
+two- and three-input additions cost 167 and 221 bytes versus 116 and 155.
+Across the measured 224 XOR, 164 two-add, and 52 three-add sites, even an
+ultra-favorable XOR-only projection exceeds 69.6 kB, while applying the
+measured addition penalties projects roughly 81.5 kB before top-limb and
+cross-rotation handling.
+
+Raw-sum add-to-XOR fusion is stack-feasible with the packed XOR rows, but its
+repeated 48-entry row selector adds 101 lifecycle bytes and 32 peak items. In a
+favorable mixed-phase kernel where aligned rotations are metadata, fused
+two-input add/ROR16 costs 227 bytes versus 219 separate and streamed add/ROR7
+costs 348 versus 323. Whole-word little-endian storage likewise costs 701 bytes
+for a two-input add versus 696 in the retained big-endian layout. Deferred
+seven-bit-rotation representations measured 63,358/658 and 62,485/628, while
+an extra low-XOR plane measured 62,018/884; none crosses the retained frontier.
+
+The u3, raw-sum, endian, and deferred-rotation kernels executed correctly on
+deterministic boundary vectors, so their measured comparisons are
+`locally-reproduced`. The full-backend u3 projections and mixed-boundary search
+are `inspected` bounds: among eight digit boundaries, canonical u4 uniquely
+maximizes aligned boundaries for rotations 7, 8, 12, and 16; a ninth boundary
+adds a digit to every add and XOR for only one additional alignment. These
+results bound the tested representation families, not every possible BLAKE3
+circuit or future opcode set.
 
 ## NR-020: Unadjusted BLAKE3 quotient/modulo interleaving is incorrect
 
@@ -327,7 +375,10 @@ exact-32 final operand order reduced the retained result to 61,074 bytes at a
 628-item peak. Every declared length from 1 through 32 matched the independent
 BLAKE3 implementation, and an exhaustive sum test covers table indices 0
 through 47. The rejected unadjusted form and retained correction are therefore
-`locally-reproduced` for this generator.
+`locally-reproduced` for this generator. Subsequent XOR-row packing and
+independent-digit scheduling reduce the combined frontier to 60,866 bytes;
+the 61,074-byte figure remains the like-for-like measurement of the addition
+change itself.
 
 ## NR-021: Higher Winternitz radices lose locking-script bytes
 

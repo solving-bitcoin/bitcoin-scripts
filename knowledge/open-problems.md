@@ -154,22 +154,25 @@ equations are documented, adversarial witnesses are tested, and either the
 checks are proven present or the verifier is fixed. Do not infer local
 vulnerability from the adjacent advisory without this analysis.
 
-## OP-013 — BLAKE3 stack-routing frontier
+## OP-013 — BLAKE3 circuit-superoptimization frontier
 
-The checked short-input frontier is 61,074 bytes and 628 stack items for 32
-bytes. Length-specific G-call schedules, physical message layout, constant
-first-round columns, corrected interleaved addition tables, alternate radices,
-expanded witness schedules, within-G streaming, and active-quartet routing have
-now been evaluated; the retained candidates and negative results are recorded.
-The seven-bit rotation and deep XOR/state routing remain dominant, with 372
-items of strict stack headroom in the representative short configuration.
+The checked short-input frontier is 60,866 bytes and 543 stack items for 32
+bytes. The preceding digit-routing criterion is complete: a shortest-common-
+superstring DP reduced the XOR table, an independent-nibble backend searched
+global and per-call rotation orders, and every retained length from 0 through
+32 passed differential and malformed-input tests. Alternate radices, expanded
+witness schedules, eager routing, little-endian state, raw-sum add-to-XOR
+fusion, and extra low-XOR planes are measured or bounded in the negative-results
+index. Deep state routing still dominates, with 457 items of strict stack
+headroom in the representative short configuration.
 
-**Complete when:** a global digit-level state scheduler or a specialized
-seven-bit-rotation table/layout is deterministically searched against the
-61,074-byte direct-u4 configuration; every retained candidate passes the
-short-length differential suite, partial-block boundaries, and malformed-input
-tests; and it either improves the checked metric or is recorded with a
-reproducible dominated measurement.
+**Complete when:** a reproducible joint circuit search or proof-producing
+superoptimizer covers a precisely stated space of digit lifetimes, G-stage
+fusion, lookup layouts, and per-call schedules on the same checked
+`fragment-with-memory` boundary; every retained candidate passes all short
+lengths and malformed inputs; and it either beats 60,866 bytes below the
+1,000-item peak or records a machine-checkable lower bound for that search
+space.
 
 ## OP-014 — Total-domain ScriptNum right-shift frontier
 
