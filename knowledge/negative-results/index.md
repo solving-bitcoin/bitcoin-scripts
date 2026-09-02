@@ -76,13 +76,13 @@ the canonical residues of one corresponding global unsigned value below
 `r < N` argument. Evidence for the implemented verifier and metrics is
 `locally-reproduced`; deployment remains `unclassified`.
 
-The separate 36-prime `carry::bound` profile closes this particular boundary
+The separate 47-prime `carry::bound` profile closes this particular boundary
 inside its fragment. It range-checks four shared 16-limb values, derives every
 canonical coordinate through exact binding carries, proves `lhs`, `rhs`, and
-`r` below the target, and only then checks the product relation over a 521-bit
+`r` below the target, and only then checks the product relation over a 513-bit
 basis. It therefore rejects detached coordinate representatives and needs no
-remainder complement. That standalone work costs 88,225 script bytes with a
-722-byte, 244-item data witness and a strict 249-item peak. This does not erase
+remainder complement. That standalone work costs 51,055 script bytes with an
+868-byte, 299-item data witness and a strict 305-item peak. This does not erase
 the counterexamples above: they still apply to the smaller 10,952-byte
 coordinate-only API and any equivalent verifier that omits global binding.
 
@@ -118,22 +118,40 @@ locking scripts. Three proofs cannot enter this layout because their five
 a `locally-reproduced` negative result for the current layout, not a general
 claim against batch verification.
 
-## NR-011: Deterministic Horner bindings lose to centered exact-dot bindings
+## NR-011: Alternative global-binding layouts lose to centered exact-dot bindings
 
 The global-binding search tested deterministic conversion before selecting the
 retained centered base-`2^16` design. Direct power-radix/Horner conversion of
 all four values produced roughly 623–647 kB of aggregate generated binding
 script across the tested layouts. A tighter 34-prime mixed-radix construction
 reduced the complete modular-product verifier to 238,885 bytes, but remained
-well above the 88,225-byte, 36-prime exact-dot verifier.
+well above both the former 88,225-byte exact-dot verifier and the current
+51,055-byte, 47-prime verifier.
 
-The two discarded figures are measured scratch-prototype boundaries whose
-generators are not retained as public deterministic fixtures, so they are
-recorded here as `inspected` design-search evidence rather than cataloged
-`locally-reproduced` configurations. The retained 88,225-byte profile is
-`locally-reproduced` by source, tests, and checked metrics. This comparison
-shows domination for the tested bases, representations, and stack layouts; it
-does not establish global optimality of centered limbs or exact dot products.
+The later capped-basis search also rejected two closer alternatives. Its best
+centered mixed-radix layout was estimated at 52,352 intrinsic bytes before
+range validation and routing, or more than approximately 53.5 kB as a complete
+standalone fragment. An unsigned base-`2^15` hybrid was 53,517 intrinsic bytes
+before range validation and routing. Both already exceed the retained 51,055-
+byte standalone verifier before their missing boundary work is added.
+
+For the composable profile, a direct fused-`qN` construction derived each
+`q*N mod p_i` term from the quotient limbs inside the product relation, using
+grouped equal/opposite coefficients plus joint-NAF and common-factor choices.
+Its best executable scratch result was 31,953 bytes, 672 bytes larger than the
+retained 31,281-byte separate quotient-binding gate. Eliminating the explicit
+q binding therefore reduced witness structure but did not minimize locking
+script bytes for the searched bases.
+
+The discarded generators are not retained as public deterministic fixtures.
+The early Horner/mixed-radix measurements, capped centered/unsigned estimates,
+and fused-`qN` scratch execution are therefore recorded as `inspected`
+design-search evidence rather than cataloged `locally-reproduced`
+configurations. The retained 51,055-byte standalone and 31,281-byte composable
+profiles are `locally-reproduced` by source, tests, and checked metrics. These
+comparisons show domination for the tested bases, representations, and stack
+layouts; they do not establish global optimality of centered limbs, explicit q
+binding, or exact dot products.
 
 ## NR-012: Direct four-opcode hash paths have deterministic aliases
 

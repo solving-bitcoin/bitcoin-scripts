@@ -13,3 +13,13 @@ Fragments that pass alone can fail when composed. Track at least:
 A protocol map should annotate every edge with its stack representation and
 trust status. Setup amortization is valid only if table memory can remain live
 across all intervening operations.
+
+Certificate provenance is part of that edge trust status. The prime-RNS
+composable multiplier, for example, is globally sound only when each operand
+vector is a verified-path output of its shared-integer field binder or a prior
+gate; a same-shaped raw witness vector is not interchangeable. Fragment-cost
+sums also assume each operation already sees its inputs in the documented
+adjacent layout. They do not include routing all witness groups that are present
+at script entry, and fan-out or squaring requires explicit duplication of the
+certified vector. Record those routing, reordering, and duplication bytes before
+turning per-fragment costs into a circuit total.

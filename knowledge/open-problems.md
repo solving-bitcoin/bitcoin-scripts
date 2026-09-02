@@ -47,15 +47,25 @@ A second `locally-reproduced` profile now supplies the previously missing
 global binding inside the arithmetic fragment. It represents `lhs`, `rhs`,
 quotient, and remainder with 16 centered base-`2^16` limbs each, derives four
 canonical RNS vectors with exact binding carries, proves `lhs`, `rhs`, and
-remainder below the target, and checks the modular relation over a 36-prime,
-521-bit basis. It is 88,225 locking-script bytes with a 722-byte complete
-244-item data witness, 79,271 static non-push opcodes, and a strict 249-item
-peak. The script is table-free: 75,732 bytes are the four residue bindings,
-11,121 are modular relations, 1,060 are range checks, and 312 are routing.
+remainder below the target, and checks the modular relation over a 47-prime,
+513-bit basis. It is 51,055 locking-script bytes with an 868-byte complete
+299-item data witness, 32,772 static non-push opcodes, and a strict 305-item
+peak. The script is table-free: 38,801 bytes are the four residue bindings,
+10,794 are modular relations, 1,060 are range checks, and 400 are routing.
 For programs that retain certified values, the separate one-value binder costs
-19,147 bytes and returns both the 16 limbs and 36 residues, proving the value
-is below `2^256`. Its `bind_value_below(N)` variant costs 19,234 bytes and also
+9,777 bytes and returns both the 16 limbs and 47 residues, proving the value
+is below `2^256`. Its `bind_value_below(N)` variant costs 9,864 bytes and also
 proves the field bound required for operands and remainders.
+
+A third `locally-reproduced` 46-prime profile makes that certificate boundary
+composable. Its 9,835-byte binder consumes a 195-byte, 62-item `N-1` witness
+and returns only 46 certified field residues at a 72-item peak. A 31,281-byte
+multiplication consumes two such verified-path certificates, locally binds q
+and r, and returns a new certificate. The `(N-1)^2` incremental witness is 471
+bytes/170 items, the gate peak is 267, and its 20,799 static non-push opcodes
+split across 444 bytes of validation, 9,852 q binding, 9,664 r binding, 10,799
+relation, and 522 routing/output. Both fragments are table-free. The basis
+product is 513 bits and 1.01865 times `2^512`.
 
 The ordinary-product batch frontier is now reproduced for one through six
 coordinate-major products. Six cost 64,462 bytes with outputs on the altstack,
@@ -65,14 +75,18 @@ with 1,050 operands and are impossible under the current stack limit. A
 two-proof no-carry modular batch was also executed and is dominated: 52,048
 bytes versus 51,554 independently because routing exceeded table savings.
 
-Both profiles remain `unclassified`. The 10,952-byte profile is still
+All profiles remain `unclassified`. The 10,952-byte profile is still
 conditional: all supplied coordinates must be externally tied to canonical
 encodings of corresponding unsigned integers below `2^256`, and operands must
-be below the target. The 88,225-byte profile closes that binding boundary for
+be below the target. The 51,055-byte profile closes that binding boundary for
 one operation, but it is still a fragment rather than a complete tapleaf or
-transaction. Bitcoin Core consensus and policy validation, executed-opcode and
-validation-budget measurement, complete witness and transaction weight, and
-dependent workloads that reuse certified values remain open.
+transaction. The 31,281-byte composable gate closes q/r locally and inherits
+lhs/rhs certificates, but assumes those vectors and its hints are already
+adjacent. Its two-gate unit test inserts later inputs as script constants and
+therefore establishes certificate-state reuse, not an all-witness-at-entry
+layout. Bitcoin Core consensus and policy validation, executed-opcode and
+validation-budget measurement, complete witness and transaction weight, and a
+measured circuit scheduler with certificate fan-out/reordering remain open.
 
 ## OP-005 — SHAKE256 composable output
 

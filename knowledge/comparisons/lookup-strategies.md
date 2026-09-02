@@ -22,7 +22,8 @@ for the actual live stack and cleanup boundary.
 | 256-bit-product prime hybrid | 15,628 | 183 | Per-coordinate shortest of streamed lookup and centered/plain binary Horner |
 | Prime hybrid, six-product batch | 64,912 total / 10,819 amortized | 900 | Coordinate-major, one table lifecycle per selected coordinate |
 | Conditional exact-carry modular verifier | 10,952 | 231 | Table-free; external global bindings excluded |
-| Standalone-bound exact-carry modular verifier | 88,225 | 249 | Table-free; four global bindings and field bounds included |
+| Standalone-bound exact-carry modular verifier | 51,055 | 305 | Table-free; four global bindings and field bounds included |
+| Composable exact-carry modular verifier | 31,281 | 267 | Table-free; q/r bound locally; requires two adjacent certified operand vectors |
 
 The prime-hybrid row is not a smaller instance of the legacy row: it covers a
 513-bit composite range with 75 canonical residues, versus 69,300 with five
@@ -59,12 +60,23 @@ ideal table-reuse saving.
 
 The exact-carry rows remove lookup memory rather than amortize it. The compact
 42-prime verifier assumes a surrounding protocol has already tied every
-coordinate vector to one bounded integer. The standalone 36-prime verifier
-performs that work from four shared 16-limb values: 75,732 of its 88,225 bytes
-are residue binding, while its modular relations cost 11,121 bytes. Its table
+coordinate vector to one bounded integer. The standalone 47-prime verifier
+performs that work from four shared 16-limb values: 38,801 of its 51,055 bytes
+are residue binding, while its modular relations cost 10,794 bytes. Its table
 setup and cleanup are both zero. These rows are therefore not like-for-like
 lookup competitors, and repeating either full fragment exposes no static table
 setup to share. A composed protocol can instead reuse the output of the
-19,147-byte one-value binder when the same unsigned-256 value survives across
+9,777-byte one-value binder when the same unsigned-256 value survives across
 operations. That plain binder does not prove a field bound; the
-`bind_value_below(N)` variant costs 19,234 bytes.
+`bind_value_below(N)` variant costs 9,864 bytes.
+
+The 46-prime composable verifier makes certificate reuse a concrete fragment:
+its matching 9,835-byte binder proves one field value and returns only its
+residue certificate, while each 31,281-byte gate binds q/r and returns a new
+certificate. Both have zero table push and cleanup bytes. This is not lookup
+setup amortization, and the gate number is not a complete multi-gate circuit
+cost: the two operand certificates and 170 hint items must already be adjacent.
+All-witness-at-entry routing, certificate fan-out/reordering, and terminal
+predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
+bytes before a square, illustrating why those circuit costs cannot be omitted
+from an end-to-end recurrence.

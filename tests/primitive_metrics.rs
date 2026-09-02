@@ -8,7 +8,7 @@ use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
 use bitcoin::{script::Instruction, Witness};
-use bitcoin_lab::arithmetic::rns::prime::carry::bound;
+use bitcoin_lab::arithmetic::rns::prime::carry::{bound, composable};
 use bitcoin_lab::{
     arithmetic::{
         bigint::U254,
@@ -236,6 +236,54 @@ fn metrics() -> Vec<Metric> {
     let prime_rns_bind_value = bound::bind_value(0);
     let prime_rns_bind_value_below = bound::bind_value_below(&prime_rns_hinted_target, 0);
     let prime_rns_bind_value_cost = bound::bind_value_cost_breakdown();
+    let prime_rns_composable_mul = composable::mul_mod_hinted(0);
+    let prime_rns_composable_cost = composable::cost_breakdown();
+    let prime_rns_composable_opcodes = static_non_push_opcodes(prime_rns_composable_mul.clone());
+    let composable_quotient_limbs = composable::centered_limbs(&prime_rns_hinted_quotient);
+    let composable_remainder_limbs = composable::centered_limbs(&prime_rns_hinted_remainder);
+    let composable_quotient_binding = composable::binding_carries(&prime_rns_hinted_quotient);
+    let composable_remainder_binding = composable::binding_carries(&prime_rns_hinted_remainder);
+    let composable_relation = composable::relation_carries(
+        &prime_rns_hinted_lhs,
+        &prime_rns_hinted_rhs,
+        &prime_rns_hinted_quotient,
+        &prime_rns_hinted_remainder,
+    );
+    let mut prime_rns_composable_hint_items = Vec::new();
+    for limbs in [&composable_quotient_limbs, &composable_remainder_limbs] {
+        for limb in limbs.iter().rev() {
+            prime_rns_composable_hint_items.push(scriptnum(i64::from(*limb)));
+        }
+    }
+    for index in (0..composable::MODULI.len()).rev() {
+        for carry in [
+            composable_quotient_binding[index],
+            composable_remainder_binding[index],
+            composable_relation[index],
+        ] {
+            prime_rns_composable_hint_items.push(scriptnum(i64::from(carry)));
+        }
+    }
+    let mut prime_rns_composable_input_items = Vec::new();
+    for value in [&prime_rns_hinted_lhs, &prime_rns_hinted_rhs] {
+        for residue in composable::encode(value).iter().rev() {
+            prime_rns_composable_input_items.push(scriptnum(i64::from(*residue)));
+        }
+    }
+    prime_rns_composable_input_items.extend(prime_rns_composable_hint_items.iter().cloned());
+    let prime_rns_composable_bind = composable::bind_value(0);
+    let prime_rns_composable_bind_cost = composable::bind_value_cost_breakdown();
+    let prime_rns_composable_bind_opcodes =
+        static_non_push_opcodes(prime_rns_composable_bind.clone());
+    let composable_bind_limbs = composable::centered_limbs(&prime_rns_hinted_lhs);
+    let composable_bind_carries = composable::binding_carries(&prime_rns_hinted_lhs);
+    let mut prime_rns_composable_bind_items = Vec::new();
+    for limb in composable_bind_limbs.iter().rev() {
+        prime_rns_composable_bind_items.push(scriptnum(i64::from(*limb)));
+    }
+    for carry in composable_bind_carries.iter().rev() {
+        prime_rns_composable_bind_items.push(scriptnum(i64::from(*carry)));
+    }
     let prime_rns_mul_opcodes = static_non_push_opcodes(prime_rns_mul.clone());
     let prime_rns_max = (BigUint::one() << 256usize) - BigUint::one();
     let prime_rns_rhs = &prime_rns_max - BigUint::one();
@@ -876,6 +924,114 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/rns/README.md",
             key: "prime_rns_bind_value_routing",
             value: prime_rns_bind_value_cost.routing_output,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul",
+            value: script_len(prime_rns_composable_mul.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_table_push",
+            value: prime_rns_composable_cost.table_push,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_table_drop",
+            value: prime_rns_composable_cost.table_drop,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_validation",
+            value: prime_rns_composable_cost.field_validation,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_quotient_binding",
+            value: prime_rns_composable_cost.quotient_binding,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_remainder_binding",
+            value: prime_rns_composable_cost.remainder_binding,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_modular_relation",
+            value: prime_rns_composable_cost.modular_relation,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_routing_output",
+            value: prime_rns_composable_cost.routing_output,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_opcodes",
+            value: prime_rns_composable_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_witness",
+            value: witness_size(&prime_rns_composable_hint_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_hinted_mod_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { prime_rns_composable_mul }
+                    for _ in 0..composable::RESIDUE_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                prime_rns_composable_input_items,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value",
+            value: script_len(prime_rns_composable_bind.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_validation",
+            value: prime_rns_composable_bind_cost.limb_and_field_validation,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_binding",
+            value: prime_rns_composable_bind_cost.residue_binding,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_routing",
+            value: prime_rns_composable_bind_cost.routing_output,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_opcodes",
+            value: prime_rns_composable_bind_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_witness",
+            value: witness_size(&prime_rns_composable_bind_items),
+        },
+        Metric {
+            readme: "src/arithmetic/rns/README.md",
+            key: "prime_rns_composable_bind_value_stack",
+            value: max_stack_items(
+                script! {
+                    { prime_rns_composable_bind }
+                    for _ in 0..composable::RESIDUE_COUNT {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                prime_rns_composable_bind_items,
+            ),
         },
         Metric {
             readme: "src/arithmetic/rns/README.md",

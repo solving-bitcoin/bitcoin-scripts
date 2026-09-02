@@ -15,14 +15,14 @@ use crate::{
     support::script::*,
 };
 
-/// Prime basis selected for the centered base-2^16 binding dot products.
+/// Prime basis selected for secp256k1-centered base-2^16 binding dot products.
 ///
-/// Its product has 521 bits. Every prime also satisfies the exact worst-case
+/// Its product has 513 bits. Every prime also satisfies the exact worst-case
 /// ScriptNum bound for a 16-term centered dot product.
-pub const MODULI: [u32; 36] = [
-    21_143, 21_277, 21_341, 21_391, 21_401, 21_481, 21_493, 21_499, 21_503, 21_517, 21_569, 21_647,
-    21_727, 21_787, 21_841, 21_863, 21_871, 22_039, 22_073, 22_093, 22_171, 22_307, 22_343, 22_391,
-    22_511, 22_573, 22_643, 22_921, 22_961, 23_017, 23_057, 23_167, 23_761, 24_373, 24_611, 32_443,
+pub const MODULI: [u32; 47] = [
+    2, 17, 31, 41, 73, 113, 127, 241, 257, 283, 331, 337, 641, 673, 683, 1013, 1249, 1321, 1613,
+    1801, 2089, 2113, 2351, 2731, 3121, 3203, 4051, 4513, 5153, 5419, 8123, 8161, 8191, 9719,
+    12007, 13367, 14323, 14449, 15101, 15377, 17449, 18121, 20261, 21841, 43691, 61681, 65537,
 ];
 
 /// Number of limbs in the shared unsigned 256-bit representation.
@@ -45,11 +45,11 @@ pub const HINTED_MUL_WITNESS_ITEMS: u32 = 4 * LIMB_COUNT + COORDINATE_HINT_ITEMS
 
 /// Exact strict combined-stack peak with no unrelated live items.
 /// A regression test executes the measured path and locks this value down.
-pub const HINTED_MUL_STACK_ITEMS: u32 = HINTED_MUL_WITNESS_ITEMS + 5;
+pub const HINTED_MUL_STACK_ITEMS: u32 = HINTED_MUL_WITNESS_ITEMS + 6;
 
 /// Strict combined-stack peak for [`bind_value`] or [`bind_value_below`] with
 /// no unrelated live items.
-pub const BIND_VALUE_STACK_ITEMS: u32 = LIMB_COUNT + RESIDUE_COUNT + 5;
+pub const BIND_VALUE_STACK_ITEMS: u32 = LIMB_COUNT + RESIDUE_COUNT + 10;
 
 /// Exact byte attribution for the globally bound verifier.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -167,9 +167,12 @@ pub fn push_value(value: &BigUint) -> Script {
     push_residues(&encode(value))
 }
 
-fn coordinate_coefficients(modulus: u32) -> ([i32; LIMB_COUNT as usize], u32, u64) {
+fn scaled_coordinate_coefficients(
+    modulus: u32,
+    scalar: u32,
+) -> ([i32; LIMB_COUNT as usize], u32, u64) {
     let radix = (1u64 << LIMB_BITS) % u64::from(modulus);
-    let mut power = 1u32;
+    let mut power = scalar % modulus;
     let mut offset = 0i64;
     let mut sum_abs = 0u64;
     let coefficients = std::array::from_fn(|_| {
@@ -186,6 +189,10 @@ fn coordinate_coefficients(modulus: u32) -> ([i32; LIMB_COUNT as usize], u32, u6
     )
 }
 
+fn coordinate_coefficients(modulus: u32) -> ([i32; LIMB_COUNT as usize], u32, u64) {
+    scaled_coordinate_coefficients(modulus, 1)
+}
+
 fn binding_carry_bound(modulus: u32) -> u32 {
     let (_, _, sum_abs) = coordinate_coefficients(modulus);
     let numerator_bound = u64::from(LIMB_OFFSET.unsigned_abs()) * sum_abs + 2 * u64::from(modulus);
@@ -195,6 +202,9 @@ fn binding_carry_bound(modulus: u32) -> u32 {
 fn safe_chain_mul(coefficient: i32, max_abs_input: u32) -> Option<Script> {
     if coefficient == 0 {
         return Some(script! { OP_DROP 0 });
+    }
+    if coefficient.unsigned_abs() > 1 << 16 {
+        return None;
     }
     let predecessors = super::exact_chain_predecessors();
     let mut cursor = coefficient;
@@ -277,7 +287,13 @@ pub fn relation_carries(
     let target = encode(target_modulus);
     std::array::from_fn(|index| {
         let modulus = i64::from(MODULI[index]);
-        let numerator = i64::from(lhs[index]) * i64::from(center(rhs[index], MODULI[index]))
+        let _ = relation_carry_bound(MODULI[index], target[index]);
+        let lhs = if centers_lhs_for_relation(MODULI[index], target[index]) {
+            center(lhs[index], MODULI[index])
+        } else {
+            lhs[index] as i32
+        };
+        let numerator = i64::from(lhs) * i64::from(center(rhs[index], MODULI[index]))
             - i64::from(quotient[index]) * i64::from(center(target[index], MODULI[index]))
             - i64::from(remainder[index]);
         assert_eq!(numerator % modulus, 0);
@@ -430,6 +446,124 @@ fn range_checks(target_modulus: &BigUint) -> Script {
     }
 }
 
+fn independent_dot_sum(
+    coefficients: &[i32; LIMB_COUNT as usize],
+    offset: u32,
+    limb_zero_depth: u32,
+) -> Script {
+    script! {
+        { offset }
+        for (index, coefficient) in coefficients.iter().copied().enumerate() {
+            { limb_zero_depth + index as u32 + 1 } OP_PICK
+            { safe_exact_constant_mul(coefficient, LIMB_OFFSET.unsigned_abs()) }
+            OP_ADD
+        }
+    }
+}
+
+fn joint_naf_dot_core(coefficients: &[i32; LIMB_COUNT as usize], limb_zero_depth: u32) -> Script {
+    let digits = coefficients.clone().map(|coefficient| {
+        let sign = if coefficient < 0 { -1i8 } else { 1i8 };
+        let mut remaining = coefficient.unsigned_abs();
+        let mut scalar_digits = Vec::new();
+        while remaining != 0 {
+            if remaining & 1 == 0 {
+                scalar_digits.push(0i8);
+                remaining >>= 1;
+            } else {
+                let digit = 2i8 - (remaining % 4) as i8;
+                scalar_digits.push(sign * digit);
+                if digit > 0 {
+                    remaining -= 1;
+                } else {
+                    remaining += 1;
+                }
+                remaining >>= 1;
+            }
+        }
+        scalar_digits
+    });
+    let bit_count = digits.iter().map(Vec::len).max().unwrap_or(0);
+    let mut initialized = false;
+    let mut result = script! {};
+    for bit in (0..bit_count).rev() {
+        if initialized {
+            result = script! { { result } OP_DUP OP_ADD };
+        }
+        for (index, scalar_digits) in digits.iter().enumerate() {
+            let digit = scalar_digits.get(bit).copied().unwrap_or(0);
+            if digit == 0 {
+                continue;
+            }
+            let base = limb_zero_depth + index as u32;
+            if !initialized {
+                result = script! {
+                    { result }
+                    { base } OP_PICK
+                    if digit < 0 { OP_NEGATE }
+                };
+                initialized = true;
+            } else {
+                result = script! {
+                    { result }
+                    { base + 1 } OP_PICK
+                    if digit > 0 { OP_ADD } else { OP_SUB }
+                };
+            }
+        }
+    }
+    if initialized {
+        result
+    } else {
+        script! { 0 }
+    }
+}
+
+fn gcd(mut lhs: u32, mut rhs: u32) -> u32 {
+    while rhs != 0 {
+        (lhs, rhs) = (rhs, lhs % rhs);
+    }
+    lhs
+}
+
+fn dot_sum(
+    coefficients: &[i32; LIMB_COUNT as usize],
+    offset: u32,
+    future_hint_items: u32,
+    prior_outputs: u32,
+    vector_from_top: u32,
+) -> Script {
+    let limb_zero_depth = future_hint_items + prior_outputs + vector_from_top * LIMB_COUNT;
+    let independent = independent_dot_sum(coefficients, offset, limb_zero_depth);
+    let joint_core = joint_naf_dot_core(coefficients, limb_zero_depth);
+    let joint = script! {
+        { joint_core }
+        if offset != 0 { { offset } OP_ADD }
+    };
+
+    let common = coefficients.iter().fold(0u32, |common, coefficient| {
+        gcd(common, coefficient.unsigned_abs())
+    });
+    let factored = (common > 1).then(|| {
+        let reduced = coefficients.map(|coefficient| coefficient / common as i32);
+        let sum_abs = reduced
+            .iter()
+            .map(|coefficient| coefficient.unsigned_abs())
+            .sum::<u32>();
+        let maximum = LIMB_OFFSET.unsigned_abs() * sum_abs;
+        script! {
+            { joint_naf_dot_core(&reduced, limb_zero_depth) }
+            { safe_exact_constant_mul(common as i32, maximum) }
+            if offset != 0 { { offset } OP_ADD }
+        }
+    });
+    [Some(independent), Some(joint), factored]
+        .into_iter()
+        .flatten()
+        .min_by_key(|candidate| candidate.clone().compile().len())
+        .expect("dot sum has candidates")
+}
+
 fn binding_sum(
     modulus: u32,
     future_hint_items: u32,
@@ -437,20 +571,67 @@ fn binding_sum(
     vector_from_top: u32,
 ) -> Script {
     let (coefficients, offset, _) = coordinate_coefficients(modulus);
+    dot_sum(
+        &coefficients,
+        offset,
+        future_hint_items,
+        prior_outputs,
+        vector_from_top,
+    )
+}
+
+fn centers_lhs_for_product(modulus: u32) -> bool {
+    u64::from(modulus - 1) * u64::from(modulus / 2) > u64::from(scriptint::MAX_SCRIPTNUM)
+}
+
+fn centers_lhs_for_relation(modulus: u32, target_residue: u32) -> bool {
+    let product = u64::from(modulus - 1) * u64::from(modulus / 2);
+    let quotient =
+        u64::from(modulus - 1) * u64::from(center(target_residue, modulus).unsigned_abs());
+    centers_lhs_for_product(modulus)
+        || product + quotient + u64::from(modulus - 1) > u64::from(scriptint::MAX_SCRIPTNUM)
+}
+
+fn relation_numerator_bound(modulus: u32, target_residue: u32) -> u64 {
+    let lhs_bound = if centers_lhs_for_relation(modulus, target_residue) {
+        u64::from(modulus / 2)
+    } else {
+        u64::from(modulus - 1)
+    };
+    lhs_bound * u64::from(modulus / 2)
+        + u64::from(modulus - 1) * u64::from(center(target_residue, modulus).unsigned_abs())
+        + u64::from(modulus - 1)
+}
+
+fn relation_carry_bound(modulus: u32, target_residue: u32) -> u32 {
+    let numerator_bound = relation_numerator_bound(modulus, target_residue);
+    assert!(
+        numerator_bound <= u64::from(scriptint::MAX_SCRIPTNUM),
+        "target modulus is not ScriptNum-safe for the selected bound RNS basis"
+    );
+    numerator_bound.div_ceil(u64::from(modulus)) as u32
+}
+
+fn center_top(modulus: u32) -> Script {
     script! {
-        { offset }
-        for (index, coefficient) in coefficients.into_iter().enumerate() {
-            {
-                future_hint_items
-                    + prior_outputs
-                    + vector_from_top * LIMB_COUNT
-                    + index as u32
-                    + 1
-            }
-            OP_PICK
-            { safe_exact_constant_mul(coefficient, LIMB_OFFSET.unsigned_abs()) }
-            OP_ADD
-        }
+        { modulus } OP_OVER OP_SUB
+        OP_2DUP OP_GREATERTHAN OP_TOALTSTACK
+        OP_MIN
+    }
+}
+
+fn exact_product(modulus: u32, center_lhs: bool) -> Script {
+    if !center_lhs {
+        return super::exact_centered_multiplier_mul(modulus);
+    }
+    script! {
+        // Center lhs as well as rhs for the exceptional >16-bit coordinate.
+        OP_SWAP
+        { center_top(modulus) }
+        OP_SWAP
+        { super::exact_centered_multiplier_mul(modulus) }
+        OP_FROMALTSTACK
+        OP_IF OP_NEGATE OP_ENDIF
     }
 }
 
@@ -463,15 +644,12 @@ struct CoordinateParts {
 fn coordinate_parts(index: usize, target_residue: u32) -> CoordinateParts {
     let modulus = MODULI[index];
     let prior_outputs = RESIDUE_COUNT - index as u32 - 1;
-    let binding_carry_bound = binding_carry_bound(modulus);
+    let carry_bound = binding_carry_bound(modulus);
     let binding = script! {
-        // Hints are popped as lhs, rhs, quotient, and remainder carries. Each
-        // completed residue stays on the main stack; prior coordinate outputs
-        // and earlier values are included in the next limb depth.
         for value in 0..4u32 {
             { binding_sum(modulus, 0, prior_outputs + value, value) }
             OP_FROMALTSTACK
-            { safe_exact_constant_mul(modulus as i32, binding_carry_bound) }
+            { safe_exact_constant_mul(modulus as i32, carry_bound) }
             OP_SUB
             OP_DUP 0 { modulus } OP_WITHIN OP_VERIFY
         }
@@ -479,22 +657,19 @@ fn coordinate_parts(index: usize, target_residue: u32) -> CoordinateParts {
     let centered_target = center(target_residue, modulus);
     let relation = script! {
         // Main: lhs_i | rhs_i | quotient_i | remainder_i.
-        // Retrieve the relation carry, then duplicate the remainder to the
-        // altstack as this coordinate's returned RNS output.
         OP_FROMALTSTACK
-        OP_SWAP
-        OP_DUP OP_TOALTSTACK
-
-        // Main: lhs | rhs | q | relation_carry | r.
-        4 OP_ROLL
-        4 OP_ROLL
-        { super::exact_centered_multiplier_mul(modulus) }
+        OP_SWAP OP_DUP OP_TOALTSTACK
+        4 OP_ROLL 4 OP_ROLL
+        { exact_product(modulus, centers_lhs_for_relation(modulus, target_residue)) }
         3 OP_ROLL
-        { super::exact_constant_mul(centered_target) }
-        OP_SUB
-        OP_SWAP OP_SUB
-        OP_SWAP
-        { super::exact_constant_mul(modulus as i32) }
+        { safe_exact_constant_mul(centered_target, modulus - 1) }
+        OP_SUB OP_SWAP OP_SUB OP_SWAP
+        {
+            safe_exact_constant_mul(
+                modulus as i32,
+                relation_carry_bound(modulus, target_residue),
+            )
+        }
         OP_EQUALVERIFY
     };
     let route_output = script! {
@@ -512,7 +687,7 @@ fn coordinate_parts(index: usize, target_residue: u32) -> CoordinateParts {
 fn move_coordinate_hints_to_altstack() -> Script {
     script! {
         // With the public reverse-coordinate witness order, moving every hint
-        // at once leaves coordinate 35's lhs carry on top. Coordinates can
+        // at once leaves the highest coordinate's lhs carry on top. Coordinates can
         // then run high to low without deep limb picks through future hints.
         for _ in 0..COORDINATE_HINT_ITEMS * RESIDUE_COUNT {
             OP_TOALTSTACK
@@ -522,7 +697,7 @@ fn move_coordinate_hints_to_altstack() -> Script {
 
 fn drop_consumed_limbs_and_restore_residues() -> Script {
     script! {
-        // Residues were accumulated on the main stack in coordinates 35..0.
+        // Residues were accumulated on the main stack from high coordinate to zero.
         // Park them now that the hint altstack is empty, expose and drop the
         // three consumed limb vectors, then restore coordinate zero on top.
         for _ in 0..RESIDUE_COUNT {
@@ -572,7 +747,7 @@ fn restore_bound_value_residues() -> Script {
     }
 }
 
-/// Bind one reusable 256-bit limb value to all 36 canonical RNS residues.
+/// Bind one reusable 256-bit limb value to all 47 canonical RNS residues.
 ///
 /// Input: `preserved | centered_limbs | binding_carries`. Output:
 /// `preserved | centered_limbs | canonical_residues`. This proves the global
@@ -649,14 +824,18 @@ fn calculated_peak(preserved_items: u32) -> u64 {
 ///
 /// The fragment proves that all four coordinate vectors come from the shared
 /// unsigned 256-bit limb values, proves `lhs,rhs,remainder < target_modulus`,
-/// and checks the 521-bit RNS product relation. It consumes lhs, rhs, and
-/// quotient, returning both the 16 centered remainder limbs and its 36
+/// and checks the 513-bit RNS product relation. It consumes lhs, rhs, and
+/// quotient, returning both the 16 centered remainder limbs and its 47
 /// canonical residues.
 ///
 /// Consequently both `lhs * rhs` and `quotient * target_modulus + remainder`
 /// are nonnegative and strictly below `2^512`. Their difference is divisible
-/// by the 521-bit basis product, so the checked congruences imply the exact
+/// by the 513-bit basis product, so the checked congruences imply the exact
 /// integer equation rather than an equation after RNS wraparound.
+///
+/// The wide target-aware coordinates are optimized for secp256k1. Generation
+/// rejects any other target whose exact relation prefixes could exceed the
+/// four-byte ScriptNum arithmetic domain.
 pub fn mul_mod_hinted(target_modulus: &BigUint, preserved_items: u32) -> Script {
     assert!(!target_modulus.is_zero(), "target modulus must be positive");
     assert!(
@@ -758,7 +937,7 @@ mod tests {
         assert!(MODULI.windows(2).all(|pair| pair[0] < pair[1]));
         assert!(MODULI.iter().all(|modulus| is_prime(*modulus)));
         assert!(modulus() > (BigUint::one() << 512usize));
-        assert_eq!(modulus().bits(), 521);
+        assert_eq!(modulus().bits(), 513);
         for modulus in MODULI {
             let (coefficients, _, sum_abs) = coordinate_coefficients(modulus);
             assert!(
@@ -782,6 +961,192 @@ mod tests {
                 }
             }
         }
+    }
+
+    fn linear_extrema(coefficients: &[i32; LIMB_COUNT as usize], constant: i64) -> (i64, i64) {
+        coefficients
+            .iter()
+            .fold((constant, constant), |(low, high), coefficient| {
+                if *coefficient >= 0 {
+                    (
+                        low + i64::from(*coefficient) * -i64::from(LIMB_OFFSET),
+                        high + i64::from(*coefficient) * i64::from(LIMB_OFFSET - 1),
+                    )
+                } else {
+                    (
+                        low + i64::from(*coefficient) * i64::from(LIMB_OFFSET - 1),
+                        high + i64::from(*coefficient) * -i64::from(LIMB_OFFSET),
+                    )
+                }
+            })
+    }
+
+    fn maximum_joint_naf_prefix(
+        coefficients: &[i32; LIMB_COUNT as usize],
+        final_offset: i64,
+    ) -> u64 {
+        let digits = coefficients.clone().map(|coefficient| {
+            let sign = if coefficient < 0 { -1i8 } else { 1i8 };
+            let mut remaining = coefficient.unsigned_abs();
+            let mut scalar = Vec::new();
+            while remaining != 0 {
+                if remaining & 1 == 0 {
+                    scalar.push(0);
+                    remaining >>= 1;
+                } else {
+                    let digit = 2i8 - (remaining % 4) as i8;
+                    scalar.push(sign * digit);
+                    if digit > 0 {
+                        remaining -= 1;
+                    } else {
+                        remaining += 1;
+                    }
+                    remaining >>= 1;
+                }
+            }
+            scalar
+        });
+        let mut prefix = [0i32; LIMB_COUNT as usize];
+        let mut initialized = false;
+        let mut maximum = 0u64;
+        let mut record = |prefix: &[i32; LIMB_COUNT as usize], constant| {
+            let (low, high) = linear_extrema(prefix, constant);
+            maximum = maximum.max(low.unsigned_abs()).max(high.unsigned_abs());
+        };
+        let bit_count = digits.iter().map(Vec::len).max().unwrap_or(0);
+        for bit in (0..bit_count).rev() {
+            if initialized {
+                prefix.iter_mut().for_each(|coefficient| *coefficient *= 2);
+                record(&prefix, 0);
+            }
+            for (index, scalar) in digits.iter().enumerate() {
+                let digit = scalar.get(bit).copied().unwrap_or(0);
+                if digit != 0 {
+                    prefix[index] += i32::from(digit);
+                    initialized = true;
+                    record(&prefix, 0);
+                }
+            }
+        }
+        assert_eq!(&prefix, coefficients);
+        record(&prefix, final_offset);
+        maximum
+    }
+
+    #[test]
+    fn every_joint_naf_prefix_fits_scriptnum() {
+        let limit = i64::from(scriptint::MAX_SCRIPTNUM);
+        let mut tightest = (u64::MAX, 0u32, 0i64);
+        for modulus in MODULI {
+            let (coefficients, offset, _) = coordinate_coefficients(modulus);
+            let common = coefficients.iter().fold(0u32, |common, coefficient| {
+                gcd(common, coefficient.unsigned_abs())
+            });
+            if common > 1 {
+                let reduced = coefficients.map(|coefficient| coefficient / common as i32);
+                assert!(
+                    maximum_joint_naf_prefix(&reduced, 0) <= scriptint::MAX_SCRIPTNUM as u64,
+                    "p={modulus}: gcd-factored inner dot prefix"
+                );
+            }
+            let digits = coefficients.map(|coefficient| {
+                let sign = if coefficient < 0 { -1i8 } else { 1i8 };
+                let mut remaining = coefficient.unsigned_abs();
+                let mut scalar = Vec::new();
+                while remaining != 0 {
+                    if remaining & 1 == 0 {
+                        scalar.push(0);
+                        remaining >>= 1;
+                    } else {
+                        let digit = 2i8 - (remaining % 4) as i8;
+                        scalar.push(sign * digit);
+                        if digit > 0 {
+                            remaining -= 1;
+                        } else {
+                            remaining += 1;
+                        }
+                        remaining >>= 1;
+                    }
+                }
+                scalar
+            });
+            let mut prefix = [0i32; LIMB_COUNT as usize];
+            let mut initialized = false;
+            let bit_count = digits.iter().map(Vec::len).max().unwrap_or(0);
+            let mut check = |prefix: &[i32; LIMB_COUNT as usize], constant: i64| {
+                let (low, high) = linear_extrema(prefix, constant);
+                assert!(low >= -limit, "p={modulus}: prefix minimum {low}");
+                assert!(high <= limit, "p={modulus}: prefix maximum {high}");
+                let maximum = low.unsigned_abs().max(high.unsigned_abs());
+                let margin = scriptint::MAX_SCRIPTNUM as u64 - maximum;
+                if margin < tightest.0 {
+                    tightest = (margin, modulus, maximum as i64);
+                }
+            };
+            for bit in (0..bit_count).rev() {
+                if initialized {
+                    prefix.iter_mut().for_each(|coefficient| *coefficient *= 2);
+                    check(&prefix, 0);
+                }
+                for (index, scalar) in digits.iter().enumerate() {
+                    let digit = scalar.get(bit).copied().unwrap_or(0);
+                    if digit != 0 {
+                        prefix[index] += i32::from(digit);
+                        initialized = true;
+                        check(&prefix, 0);
+                    }
+                }
+            }
+            assert_eq!(prefix, coefficients);
+            check(&prefix, i64::from(offset));
+        }
+        assert_eq!(tightest, (76_455, 43_691, 2_147_407_192));
+    }
+
+    #[test]
+    fn relation_prefixes_and_double_centering_fit_scriptnum() {
+        let target = secp256k1_modulus();
+        let limit = u64::from(scriptint::MAX_SCRIPTNUM);
+        for modulus in MODULI {
+            let target_residue = (&target % modulus).to_u32().unwrap();
+            assert!(relation_numerator_bound(modulus, target_residue) <= limit);
+            let coefficient = center(target_residue, modulus);
+            for quotient in [0, modulus - 1] {
+                let result = crate::support::execution::execute_script(script! {
+                    { quotient }
+                    { safe_exact_constant_mul(coefficient, modulus - 1) }
+                    { i64::from(quotient) * i64::from(coefficient) }
+                    OP_EQUAL
+                });
+                assert!(result.success, "p={modulus}, q={quotient}: {result}");
+            }
+        }
+
+        for modulus in [61_681u32, 65_537] {
+            let target_residue = (&target % modulus).to_u32().unwrap();
+            assert!(centers_lhs_for_relation(modulus, target_residue));
+            for lhs in [0, modulus / 2, modulus / 2 + 1, modulus - 1] {
+                for rhs in [0, modulus / 2, modulus / 2 + 1, modulus - 1] {
+                    let expected =
+                        i64::from(center(lhs, modulus)) * i64::from(center(rhs, modulus));
+                    let result = crate::support::execution::execute_script(script! {
+                        { lhs } { rhs }
+                        { exact_product(modulus, true) }
+                        { expected } OP_EQUAL
+                    });
+                    assert!(
+                        result.success,
+                        "p={modulus}, lhs={lhs}, rhs={rhs}: {result}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "target modulus is not ScriptNum-safe")]
+    fn rejects_scriptnum_unsafe_target_profile() {
+        let _ = mul_mod_hinted(&BigUint::from(32_768u32), 0);
     }
 
     #[test]
@@ -1129,6 +1494,7 @@ mod tests {
             for _ in 0..(LIMB_COUNT + RESIDUE_COUNT) / 2 {
                 OP_2DROP
             }
+            if (LIMB_COUNT + RESIDUE_COUNT) % 2 != 0 { OP_DROP }
             OP_TRUE
         });
         assert!(result.success, "strict peak execution failed: {result}");
@@ -1145,6 +1511,7 @@ mod tests {
             for _ in 0..(LIMB_COUNT + RESIDUE_COUNT) / 2 {
                 OP_2DROP
             }
+            if (LIMB_COUNT + RESIDUE_COUNT) % 2 != 0 { OP_DROP }
             102 OP_EQUALVERIFY
             OP_FROMALTSTACK 101 OP_EQUALVERIFY
             OP_TRUE
@@ -1161,6 +1528,7 @@ mod tests {
             for _ in 0..(LIMB_COUNT + RESIDUE_COUNT) / 2 {
                 OP_2DROP
             }
+            if (LIMB_COUNT + RESIDUE_COUNT) % 2 != 0 { OP_DROP }
             for _ in 0..preserved / 2 {
                 OP_2DROP
             }

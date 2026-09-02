@@ -21,6 +21,7 @@ use crate::{
 };
 
 pub mod bound;
+pub mod composable;
 
 /// Carry-optimized prime basis in stack-coordinate order.
 pub const MODULI: [u32; 42] = [

@@ -165,7 +165,8 @@ The measured secp256k1-field instance uses
 | --- | ---: | ---: | ---: |
 | 75-prime, no relation carries | <!-- metric:prime_rns_hinted_mod_mul -->25777<!-- /metric:prime_rns_hinted_mod_mul --> bytes | <!-- metric:prime_rns_hinted_mod_mul_witness -->477<!-- /metric:prime_rns_hinted_mod_mul_witness --> bytes | <!-- metric:prime_rns_hinted_mod_mul_stack -->384<!-- /metric:prime_rns_hinted_mod_mul_stack --> |
 | 42-prime, exact carries, external bindings | <!-- metric:prime_rns_carry_hinted_mod_mul -->10952<!-- /metric:prime_rns_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_witness -->301<!-- /metric:prime_rns_carry_hinted_mod_mul_witness --> hint bytes | <!-- metric:prime_rns_carry_hinted_mod_mul_stack -->231<!-- /metric:prime_rns_carry_hinted_mod_mul_stack --> |
-| 36-prime, exact carries, standalone global bindings | <!-- metric:prime_rns_bound_carry_hinted_mod_mul -->88225<!-- /metric:prime_rns_bound_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_witness -->722<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_witness --> bytes for all 244 inputs | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_stack -->249<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_stack --> |
+| 47-prime, exact carries, standalone global bindings | <!-- metric:prime_rns_bound_carry_hinted_mod_mul -->51055<!-- /metric:prime_rns_bound_carry_hinted_mod_mul --> bytes | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_witness -->868<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_witness --> bytes for all 299 inputs | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_stack -->305<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_stack --> |
+| 46-prime, exact carries, composable certified operands | <!-- metric:prime_rns_composable_hinted_mod_mul -->31281<!-- /metric:prime_rns_composable_hinted_mod_mul --> bytes | <!-- metric:prime_rns_composable_hinted_mod_mul_witness -->471<!-- /metric:prime_rns_composable_hinted_mod_mul_witness --> incremental hint bytes; operands excluded | <!-- metric:prime_rns_composable_hinted_mod_mul_stack -->267<!-- /metric:prime_rns_composable_hinted_mod_mul_stack --> |
 
 Their exact one-shot locking-script attribution is:
 
@@ -173,7 +174,8 @@ Their exact one-shot locking-script attribution is:
 | --- | ---: | ---: | ---: | ---: |
 | 75-prime, no carries | <!-- metric:prime_rns_hinted_mod_mul_table_push -->123<!-- /metric:prime_rns_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_hinted_mod_mul_table_drop -->60<!-- /metric:prime_rns_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_hinted_mod_mul_computation -->25594<!-- /metric:prime_rns_hinted_mod_mul_computation --> | 25,777 |
 | 42-prime, exact carries | <!-- metric:prime_rns_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_carry_hinted_mod_mul_table_drop --> | <!-- metric:prime_rns_carry_hinted_mod_mul_computation -->10952<!-- /metric:prime_rns_carry_hinted_mod_mul_computation --> | 10,952 |
-| 36-prime, globally bound exact carries | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_drop --> | range <!-- metric:prime_rns_bound_carry_hinted_mod_mul_range_checks -->1060<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_range_checks --> + binding <!-- metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding -->75732<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding --> + relation <!-- metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation -->11121<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_bound_carry_hinted_mod_mul_routing_output -->312<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_routing_output --> | 88,225 |
+| 47-prime, globally bound exact carries | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_bound_carry_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_table_drop --> | range <!-- metric:prime_rns_bound_carry_hinted_mod_mul_range_checks -->1060<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_range_checks --> + binding <!-- metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding -->38801<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_residue_binding --> + relation <!-- metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation -->10794<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_bound_carry_hinted_mod_mul_routing_output -->400<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_routing_output --> | 51,055 |
+| 46-prime, composable certified operands | <!-- metric:prime_rns_composable_hinted_mod_mul_table_push -->0<!-- /metric:prime_rns_composable_hinted_mod_mul_table_push --> | <!-- metric:prime_rns_composable_hinted_mod_mul_table_drop -->0<!-- /metric:prime_rns_composable_hinted_mod_mul_table_drop --> | validation <!-- metric:prime_rns_composable_hinted_mod_mul_validation -->444<!-- /metric:prime_rns_composable_hinted_mod_mul_validation --> + quotient binding <!-- metric:prime_rns_composable_hinted_mod_mul_quotient_binding -->9852<!-- /metric:prime_rns_composable_hinted_mod_mul_quotient_binding --> + remainder binding <!-- metric:prime_rns_composable_hinted_mod_mul_remainder_binding -->9664<!-- /metric:prime_rns_composable_hinted_mod_mul_remainder_binding --> + relation <!-- metric:prime_rns_composable_hinted_mod_mul_modular_relation -->10799<!-- /metric:prime_rns_composable_hinted_mod_mul_modular_relation --> + routing <!-- metric:prime_rns_composable_hinted_mod_mul_routing_output -->522<!-- /metric:prime_rns_composable_hinted_mod_mul_routing_output --> | 31,281 |
 
 Only 183 bytes, 0.7%, of the no-carry verifier are table lifecycle. The carry
 verifier has no lookup memory at all: its 10,952 bytes consist of 9,595 bytes
@@ -182,22 +184,67 @@ validation, and 378 bytes of routing and output handling. Repeating that
 fragment therefore exposes no table setup to amortize; batching must instead
 share external bindings or introduce a different arithmetic strategy.
 
-The standalone verifier is also entirely table-free. Its larger size is not
-static lookup overhead: 75,732 of 88,225 bytes derive and bind four complete
-RNS vectors to shared 256-bit values, while 11,121 bytes perform the actual
+The standalone verifier is also entirely table-free. Its size is not static
+lookup overhead: 38,801 of 51,055 bytes derive and bind four complete RNS
+vectors to shared 256-bit values, while 10,794 bytes perform the actual
 modular-product relations. The reusable `carry::bound::bind_value` boundary is
-<!-- metric:prime_rns_bind_value -->19147<!-- /metric:prime_rns_bind_value -->
+<!-- metric:prime_rns_bind_value -->9777<!-- /metric:prime_rns_bind_value -->
 bytes: <!-- metric:prime_rns_bind_value_validation -->208<!-- /metric:prime_rns_bind_value_validation -->
-bytes validate limbs, <!-- metric:prime_rns_bind_value_binding -->18867<!-- /metric:prime_rns_bind_value_binding -->
-bytes derive all residues, and <!-- metric:prime_rns_bind_value_routing -->72<!-- /metric:prime_rns_bind_value_routing -->
+bytes validate limbs, <!-- metric:prime_rns_bind_value_binding -->9475<!-- /metric:prime_rns_bind_value_binding -->
+bytes derive all residues, and <!-- metric:prime_rns_bind_value_routing -->94<!-- /metric:prime_rns_bind_value_routing -->
 bytes route the dual output. This plain binder proves only that the shared
 integer is below `2^256`. `carry::bound::bind_value_below(N)` is
-<!-- metric:prime_rns_bind_value_below -->19234<!-- /metric:prime_rns_bind_value_below -->
+<!-- metric:prime_rns_bind_value_below -->9864<!-- /metric:prime_rns_bind_value_below -->
 bytes and additionally proves the fixed field bound required for `lhs`, `rhs`,
 or `r` unless that predicate is established elsewhere. A composed program can
-certify persistent values once at their introduction boundary; the 88,225-byte
+certify persistent values once at their introduction boundary; the 51,055-byte
 fused API deliberately rechecks all four values to provide a sound standalone
 operation.
+
+`carry::composable` makes that reuse executable in a separate 46-prime basis.
+Its 513-bit basis product is 1.01865 times `2^512`. The introduction fragment
+`carry::composable::bind_value` consumes 16 centered limbs and 46 binding
+carries, proves the value below the secp256k1 modulus, and returns only its 46
+canonical residues. It is
+<!-- metric:prime_rns_composable_bind_value -->9835<!-- /metric:prime_rns_composable_bind_value -->
+bytes: <!-- metric:prime_rns_composable_bind_value_validation -->248<!-- /metric:prime_rns_composable_bind_value_validation -->
+bytes of limb/field validation,
+<!-- metric:prime_rns_composable_bind_value_binding -->9487<!-- /metric:prime_rns_composable_bind_value_binding -->
+bytes of residue binding, and
+<!-- metric:prime_rns_composable_bind_value_routing -->100<!-- /metric:prime_rns_composable_bind_value_routing -->
+bytes of routing. For `N-1`, its 62 witness items serialize to
+<!-- metric:prime_rns_composable_bind_value_witness -->195<!-- /metric:prime_rns_composable_bind_value_witness -->
+bytes; it contains
+<!-- metric:prime_rns_composable_bind_value_opcodes -->6168<!-- /metric:prime_rns_composable_bind_value_opcodes -->
+static non-push opcodes and peaks at
+<!-- metric:prime_rns_composable_bind_value_stack -->72<!-- /metric:prime_rns_composable_bind_value_stack -->
+combined stack items.
+
+The 31,281-byte multiplication then consumes two certified residue vectors,
+binds only the hostile quotient and new remainder, and returns a certified
+remainder vector that can feed the next multiplication. Its input, bottom to
+top, is `preserved | lhs residues | rhs residues | q limbs | r limbs | hint
+groups`; each reverse-coordinate hint group contains a quotient-binding carry,
+remainder-binding carry, and relation carry. For `(N-1)^2`, the incremental
+170-item witness serializes to 471 bytes and excludes the two live certified
+operand vectors. The fragment contains
+<!-- metric:prime_rns_composable_hinted_mod_mul_opcodes -->20799<!-- /metric:prime_rns_composable_hinted_mod_mul_opcodes -->
+static non-push opcodes. Tests execute a two-multiplication chain, preserve
+unrelated main/alt state, reject every carry class at every coordinate, and
+exercise the exact 267-item peak and 1,000-item guard.
+
+There is no static table lifecycle to amortize: table push and drop are both
+zero for the binder and multiplication. Instead, global certification is the
+reusable cost. When `k` binder fragments and `m` multiplication fragments are
+already presented with their documented adjacent inputs, their arithmetic
+subtotal is `9,835*k + 31,281*m` bytes. This is not a complete all-witness-at-
+entry schedule: circuit-specific witness routing, certificate reordering and
+fan-out, terminal predicates, and transaction serialization remain excluded.
+In particular, multiplication consumes both operand vectors. A straightforward
+46-residue certificate duplication costs another 138 bytes before a square,
+so repeated squaring is not the unqualified `31,281`-byte recurrence. The exact
+31,281-byte claim applies only when two certified vectors and the gate hints
+are already adjacent in the required boundary layout.
 
 The boundary is `fragment-with-memory`: it includes complement and hint
 coordinate validation, a per-coordinate choice between a reused streamed table
@@ -262,7 +309,7 @@ returns the validated numeric remainder but does not normalize its raw bytes.
 
 `prime::carry::bound::mul_mod_hinted` closes that precondition in the fragment
 itself. Its witness supplies four values as 16 centered base-`2^16` limbs plus
-four residue-binding carries and one multiplication carry for each of 36
+four residue-binding carries and one multiplication carry for each of 47
 primes. For coordinate `i`, the script derives a canonical residue from the
 same limb vector with an exact dot-product equation
 
@@ -272,11 +319,15 @@ offset_i + sum_j(center(2^(16j) mod p_i) * limb_j)
 ```
 
 It validates all limb ranges, proves `lhs`, `rhs`, and `r` are below `N`, and
-therefore needs no remainder-complement vector. The 36-prime product has 521
+therefore needs no remainder-complement vector. The 47-prime product has 513
 bits, so the bound product congruence cannot wrap. The complete witness has 64
-limbs, 144 binding carries, and 36 relation carries. The fragment returns the
-16 centered remainder limbs beneath its 36 canonical residues. It has
-<!-- metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->79271<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->
+limbs, 188 binding carries, and 47 relation carries. The fragment returns the
+16 centered remainder limbs beneath its 47 canonical residues. Shared joint
+NAF doubling chains and common-factor extraction make the exact binding dots
+substantially smaller. The two widest target-aware coordinates center both
+product operands; generation rejects other targets whose exact relation
+prefixes would exceed ScriptNum. It has
+<!-- metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->32772<!-- /metric:prime_rns_bound_carry_hinted_mod_mul_opcodes -->
 static non-push opcodes; this marker is refreshed from the generated script.
 
 ### Range validation
@@ -329,11 +380,15 @@ the measured secp256k1 no-carry reduction peaks at 384 items, and its
 target-independent generation guard reserves a conservative 466. The packed
 carry profile is exercised at its exact 231-item peak and at exactly 1,000
 items after unrelated state is added. The standalone bound profile is likewise
-strict-executed at its exact 249-item peak and with exactly 1,000 items. The
+strict-executed at its exact 305-item peak and with exactly 1,000 items. The
 conditional fragments still need their documented external bindings; the
-standalone profile closes that obligation locally. Every fragment still needs
-a terminal predicate, clean-stack composition, and transaction-weight
-accounting.
+standalone profile closes that obligation locally. The composable profile
+closes q/r locally but accepts lhs/rhs certificates by verified control-flow
+provenance: they must come from its global field-value binder or a prior gate,
+not from raw witness residues or independent coordinate checks. Its binder and
+gate are strict-executed at exact 72- and 267-item peaks and with their
+generation guards filled to 1,000 items. Every fragment still needs a terminal
+predicate, clean-stack composition, and transaction-weight accounting.
 
 See the repository's [script-type](../../../docs/script-types.md) and
 [standardness](../../../docs/standardness.md) notes for the comparison rules.
@@ -371,9 +426,28 @@ from the contiguous 75-residue value above.
 self-contained alternative. It consumes the layout produced by
 `prime::carry::bound::push_hinted_witness`, proves all global bindings and
 field bounds locally, and returns both a centered 16-limb remainder and its
-36-residue encoding. `prime::carry::bound::bind_value` separately certifies
+47-residue encoding. `prime::carry::bound::bind_value` separately certifies
 one reusable limb-plus-residue value below `2^256` for larger composed scripts;
 `bind_value_below` also proves a fixed field bound.
+
+`prime::carry::composable::bind_value(preserved_items)` consumes
+`preserved | centered_limbs[16] | binding_carries[46]` and returns only
+`preserved | certified_residues[46]`, with coordinate zero on top. It validates
+the secp256k1 field bound as well as the global limb-to-residue binding.
+`prime::carry::composable::mul_mod_hinted(preserved_items)` then consumes,
+bottom to top, `preserved | lhs[46] | rhs[46] | q_limbs[16] | r_limbs[16] |
+hints`. Hints are 46 reverse-coordinate groups of `q_binding | r_binding |
+relation`. It consumes both operand certificates and every hint, returning
+only a certified `r[46]` vector in the same coordinate-zero-on-top order.
+`preserved_items` counts unrelated items across both stacks.
+
+That contract describes an operation boundary, not an all-witness-at-entry
+circuit layout. The measured 471-byte witness covers only one gate's 170
+incremental items and excludes its live certificates. Scheduling several
+initial witness groups, moving certificates between gates, and duplicating a
+certificate for fan-out or squaring require explicit extra script. The
+two-gate unit test inserts later inputs as script constants, so it validates
+certificate-state composition without claiming a complete witness router.
 
 ## Knowledge-base integration
 
