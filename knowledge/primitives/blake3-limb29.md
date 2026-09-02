@@ -7,14 +7,14 @@ u4 and bigint machinery.
   bounded single-chunk range rather than the full unbounded tree API.
 - **Evidence:** `differentially-validated` against official vectors.
 - **Representative result:** a fixed-point-optimized 64-byte, 29-bit-limb
-  compute fragment with its table memory is 74,049 bytes, contains 46,098
-  static non-push opcodes, and peaks at 644 combined stack items in the
+  compute fragment with its table memory is 72,469 bytes, contains 47,624
+  static non-push opcodes, and peaks at 692 combined stack items in the
   deterministic helper composition.
-- **Boundary:** `fragment-with-memory`; the result includes 383 bytes of full
-  table setup and 192 bytes of cleanup, but excludes input encoding and digest
+- **Boundary:** `fragment-with-memory`; the result includes 458 bytes of lookup
+  table setup and 216 bytes of cleanup, but excludes input encoding and digest
   comparison.
 - **Tradeoff:** limb width trades script bytes against retained-message stack
-  items. The same 64-byte fragment is 65,855 bytes with 4-bit limbs, while
+  items. The same 64-byte fragment is 64,275 bytes with 4-bit limbs, while
   larger widths compose with more blocks and unrelated state.
 - **Execution:** the local witness-input executor used by differential tests
   and the peak metric disables the stack-limit check. The observed one-block

@@ -269,6 +269,7 @@ fn blake3(
             &tables,
             8,
             i == num_blocks - 1,
+            false,
         );
 
         for _ in 0..8 {
@@ -351,7 +352,7 @@ pub fn blake3_push_message_script_with_limb(message_bytes: &[u8], limb_len: u8) 
     }
 }
 
-const SUM_OF_FULL_TABLES: usize = 384;
+const SUM_OF_FULL_TABLES: usize = 432;
 const UNPACKED_BLOCK: usize = 128;
 const MAX_BLAKE3_ELEMENT_COUNT: usize = SUM_OF_FULL_TABLES + UNPACKED_BLOCK + 132;
 
@@ -468,6 +469,7 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
         message,
         &tables,
         8,
+        true,
         true,
     );
 

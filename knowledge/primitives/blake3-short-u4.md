@@ -10,22 +10,24 @@ checked 32-byte, 4-bit-limb generator on the same
 
 ## Result
 
-The 32-byte direct-u4 compute fragment is 62,647 bytes, contains 39,664 static
-non-push opcodes, and peaks at 580 combined stack items. It includes numeric
-input validation, 383 bytes of lookup-table setup, compression, 192 bytes of
+The 32-byte direct-u4 compute fragment is 61,074 bytes, contains 41,190 static
+non-push opcodes, and peaks at 628 combined stack items. It includes numeric
+input validation, 458 bytes of lookup-table setup, compression, 216 bytes of
 table cleanup, and digest restoration. It excludes input serialization and the
 terminal digest predicate.
 
 The deterministic `00 01 ... 1f` helper composition adds 64 bytes of input
-pushes and 128 bytes of digest comparison, for 62,839 bytes total. Its canonical
+pushes and 128 bytes of digest comparison, for 61,266 bytes total. Its canonical
 64-item witness encoding would serialize to 111 bytes; the maximum over valid
 numeric nibbles is 129 bytes.
 
 The pre-optimization 32-byte, 4-bit-limb compute baseline was 67,974 bytes with
-a peak of 644, so the selected result saves 5,327 bytes (7.84%) and 64 stack
-items. After applying the shared addition and constant-column improvements to
-the selected-limb path too, that generic 32-byte fragment is 62,953 bytes; the
-direct layout accounts for the remaining 306-byte compute reduction and halves
+a peak of 644, so the selected result saves 6,900 bytes (10.15%) and 16 stack
+items. Relative to the previous checked direct-u4 frontier, it saves 1,573 bytes
+while spending 48 more persistent table items. After applying the shared
+addition and constant-column improvements to the selected-limb path too, that
+generic 32-byte fragment is 61,383 bytes; the direct layout accounts for the
+remaining 309-byte compute reduction and halves
 the host-push fixture from 128 to 64 bytes.
 
 ## Construction
@@ -37,8 +39,10 @@ the host-push fixture from 128 to 64 bytes.
 - Evaluate wholly constant first-round column calls on the host. Active columns
   fold literal initial-state additions and use fixed rows of the XOR table;
   literal XOR nibbles zero and fifteen use copy and `15-x` special cases.
-- Reuse one absolute stack index to fetch both quotient and modulo from the
-  adjacent addition tables.
+- Interleave modulo and carry at adjacent depths so one retained absolute index
+  fetches both. A separate 48-item modulo table avoids doubling the discarded
+  most-significant-digit sum, and constant additions fold literals into the
+  lookup address.
 - Select disjoint G-call order at generation time. For exactly eight live
   words, place semantic words in physical order `w2,w4,w3,w7,w6,w1,w0,w5` so
   the final consuming round removes them with less routing.
@@ -61,9 +65,10 @@ acceptance was performed. Numeric nibble bounds do not by themselves define a
 protocol's raw-byte canonicality rule, and callers must bind both the generated
 length choice and returned digest.
 
-Rejected eager message expansion, active-quartet routing, alternate radix, and
-carry-branch layouts are recorded in the negative-results index. The remaining
-fused add/rotate frontier is tracked by OP-013.
+Rejected eager message expansion, active-quartet routing, radix-u2, bitwise,
+byte-hybrid, and fused add/rotate layouts are recorded in the negative-results
+index. The remaining global digit-routing and seven-bit-rotation frontier is
+tracked by OP-013.
 
 See the [implementation README](../../src/hashes/blake3/README.md), the generic
 [selected-limb profile](blake3-limb29.md), and catalog record

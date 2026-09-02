@@ -266,6 +266,24 @@ recorded stack layout, not a proof against every fused scheduler. A
 branch-based two-input carry prototype was also dominated by 351 bytes at 32
 bytes.
 
+A later explicit witness-expanded design supplied seven 64-nibble schedule
+copies, range-checked one canonical copy, and equality-bound the other six. It
+fit the limit at 906 items but measured 65,651 bytes versus the contemporary
+62,647-byte single-copy backend. Without binding or range checks it was 63,091
+bytes; destructive per-round consumption saved only four compression bytes,
+so input parking and equality checks could not amortize. The bound construction
+matched the independent BLAKE3 implementation and rejected unequal copies.
+
+Interleaving the eight dependent stages across four disjoint G calls was also
+dominated. Stage chunk sizes one through eight measured 66,433, 64,739, 63,600,
+63,763, 63,205, 63,221, 63,125, and 62,647 bytes; whole-G execution was the
+minimum. A within-G prototype streamed all three aligned XOR-to-add chains but
+reached 66,170 bytes before digest-order cleanup. Even crediting all 2,184 bytes
+needed to restore canonical retained-word order leaves a 63,986-byte lower
+bound above its 62,647-byte comparison point. The expanded-witness and
+stage-chunk results are `locally-reproduced`; the unfinished streamed lower
+bound is `inspected` design-search evidence.
+
 ## NR-019: A preliminary u8 BLAKE3 backend is size-dominated by sparse u4
 
 A byte-radix prototype generated 95,788 bytes before its quick register
@@ -276,7 +294,18 @@ digit boundaries. The u8 experiment was stopped rather than polished because
 correctness cleanup could not erase the existing size gap. This is an
 `inspected` rejected prototype, not a differentially validated u8 construction.
 
-## NR-020: Literal interleaving of BLAKE3 quotient/modulo tables is incorrect
+Correct clean-sheet radix-u2 and bitwise backends settled the smaller-radix
+side of the same question. For a checked 32-byte input they measured 131,443
+bytes at a 450-item peak and 202,577 bytes at a 792-item peak, respectively,
+versus the 62,647-byte u4 comparison point. Both implemented all seven rounds,
+sparse message words, checked hostile input, and standard u4 digest output, and
+matched the independent BLAKE3 crate on deterministic short lengths. A checked
+byte-to-u4 input bridge alone was 1,168 bytes versus 451 for direct u4 input.
+These results are `differentially-validated` local generator evidence: smaller
+tables do not repay doubled or quadrupled digit routing, while byte and wider
+radices lose the free 12-bit nibble rotation.
+
+## NR-020: Unadjusted BLAKE3 quotient/modulo interleaving is incorrect
 
 An attempted 96-item table placed `sum % 16` and `sum / 16` at adjacent depths
 so one absolute index could fetch both. The first lookup retained a copy of that
@@ -284,11 +313,20 @@ index, however, shifting the depth seen by the second `OP_PICK`; deterministic
 digest comparison exposed the error. The rejected layout must not be cited as a
 size improvement.
 
-The corrected optimization keeps the existing adjacent 48-item modulo and
-quotient tables. For non-final nibbles it computes the quotient's absolute
-depth once, fetches modulo 49 items below the retained index, and then fetches
-carry from the retained depth. Partial-block, 64-byte, 4/29/31-bit-limb, and
-malformed-limb checks passed locally. The failure and correction are
+The retained correction accounts for that shift instead of abandoning
+interleaving. Top-relative depths `2*s` and `2*s+1` hold `s mod 16` and
+`floor(s/16)`. The first lookup uses an absolute base one item deeper because
+the index is retained; after the modulo result moves to altstack, consuming the
+unchanged index selects the adjacent carry. A separate 48-item modulo table
+avoids doubling the most-significant sum whose carry is discarded, and literal
+first-column nibbles are folded into the address.
+
+On the previous 62,647-byte checked 32-byte backend, corrected interleaving plus
+the final-modulo table measured 61,188 bytes; constant-address folding and the
+exact-32 final operand order reduced the retained result to 61,074 bytes at a
+628-item peak. Every declared length from 1 through 32 matched the independent
+BLAKE3 implementation, and an exhaustive sum test covers table indices 0
+through 47. The rejected unadjusted form and retained correction are therefore
 `locally-reproduced` for this generator.
 
 ## NR-021: Higher Winternitz radices lose locking-script bytes

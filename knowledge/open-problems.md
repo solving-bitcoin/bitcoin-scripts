@@ -150,18 +150,20 @@ vulnerability from the adjacent advisory without this analysis.
 
 ## OP-013 — BLAKE3 stack-routing frontier
 
-The checked short-input frontier is 62,647 bytes and 580 stack items for 32
-bytes. Length-specific first/middle/final G-call schedules, a physical message
-layout, constant first-round columns, adjacent add-table base reuse, eager
-message expansion, and active-quartet routing have now been evaluated; the
-retained candidates and negative results are recorded. Nibble additions, the
-seven-bit rotation, and deep XOR routing remain dominant.
+The checked short-input frontier is 61,074 bytes and 628 stack items for 32
+bytes. Length-specific G-call schedules, physical message layout, constant
+first-round columns, corrected interleaved addition tables, alternate radices,
+expanded witness schedules, within-G streaming, and active-quartet routing have
+now been evaluated; the retained candidates and negative results are recorded.
+The seven-bit rotation and deep XOR/state routing remain dominant, with 372
+items of strict stack headroom in the representative short configuration.
 
-**Complete when:** at least one fused add/rotate or seven-bit-rotation layout is
-deterministically searched against the 32-byte direct-u4 configuration; every
-retained candidate passes the short-length differential suite, partial-block
-boundaries, and malformed-input tests; and it either improves the checked
-metric or is recorded with a reproducible dominated measurement.
+**Complete when:** a global digit-level state scheduler or a specialized
+seven-bit-rotation table/layout is deterministically searched against the
+61,074-byte direct-u4 configuration; every retained candidate passes the
+short-length differential suite, partial-block boundaries, and malformed-input
+tests; and it either improves the checked metric or is recorded with a
+reproducible dominated measurement.
 
 ## OP-014 — Total-domain ScriptNum right-shift frontier
 

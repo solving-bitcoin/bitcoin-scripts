@@ -1,5 +1,6 @@
 use crate::arithmetic::u4::{stack_add::*, stack_logic::*, stack_shift::*};
 pub use bitcoin_script::builder::StructuredScript as Script;
+use bitcoin_script::script;
 use bitcoin_script_stack::stack::{StackTracker, StackVariable};
 use std::collections::HashMap;
 
@@ -11,8 +12,8 @@ const MSG_PERMUTATION: [u8; 16] = [2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14
 
 #[derive(Clone, Debug, Copy)]
 pub(crate) struct TablesVars {
-    modulo: StackVariable,
-    quotient: StackVariable,
+    modulo_last: StackVariable,
+    add_interleaved: StackVariable,
     shift_tables: StackVariable,
     xor_table: StackVariable,
     depth_lookup: StackVariable,
@@ -32,11 +33,25 @@ impl TablesVars {
             u4_push_full_xor_table_stack(stack)
         };
         let shift_tables = u4_push_shift_for_blake(stack);
-        let modulo = u4_push_modulo_for_blake(stack);
-        let quotient = u4_push_quotient_for_blake(stack);
+        // A separate modulo-only table saves two opcodes on the discarded
+        // carry of every most-significant digit.
+        let modulo_last = u4_push_modulo_for_blake(stack);
+        stack.custom(
+            script! {
+                for sum in (0..48).rev() {
+                    { sum / 16 }
+                    { sum % 16 }
+                }
+            },
+            0,
+            false,
+            0,
+            "interleaved quotient/modulo addition table",
+        );
+        let add_interleaved = stack.define(96, "add_interleaved");
         TablesVars {
-            modulo,
-            quotient,
+            modulo_last,
+            add_interleaved,
             shift_tables,
             xor_table,
             depth_lookup,
@@ -45,8 +60,8 @@ impl TablesVars {
     }
 
     pub(crate) fn drop(&self, stack: &mut StackTracker) {
-        stack.drop(self.quotient);
-        stack.drop(self.modulo);
+        stack.drop(self.add_interleaved);
+        stack.drop(self.modulo_last);
         stack.drop(self.shift_tables);
         stack.drop(self.xor_table);
         stack.drop(self.depth_lookup);
@@ -157,22 +172,22 @@ fn xor_and_rotate_right_by_7(
 
 fn split_addition(stack: &mut StackTracker, tables: &TablesVars, nibble_index: u8) {
     if nibble_index > 0 {
-        // The 48-entry quotient table sits immediately above modulo. Retain
-        // one absolute quotient depth, fetch modulo 48 entries plus the
-        // retained-depth item below it, then reuse the depth for carry.
-        let quotient_offset = stack.get_offset(tables.quotient) - 1;
-        stack.number(quotient_offset);
+        // Top-relative depths 2*s and 2*s+1 contain s%16 and s/16. Retaining
+        // the absolute index during the first PICK shifts that lookup by one;
+        // consuming the same index during the second PICK selects carry.
+        stack.op_dup();
+        stack.op_add();
+        let interleaved_offset = stack.get_offset(tables.add_interleaved);
+        stack.number(interleaved_offset);
         stack.op_add();
         stack.op_dup();
-        stack.number(49);
-        stack.op_add();
         let modulo = stack.op_pick();
         stack.rename(modulo, &format!("modulo[{nibble_index}]"));
         stack.to_altstack();
         let carry = stack.op_pick();
         stack.rename(carry, "carry");
     } else {
-        let modulo = stack.get_value_from_table(tables.modulo, None);
+        let modulo = stack.get_value_from_table(tables.modulo_last, None);
         stack.rename(modulo, "modulo[0]");
         stack.to_altstack();
     }
@@ -181,19 +196,37 @@ fn split_addition(stack: &mut StackTracker, tables: &TablesVars, nibble_index: u
 fn u4_add_direct(
     stack: &mut StackTracker,
     to_copy: Vec<StackVariable>,
+    to_move: Vec<&mut StackVariable>,
+    tables: &TablesVars,
+) {
+    u4_add_direct_ordered(stack, to_copy, to_move, tables, false);
+}
+
+fn u4_add_direct_ordered(
+    stack: &mut StackTracker,
+    to_copy: Vec<StackVariable>,
     mut to_move: Vec<&mut StackVariable>,
     tables: &TablesVars,
+    move_before_copy: bool,
 ) {
     let nibble_count = 8;
     let number_count = to_copy.len() + to_move.len();
 
     for i in (0..nibble_count).rev() {
-        for x in to_copy.iter() {
-            stack.copy_var_sub_n(*x, i);
-        }
-
-        for x in to_move.iter_mut() {
-            stack.move_var_sub_n(x, i);
+        if move_before_copy {
+            for x in to_move.iter_mut().rev() {
+                stack.move_var_sub_n(x, i);
+            }
+            for x in &to_copy {
+                stack.copy_var_sub_n(*x, i);
+            }
+        } else {
+            for x in &to_copy {
+                stack.copy_var_sub_n(*x, i);
+            }
+            for x in &mut to_move {
+                stack.move_var_sub_n(x, i);
+            }
         }
 
         for _ in 0..number_count - 1 {
@@ -220,13 +253,28 @@ fn u4_add_constant_and_dynamic(
 ) -> StackVariable {
     for i in (0..8_u8).rev() {
         stack.copy_var_sub_n(*dynamic, u32::from(i));
-        stack.number(constant_nibble(constant, i));
-        stack.op_add();
-
         if i < 7 {
             stack.op_add();
         }
-        split_addition(stack, tables, i);
+        // Fold the known nibble into the absolute interleaved-table address:
+        // 2*(dynamic + carry + constant) = 2*(dynamic + carry) + 2*constant.
+        stack.op_dup();
+        stack.op_add();
+        let retained_index_adjustment = u32::from(i > 0);
+        let offset = stack.get_offset(tables.add_interleaved) - 1
+            + retained_index_adjustment
+            + 2 * constant_nibble(constant, i);
+        stack.number(offset);
+        stack.op_add();
+        if i > 0 {
+            stack.op_dup();
+            stack.op_pick();
+            stack.to_altstack();
+            stack.op_pick();
+        } else {
+            stack.op_pick();
+            stack.to_altstack();
+        }
     }
     stack.from_altstack_joined(8, "constant-plus-dynamic")
 }
@@ -362,12 +410,19 @@ fn g(
     mut m_two_i_plus_one: Option<StackVariable>,
     tables: &TablesVars,
     last_round: bool,
+    move_message_first: bool,
 ) {
     let vb = var_map[&b];
     let mut va = var_map.get_mut(&a).unwrap();
 
     match (last_round, m_two_i.as_mut()) {
-        (true, Some(message)) => u4_add_direct(stack, vec![vb], vec![&mut va, message], tables),
+        (true, Some(message)) => u4_add_direct_ordered(
+            stack,
+            vec![vb],
+            vec![&mut va, message],
+            tables,
+            move_message_first,
+        ),
         (false, Some(message)) => u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables),
         (_, None) => u4_add_direct(stack, vec![vb], vec![&mut va], tables),
     }
@@ -389,7 +444,13 @@ fn g(
     let vb = var_map[&b];
     let mut va = var_map.get_mut(&a).unwrap();
     match (last_round, m_two_i_plus_one.as_mut()) {
-        (true, Some(message)) => u4_add_direct(stack, vec![vb], vec![&mut va, message], tables),
+        (true, Some(message)) => u4_add_direct_ordered(
+            stack,
+            vec![vb],
+            vec![&mut va, message],
+            tables,
+            move_message_first,
+        ),
         (false, Some(message)) => u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables),
         (_, None) => u4_add_direct(stack, vec![vb], vec![&mut va], tables),
     }
@@ -420,6 +481,7 @@ fn round(
     round_index: u8,
     block_len: u32,
     skipped_columns: [bool; 4],
+    direct_short_layout: bool,
 ) {
     const COLUMN_STEPS: [(u8, u8, u8, u8, u8, u8); 4] = [
         (0, 4, 8, 12, 0, 1),
@@ -471,6 +533,7 @@ fn round(
                 message_var_map.get(&m1).copied(),
                 tables,
                 last_round,
+                last_round && direct_short_layout && block_len == 32,
             );
         }
     }
@@ -531,6 +594,7 @@ pub(crate) fn compress(
     tables: &TablesVars,
     final_rounds: u8,
     last_round: bool,
+    direct_short_layout: bool,
 ) {
     assert_eq!(final_rounds, 8);
 
@@ -539,7 +603,15 @@ pub(crate) fn compress(
     } else {
         let mut state = first_round_columns(stack, counter, block_len, flags, &message, tables);
         round(
-            stack, &mut state, &message, tables, false, 0, block_len, [true; 4],
+            stack,
+            &mut state,
+            &message,
+            tables,
+            false,
+            0,
+            block_len,
+            [true; 4],
+            direct_short_layout,
         );
         message = permutate(&message);
         (state, 1)
@@ -555,11 +627,20 @@ pub(crate) fn compress(
             round_index,
             block_len,
             [false; 4],
+            direct_short_layout,
         );
         message = permutate(&message);
     }
     round(
-        stack, &mut state, &message, tables, true, 6, block_len, [false; 4],
+        stack,
+        &mut state,
+        &message,
+        tables,
+        true,
+        6,
+        block_len,
+        [false; 4],
+        direct_short_layout,
     );
 
     for i in (0..final_rounds).rev() {
@@ -594,4 +675,43 @@ pub(crate) fn get_flags_for_block(i: u32, num_blocks: u32) -> u32 {
         return 0b00001010;
     }
     0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::support::execution::execute_script;
+
+    #[test]
+    fn interleaved_addition_table_covers_every_sum() {
+        for sum in 0..48_u32 {
+            let mut stack = StackTracker::new();
+            let tables = TablesVars::new(&mut stack, true);
+
+            stack.number(sum);
+            split_addition(&mut stack, &tables, 1);
+            stack.from_altstack();
+            stack.number(sum % 16);
+            stack.op_equalverify();
+            stack.number(sum / 16);
+            stack.op_equalverify();
+            tables.drop(&mut stack);
+            stack.op_true();
+            assert!(execute_script(stack.get_script()).success, "sum {sum}");
+
+            let mut stack = StackTracker::new();
+            let tables = TablesVars::new(&mut stack, true);
+            stack.number(sum);
+            split_addition(&mut stack, &tables, 0);
+            stack.from_altstack();
+            stack.number(sum % 16);
+            stack.op_equalverify();
+            tables.drop(&mut stack);
+            stack.op_true();
+            assert!(
+                execute_script(stack.get_script()).success,
+                "final sum {sum}"
+            );
+        }
+    }
 }

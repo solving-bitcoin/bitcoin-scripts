@@ -4,8 +4,8 @@ Measured fragments exclude input pushes and output comparison.
 
 | Construction | Configuration | Script bytes | Evidence | Principal limitation |
 | --- | --- | ---: | --- | --- |
-| BLAKE3 sparse direct u4 | 32-byte input | 62,647 | differentially-validated | Fixed length at generation time; at most 32 bytes |
-| BLAKE3 limb29 | 64-byte input | 74,049 | differentially-validated | Single 1,024-byte chunk only; includes table memory |
+| BLAKE3 sparse direct u4 | 32-byte input | 61,074 | differentially-validated | Fixed length at generation time; at most 32 bytes |
+| BLAKE3 limb29 | 64-byte input | 72,469 | differentially-validated | Single 1,024-byte chunk only; includes table memory |
 | SHA-1 u32 | 32-byte input | 209,726 | differentially-validated | Collision-broken compatibility hash |
 | RIPEMD-160 u32 | 32-byte input | 244,063 | differentially-validated | 160-bit output |
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
@@ -19,5 +19,6 @@ other backend. For protocol selection, include
 representation conversion, digest comparison, and any state-compression role.
 Its checked generator applies the pinned peephole optimizer to a fixed point;
 the row is `fragment-with-memory` because it owns full lookup-table setup and
-cleanup. Its local differential/peak executor disables the stack-limit check,
-so this result remains `research-unlimited` rather than consensus-validated.
+cleanup. The short-profile executor enforces the 1,000-item local limit, but it
+is not a pinned Bitcoin Core consensus run, so the result remains
+`research-unlimited` rather than consensus-validated.
