@@ -443,9 +443,13 @@ fn metrics() -> Vec<Metric> {
     let fast_wots_public_key = FastWots32::public_key(&fast_wots_key);
     let fast_wots_signature = FastWots32::sign(fast_wots_key, &wots_message);
     let fast_wots_witness = fast_wots_signature.to_witness();
+    let fast_wots_size_witness = fast_wots_signature.to_size_optimized_witness();
     let fast_wots_exact = FastWots32::checksig_verify(&fast_wots_public_key);
     let fast_wots_minimal = FastWots32::checksig_verify_minimal(&fast_wots_public_key);
     let fast_wots_clear = FastWots32::checksig_verify_and_clear(&fast_wots_public_key);
+    let fast_wots_size = FastWots32::checksig_verify_size_optimized(&fast_wots_public_key);
+    let fast_wots_size_clear =
+        FastWots32::checksig_verify_size_optimized_and_clear(&fast_wots_public_key);
     let fast_wots_exact_complete = script! {
         { fast_wots_exact.clone() }
         for _ in 0..FastWots32::MESSAGE_DIGITS {
@@ -461,6 +465,14 @@ fn metrics() -> Vec<Metric> {
         OP_TRUE
     };
     let fast_wots_clear_complete = script! {{ fast_wots_clear.clone() } OP_TRUE};
+    let fast_wots_size_complete = script! {
+        { fast_wots_size.clone() }
+        for _ in 0..FastWots32::MESSAGE_DIGITS {
+            OP_DROP
+        }
+        OP_TRUE
+    };
+    let fast_wots_size_clear_complete = script! {{ fast_wots_size_clear.clone() } OP_TRUE};
     let fast_wots_performance_message: [u8; 32] = [
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee,
         0xff, 0x0f, 0x1e, 0x2d, 0x3c, 0x4b, 0x5a, 0x69, 0x78, 0x87, 0x96, 0xa5, 0xb4, 0xc3, 0xd2,
@@ -1717,6 +1729,16 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_lock",
+            value: script_len(fast_wots_size.clone()),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_clear_lock",
+            value: script_len(fast_wots_size_clear.clone()),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
             key: "fast_wots32_witness_zero",
             value: serialize(&fast_wots_witness).len(),
         },
@@ -1746,6 +1768,16 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_static_opcodes",
+            value: static_non_push_opcodes(fast_wots_size),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_clear_static_opcodes",
+            value: static_non_push_opcodes(fast_wots_size_clear),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
             key: "fast_wots32_exact_hashes",
             value: fast_wots_exact_hashes,
         },
@@ -1768,6 +1800,19 @@ fn metrics() -> Vec<Metric> {
             readme: "src/signatures/winternitz/README.md",
             key: "fast_wots32_clear_stack",
             value: max_stack_items(fast_wots_clear_complete, fast_wots_witness.to_vec()),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_stack",
+            value: max_stack_items(fast_wots_size_complete, fast_wots_size_witness.to_vec()),
+        },
+        Metric {
+            readme: "src/signatures/winternitz/README.md",
+            key: "fast_wots32_size_clear_stack",
+            value: max_stack_items(
+                fast_wots_size_clear_complete,
+                fast_wots_size_witness.to_vec(),
+            ),
         },
         Metric {
             readme: "src/ciphers/prince/README.md",

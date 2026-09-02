@@ -26,8 +26,10 @@ The Fast Winternitz path makes the transport boundary more explicit: a
 nibbles, and the exact verifier depends on tapscript `MINIMALIF`. Its consuming
 Rust key prevents ordinary same-process reuse only. Transaction-graph state,
 crash rollback, restored seeds, distributed signers, and raw in-range
-ScriptNum canonicality remain protocol obligations. Fast and legacy witnesses
-are not wire-compatible.
+ScriptNum canonicality remain protocol obligations. The 4,640-byte size profile
+uses a distinct chain/digit/checksum order and relaxes raw chain-item length;
+protocols requiring exactly 20-byte signature nodes should use the 5,050-byte
+strict-chain profile. Fast and legacy witnesses are not wire-compatible.
 
 Protocol evaluation must count public commitment placement, witness
 serialization, recovered-state cleanup, and the transaction graph that prevents

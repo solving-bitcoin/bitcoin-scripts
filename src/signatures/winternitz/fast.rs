@@ -155,6 +155,28 @@ impl<const MESSAGE_BYTES: usize> FastSignature<MESSAGE_BYTES> {
         }
         witness
     }
+
+    /// Serializes for the locking-size-optimized verifier.
+    ///
+    /// Message pairs are `[chain_0, digit_0, ..., chain_n, digit_n]`.
+    /// Checksum pairs follow in reverse chain-index order. This makes Script
+    /// consume checksum digits least-significant first, then message digits in
+    /// reverse order, while the authenticated digits ultimately reach the
+    /// checksum routine in its cheapest Horner order.
+    pub fn to_size_optimized_witness(&self) -> Witness {
+        debug_assert_eq!(self.chain_values.len(), self.digits.len());
+        let mut witness = Witness::new();
+        for index in 0..FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS {
+            witness.push(self.chain_values[index]);
+            push_digit(&mut witness, self.digits[index]);
+        }
+        for checksum_index in (0..FastWinternitz::<MESSAGE_BYTES>::CHECKSUM_DIGITS).rev() {
+            let index = FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS + checksum_index;
+            witness.push(self.chain_values[index]);
+            push_digit(&mut witness, self.digits[index]);
+        }
+        witness
+    }
 }
 
 /// Fixed-message-length, base-16, HASH160 Winternitz operations.
@@ -313,6 +335,48 @@ impl<const MESSAGE_BYTES: usize> FastWinternitz<MESSAGE_BYTES> {
         }
     }
 
+    /// Builds the smallest strict numeric verifier and recovers the message.
+    ///
+    /// This profile expects [`FastSignature::to_size_optimized_witness`]. It
+    /// rejects digits outside `0..=15`, uses a symmetric eight-value lookup,
+    /// and leaves the authenticated message nibbles on the main stack. To save
+    /// four locking bytes per chain it does not separately require the supplied
+    /// chain item to be 20 bytes; the accepted relation is documented on the
+    /// internal chain verifier below.
+    pub fn checksig_verify_size_optimized(public_key: &FastPublicKey<MESSAGE_BYTES>) -> Script {
+        Self::assert_public_key(public_key);
+        script! {
+            // The size witness puts checksum chain 0 on top, followed by the
+            // remaining checksum chains and then message chains in reverse.
+            for checksum_index in 0..Self::CHECKSUM_DIGITS {
+                { verify_chain_size_optimized(public_key.chain_ends[Self::MESSAGE_DIGITS + checksum_index]) }
+            }
+            for message_index in (0..Self::MESSAGE_DIGITS).rev() {
+                { verify_chain_size_optimized(public_key.chain_ends[message_index]) }
+            }
+            { recover_message_and_verify_checksum_horner::<MESSAGE_BYTES>() }
+        }
+    }
+
+    /// Builds the smallest terminal verifier and consumes the message.
+    ///
+    /// The fragment leaves an empty stack after successful verification. The
+    /// caller must append the surrounding protocol's terminal predicate.
+    pub fn checksig_verify_size_optimized_and_clear(
+        public_key: &FastPublicKey<MESSAGE_BYTES>,
+    ) -> Script {
+        Self::assert_public_key(public_key);
+        script! {
+            for checksum_index in 0..Self::CHECKSUM_DIGITS {
+                { verify_chain_size_optimized(public_key.chain_ends[Self::MESSAGE_DIGITS + checksum_index]) }
+            }
+            for message_index in (0..Self::MESSAGE_DIGITS).rev() {
+                { verify_chain_size_optimized(public_key.chain_ends[message_index]) }
+            }
+            { verify_checksum_and_clear_horner::<MESSAGE_BYTES>() }
+        }
+    }
+
     fn assert_public_key(public_key: &FastPublicKey<MESSAGE_BYTES>) {
         Self::assert_parameters();
         assert_eq!(
@@ -352,6 +416,14 @@ fn hash_chain(mut value: FastChainValue, steps: u8) -> FastChainValue {
         value = *hash160::Hash::hash(&value).as_byte_array();
     }
     value
+}
+
+fn push_digit(witness: &mut Witness, digit: u8) {
+    if digit == 0 {
+        witness.push([]);
+    } else {
+        witness.push([digit]);
+    }
 }
 
 fn message_and_checksum_digits<const MESSAGE_BYTES: usize>(
@@ -445,6 +517,44 @@ fn verify_chain_minimal(expected: FastChainValue, return_digit: bool) -> Script 
     }
 }
 
+/// Verifies one chain with the smallest measured strict-numeric lookup.
+///
+/// Precondition: `[... chain_value, digit]`. Postcondition: the digit is on
+/// the altstack. Negative digits fail at `OP_PICK`; `16` and above fail the
+/// explicit upper bound; oversized ScriptNums fail numeric decoding.
+///
+/// The fragment intentionally omits `OP_SIZE 20 OP_EQUALVERIFY`. For digit 15
+/// the selected item is compared directly with the 20-byte endpoint, which
+/// enforces its length. For every smaller digit, at least one HASH160 executes
+/// before the comparison and normalizes the selected value to 20 bytes. The
+/// signer always emits 20-byte nodes, but the verifier relation also admits an
+/// arbitrary-length preimage for digits below 15. That tradeoff saves four
+/// serialized locking bytes per chain and is specific to this size profile.
+fn verify_chain_size_optimized(expected: FastChainValue) -> Script {
+    script! {
+        OP_DUP { BASE } OP_LESSTHAN OP_VERIFY
+        OP_DUP OP_TOALTSTACK
+
+        { 8 }
+        OP_2DUP OP_LESSTHAN
+        OP_IF
+            OP_DROP OP_TOALTSTACK
+            for _ in 0..8 {
+                OP_HASH160
+            }
+        OP_ELSE
+            OP_SUB OP_TOALTSTACK
+        OP_ENDIF
+        for _ in 0..7 {
+            OP_DUP OP_HASH160
+        }
+        OP_FROMALTSTACK OP_PICK
+        { expected.to_vec() }
+        OP_EQUALVERIFY
+        OP_2DROP OP_2DROP OP_2DROP OP_2DROP
+    }
+}
+
 fn recover_message_and_verify_checksum<const MESSAGE_BYTES: usize>() -> Script {
     script! {
         // Preserve message digits while accumulating max_sum - actual_sum.
@@ -464,6 +574,49 @@ fn recover_message_and_verify_checksum<const MESSAGE_BYTES: usize>() -> Script {
             }
             OP_ADD
         }
+        OP_EQUALVERIFY
+    }
+}
+
+fn recover_message_and_verify_checksum_horner<const MESSAGE_BYTES: usize>() -> Script {
+    script! {
+        // Preserve message digits while accumulating max_sum - actual_sum.
+        OP_FROMALTSTACK OP_DUP OP_NEGATE
+        for _ in 1..FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS {
+            OP_FROMALTSTACK OP_TUCK OP_SUB
+        }
+        { FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS * MAX_DIGIT as usize }
+        OP_ADD
+
+        // The custom witness order exposes checksum digits most-significant
+        // first, so one fixed-width Horner pass is smallest.
+        OP_FROMALTSTACK
+        for _ in 1..FastWinternitz::<MESSAGE_BYTES>::CHECKSUM_DIGITS {
+            for _ in 0..4 {
+                OP_DUP OP_ADD
+            }
+            OP_FROMALTSTACK OP_ADD
+        }
+        OP_EQUALVERIFY
+    }
+}
+
+fn verify_checksum_and_clear_horner<const MESSAGE_BYTES: usize>() -> Script {
+    script! {
+        OP_FROMALTSTACK
+        for _ in 1..FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS {
+            OP_FROMALTSTACK OP_ADD
+        }
+
+        OP_FROMALTSTACK
+        for _ in 1..FastWinternitz::<MESSAGE_BYTES>::CHECKSUM_DIGITS {
+            for _ in 0..4 {
+                OP_DUP OP_ADD
+            }
+            OP_FROMALTSTACK OP_ADD
+        }
+        OP_ADD
+        { FastWinternitz::<MESSAGE_BYTES>::MESSAGE_DIGITS * MAX_DIGIT as usize }
         OP_EQUALVERIFY
     }
 }
@@ -508,6 +661,22 @@ mod tests {
         assert!(result.success, "length {MESSAGE_BYTES}: {result}");
         assert_eq!(result.final_stack.len(), 1);
         assert!(result.stats.max_nb_stack_items <= 1000);
+
+        let size_signature = FastWinternitz::<MESSAGE_BYTES>::sign(
+            FastWinternitz::<MESSAGE_BYTES>::signing_key_from_seed(seed),
+            &message,
+        );
+        let result = execute_script(script! {
+            { size_signature.to_size_optimized_witness() }
+            { FastWinternitz::<MESSAGE_BYTES>::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "size profile, length {MESSAGE_BYTES}: {result}"
+        );
+        assert_eq!(result.final_stack.len(), 1);
+        assert!(result.stats.max_nb_stack_items <= 1000);
     }
 
     fn assert_message_output(verifier: Script, witness: Witness) {
@@ -532,6 +701,22 @@ mod tests {
         assert_eq!(FastWots32::MESSAGE_DIGITS, 64);
         assert_eq!(FastWots32::CHECKSUM_DIGITS, 3);
         assert_eq!(FastWots32::TOTAL_DIGITS, 67);
+    }
+
+    #[test]
+    fn supported_radix_list_sweep_selects_base16_for_script_size() {
+        let secret = vec![0x42; 32];
+        let measured = (4..=8)
+            .map(|log2_base| {
+                let parameters = Parameters::new_by_bit_length(256, log2_base);
+                let public_key = super::super::generate_public_key(&parameters, &secret);
+                Winternitz::<ListpickVerifier, VoidConverter>::new()
+                    .checksig_verify(&parameters, &public_key)
+                    .len()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(measured, [4_908, 5_631, 7_169, 10_585, 16_916]);
+        assert_eq!(measured.iter().min(), measured.first());
     }
 
     #[test]
@@ -581,6 +766,10 @@ mod tests {
         let witness = signature.to_witness();
         assert_message_output(FastWots32::checksig_verify(&public_key), witness.clone());
         assert_message_output(FastWots32::checksig_verify_minimal(&public_key), witness);
+        assert_message_output(
+            FastWots32::checksig_verify_size_optimized(&public_key),
+            signature.to_size_optimized_witness(),
+        );
     }
 
     #[test]
@@ -592,6 +781,15 @@ mod tests {
             OP_TRUE
         });
         assert!(result.success, "{result}");
+        assert_eq!(result.final_stack.len(), 1);
+        assert!(result.stats.max_nb_stack_items <= 1000);
+
+        let result = execute_script(script! {
+            { signature.to_size_optimized_witness() }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(result.success, "size profile: {result}");
         assert_eq!(result.final_stack.len(), 1);
         assert!(result.stats.max_nb_stack_items <= 1000);
     }
@@ -608,11 +806,27 @@ mod tests {
         });
         assert!(!result.success);
 
+        let mut bad_size_witness = signature.to_size_optimized_witness().to_vec();
+        bad_size_witness[0][0] ^= 1;
+        let result = execute_script(script! {
+            { bad_size_witness }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(!result.success);
+
         let mut wrong_public_key = public_key.clone();
         wrong_public_key.chain_ends[0][0] ^= 1;
         let result = execute_script(script! {
             { signature.to_witness() }
             { FastWots32::checksig_verify_and_clear(&wrong_public_key) }
+            OP_TRUE
+        });
+        assert!(!result.success);
+
+        let result = execute_script(script! {
+            { signature.to_size_optimized_witness() }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&wrong_public_key) }
             OP_TRUE
         });
         assert!(!result.success);
@@ -623,10 +837,19 @@ mod tests {
         let (public_key, signature) = fixture();
         for invalid in [vec![16], vec![0x81], vec![1, 0, 0, 0, 0]] {
             let mut witness = signature.to_witness().to_vec();
-            witness[0] = invalid;
+            witness[0] = invalid.clone();
             let result = execute_script(script! {
                 { witness }
                 { FastWots32::checksig_verify_and_clear(&public_key) }
+                OP_TRUE
+            });
+            assert!(!result.success);
+
+            let mut size_witness = signature.to_size_optimized_witness().to_vec();
+            size_witness[1] = invalid;
+            let result = execute_script(script! {
+                { size_witness }
+                { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
                 OP_TRUE
             });
             assert!(!result.success);
@@ -667,6 +890,27 @@ mod tests {
             !result.success,
             "tapscript cleanstack must reject extra input"
         );
+
+        let mut size_missing = signature.to_size_optimized_witness().to_vec();
+        size_missing.pop();
+        let result = execute_script(script! {
+            { size_missing }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(!result.success);
+
+        let mut size_extra = signature.to_size_optimized_witness().to_vec();
+        size_extra.insert(0, Vec::new());
+        let result = execute_script(script! {
+            { size_extra }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(
+            !result.success,
+            "tapscript cleanstack must reject extra input"
+        );
     }
 
     #[test]
@@ -688,6 +932,13 @@ mod tests {
             OP_TRUE
         });
         assert!(!result.success);
+
+        let result = execute_script(script! {
+            { signature.to_size_optimized_witness() }
+            { FastWots32::checksig_verify_size_optimized_and_clear(&public_key) }
+            OP_TRUE
+        });
+        assert!(!result.success);
     }
 
     #[test]
@@ -697,6 +948,9 @@ mod tests {
         let exact = FastWots32::checksig_verify(&public_key);
         let minimal = FastWots32::checksig_verify_minimal(&public_key);
         let clear = FastWots32::checksig_verify_and_clear(&public_key);
+        let size = FastWots32::checksig_verify_size_optimized(&public_key);
+        let size_clear = FastWots32::checksig_verify_size_optimized_and_clear(&public_key);
+        let size_witness = signature.to_size_optimized_witness();
         let exact_result = execute_script_with_inputs(
             script! {
                 { exact.clone() }
@@ -719,9 +973,25 @@ mod tests {
         );
         let clear_result =
             execute_script_with_inputs(script! {{ clear.clone() } OP_TRUE}, witness.to_vec());
+        let size_result = execute_script_with_inputs(
+            script! {
+                { size.clone() }
+                for _ in 0..FastWots32::MESSAGE_DIGITS {
+                    OP_DROP
+                }
+                OP_TRUE
+            },
+            size_witness.to_vec(),
+        );
+        let size_clear_result = execute_script_with_inputs(
+            script! {{ size_clear.clone() } OP_TRUE},
+            size_witness.to_vec(),
+        );
         assert!(exact_result.success, "{exact_result}");
         assert!(minimal_result.success, "{minimal_result}");
         assert!(clear_result.success, "{clear_result}");
+        assert!(size_result.success, "{size_result}");
+        assert!(size_clear_result.success, "{size_clear_result}");
         let exact_hashes = signature
             .digits()
             .iter()
@@ -734,6 +1004,8 @@ mod tests {
             .sum::<usize>();
         assert!(exact_hashes < minimal_hashes);
         assert!(minimal.len() < exact.len());
+        assert!(size.len() < minimal.len());
+        assert!(size_clear.len() < size.len());
 
         let legacy_parameters = Parameters::new_by_bit_length(256, 4);
         let legacy_secret = vec![0x42; 20];
@@ -749,19 +1021,25 @@ mod tests {
         let legacy_compact_witness = Wots32::compact_sign_to_raw_witness(&legacy_secret, &[0; 32]);
 
         eprintln!(
-            "fast-wots32 exact={} minimal={} clear={} witness={} exact_hashes={} minimal_hashes={} exact_ops={} minimal_ops={} clear_ops={} exact_stack={} minimal_stack={} clear_stack={} legacy_list={} legacy_binary={} legacy_bruteforce={} legacy_witness={} legacy_compact_witness={}",
+            "fast-wots32 exact={} minimal={} clear={} size={} size_clear={} witness={} exact_hashes={} minimal_hashes={} exact_ops={} minimal_ops={} clear_ops={} size_ops={} size_clear_ops={} exact_stack={} minimal_stack={} clear_stack={} size_stack={} size_clear_stack={} legacy_list={} legacy_binary={} legacy_bruteforce={} legacy_witness={} legacy_compact_witness={}",
             exact.len(),
             minimal.len(),
             clear.len(),
+            size.len(),
+            size_clear.len(),
             serialize(&witness).len(),
             exact_hashes,
             minimal_hashes,
             exact_result.stats.opcode_count,
             minimal_result.stats.opcode_count,
             clear_result.stats.opcode_count,
+            size_result.stats.opcode_count,
+            size_clear_result.stats.opcode_count,
             exact_result.stats.max_nb_stack_items,
             minimal_result.stats.max_nb_stack_items,
             clear_result.stats.max_nb_stack_items,
+            size_result.stats.max_nb_stack_items,
+            size_clear_result.stats.max_nb_stack_items,
             legacy_list.len(),
             legacy_binary.len(),
             legacy_bruteforce.len(),

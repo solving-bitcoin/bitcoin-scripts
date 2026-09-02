@@ -290,3 +290,15 @@ depth once, fetches modulo 49 items below the retained index, and then fetches
 carry from the retained depth. Partial-block, 64-byte, 4/29/31-bit-limb, and
 malformed-limb checks passed locally. The failure and correction are
 `locally-reproduced` for this generator.
+
+## NR-021: Higher Winternitz radices lose locking-script bytes
+
+For a 256-bit message, the committed list-pick parameter sweep measured bases
+16, 32, 64, 128, and 256 at respectively 4,908, 5,631, 7,169, 10,585, and
+16,916 locking-script bytes. Larger radices reduce the number of public
+endpoints from 67 to 55, 45, 39, and 34, but the longer static hash/list logic
+per chain grows faster than the endpoint commitment shrinks. Base 16 is
+therefore the selected locking-size radix among the implementation's supported
+power-of-two parameters. This is a `locally-reproduced` result for the current
+list-pick layout and fixed 256-bit message, not a proof that base 16 is globally
+optimal for every Winternitz verifier, message length, or checksum encoding.

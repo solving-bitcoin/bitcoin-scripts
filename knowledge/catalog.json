@@ -1942,7 +1942,7 @@
       "id": "signature/winternitz-fast-base16",
       "name": "Fast base-16 Winternitz signatures",
       "class": "signature/one-time",
-      "summary": "Tapscript-specialized HASH160 Winternitz with exact-hash and strict lookup profiles, consuming keys, and fused terminal verification.",
+      "summary": "Tapscript-specialized HASH160 Winternitz with locking-size, strict-chain, exact-hash, and terminal profiles plus consuming keys.",
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
@@ -1963,9 +1963,63 @@
         "hash-chain",
         "lookup-table"
       ],
-      "security": "Strictly one-time classic HASH160-chain Winternitz, not WOTS+; raw in-range ScriptNum canonicality and durable seed-reuse prevention remain caller obligations.",
-      "stack_contract": "A 134-item witness contains digit/chain pairs; recovery profiles return 64 message nibbles, while the fused profile clears all signature state and requires a terminal predicate.",
+      "security": "Strictly one-time classic HASH160-chain Winternitz, not WOTS+; raw in-range ScriptNum canonicality and durable seed-reuse prevention remain caller obligations. The size profile accepts arbitrary-length HASH160 preimages below digit 15 while signer nodes and strict profiles require 20 bytes.",
+      "stack_contract": "A 134-item witness uses either digit/chain pairs or the documented size-specific chain/digit ordering; recovery profiles return 64 message nibbles, while terminal profiles clear all signature state and require a terminal predicate.",
       "configurations": [
+        {
+          "id": "fast-wots32-size-recovery",
+          "label": "FastWots32 locking-size lookup recovery verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "strict numeric symmetric eight-value OP_PICK lookup",
+            "checksum_order": "size-specific witness order with Horner decoding",
+            "static_non_push_opcodes": 3096,
+            "balanced_vector_hash160_calls": 741
+          },
+          "includes": "fragment-only: 67 embedded endpoints, explicit numeric digit checks, relaxed raw chain-item length, checksum verification, and 64 recovered message nibbles; script excludes a terminal consumer, witness is complete serialized zero-message data and witness maximum covers signer-produced 20-byte nodes rather than adversarial accepted item lengths",
+          "script_bytes": 4640,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1542,
+          "max_stack_items": 143,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4640,
+          "metric_keys": [
+            "fast_wots32_size_lock",
+            "fast_wots32_witness_zero",
+            "fast_wots32_witness_max",
+            "fast_wots32_size_stack"
+          ]
+        },
+        {
+          "id": "fast-wots32-size-clear",
+          "label": "FastWots32 locking-size lookup terminal verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "strict numeric symmetric eight-value OP_PICK lookup",
+            "checksum_order": "size-specific witness order with Horner decoding",
+            "static_non_push_opcodes": 3031,
+            "balanced_vector_hash160_calls": 741
+          },
+          "includes": "fragment-only: 67 embedded endpoints, explicit numeric digit checks, relaxed raw chain-item length, checksum verification, and message cleanup; terminal truthy predicate excluded, witness is complete serialized zero-message data and witness maximum covers signer-produced 20-byte nodes rather than adversarial accepted item lengths",
+          "script_bytes": 4575,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1542,
+          "max_stack_items": 143,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4575,
+          "metric_keys": [
+            "fast_wots32_size_clear_lock",
+            "fast_wots32_witness_zero",
+            "fast_wots32_witness_max",
+            "fast_wots32_size_clear_stack"
+          ]
+        },
         {
           "id": "fast-wots32-exact",
           "label": "FastWots32 exact-hash recovery verifier",
@@ -2051,6 +2105,7 @@
       "limitations": [
         "One-time key only; consuming type does not provide crash-safe or distributed reuse prevention",
         "Classic unkeyed HASH160 chains are not RFC 8391 WOTS+",
+        "Size profile omits explicit 20-byte chain-item checks and therefore accepts arbitrary-length preimages below digit 15",
         "Exact verifier depends on tapscript consensus MINIMALIF",
         "Raw nonminimal encodings of valid ScriptNums are not bound",
         "Metric executor disables the stack limit and reports no executed-opcode count",

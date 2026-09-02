@@ -3,9 +3,9 @@
 This module contains two base-16 HASH160 Winternitz implementations. The
 compatibility API preserves the original list-pick, brute-force, and binary-
 search verifiers. The new `FastWinternitz<N>` API is an independent fixed-size
-implementation designed for tapscript verification latency, hostile witness
-handling, low-allocation host key generation, and explicit one-time-key
-lifecycle.
+implementation with separate locking-size, verification-latency, strict chain-
+encoding, and terminal-cleanup profiles, plus low-allocation host key generation
+and an explicit one-time-key lifecycle.
 
 This is a classic unkeyed HASH160-chain construction, not WOTS+. WOTS+ as
 specified by RFC 8391 has addressed, keyed chain functions and different
@@ -27,7 +27,23 @@ security assumptions.
 - Representative configuration: `FastWots32`, with 64 message digits, three
   checksum digits, and 67 chains.
 
-## Optimization objective
+## Optimization objectives
+
+The primary size profile minimizes serialized locking-script bytes for a fixed
+32-byte message and 20-byte HASH160 public endpoints. A parameter sweep over
+bases 16, 32, 64, 128, and 256 confirmed that base 16 is smallest among the
+implemented radices: reducing the endpoint count at a higher base costs more
+hash/list opcodes than it saves.
+
+The size witness uses `[chain, digit]` pairs and orders the three checksum pairs
+so Script can use one short Horner pass. Its symmetric eight-value lookup
+strictly rejects numeric digits outside `0..=15`. It intentionally omits a
+separate chain-item length check. At digit 15 the direct endpoint equality
+already forces 20 bytes; below 15 at least one HASH160 normalizes the selected
+value before equality. The signer always emits 20-byte nodes, but the accepted
+relation also includes arbitrary-length HASH160 preimages for digits below 15.
+That is a deliberate four-byte-per-chain locking-size tradeoff, not a claim of
+canonical raw witness encoding.
 
 The speed profile minimizes executed HASH160 calls while keeping one copy of
 each public endpoint in the locking fragment. For digit `d`, it executes
@@ -51,12 +67,16 @@ Locking sizes are `fragment-only`: chain checks, embedded public endpoints,
 checksum verification, and the documented message/cleanup postcondition are
 included. A terminal protocol predicate is excluded. Witness sizes are full
 Bitcoin witness-vector serialization for a deterministic 32-byte zero message;
-the maximum assumes every digit item is one byte. The stack fixtures append a
-message consumer or `OP_TRUE` so execution ends cleanly.
+the maximum is the signer-produced maximum with 20-byte chain nodes and every
+digit item one byte. It is not the size profile's maximum accepted adversarial
+item length. The stack fixtures append a message consumer or `OP_TRUE` so
+execution ends cleanly.
 
 | `Wots32` configuration | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | Legacy list-pick, recover message | <!-- metric:wots32_lock -->4908<!-- /metric:wots32_lock --> bytes | <!-- metric:wots32_witness -->1477<!-- /metric:wots32_witness --> bytes | not previously measured |
+| Fast size lookup, recover message | <!-- metric:fast_wots32_size_lock -->4640<!-- /metric:fast_wots32_size_lock --> bytes | same | <!-- metric:fast_wots32_size_stack -->143<!-- /metric:fast_wots32_size_stack --> |
+| Fast size lookup, clear message | <!-- metric:fast_wots32_size_clear_lock -->4575<!-- /metric:fast_wots32_size_clear_lock --> bytes | same | <!-- metric:fast_wots32_size_clear_stack -->143<!-- /metric:fast_wots32_size_clear_stack --> |
 | Fast exact-hash, recover message | <!-- metric:fast_wots32_exact_lock -->5452<!-- /metric:fast_wots32_exact_lock --> bytes | <!-- metric:fast_wots32_witness_zero -->1477<!-- /metric:fast_wots32_witness_zero --> bytes | <!-- metric:fast_wots32_exact_stack -->137<!-- /metric:fast_wots32_exact_stack --> |
 | Fast eight-value lookup, recover message | <!-- metric:fast_wots32_minimal_lock -->5050<!-- /metric:fast_wots32_minimal_lock --> bytes | same | <!-- metric:fast_wots32_minimal_stack -->143<!-- /metric:fast_wots32_minimal_stack --> |
 | Fast exact-hash, clear message | <!-- metric:fast_wots32_clear_lock -->5515<!-- /metric:fast_wots32_clear_lock --> bytes | same | <!-- metric:fast_wots32_clear_stack -->137<!-- /metric:fast_wots32_clear_stack --> |
@@ -67,7 +87,15 @@ bytes. The exact, lookup, and clear fragments contain respectively
 <!-- metric:fast_wots32_exact_static_opcodes -->3439<!-- /metric:fast_wots32_exact_static_opcodes -->,
 <!-- metric:fast_wots32_minimal_static_opcodes -->3305<!-- /metric:fast_wots32_minimal_static_opcodes -->,
 and <!-- metric:fast_wots32_clear_static_opcodes -->3501<!-- /metric:fast_wots32_clear_static_opcodes -->
-static non-push opcodes.
+static non-push opcodes. The size recovery and terminal fragments contain
+<!-- metric:fast_wots32_size_static_opcodes -->3096<!-- /metric:fast_wots32_size_static_opcodes -->
+and <!-- metric:fast_wots32_size_clear_static_opcodes -->3031<!-- /metric:fast_wots32_size_clear_static_opcodes -->
+respectively.
+
+The 4,640-byte size recovery fragment is 268 bytes (5.5%) smaller than the
+4,908-byte legacy list-pick fragment while rejecting, rather than clamping,
+digits above 15. The 4,575-byte terminal profile saves another 65 bytes when
+the surrounding protocol does not need the recovered message on the stack.
 
 For the deterministic balanced message
 `00112233445566778899aabbccddeeff0f1e2d3c4b5a69788796a5b4c3d2e1f0`,
@@ -121,11 +149,13 @@ fragments.
 
 ## Witness and hints
 
-Fast witness order is
+Speed/strict witness order is
 `[digit_0, chain_0, digit_1, chain_1, ...]`. Script consumes pairs backwards,
 so the 20-byte chain value is on top and can be size-checked before the numeric
 digit is used. A zero digit is an empty item; `1..=15` is a one-byte canonical
-ScriptNum item. There are no auxiliary hints.
+ScriptNum item. Size witness order is message `[chain_i, digit_i]` pairs
+followed by checksum pairs in reverse chain-index order; callers must use
+`to_size_optimized_witness` with a size verifier. There are no auxiliary hints.
 
 The legacy standard witness uses `[chain_0, digit_0, ...]`; its list-pick
 verifier clamps digits above 15 before authenticating the recovered value. That
@@ -138,6 +168,11 @@ malleability and should not be treated as strict raw-digit validation.
   authenticated nibbles on the main stack in message high/low order.
 - `FastWots32::checksig_verify_minimal`: same external contract with the lookup
   time/size tradeoff.
+- `FastWots32::checksig_verify_size_optimized`: consumes the custom size witness
+  and leaves the same 64 authenticated nibbles using the smallest measured
+  locking fragment.
+- `FastWots32::checksig_verify_size_optimized_and_clear`: consumes the custom
+  size witness and leaves an empty stack.
 - `FastWots32::checksig_verify_and_clear`: consumes the signature, fuses
   checksum accumulation into the reverse chain walk, and leaves an empty stack.
   The caller must append a terminal predicate.
@@ -148,7 +183,7 @@ composed into a complete leaf.
 
 ## Test coverage and limitations
 
-Tests cover both verifier profiles, the fused terminal path, every documented
+Tests cover all verifier profiles, both terminal paths, every documented
 stack postcondition, a separately generated Python HASH160 vector, wrong chain
 values, wrong public endpoints, a valid-chain/invalid-checksum signature,
 negative and above-range digits, oversized ScriptNums, and the local strict
