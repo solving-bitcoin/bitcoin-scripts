@@ -118,6 +118,12 @@ Turn parameters into concrete protocol guidance. **Complete when:** Lamport,
 HORS, and Winternitz records include domain separation, key lifecycle,
 multi-target bounds, message encoding, and end-to-end state transport costs.
 
+Progress: `FastWinternitz` now fixes chain-start domain separation, typed
+message/checksum encoding, a consuming in-process key API, numeric witness
+bounds, and measured Wots32 time/size/stack profiles. Durable crash-safe and
+distributed one-time state, concrete multi-target bounds, raw ScriptNum
+canonicality, and complete state-transport transaction costs remain open.
+
 ## OP-010 — External coverage review
 
 Continuously compare this atlas with primary papers and active upstream Bitcoin

@@ -1884,7 +1884,7 @@
       "class": "signature/one-time",
       "summary": "HASH160 Winternitz chains with typed messages and multiple verifier/witness tradeoffs.",
       "status": "active",
-      "evidence": "differentially-validated",
+      "evidence": "locally-reproduced",
       "execution": "unclassified",
       "as_of": "2026-09-01",
       "knowledge_page": "knowledge/primitives/winternitz-base16.md",
@@ -1929,9 +1929,135 @@
       ],
       "limitations": [
         "One-time key only",
-        "Verifier selection changes all resource costs"
+        "Verifier selection changes all resource costs",
+        "Default list-pick verifier clamps above-range digits",
+        "Committed vectors are self-generated regression fixtures, not an independent differential implementation"
       ],
       "open_problems": [
+        "OP-003",
+        "OP-009"
+      ]
+    },
+    {
+      "id": "signature/winternitz-fast-base16",
+      "name": "Fast base-16 Winternitz signatures",
+      "class": "signature/one-time",
+      "summary": "Tapscript-specialized HASH160 Winternitz with exact-hash and strict lookup profiles, consuming keys, and fused terminal verification.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-01",
+      "knowledge_page": "knowledge/primitives/winternitz-fast-base16.md",
+      "implementation": "src/signatures/winternitz/fast.rs",
+      "documentation": "src/signatures/winternitz/README.md",
+      "tests": [
+        "signatures::winternitz::fast::tests"
+      ],
+      "references": [
+        "rfc-8391",
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "hash-chain",
+        "lookup-table"
+      ],
+      "security": "Strictly one-time classic HASH160-chain Winternitz, not WOTS+; raw in-range ScriptNum canonicality and durable seed-reuse prevention remain caller obligations.",
+      "stack_contract": "A 134-item witness contains digit/chain pairs; recovery profiles return 64 message nibbles, while the fused profile clears all signature state and requires a terminal predicate.",
+      "configurations": [
+        {
+          "id": "fast-wots32-exact",
+          "label": "FastWots32 exact-hash recovery verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "8/4/2/1 exact conditional hash",
+            "checksum_order": "little-endian base16",
+            "static_non_push_opcodes": 3439,
+            "balanced_vector_hash160_calls": 510
+          },
+          "includes": "fragment-only: 67 embedded endpoints, chain-value size checks, tapscript MINIMALIF digit bounds, checksum verification, and 64 recovered message nibbles; script excludes a terminal consumer, witness is complete serialized zero-message data",
+          "script_bytes": 5452,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1542,
+          "max_stack_items": 137,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 5452,
+          "metric_keys": [
+            "fast_wots32_exact_lock",
+            "fast_wots32_witness_zero",
+            "fast_wots32_witness_max",
+            "fast_wots32_exact_stack"
+          ]
+        },
+        {
+          "id": "fast-wots32-strict-lookup",
+          "label": "FastWots32 strict eight-value lookup verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "strict symmetric eight-value OP_PICK lookup",
+            "checksum_order": "little-endian base16",
+            "static_non_push_opcodes": 3305,
+            "balanced_vector_hash160_calls": 741
+          },
+          "includes": "fragment-only: 67 embedded endpoints, chain-value size and explicit numeric digit checks, checksum verification, and 64 recovered message nibbles; script excludes a terminal consumer, witness is complete serialized zero-message data",
+          "script_bytes": 5050,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1542,
+          "max_stack_items": 143,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 5050,
+          "metric_keys": [
+            "fast_wots32_minimal_lock",
+            "fast_wots32_witness_zero",
+            "fast_wots32_witness_max",
+            "fast_wots32_minimal_stack"
+          ]
+        },
+        {
+          "id": "fast-wots32-exact-clear",
+          "label": "FastWots32 exact-hash fused terminal verifier",
+          "parameters": {
+            "message_bytes": 32,
+            "base": 16,
+            "verifier": "8/4/2/1 exact conditional hash",
+            "checksum": "fused reverse-walk accumulator",
+            "static_non_push_opcodes": 3501,
+            "balanced_vector_hash160_calls": 510
+          },
+          "includes": "fragment-only: 67 embedded endpoints, chain-value size checks, tapscript MINIMALIF digit bounds, fused checksum accumulation, and message cleanup; terminal truthy predicate excluded, witness is complete serialized zero-message data",
+          "script_bytes": 5515,
+          "witness_bytes": 1477,
+          "witness_bytes_max": 1542,
+          "max_stack_items": 137,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 5515,
+          "metric_keys": [
+            "fast_wots32_clear_lock",
+            "fast_wots32_witness_zero",
+            "fast_wots32_witness_max",
+            "fast_wots32_clear_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "One-time key only; consuming type does not provide crash-safe or distributed reuse prevention",
+        "Classic unkeyed HASH160 chains are not RFC 8391 WOTS+",
+        "Exact verifier depends on tapscript consensus MINIMALIF",
+        "Raw nonminimal encodings of valid ScriptNums are not bound",
+        "Metric executor disables the stack limit and reports no executed-opcode count",
+        "No Bitcoin Core consensus or policy reproduction"
+      ],
+      "open_problems": [
+        "OP-002",
         "OP-003",
         "OP-009"
       ]

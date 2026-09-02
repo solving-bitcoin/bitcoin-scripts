@@ -21,6 +21,14 @@ Lamport helper authenticates only two bits. Winternitz provides typed message
 APIs but requires strict one-time key management and can make state transport
 witness-heavy.
 
+The Fast Winternitz path makes the transport boundary more explicit: a
+`FastWots32` witness is 134 digit/chain items, recovery returns 64 high/low
+nibbles, and the exact verifier depends on tapscript `MINIMALIF`. Its consuming
+Rust key prevents ordinary same-process reuse only. Transaction-graph state,
+crash rollback, restored seeds, distributed signers, and raw in-range
+ScriptNum canonicality remain protocol obligations. Fast and legacy witnesses
+are not wire-compatible.
+
 Protocol evaluation must count public commitment placement, witness
 serialization, recovered-state cleanup, and the transaction graph that prevents
 key reuse.

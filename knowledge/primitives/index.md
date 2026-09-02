@@ -41,6 +41,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)
 - [Base-16 Winternitz signatures](winternitz-base16.md)
+- [Fast base-16 Winternitz signatures](winternitz-fast-base16.md)
 
 ## Curves and pairings
 

@@ -129,6 +129,13 @@
       "revision": "FIPS 180-4"
     },
     {
+      "id": "rfc-8391",
+      "title": "RFC 8391: XMSS and WOTS+",
+      "kind": "standard",
+      "url": "https://www.rfc-editor.org/rfc/rfc8391.html",
+      "revision": "RFC 8391, May 2018"
+    },
+    {
       "id": "fips-202",
       "title": "FIPS 202 SHA-3 Standard",
       "kind": "standard",
