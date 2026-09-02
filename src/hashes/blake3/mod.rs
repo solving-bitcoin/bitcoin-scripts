@@ -2,7 +2,12 @@ use std::collections::HashMap;
 
 pub mod utils;
 
-use bitcoin::hex::FromHex;
+use bitcoin::{
+    hex::FromHex,
+    opcodes::all::{OP_2DUP, OP_2OVER, OP_PICK, OP_SWAP},
+    script::Instruction,
+    ScriptBuf,
+};
 use bitcoin_script_stack::{optimizer, stack::StackTracker};
 use itertools::Itertools;
 
@@ -14,10 +19,10 @@ use crate::hashes::blake3::utils::{
     compress, compress_short_digits, get_flags_for_block, DigitWord, TablesVars,
 };
 
-const SHORT_32_SEMANTIC_TO_PHYSICAL_WORD: [usize; 8] = [6, 5, 0, 2, 1, 7, 4, 3];
-const SHORT_32_PHYSICAL_TO_SEMANTIC_WORD: [usize; 8] = [2, 4, 3, 7, 6, 1, 0, 5];
+const SHORT_32_SEMANTIC_TO_PHYSICAL_WORD: [usize; 8] = [6, 0, 5, 2, 1, 7, 4, 3];
+const SHORT_32_PHYSICAL_TO_SEMANTIC_WORD: [usize; 8] = [1, 4, 3, 7, 6, 2, 0, 5];
 // Each entry maps a physical position within a word to its semantic nibble.
-const SHORT_32_PHYSICAL_TO_SEMANTIC_DIGIT: [usize; 8] = [7, 6, 5, 0, 1, 2, 3, 4];
+const SHORT_32_PHYSICAL_TO_SEMANTIC_DIGIT: [usize; 8] = [7, 0, 5, 6, 1, 2, 3, 4];
 
 fn assert_valid_limb_len(limb_len: u8) {
     assert!(
@@ -26,9 +31,51 @@ fn assert_valid_limb_len(limb_len: u8) {
     );
 }
 
-fn optimize_to_fixed_point(mut script: bitcoin::ScriptBuf) -> bitcoin::ScriptBuf {
+fn is_opcode(instruction: &Instruction<'_>, opcode: bitcoin::Opcode) -> bool {
+    matches!(instruction, Instruction::Op(candidate) if *candidate == opcode)
+}
+
+fn is_small_integer(instruction: &Instruction<'_>, value: u8) -> bool {
+    matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() == 0x50 + value)
+}
+
+fn optimize_stack_identities(script: ScriptBuf) -> ScriptBuf {
+    let instructions = script
+        .instructions_minimal()
+        .map(Result::unwrap)
+        .collect::<Vec<_>>();
+    let mut optimized = ScriptBuf::new();
+    let mut index = 0;
+    while index < instructions.len() {
+        if index + 3 < instructions.len()
+            && is_small_integer(&instructions[index], 3)
+            && is_opcode(&instructions[index + 1], OP_PICK)
+            && is_small_integer(&instructions[index + 2], 3)
+            && is_opcode(&instructions[index + 3], OP_PICK)
+        {
+            optimized.push_opcode(OP_2OVER);
+            index += 4;
+            continue;
+        }
+        if index + 2 < instructions.len()
+            && is_opcode(&instructions[index], bitcoin::opcodes::all::OP_DUP)
+            && is_small_integer(&instructions[index + 1], 2)
+            && is_opcode(&instructions[index + 2], OP_PICK)
+        {
+            optimized.push_opcode(OP_2DUP);
+            optimized.push_opcode(OP_SWAP);
+            index += 3;
+            continue;
+        }
+        optimized.push_instruction(instructions[index]);
+        index += 1;
+    }
+    optimized
+}
+
+fn optimize_to_fixed_point(mut script: ScriptBuf) -> ScriptBuf {
     loop {
-        let optimized = optimizer::optimize(script.clone());
+        let optimized = optimize_stack_identities(optimizer::optimize(script.clone()));
         if optimized == script {
             return optimized;
         }
@@ -356,7 +403,7 @@ pub fn blake3_push_message_script_with_limb(message_bytes: &[u8], limb_len: u8) 
     }
 }
 
-const SUM_OF_FULL_TABLES: usize = 347;
+const SUM_OF_FULL_TABLES: usize = 331;
 const UNPACKED_BLOCK: usize = 128;
 const MAX_BLAKE3_ELEMENT_COUNT: usize = SUM_OF_FULL_TABLES + UNPACKED_BLOCK + 132;
 
@@ -421,9 +468,13 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
         input_nibbles,
     );
 
-    let tables = TablesVars::new(stack, true);
-    let input = stack.from_altstack_joined(input_nibbles, "validated short message nibbles");
     let message_word_count = message_len.div_ceil(4);
+    let mut tables = if message_word_count == 8 {
+        TablesVars::new_late(stack)
+    } else {
+        TablesVars::new(stack, true)
+    };
+    let input = stack.from_altstack_joined(input_nibbles, "validated short message nibbles");
     let partial_word_bytes = message_len % 4;
     let partial_word_nibbles = partial_word_bytes * 2;
     let partial_padding_nibbles = if partial_word_bytes == 0 {
@@ -482,6 +533,7 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
                 )
             })
             .collect();
+        tables.push_late_tables(stack);
         compress_short_digits(stack, message_len, message, &tables);
     } else {
         let message = (0..message_word_count as usize)
@@ -504,7 +556,11 @@ fn blake3_short(stack: &mut StackTracker, message_len: u32) {
     for _ in 0..8 {
         stack.drop(stack.get_var_from_stack(0));
     }
-    tables.drop(stack);
+    if message_len == 32 {
+        tables.drop_after_destructive_xor_query(stack);
+    } else {
+        tables.drop(stack);
+    }
     stack.from_altstack_joined(64, "blake3-hash");
 }
 
@@ -620,6 +676,91 @@ mod tests {
     use bitcoin::ScriptBuf;
 
     const USEFUL_LIMB_LENGTHS: [u8; 2] = [4, 29];
+
+    fn final_stack(script: Script) -> (bool, Vec<Vec<u8>>) {
+        let result = execute_script(script);
+        let stack = (0..result.final_stack.len())
+            .map(|index| result.final_stack.get(index))
+            .collect();
+        (result.success, stack)
+    }
+
+    #[test]
+    fn stack_identity_peepholes_are_exact() {
+        let values = [-1_i32, 0, 1, 17];
+        for a in values {
+            for b in values {
+                for c in values {
+                    for d in values {
+                        let original = final_stack(script! {
+                            { a } { b } { c } { d }
+                            { 3 } OP_PICK { 3 } OP_PICK OP_TRUE
+                        });
+                        let replacement = final_stack(script! {
+                            { a } { b } { c } { d }
+                            OP_2OVER OP_TRUE
+                        });
+                        assert_eq!(original, replacement, "2OVER: {a} {b} {c} {d}");
+                    }
+                }
+            }
+        }
+        for a in values {
+            for b in values {
+                let original = final_stack(script! {
+                    { a } { b } OP_DUP { 2 } OP_PICK OP_TRUE
+                });
+                let replacement = final_stack(script! {
+                    { a } { b } OP_2DUP OP_SWAP OP_TRUE
+                });
+                assert_eq!(original, replacement, "2DUP SWAP: {a} {b}");
+            }
+        }
+
+        // Symbolically compare every shallow depth, including failure.
+        let pick = |stack: &mut Vec<usize>, depth: usize| {
+            let index = stack.len().checked_sub(depth + 1)?;
+            stack.push(stack[index]);
+            Some(())
+        };
+        for depth in 0..=8 {
+            let mut original = (0..depth).collect::<Vec<_>>();
+            let original = pick(&mut original, 3)
+                .and_then(|()| pick(&mut original, 3))
+                .map(|()| original);
+            let mut replacement = (0..depth).collect::<Vec<_>>();
+            let replacement = (depth >= 4).then(|| {
+                replacement.extend([replacement[depth - 4], replacement[depth - 3]]);
+                replacement
+            });
+            assert_eq!(original, replacement, "2OVER depth {depth}");
+
+            let mut original = (0..depth).collect::<Vec<_>>();
+            let original = original.last().copied().and_then(|top| {
+                original.push(top);
+                pick(&mut original, 2).map(|()| original)
+            });
+            let mut replacement = (0..depth).collect::<Vec<_>>();
+            let replacement = (depth >= 2).then(|| {
+                replacement.extend([replacement[depth - 1], replacement[depth - 2]]);
+                replacement
+            });
+            assert_eq!(original, replacement, "2DUP SWAP depth {depth}");
+        }
+
+        let once = optimize_stack_identities(
+            script! {
+                { 3 } OP_PICK { 3 } OP_PICK
+                OP_DUP { 2 } OP_PICK
+            }
+            .compile(),
+        );
+        assert_eq!(once, script! { OP_2OVER OP_2DUP OP_SWAP }.compile());
+        assert_eq!(optimize_stack_identities(once.clone()), once);
+
+        let exact32 = blake3_short_compute_script(32).compile();
+        assert_eq!(optimize_to_fixed_point(exact32.clone()), exact32);
+    }
 
     fn verify_blake_output_with_limbs(message: &[u8], expected_hash: [u8; 32], limb_lens: &[u8]) {
         for limb_len in limb_lens.iter().copied() {
@@ -788,17 +929,11 @@ mod tests {
     fn test_compute_script_is_optimizer_fixed_point() {
         for message_len in [64, 1024] {
             let script = blake3_compute_script_with_limb(message_len, 29).compile();
-            assert_eq!(
-                bitcoin_script_stack::optimizer::optimize(script.clone()),
-                script
-            );
+            assert_eq!(optimize_to_fixed_point(script.clone()), script);
         }
 
         let short = blake3_short_compute_script(32).compile();
-        assert_eq!(
-            bitcoin_script_stack::optimizer::optimize(short.clone()),
-            short
-        );
+        assert_eq!(optimize_to_fixed_point(short.clone()), short);
     }
 
     #[test]

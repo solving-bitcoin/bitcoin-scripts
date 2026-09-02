@@ -1,4 +1,4 @@
-use crate::arithmetic::u4::{stack_add::*, stack_logic::*, stack_shift::*};
+use crate::arithmetic::u4::{stack_add::u4_push_modulo_for_blake, stack_logic::*, stack_shift::*};
 pub use bitcoin_script::builder::StructuredScript as Script;
 use bitcoin_script::script;
 use bitcoin_script_stack::stack::{StackTracker, StackVariable};
@@ -18,10 +18,19 @@ pub(crate) struct TablesVars {
     xor_table: StackVariable,
     depth_lookup: StackVariable,
     use_full_tables: bool,
+    late_tables: bool,
 }
 
 impl TablesVars {
     pub(crate) fn new(stack: &mut StackTracker, use_full_tables: bool) -> Self {
+        Self::build(stack, use_full_tables, false)
+    }
+
+    pub(crate) fn new_late(stack: &mut StackTracker) -> Self {
+        Self::build(stack, true, true)
+    }
+
+    fn build(stack: &mut StackTracker, use_full_tables: bool, late_tables: bool) -> Self {
         let depth_lookup = if !use_full_tables {
             u4_push_from_depth_half_lookup(stack, -18)
         } else {
@@ -32,23 +41,21 @@ impl TablesVars {
         } else {
             push_packed_full_xor_table(stack)
         };
-        let shift_tables = u4_push_shift_for_blake(stack);
-        // A separate modulo-only table saves two opcodes on the discarded
-        // carry of every most-significant digit.
-        let modulo_last = u4_push_modulo_for_blake(stack);
-        stack.custom(
-            script! {
-                for sum in (0..48).rev() {
-                    { sum / 16 }
-                    { sum % 16 }
-                }
-            },
-            0,
-            false,
-            0,
-            "interleaved quotient/modulo addition table",
-        );
-        let add_interleaved = stack.define(96, "add_interleaved");
+        let shift_tables = if late_tables {
+            StackVariable::null()
+        } else {
+            u4_push_shift_for_blake(stack)
+        };
+        let modulo_last = if use_full_tables {
+            StackVariable::null()
+        } else {
+            u4_push_modulo_for_blake(stack)
+        };
+        let add_interleaved = if late_tables {
+            StackVariable::null()
+        } else {
+            push_interleaved_add_table(stack)
+        };
         TablesVars {
             modulo_last,
             add_interleaved,
@@ -56,25 +63,74 @@ impl TablesVars {
             xor_table,
             depth_lookup,
             use_full_tables,
+            late_tables,
         }
+    }
+
+    pub(crate) fn push_late_tables(&mut self, stack: &mut StackTracker) {
+        assert!(self.late_tables);
+        assert!(self.shift_tables.is_null());
+        assert!(self.add_interleaved.is_null());
+        self.shift_tables = u4_push_shift_for_blake(stack);
+        self.add_interleaved = push_interleaved_add_table(stack);
+        self.late_tables = false;
     }
 
     pub(crate) fn drop(&self, stack: &mut StackTracker) {
         stack.drop(self.add_interleaved);
-        stack.drop(self.modulo_last);
+        if !self.use_full_tables {
+            stack.drop(self.modulo_last);
+        }
         stack.drop(self.shift_tables);
         stack.drop(self.xor_table);
         stack.drop(self.depth_lookup);
     }
+
+    pub(crate) fn drop_after_destructive_xor_query(&self, stack: &mut StackTracker) {
+        assert!(self.use_full_tables);
+        // The final OP_ROLL removes one item from the 331-item table memory.
+        // Model the four tracked table variables as one 330-item runtime drop.
+        stack.custom(
+            script! {
+                for _ in 0..165 {
+                    OP_2DROP
+                }
+            },
+            4,
+            false,
+            0,
+            "drop tables after final destructive XOR query",
+        );
+    }
+}
+
+fn push_interleaved_add_table(stack: &mut StackTracker) -> StackVariable {
+    stack.custom(
+        script! {
+            for sum in (0..48).rev() {
+                { sum / 16 }
+                { sum % 16 }
+            }
+        },
+        0,
+        false,
+        0,
+        "interleaved quotient/modulo addition table",
+    );
+    stack.define(96, "add_interleaved")
 }
 
 // Consecutive fixed-orientation XOR rows overlap by 8, 4, 2, or 1 items.
 // This bit-reversal order attains the 171-item shortest common superstring.
-const PACKED_FULL_XOR_ROW_ORDER: [u32; 16] = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+const PACKED_FULL_XOR_ROW_ORDER: [u32; 16] = [15, 7, 11, 3, 13, 5, 9, 1, 14, 6, 10, 2, 12, 4, 8, 0];
 const PACKED_FULL_XOR_ROW_STARTS: [u32; 16] = [
-    0, 85, 42, 127, 20, 105, 62, 147, 8, 93, 50, 135, 28, 113, 70, 155,
+    155, 70, 113, 28, 135, 50, 93, 8, 147, 62, 105, 20, 127, 42, 85, 0,
 ];
-const PACKED_FULL_XOR_ITEMS: u32 = 171;
+const PACKED_FULL_XOR_SCS_ITEMS: u32 = 171;
+// Two extra copies of row zero extend its existing 16 entries into a
+// 48-entry modulo-16 table. Addition sums are bounded by 47.
+const PACKED_FULL_XOR_SUFFIX_ITEMS: u32 = 32;
+const PACKED_FULL_XOR_ITEMS: u32 = PACKED_FULL_XOR_SCS_ITEMS + PACKED_FULL_XOR_SUFFIX_ITEMS;
 
 fn packed_full_xor_overlap(left_row: u32, right_row: u32) -> usize {
     match left_row ^ right_row {
@@ -99,6 +155,9 @@ fn packed_full_xor_values() -> Vec<u32> {
             PACKED_FULL_XOR_ROW_STARTS[row as usize]
         );
         values.extend((0..16 - overlap).rev().map(|column| row ^ column as u32));
+    }
+    for _ in 0..2 {
+        values.extend((0..16).rev());
     }
     debug_assert_eq!(values.len(), PACKED_FULL_XOR_ITEMS as usize);
     values
@@ -139,6 +198,10 @@ fn push_packed_full_xor_table(stack: &mut StackTracker) -> StackVariable {
 
 fn packed_full_xor_row_offset(semantic_row: u32) -> u32 {
     PACKED_FULL_XOR_ITEMS - 16 - PACKED_FULL_XOR_ROW_STARTS[semantic_row as usize]
+}
+
+fn packed_full_modulo_offset() -> u32 {
+    PACKED_FULL_XOR_ITEMS - 48 - PACKED_FULL_XOR_ROW_STARTS[0]
 }
 
 fn xor_and_rotate_right_by_multiple_of_4(
@@ -260,7 +323,13 @@ fn split_addition(stack: &mut StackTracker, tables: &TablesVars, nibble_index: u
         let carry = stack.op_pick();
         stack.rename(carry, "carry");
     } else {
-        let modulo = stack.get_value_from_table(tables.modulo_last, None);
+        let modulo = if tables.use_full_tables {
+            // Row zero is extended to three consecutive copies, so indexing
+            // it with any possible raw sum directly returns sum modulo 16.
+            stack.get_value_from_table(tables.xor_table, Some(packed_full_modulo_offset()))
+        } else {
+            stack.get_value_from_table(tables.modulo_last, None)
+        };
         stack.rename(modulo, "modulo[0]");
         stack.to_altstack();
     }
@@ -754,7 +823,7 @@ pub(crate) fn get_flags_for_block(i: u32, num_blocks: u32) -> u32 {
 }
 
 const DIGIT_R16_ORDER: [usize; 8] = [3, 1, 2, 0, 4, 5, 6, 7];
-const DIGIT_R12_ORDER: [usize; 8] = [2, 1, 0, 6, 4, 5, 3, 7];
+const DIGIT_R12_ORDER: [usize; 8] = [2, 0, 1, 6, 4, 5, 3, 7];
 const DIGIT_R8_ORDER: [usize; 8] = [0, 1, 2, 3, 4, 5, 6, 7];
 
 // Short inputs with eight live words keep each nibble as an independent
@@ -888,6 +957,35 @@ fn digit_xor(
     stack.op_pick()
 }
 
+fn digit_xor_final_query(
+    stack: &mut StackTracker,
+    x: &mut DigitWord,
+    x_index: usize,
+    y: &DigitWord,
+    y_index: usize,
+) -> StackVariable {
+    stack.op_depth();
+    stack.op_dup();
+    y.copy_digit(stack, y_index);
+    stack.op_sub();
+    stack.op_pick();
+    stack.op_add();
+    x.move_digit(stack, x_index);
+    stack.op_add();
+    // Runtime destructively consumes the selected table item. The tracker
+    // intentionally models this as a PICK-shaped result; cleanup reconciles
+    // the one-item difference once no later table lookup can observe it.
+    stack
+        .custom(
+            script! { OP_ROLL },
+            1,
+            true,
+            0,
+            "final destructive XOR lookup",
+        )
+        .unwrap()
+}
+
 fn digit_rotation_order(rotation: usize) -> &'static [usize; 8] {
     // Exhaustive host-time searches selected these orders for the fixed
     // eight-word message layout. They affect routing only, not word semantics.
@@ -947,9 +1045,12 @@ fn digit_xor_rotate_seven(
     tables: &TablesVars,
     call: usize,
 ) -> DigitWord {
-    // An exhaustive eight-start search over all 52 dynamic G calls selected
-    // start zero for calls 3, 7, ..., 43 and start four everywhere else.
-    let start = if call < 44 && call % 4 == 3 { 0 } else { 4 };
+    // A bounded coordinate search over all eight starts for every G call.
+    const STARTS: [usize; 56] = [
+        1, 4, 1, 0, 1, 1, 4, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1,
+        1, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1, 1, 0, 4, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1,
+    ];
+    let start = STARTS[call];
     let first_source = (start + 6) % 8;
     let second_source = (start + 7) % 8;
     let first = digit_xor(stack, x, first_source, y, first_source);
@@ -1143,7 +1244,12 @@ pub(crate) fn compress_short_digits(
 
     let mut call = 8;
     for round in 1..=6 {
-        for (steps, order) in [(&COLUMNS, [1, 2, 3, 0]), (&DIAGONALS, [3, 2, 1, 0])] {
+        let diagonal_order = if round == 6 {
+            [3, 0, 2, 1]
+        } else {
+            [3, 2, 1, 0]
+        };
+        for (steps, order) in [(&COLUMNS, [1, 2, 3, 0]), (&DIAGONALS, diagonal_order)] {
             for index in order {
                 let (a, b, c, d, m0, m1) = steps[index];
                 digit_g(
@@ -1171,7 +1277,11 @@ pub(crate) fn compress_short_digits(
         for digit in 0..8 {
             let y = state[&(word + 8)];
             let x = state.get_mut(&word).unwrap();
-            digit_xor(stack, x, digit, &y, digit);
+            if block_len == 32 && word == 0 && digit == 7 {
+                digit_xor_final_query(stack, x, digit, &y, digit);
+            } else {
+                digit_xor(stack, x, digit, &y, digit);
+            }
             if digit % 2 == 1 {
                 stack.to_altstack();
                 stack.to_altstack();
@@ -1194,8 +1304,39 @@ mod tests {
         let tables = TablesVars::new(&mut stack, true);
         let setup_bytes = stack.get_script().compile().len();
         tables.drop(&mut stack);
-        assert_eq!(setup_bytes, 369);
-        assert_eq!(stack.get_script().compile().len() - setup_bytes, 174);
+        assert_eq!(setup_bytes, 353);
+        assert_eq!(stack.get_script().compile().len() - setup_bytes, 166);
+
+        let mut stack = StackTracker::new();
+        let mut tables = TablesVars::new_late(&mut stack);
+        let initial_setup_bytes = stack.get_script().compile().len();
+        tables.push_late_tables(&mut stack);
+        let complete_setup_bytes = stack.get_script().compile().len();
+        tables.drop(&mut stack);
+        assert_eq!(initial_setup_bytes, 241);
+        assert_eq!(complete_setup_bytes - initial_setup_bytes, 112);
+        assert_eq!(
+            stack.get_script().compile().len() - complete_setup_bytes,
+            166
+        );
+    }
+
+    #[test]
+    fn destructive_final_xor_query_cleanup_matches_runtime_shape() {
+        let mut stack = StackTracker::new();
+        let mut tables = TablesVars::new_late(&mut stack);
+        tables.push_late_tables(&mut stack);
+        stack.number(stack.get_offset(tables.xor_table));
+        let result = stack
+            .custom(script! { OP_ROLL }, 1, true, 0, "destructive table probe")
+            .unwrap();
+        stack.drop(result);
+        tables.drop_after_destructive_xor_query(&mut stack);
+        stack.op_depth();
+        stack.number(0);
+        stack.op_equalverify();
+        stack.op_true();
+        assert!(execute_script(stack.get_script()).success);
     }
 
     #[test]

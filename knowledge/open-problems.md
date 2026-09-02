@@ -157,21 +157,23 @@ vulnerability from the adjacent advisory without this analysis.
 
 ## OP-013 — BLAKE3 circuit-superoptimization frontier
 
-The checked short-input frontier is 60,866 bytes and 543 stack items for 32
-bytes. The preceding digit-routing criterion is complete: a shortest-common-
-superstring DP reduced the XOR table, an independent-nibble backend searched
-global and per-call rotation orders, and every retained length from 0 through
-32 passed differential and malformed-input tests. Alternate radices, expanded
-witness schedules, eager routing, little-endian state, raw-sum add-to-XOR
-fusion, and extra low-XOR planes are measured or bounded in the negative-results
-index. Deep state routing still dominates, with 457 items of strict stack
-headroom in the representative short configuration.
+The checked short-input frontier is 59,534 bytes and 527 stack items for 32
+bytes. The preceding digit-routing criterion is bounded: a
+shortest-common-superstring DP reduced the XOR table, row-zero suffixes fused
+the modulo table, table-lifetime search delayed shift/addition memory, and an
+independent-nibble backend searched global and per-call rotation orders. Every
+retained length from 0 through 32 passed differential and malformed-input
+tests. Alternate radices, expanded witness schedules, eager routing,
+little-endian state, raw-sum add-to-XOR fusion, final-round pair fusion, and
+extra low-XOR planes are measured or bounded in the negative-results index.
+Deep state routing still dominates, with 473 items of strict stack headroom in
+the representative short configuration.
 
 **Complete when:** a reproducible joint circuit search or proof-producing
 superoptimizer covers a precisely stated space of digit lifetimes, G-stage
 fusion, lookup layouts, and per-call schedules on the same checked
 `fragment-with-memory` boundary; every retained candidate passes all short
-lengths and malformed inputs; and it either beats 60,866 bytes below the
+lengths and malformed inputs; and it either beats 59,534 bytes below the
 1,000-item peak or records a machine-checkable lower bound for that search
 space.
 

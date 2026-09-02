@@ -365,9 +365,11 @@ The retained correction accounts for that shift instead of abandoning
 interleaving. Top-relative depths `2*s` and `2*s+1` hold `s mod 16` and
 `floor(s/16)`. The first lookup uses an absolute base one item deeper because
 the index is retained; after the modulo result moves to altstack, consuming the
-unchanged index selects the adjacent carry. A separate 48-item modulo table
-avoids doubling the most-significant sum whose carry is discarded, and literal
-first-column nibbles are folded into the address.
+unchanged index selects the adjacent carry. At this search stage, a separate
+48-item modulo table avoided doubling the most-significant sum whose carry was
+discarded, and literal first-column nibbles were folded into the address. The
+production backend later replaced that table with two row-zero cycles appended
+to the reversed packed-XOR superstring.
 
 On the previous 62,647-byte checked 32-byte backend, corrected interleaving plus
 the final-modulo table measured 61,188 bytes; constant-address folding and the
@@ -375,10 +377,10 @@ exact-32 final operand order reduced the retained result to 61,074 bytes at a
 628-item peak. Every declared length from 1 through 32 matched the independent
 BLAKE3 implementation, and an exhaustive sum test covers table indices 0
 through 47. The rejected unadjusted form and retained correction are therefore
-`locally-reproduced` for this generator. Subsequent XOR-row packing and
-independent-digit scheduling reduce the combined frontier to 60,866 bytes;
-the 61,074-byte figure remains the like-for-like measurement of the addition
-change itself.
+`locally-reproduced` for this generator. Subsequent XOR/modulo fusion, delayed
+table introduction, peepholes, and independent-digit scheduling reduce the
+combined frontier to 59,534 bytes; the 61,074-byte figure remains the
+like-for-like measurement of the addition change itself.
 
 ## NR-021: Higher Winternitz radices lose locking-script bytes
 
@@ -466,3 +468,33 @@ factor-16 endpoints are `locally-reproduced` production configurations. The
 factor-16 endpoint is not an ordinary-domain drop-in: it requires stored
 `E(x)=x/16 mod p` values, so omitted conversions can reverse its 23-byte
 one-shot advantage.
+
+## NR-025: BLAKE3 cross-G and final-output fusion do not repay routing
+
+Several bounded searches attempted to consume related BLAKE3 values together
+instead of shortening the existing absolute lookups. Pairing final-round G
+calls with their output XORs produced a best strict two-lane construction of
+60,983 bytes and a relaxed retain-one-lane construction of 60,912 bytes against
+the then-current 60,866-byte exact-32 baseline. Both matched the independent
+Rust BLAKE3 implementation for every declared short length, but the extra
+`OP_1SUB` depth corrections and grouped cleanup exceeded the saved copies.
+
+Within a G call, streaming three aligned XOR results directly into the next
+addition generated 66,170 bytes, 3,523 bytes above its comparison point; even
+granting free word-order normalization left it larger. A dual-output XOR table
+was 8,294 bytes larger, branch-based carry splitting added 1,640 bytes, a
+corrected single-base quotient hoist added 1,352 bytes, and a carry-on-altstack
+layout added 4,448 bytes. On the packed-table backend, consuming both halves of
+the final output remained nine bytes larger. A trace of all 1,792 dynamic XOR
+queries found only eight shallow first operands and no adjacent source pair for
+which native pair operators repaid the required result preservation.
+
+Table-boundary fusion was likewise bounded. Aliasing the zero at the shift/XOR
+boundary saved one pushed value but crossed ScriptNum-width boundaries in two
+selector constants, a net one-byte regression. Raw-sum add-to-XOR selectors
+and extra low-XOR planes are recorded in NR-019. The retained construction
+instead delays shift/addition memory, uses scalar hot-path queries, and only
+destructively consumes the final single XOR lookup. These rejected generators
+and their deterministic digest checks are `locally-reproduced`; the routing
+trace is an `inspected` lower bound for the enumerated native-pair patterns, not
+a proof against every fused BLAKE3 circuit.
