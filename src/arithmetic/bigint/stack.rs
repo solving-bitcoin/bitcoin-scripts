@@ -570,33 +570,34 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
                 // Pick the limb from stack (limbs are ordered MSB first, LSB on top)
                 { i + 1 } OP_PICK
 
-                // Check if limb >= 0 (not negative)
-                OP_DUP
-                0 OP_GREATERTHANOREQUAL
+                if limb_size == 31 {
+                    // A non-negative ScriptNum that numeric opcodes can decode
+                    // already fits in 31 value bits. Avoid pushing 2^31, which
+                    // those opcodes cannot decode with the four-byte limit.
+                    0 OP_GREATERTHANOREQUAL
+                } else {
+                    // Check 0 <= limb < (1 << LIMB_SIZE).
+                    0
+                    { 1 << limb_size }
+                    OP_WITHIN
+                }
 
-                // Check if limb < (1 << LIMB_SIZE)
-                OP_SWAP
-                { 1 << limb_size }
-                OP_LESSTHAN
-
-                // AND the boolean results
-                OP_BOOLAND OP_BOOLAND
+                OP_BOOLAND
             }
 
             // Validate the head limb (MSB) separately as it may have fewer bits
             { n_limbs } OP_PICK
 
-            // Check if head limb >= 0 (not negative)
-            OP_DUP
-            0 OP_GREATERTHANOREQUAL
+            if head == 31 {
+                0 OP_GREATERTHANOREQUAL
+            } else {
+                // Check 0 <= head limb < (1 << HEAD)
+                0
+                { 1 << head }
+                OP_WITHIN
+            }
 
-            // Check if head limb < (1 << HEAD)
-            OP_SWAP
-            { 1 << head }
-            OP_LESSTHAN
-
-            // AND the boolean results
-            OP_BOOLAND OP_BOOLAND
+            OP_BOOLAND
         }
     }
 
@@ -706,6 +707,53 @@ mod test {
                 OP_FROMALTSTACK
             });
             assert_eq!(res.success, expected);
+        }
+    }
+
+    #[test]
+    fn test_dynamic_limb_size_validation_boundaries() {
+        fn validates(limbs: &[i64], limb_size: u32) -> bool {
+            execute_script(script! {
+                for limb in limbs {
+                    {*limb}
+                }
+                {U256::is_valid_bigint_with_limb_size(limb_size)}
+                OP_TOALTSTACK
+                for _ in 0..limbs.len() {
+                    OP_DROP
+                }
+                OP_FROMALTSTACK
+            })
+            .success
+        }
+
+        for limb_size in 4_u32..=31 {
+            let limb_count = 256_u32.div_ceil(limb_size) as usize;
+            let head_bits = 256 - (limb_count as u32 - 1) * limb_size;
+            let regular_max = (1_i64 << limb_size) - 1;
+            let head_max = (1_i64 << head_bits) - 1;
+            let mut limbs = vec![head_max];
+            limbs.extend(std::iter::repeat_n(regular_max, limb_count - 1));
+
+            assert!(validates(&limbs, limb_size), "limb width {limb_size}");
+
+            let mut negative = limbs.clone();
+            *negative.last_mut().unwrap() = -1;
+            assert!(!validates(&negative, limb_size), "limb width {limb_size}");
+
+            let mut oversized_regular = limbs.clone();
+            *oversized_regular.last_mut().unwrap() = 1_i64 << limb_size;
+            assert!(
+                !validates(&oversized_regular, limb_size),
+                "limb width {limb_size}"
+            );
+
+            let mut oversized_head = limbs.clone();
+            oversized_head[0] = 1_i64 << head_bits;
+            assert!(
+                !validates(&oversized_head, limb_size),
+                "limb width {limb_size}"
+            );
         }
     }
 

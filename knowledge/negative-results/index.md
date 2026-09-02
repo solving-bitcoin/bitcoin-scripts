@@ -221,3 +221,29 @@ limit. Tapscript removes that opcode-count limit, but total-domain correctness,
 encoding, conversion, and strict Bitcoin Core validation remain open under
 OP-014. Source: `coins-bitcoin-scripts-8f442e4b` at
 [`op_rshift.md`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/op_rshift.md).
+
+## NR-016: Half XOR tables lose BLAKE3 byte efficiency
+
+The BLAKE3 generator's half-table mode saves 120 persistent stack items, but it
+adds sorting and symmetry-recovery work to every nibble XOR. A deterministic
+single-block, 29-bit-limb design probe with the selected G-call order measured
+87,507 optimized bytes for half tables versus 76,556 for full tables before the
+shared limb-validator improvement: a 10,951-byte regression. BLAKE3 performs
+1,856 nibble XOR lookups per block, so the per-query penalty dominates the
+smaller setup. This is an `inspected` generator result for the current lookup
+layout, not a universal claim that half tables are inferior when stack items
+are the primary objective.
+
+## NR-017: Consuming both BLAKE3 output halves does not save bytes
+
+Compression finalization currently consumes the first eight state words,
+copies the second eight through nibble XOR, and then drops those copied words.
+A consume-both prototype removed the final 32 `OP_2DROP` operations, but moving
+the second operand changes each lookup depth and required 64 `OP_1SUB`
+adjustments. Shallower routing recovered most, but not all, of that cost: on the
+pre-scheduling 64-byte, 29-bit baseline it measured 77,781 raw and 76,699
+optimized bytes versus 77,777 and 76,695 for the retained copy-and-drop layout,
+a four-byte regression in both cases. The prototype passed a deterministic
+64-byte differential check. This is an `inspected` result for the current
+depth-table lookup scheme; a fused output schedule may have a different
+frontier.

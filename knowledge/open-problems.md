@@ -141,6 +141,16 @@ equations are documented, adversarial witnesses are tested, and either the
 checks are proven present or the verifier is fixed. Do not infer local
 vulnerability from the adjacent advisory without this analysis.
 
+## OP-013 — BLAKE3 stack-routing frontier
+
+The current fixed-point generator still spends most bytes in nibble additions,
+XOR lookups, and deep stack routing. **Complete when:** separate first, middle,
+and final round schedules plus at least one fused add/rotate layout are
+deterministically evaluated; every retained candidate passes official vectors,
+partial-block boundaries, and malformed-limb tests; and either a smaller
+representative fragment is checked into the metric surface or the dominated
+layouts are recorded as negative results.
+
 ## OP-014 — Total-domain ScriptNum right-shift frontier
 
 Determine whether a one-item ScriptNum representation can beat the four-byte

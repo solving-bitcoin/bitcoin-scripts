@@ -270,102 +270,42 @@ fn round(
     tables: &TablesVars,
     last_round: bool,
 ) {
-    g(
-        stack,
-        state_var_map,
-        0,
-        4,
-        8,
-        12,
-        message_var_map[&0],
-        message_var_map[&1],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        1,
-        5,
-        9,
-        13,
-        message_var_map[&2],
-        message_var_map[&3],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        2,
-        6,
-        10,
-        14,
-        message_var_map[&4],
-        message_var_map[&5],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        3,
-        7,
-        11,
-        15,
-        message_var_map[&6],
-        message_var_map[&7],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        0,
-        5,
-        10,
-        15,
-        message_var_map[&8],
-        message_var_map[&9],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        1,
-        6,
-        11,
-        12,
-        message_var_map[&10],
-        message_var_map[&11],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        2,
-        7,
-        8,
-        13,
-        message_var_map[&12],
-        message_var_map[&13],
-        tables,
-        last_round,
-    );
-    g(
-        stack,
-        state_var_map,
-        3,
-        4,
-        9,
-        14,
-        message_var_map[&14],
-        message_var_map[&15],
-        tables,
-        last_round,
-    );
+    const COLUMN_STEPS: [(u8, u8, u8, u8, u8, u8); 4] = [
+        (0, 4, 8, 12, 0, 1),
+        (1, 5, 9, 13, 2, 3),
+        (2, 6, 10, 14, 4, 5),
+        (3, 7, 11, 15, 6, 7),
+    ];
+    const DIAGONAL_STEPS: [(u8, u8, u8, u8, u8, u8); 4] = [
+        (0, 5, 10, 15, 8, 9),
+        (1, 6, 11, 12, 10, 11),
+        (2, 7, 8, 13, 12, 13),
+        (3, 4, 9, 14, 14, 15),
+    ];
+
+    // Calls within each phase touch disjoint lanes, so their order does not
+    // affect BLAKE3 semantics. These orders minimize tracked-stack routing for
+    // the representative single-block fragment.
+    for (steps, order) in [
+        (&COLUMN_STEPS, [3, 0, 2, 1]),
+        (&DIAGONAL_STEPS, [0, 3, 1, 2]),
+    ] {
+        for index in order {
+            let (a, b, c, d, m0, m1) = steps[index];
+            g(
+                stack,
+                state_var_map,
+                a,
+                b,
+                c,
+                d,
+                message_var_map[&m0],
+                message_var_map[&m1],
+                tables,
+                last_round,
+            );
+        }
+    }
 }
 
 fn permutate(message_var_map: &HashMap<u8, StackVariable>) -> HashMap<u8, StackVariable> {

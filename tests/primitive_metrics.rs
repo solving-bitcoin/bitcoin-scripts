@@ -74,6 +74,16 @@ fn max_stack_items(script: bitcoin_script::Script, witness: Vec<Vec<u8>>) -> usi
 }
 
 fn metrics() -> Vec<Metric> {
+    let blake3_message: [u8; 64] = std::array::from_fn(|index| index as u8);
+    let blake3_expected = *::blake3::hash(&blake3_message).as_bytes();
+    let blake3_push = blake3::blake3_push_message_script_with_limb(&blake3_message, 29);
+    let blake3_compute = blake3::blake3_compute_script_with_limb(64, 29);
+    let blake3_verify = blake3::blake3_verify_output_script(blake3_expected);
+    let blake3_complete = script! {
+        {blake3_push.clone()}
+        {blake3_compute.clone()}
+        {blake3_verify.clone()}
+    };
     let rns_add = script! {
         { rns::rns_push_add_tables() }
         { rns::rns_add() }
@@ -1452,9 +1462,42 @@ fn metrics() -> Vec<Metric> {
         Metric {
             readme: "src/hashes/blake3/README.md",
             key: "blake3_64_limb29",
-            value: blake3::blake3_compute_script_with_limb(64, 29)
-                .compile()
-                .len(),
+            value: script_len(blake3_compute.clone()),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_64_limb4",
+            value: script_len(blake3::blake3_compute_script_with_limb(64, 4)),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_empty_limb29",
+            value: script_len(blake3::blake3_compute_script_with_limb(0, 29)),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_push_64_limb29",
+            value: script_len(blake3_push),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_verify_output",
+            value: script_len(blake3_verify),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_complete_64_limb29",
+            value: script_len(blake3_complete.clone()),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_opcodes_64_limb29",
+            value: static_non_push_opcodes(blake3_compute),
+        },
+        Metric {
+            readme: "src/hashes/blake3/README.md",
+            key: "blake3_stack_64_limb29",
+            value: max_stack_items(blake3_complete, vec![]),
         },
         Metric {
             readme: "src/commitments/README.md",

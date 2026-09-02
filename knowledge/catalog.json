@@ -1412,7 +1412,11 @@
       "implementation": "src/hashes/blake3/mod.rs",
       "documentation": "src/hashes/blake3/README.md",
       "tests": [
-        "hashes::blake3::tests::test_official_test_vectors"
+        "hashes::blake3::tests::test_official_test_vectors",
+        "hashes::blake3::tests::test_half_and_full_block_boundaries",
+        "hashes::blake3::tests::test_failure_on_oversized_input_limb",
+        "hashes::blake3::tests::test_full_block_and_31_bit_limbs",
+        "arithmetic::bigint::stack::test::test_dynamic_limb_size_validation_boundaries"
       ],
       "references": [
         "blake3-spec",
@@ -1423,37 +1427,68 @@
         "tracked-stack",
         "lookup-table"
       ],
-      "security": "Security is inherited from BLAKE3 within the supported single-chunk range.",
-      "stack_contract": "Consumes the selected limb encoding and returns a 256-bit digest in the helper-defined layout.",
+      "security": "Security is inherited from BLAKE3 within the supported single-chunk range; actual message limbs are numerically range-checked, byte-encoding canonicality remains a caller obligation, and the caller must bind the declared length and returned digest.",
+      "stack_contract": "Consumes two selected-limb 256-bit groups per block and returns a 256-bit digest in the helper-defined layout; a wholly padded final second group is ignored rather than authenticated.",
       "configurations": [
         {
           "id": "message64-limb29",
           "label": "64-byte input, 29-bit limbs",
           "parameters": {
             "message_bytes": 64,
-            "limb_bits": 29
+            "limb_bits": 29,
+            "optimizer": "bitcoin-script-stack fixed point",
+            "static_non_push_opcodes": 46691,
+            "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
+            "table_cleanup_script_bytes": 192
           },
-          "includes": "fragment-only: compute fragment; excludes message encoding and output verification",
-          "script_bytes": 77777,
+          "includes": "fragment-with-memory: numeric input-limb range validation and conversion, 383-byte full lookup-table setup, hashing, 192-byte cleanup, and digest restoration; excludes input encoding and output verification; stack peak is measured by the deterministic host-push/output-check composition",
+          "script_bytes": 76481,
           "witness_bytes": null,
           "witness_bytes_max": null,
-          "max_stack_items": null,
+          "max_stack_items": 644,
           "executed_opcodes": null,
           "validation_weight": null,
-          "setup_script_bytes": null,
-          "per_use_script_bytes": 77777,
+          "setup_script_bytes": 383,
+          "per_use_script_bytes": 75906,
           "metric_keys": [
-            "blake3_64_limb29"
+            "blake3_64_limb29",
+            "blake3_stack_64_limb29"
+          ]
+        },
+        {
+          "id": "message64-limb4",
+          "label": "64-byte input, 4-bit limbs",
+          "parameters": {
+            "message_bytes": 64,
+            "limb_bits": 4,
+            "optimizer": "bitcoin-script-stack fixed point",
+            "stack_measurement": "combined main/alt peak from execute_script_with_inputs; stack limit disabled",
+            "table_cleanup_script_bytes": 192
+          },
+          "includes": "fragment-with-memory: numeric input-limb range validation, 383-byte full lookup-table setup, hashing, 192-byte cleanup, and digest restoration; excludes input encoding and output verification",
+          "script_bytes": 68287,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 644,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 383,
+          "per_use_script_bytes": 67712,
+          "metric_keys": [
+            "blake3_64_limb4"
           ]
         }
       ],
       "limitations": [
         "Messages limited to one 1,024-byte chunk",
-        "Some configurations disable stack limits"
+        "Only unkeyed 32-byte output is implemented",
+        "Local witness-input and peak-metric execution disables the stack-limit check; Bitcoin Core consensus and policy validation were not performed",
+        "A wholly padded final second input group is ignored and not bound"
       ],
       "open_problems": [
         "OP-001",
-        "OP-003"
+        "OP-003",
+        "OP-013"
       ]
     },
     {
