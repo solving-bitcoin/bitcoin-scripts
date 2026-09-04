@@ -157,6 +157,13 @@
       "revision": "RFC 8391, May 2018"
     },
     {
+      "id": "rfc-8032",
+      "title": "RFC 8032: Edwards-Curve Digital Signature Algorithm (EdDSA)",
+      "kind": "standard",
+      "url": "https://www.rfc-editor.org/rfc/rfc8032.html",
+      "revision": "RFC 8032, January 2017"
+    },
+    {
       "id": "fips-202",
       "title": "FIPS 202 SHA-3 Standard",
       "kind": "standard",

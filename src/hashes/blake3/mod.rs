@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+pub mod ed25519_challenge;
 pub mod utils;
 
 use bitcoin::{

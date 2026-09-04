@@ -232,3 +232,292 @@ committed-ECDSA setup statement has a byte-exact circuit and proof transcript
 for at least one pinned zkVM backend; and the Schnorr adaptor flow is tested
 against an independently maintained implementation with explicit nonce,
 parity, transcript, and extraction checks.
+
+## OP-018 — Complete explicit Ed25519/EdDSA verification
+
+Build a spend-time Ed25519 verifier on a documented base-field representation.
+**Complete when:** canonical compressed-point decoding, curve membership,
+the selected subgroup/small-order policy, scalar canonicality modulo the
+Ed25519 group order, SHA-512 challenge construction, and the full EdDSA
+verification equation are implemented with hostile witness tests; a scheduler
+accounts for field-value certification, fan-out, multiplication/squaring,
+table lifetime, and authenticated chunk boundaries; complete script, witness,
+stack, opcode, validation-weight, and transaction metrics are recorded; and a
+deterministic fixture is compared against an independent RFC 8032
+implementation and a pinned Bitcoin Core execution environment where
+applicable.
+
+Progress: the current ordinary-domain `u5_balanced_table` multiplication uses a
+51-digit biased centered radix-32 stack encoding, 663 operand-bound lookups,
+one scalar quotient, and 50 carries. Its certified-input gate is 9,893 bytes
+with a 245-byte/51-item incremental hint and a strict 523-item peak; the
+11,180-byte raw wrapper consumes a representative 398-byte/153-item complete
+data witness. The retained bigint9 factor-8 gate is 19,903 bytes with a
+31-byte/29-item incremental hint and a 719-item peak, so it remains a distinct
+circuit-domain/witness tradeoff rather than the size winner. Both results are
+`locally-reproduced` and `unclassified`. Generated-Script boundary and
+adversarial tests for the radix-32 backend remain ignored by default.
+
+A fixed-base group layer is now also present. The G29 schedule validates a
+canonical scalar from eight packed words, selects one of 29 position tables,
+and verifies 28 signed/identity-safe affine transitions. Its byte-minimizing
+entry contains 672 hostile trace-data items, 84 direct quotient-hint items
+(three per transition), and eight scalar items: exactly 764 items, all
+coexisting at entry. Honest quotients use signed 23-bit slots and at most three
+ScriptNum payload bytes. A 61-item packed quotient alternative is the physical
+minimum for the same 1,932 bits, but adds a 25,570-byte raw decoder and is
+therefore not the byte-minimizing choice.
+
+The generator now produces one actual fragment containing the scalar validator
+and stream, authenticated bit tries, sign/identity routing, trace and quotient
+consumption, and every real affine kernel. Policy-precompiling the signed
+kernels' smaller semantic steps saves 78,498 bytes; the final multi-megabyte
+composition is 3,881,402 policy-produced bytes, 118,598 below the four-million-
+byte comparison line.
+The integrated strict schedule has been executed with those control paths and
+peak-equivalent arithmetic stubs; scalar zero, one, and `l-1` each reach at
+most 993 combined stack items. The positive, negative, and identity kernels
+were executed separately before that size-only transformation; the optimized
+kernels and full 28-kernel arithmetic schedule were deliberately not run
+because generated long-running tests are opt-in. This fixed-base result is
+`locally-reproduced` and `unclassified`, not a complete leaf or transaction.
+An inspected depth-zero one-input/one-output projection is 3,886,238 WU before
+the missing terminal point consumer, leaving 113,762 WU below the block limit
+before block-level overhead and exceeding default transaction policy by nearly
+an order of magnitude.
+
+For a custom, key-specialized BLAKE3 variant, the fixed transcript prefix
+`D32 || A32` can be compiled into the chaining value. The remaining exact
+compression of `R32 || M32` measures 65,208 raw bytes, 128 checked u4 data
+items, exactly zero hint items, and an analytic local peak of at most 591. The
+host chaining computation matches standard unkeyed BLAKE3, but the generated
+Script has not been executed. A direct composition with G29 is 3,946,610 bytes
+before routing or curve glue but exceeds the stack limit whichever component
+runs first. Packing 64 transcript bytes into the spare high bits of 64 existing
+q items repairs that narrower coexistence problem with zero additional entry
+items: the inspected model projects roughly 3.957 MB at the same 764-item entry
+and 993-item frontier. Its final metric run was skipped, and it still omits the
+entire `[h]A` side. The best inspected joint `[s]B-[h]A` radix-16 schedule is
+instead near 7.59 MB and begins with at least 1,701 trace/hint packet items.
+These are scoped results for the current affine trace, not a universal
+impossibility result.
+
+A newer candidate maps the verification equation to Montgomery coordinates
+and certifies a slope chain with two relations per transition.
+Using a 128-bit custom BLAKE3 challenge gives 45 selected groups and 44
+transitions. Each transition packet has two packed trace fields (16 circuit-
+data items) and exactly **two quotient-hint items**, so all 704 trace-data
+items plus all 88 quotient hints total 792 raw witness items at entry. The
+schedule carries the scalar inside later q hints; predecoding it into eight
+words while restoring q returns 800 items. A full item-accurate synthetic
+router is locally reproduced with a 25,231-byte raw/unoptimized fragment and a
+strict combined main-plus-alt-stack peak of 813 items. Its complete strict
+probe exceeds the centralized policy's 32 KiB cutoff and uses no optimizer. A
+correlation-free radix-32 interval model matches the
+prototype's exact sparse coefficient representation: the square product uses
+`[4x12,3x1]`, sparse u/a fields and continuity products use `[4x3,3x13]`, and
+sparse b/v fields use the staggered nine-limb layout `[4,6x7,5]` at offsets
+`0,4,10,16,22,28,34,40,46`. The symmetry-specialized square groups doubled
+cross terms before folding. Its q lies in `[-3,404,320,3,631,275]`, its
+maximum reverse carry is 63,966,197, and maximum modeled ScriptNum arithmetic
+is 2,046,918,304, leaving 100,565,343 of headroom. Regular continuity q remains
+in `[-3,686,931,3,686,931]`; its complete coefficient, reverse-carry, and
+maximum-arithmetic bounds are 2,072,011,424, 66,330,611, and 2,122,579,552.
+The latter leaves 24,904,095 below the four-byte limit even after both
+sign-routed b inputs are widened to the union `[-16*S_w,16*S_w]`. The first
+one-product continuity relation is narrower: with its selected b input widened
+the same way, its coefficient is 1,590,195,040, q remains in
+`[-1,843,466,1,843,466]` (signed 22-bit), reverse carry is 50,483,722, and
+maximum arithmetic is 1,615,479,104. Starting b/v directly with eight
+six-digit limbs and one three-digit limb is unsafe at 2,746,042,313 maximum
+arithmetic; the staggered four-digit first limb moves the wide sparse terms
+away from the largest low product coefficients.
+
+Limbwise sign routing is algebraically valid but creates an important boundary
+condition. Negating all grouped limbs reconstructs the exact integer negative
+of the original centered representative and hence the correct field element
+`-v` modulo `p`; the largest possible six-digit limb is only 554,189,328.
+That literal negative is not necessarily the backend's canonical centered
+representative of `p-v`. It can differ by `p`, so regrouping the canonical
+residue can shift the required continuity quotient by one per affected term.
+The implementation now exposes a signed-direct-limb hint/witness boundary that
+uses exactly the limbs emitted by the authenticated table. Focused strict
+negative first and chained fixtures both pass; each chosen fixture demonstrates
+a continuity quotient one below the canonically regrouped helper's value.
+
+Using both ScriptNum signs gives each signed-23-bit q carrier nine metadata
+bits, while the first signed-22 continuity q carries ten. The 56 q hints
+consumed by the first 28 response transitions therefore carry 505 transcript
+bits. The concrete schedule extracts and clears the normally-zero padding bit
+from eight early packed trace fields. All eight enter `R32 || M32` in its chunk
+order, and the final response q-metadata bit is the forced-zero 513th bit,
+without touching future challenge-side packets or adding entry items. Across
+all 88 q hints the exact mixed-width channel is 793 bits. Twenty-nine final
+challenge-side signed-23 q items provide 261 bits for the 253-bit scalar. The
+entry stores response packets before challenge packets so these scalar
+carriers are shallow. The q-restoring predecode/repack route is strictly
+executed at the synthetic 792-item packet boundary by
+`examples/ed25519_h16_scalar_carrier_router.rs`; its raw size is 25,231 bytes,
+and a 2,032-byte zero-growth block transpose then creates
+challenge-first/response-last execution order. The width-parametric compact
+carrier decoder, one-chunk-per-transition pair combiner, and padding-bit codec
+are strictly executed by `examples/ed25519_slope_carrier_codec.rs`. The algebra
+and interval models are respectively
+`examples/ed25519_montgomery_slope_chain_model.rs` and
+`examples/ed25519_montgomery_slope_bounds.rs`; carrier fragments, the router,
+and the bound model are `locally-reproduced` and `unclassified` at their stated
+boundaries.
+
+The historical generation-only linker serialized the matching 45 direct-limb
+tables,
+all 44 transition bodies, fixed-message BLAKE3 compression, scalar carrier
+router and transpose, validator/stream, pair/padding decoders, canonical
+transcript unpacking, a 128-byte consume-and-drop message binding, H16
+recoding, all physical routing, and the endpoint clean-stack predicate. After
+correcting the hash fragment's compilation policy, those components project a
+**3,828,057-byte** leaf; the superseded pre-policy whole serialization was
+3,826,949 bytes and the corrected whole has not been regenerated. Challenge
+byte `b_i` is independently recoded as
+`e_i=b_i-127` in `[-127,128]`, with
+`h=sum(e_i*2^(8i))+0x7f7f...7f`; the fixed negative bias multiple is absorbed
+by the response initializer. This removes the carry chain and shrinks the
+challenge-top table from 257 to 129 leaves. Tables plus recoding save 12,575
+bytes without changing the 45 tables, 44 transitions, entry items, or hints.
+Its corrected component partition sums exactly to the additive projection. Short
+strict linker probes reproduce
+packet/table/q/prior-state ordering, signed selection, remaining-q decoding,
+and fixed-message preservation/rejection. The fixed-message compressor folds
+the eight constant `M32` words into table addresses: binder plus hash is 64,118
+bytes versus 65,315 for the corrected republish-and-variable-message pair, and
+the strict host-differential hash probe peaks at 864 rather than 928. Both need
+zero hint items. The strict whole control execution
+substitutes peak-equivalent bodies for the multi-megabyte arithmetic and hash
+fragments and reaches 999 combined items; the real first/chained local peaks
+used at the critical rows are separately reproduced. The superseded whole was
+generated but not executed; the corrected whole was not regenerated. See
+[`ed25519-blake3-montgomery-slope.md`](primitives/ed25519-blake3-montgomery-slope.md)
+for the component boundaries and custom signature definition.
+
+A parallel G29 q-free construction derives each signed-22/23-bit quotient from the
+completed relation accumulator instead of accepting it as witness data. Its
+entry is exactly 704 trace-data items plus eight scalar words: **712 coexisting
+data items and zero auxiliary hints**. It removes the q router, metadata
+channel, and packet transpose. Its corrected components project a policy-
+compliant **3,896,335-byte** leaf. The sole pre-policy generation produced a
+3,895,323-byte whole with 2,087,154 static
+non-push opcodes; no corrected whole opcode count is claimed without
+regeneration. The projection is 68,278 bytes larger than the hinted projection
+because its 44 derived kernels cost 2,982,140 bytes and its later-certified
+packed-R hash boundary costs 67,806 bytes. Strict synthetic routing peaks at 763, the packed-R hash
+strict-peaks at 824 and matches host BLAKE3, and separately executed derived
+kernels imply an analytical worst complete-schedule frontier of **912**. The
+multi-megabyte leaf was not executed.
+
+The current successor combines three further changes. First, it uses the
+bounded-search G32 response partition—width eight everywhere except lower
+positions 21, 25, and 29 at width seven—plus the existing sixteen independent
+challenge bytes, for 47 transitions. Second, its final challenge packet carries
+51 canonical radix-32 `Rtilde` digits instead of eight packed words; the hash
+helper checks and copies those digits into BLAKE3 while preserving the original
+field for the fused terminal relation. Third, each curve relation uses a
+symmetry-specialized square, and quotient derivation shares Script-authored
+power-of-two pools within two phases. The square removes 2,887 integrated bytes
+per transition, while the split pools remove another 19,365 bytes and leave no
+pool across the hash boundary. The first transition deliberately keeps only
+four powers for bits 23 through 26, spending 37 bytes versus the five-item byte
+minimum to retain one stack slot of headroom. The pools add no witness data and are not hints.
+The exact entry is **803 coexisting circuit-data items and zero auxiliary hint
+items per transition and in total across all 47 transitions**. The analytical
+combined main-plus-alt-stack maximum is exactly **999**, including the
+script-authored pools; focused routing and individual kernel/hash interfaces
+are strict-executed separately. Generated long-running tests and whole-leaf
+execution remain opt-in.
+
+The final policy-produced G32 serialization is **2,999,983 bytes** and contains
+1,729,242 static non-push opcodes. Its disjoint component account is exact with
+zero cross-component optimizer delta: 1,931,479 response bytes, 1,000,204
+challenge bytes, 67,137 canonical-u5 fixed-message BLAKE3 bytes, 389 recoder
+bytes, and 774 scalar-validator bytes. Because the whole leaf exceeds 32 KiB,
+the compilation policy applies `CompileOptions::NONE`; the reported whole size
+is unoptimized by upstream fixpoint passes. The deterministic production-shaped
+host fixture serializes all 803 argument items to 3,863 bytes and commits them
+with BLAKE3 digest
+`896812f002f5c8b1a2816eed80ceb84e9822a9202ae226771a48091a6ef8c5d1`.
+Its exact complete-witness, target, and minimum-block formulas are `S+3,902`,
+`S+4,280`, and `S+5,048`; at the measured `S`, they are 3,003,885 bytes,
+3,004,263 WU, and 3,005,031 WU, leaving 994,969 WU below four million. A
+representation-aware conservative argument instead gives target/minimum-block
+formulas `S+5,034` and `S+5,802`, leaving 994,215 WU.
+
+A measured but non-selected lifecycle carries the later 16-item Script-authored
+power pool through canonical-u5 BLAKE3 and the recoder. It is technically
+feasible, uses zero hints, and strict-peaks at 934 inside that boundary, but
+saves only 25 bytes: 2,999,958 versus the retained 2,999,983-byte split. It
+also couples the hash and recoder to a nonempty alt stack. Production keeps the
+explicit empty hash/final boundaries; [NR-035](negative-results/index.md)
+records this operational tradeoff.
+
+The historical hinted G29 transaction envelope is parameterized independently
+of its glue. For any final leaf size `S` between 65,536 and `2^32-1`, a conservative
+maximum-payload, depth-zero, one-input/one-P2TR-output fixture with these 792
+entry arguments has an `S+4,706`-byte witness field and weighs `S+5,084` WU:
+the witness has a three-byte count for 794 items, 704 trace values serialized
+at their five-byte payload maximum, 88 q carriers at their four-byte maximum,
+a five-byte leaf length, and a 33-byte control block. The exact hint count
+remains two per transition and 88 total; all hints coexist with all 704
+trace-data items at script entry. A minimum current-height witness-committing
+coinbase plus the block header and two-transaction count costs another 768 WU.
+Thus 3,994,148 bytes is the conservative leaf-size ceiling under that argument
+upper bound and minimum block envelope; real miner coinbase data or extra
+outputs lower it. At projected leaf size `S=3,828,057`, the transaction is
+3,833,141 WU and the minimum block is 3,833,909 WU, leaving 166,091 WU. The deterministic
+`examples/ed25519_montgomery_h16_envelope_model.rs` fixture reproduces these
+CompactSize, serialized-size, and weight equations with the pinned
+`rust-bitcoin` serializer. This serialization evidence is
+`locally-reproduced`; deployment remains `unclassified`, and the transaction
+is necessarily non-standard under the 400,000-WU default policy limit.
+The deterministic honest fixture now fills all 792 argument slots and
+serializes them to 3,958 bytes. For that fixture the exact target and
+minimum-block formulas improve to `S+4,375` and `S+5,143` WU respectively;
+at the projected linked size they leave 166,800 WU. The conservative formulas above
+remain the content-independent planning bounds.
+
+For the G29 q-free leaf, the deterministic 712-item argument witness is 3,561
+bytes and the exact complete-witness/target/minimum-block formulas are
+`S+3,600`, `S+3,978`, and `S+4,746`. At projected `S=3,896,335`, target and minimum block
+are 3,900,313 and 3,901,081 WU, leaving 98,919 WU. The five-byte-payload
+conservative target/minimum formulas are `S+4,692` and `S+5,460`; they give
+3,901,027 and 3,901,795 WU, leaving 98,205 WU. All counts include exactly zero
+hint items.
+
+Canonical Edwards-point decoding, a subgroup/small-order policy for runtime
+keys, standard SHA-512 challenge construction and reduction, and independent
+RFC 8032 differential fixtures remain necessary for the original Ed25519
+objective. The BLAKE3 slope construction instead defines a key-specialized
+custom scheme with a torsion-shifted Montgomery-u commitment; it is not RFC
+8032. The linked benchmark binds the same deterministic `M32` used by its host
+signing fixture, but its disclosed fixture secret `a=987654321` makes the
+exact leaf forgeable. The fixed `M32` is not a Bitcoin transaction digest and
+provides no transaction authorization or replay protection. The custom scheme
+also lacks a specified domain-separated nonce derivation; nonce reuse with
+Ed25519 or another scheme under the same scalar would disclose the key. Its
+pinned challenge takes digest bytes 0 through 15 as a little-endian integer,
+and its response transports the 253-bit `C+s` value with three checked zero
+high bits. Authorized transaction-message binding, nonce specification,
+independent security review, complete transaction execution, and Bitcoin Core
+validation remain open. The external-key generator and concrete honest
+792-item hinted, 712-item G29 q-free, and 803-item G32 q-free witnesses exist at
+host-generation boundaries. The G32 host probe audits all 47 transition pairs
+and all 94 exact scalar relations without serializing q; the G29 q-free probe
+does the same for its 44 pairs and 88 relations. None has been validated by
+executing a complete leaf or by Bitcoin Core.
+
+For the historical hinted baseline, one remaining byte experiment is to leave the BLAKE3 backend's 330 lookup-table
+items below `prefix | digest` instead of moving the 337-item prefix during hash
+cleanup. The challenge schedule appears to have enough stack room to carry
+them and the endpoint could drop them, but this has not been generated or
+executed. **Accept when:** an exact linker variant preserves all routing and
+clean-stack semantics, stays below 1,000 combined items in a strict schedule,
+matches the standard BLAKE3 digest in a focused execution, and reports a
+policy-produced leaf smaller than the 3,828,057-byte projection with the same 792 entry items
+and exactly 88 hints.

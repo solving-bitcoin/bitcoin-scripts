@@ -6,7 +6,7 @@ reproducible constructions. The local Rust library is one source of evidence;
 it is not the boundary of the atlas.
 
 The catalog is explicitly time-scoped. Its current review date is
-**2026-09-01**. A record's `as_of` field says when its claims were last checked.
+**2026-09-04**. A record's `as_of` field says when its claims were last checked.
 Missing records are unknown coverage, not proof of nonexistence.
 
 ## How to answer a research question
@@ -53,7 +53,8 @@ implemented in this repository: ScriptNum, u4/u32/u31/bigint/RNS, native
 secp256k1 and other prime-field arithmetic, integer commitments, SHA-1,
 SHA-256, RIPEMD-160, BLAKE3, SHAKE256,
 AES-128, PRINCEv2, Lamport/HORS/Winternitz one-time constructions, and BN254
-field/group/pairing operations.
+field/group/pairing operations, Ed25519 field and scalar experiments, and a
+custom BLAKE3-128 Montgomery-slope signature-verifier candidate.
 
 Most local execution evidence comes from `bitcoin-scriptexec`, frequently in a
 tapscript context and sometimes without the consensus stack limit. Therefore

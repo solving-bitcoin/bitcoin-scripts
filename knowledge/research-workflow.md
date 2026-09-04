@@ -4,7 +4,8 @@
 
 Choose a primitive class, exact semantics, execution class, and optimization
 objective. Record hard limits such as live protocol stack, message length,
-number of repeated uses, and whether witness hints are allowed.
+number of repeated uses, whether witness hints are allowed, and the available
+hint-item budget under the 1,000-item combined stack limit.
 
 ## 2. Search the atlas
 
@@ -24,7 +25,9 @@ Use deterministic vectors. Prefer a reference implementation and a script
 execution test. Record the exact inclusion boundary from `cost-model.md` and
 the execution environment. Preserve raw vectors or a deterministic generator;
 large generated scripts should be reproducible from hashes and parameters
-rather than committed repeatedly.
+rather than committed repeatedly. For a hinted primitive, record exact
+per-invocation and cumulative batched hint-item counts, serialized hint bytes,
+the complete witness/data item count, and the measured combined stack peak.
 
 ## 5. Attempt falsification
 
@@ -36,8 +39,11 @@ for a verifier.
 ## 6. Compare and compose
 
 Update the relevant Pareto table. Evaluate coexistence with the surrounding
-protocol state and account for setup reuse. Map the primitive into a complete
-protocol dependency page before making deployment claims.
+protocol state and account for setup reuse. For hinted constructions, model all
+hints that coexist at script entry and do not estimate repeat capacity from the
+hint count without operands, tables, intermediates, outputs, and unrelated live
+state. Map the primitive into a complete protocol dependency page before making
+deployment claims.
 
 ## 7. Record the frontier
 

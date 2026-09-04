@@ -10,6 +10,16 @@ const IV: [u32; 8] = [
 
 const MSG_PERMUTATION: [u8; 16] = [2, 6, 3, 10, 7, 0, 4, 13, 1, 11, 12, 5, 9, 14, 15, 8];
 
+/// A compression-block word can either live on the Script stack or be fixed
+/// when the script is generated.  Keeping fixed words out of the runtime
+/// stack is particularly useful for protocol transcripts with a constant
+/// message suffix.
+#[derive(Clone, Debug, Copy)]
+pub(crate) enum CompressionMessageWord {
+    Dynamic(StackVariable),
+    Constant(u32),
+}
+
 #[derive(Clone, Debug, Copy)]
 pub(crate) struct TablesVars {
     modulo_last: StackVariable,
@@ -393,8 +403,32 @@ fn u4_add_constant_and_dynamic(
     dynamic: &mut StackVariable,
     tables: &TablesVars,
 ) -> StackVariable {
+    u4_add_constant_and_terms(stack, constant, vec![*dynamic], vec![], tables)
+}
+
+/// Add a compile-time word to one or more runtime words.  The known nibble is
+/// folded into the absolute interleaved-table address, so it costs neither a
+/// stack item nor a runtime push/add pair.  This is the constant-message
+/// counterpart of `u4_add_direct`.
+fn u4_add_constant_and_terms(
+    stack: &mut StackTracker,
+    constant: u32,
+    to_copy: Vec<StackVariable>,
+    mut to_move: Vec<&mut StackVariable>,
+    tables: &TablesVars,
+) -> StackVariable {
+    let term_count = to_copy.len() + to_move.len();
+    assert!(term_count > 0);
     for i in (0..8_u8).rev() {
-        stack.copy_var_sub_n(*dynamic, u32::from(i));
+        for value in &to_copy {
+            stack.copy_var_sub_n(*value, u32::from(i));
+        }
+        for value in &mut to_move {
+            stack.move_var_sub_n(value, u32::from(i));
+        }
+        for _ in 1..term_count {
+            stack.op_add();
+        }
         if i < 7 {
             stack.op_add();
         }
@@ -509,7 +543,7 @@ fn first_round_columns(
     counter: u32,
     block_len: u32,
     flags: u32,
-    message: &HashMap<u8, StackVariable>,
+    message: &HashMap<u8, CompressionMessageWord>,
     tables: &TablesVars,
 ) -> HashMap<u8, StackVariable> {
     let initial = [
@@ -526,8 +560,15 @@ fn first_round_columns(
     };
     for index in column_order {
         let (a, b, c, d) = (index, index + 4, index + 8, index + 12);
-        let m0 = message.get(&(index as u8 * 2)).copied();
-        let m1 = message.get(&(index as u8 * 2 + 1)).copied();
+        let dynamic_word = |word: u8| match message.get(&word).copied() {
+            Some(CompressionMessageWord::Dynamic(value)) => Some(value),
+            Some(CompressionMessageWord::Constant(_)) => {
+                unreachable!("constant words require chaining compression")
+            }
+            None => None,
+        };
+        let m0 = dynamic_word(index as u8 * 2);
+        let m1 = dynamic_word(index as u8 * 2 + 1);
         let words = match (m0, m1) {
             (None, None) => constant_g(initial[a], initial[b], initial[c], initial[d])
                 .map(|value| stack.number_u32(value)),
@@ -551,8 +592,8 @@ fn g(
     b: u8,
     c: u8,
     d: u8,
-    mut m_two_i: Option<StackVariable>,
-    mut m_two_i_plus_one: Option<StackVariable>,
+    mut m_two_i: Option<CompressionMessageWord>,
+    mut m_two_i_plus_one: Option<CompressionMessageWord>,
     tables: &TablesVars,
     last_round: bool,
     move_message_first: bool,
@@ -561,17 +602,26 @@ fn g(
     let mut va = var_map.get_mut(&a).unwrap();
 
     match (last_round, m_two_i.as_mut()) {
-        (true, Some(message)) => u4_add_direct_ordered(
+        (true, Some(CompressionMessageWord::Dynamic(message))) => u4_add_direct_ordered(
             stack,
             vec![vb],
             vec![&mut va, message],
             tables,
             move_message_first,
         ),
-        (false, Some(message)) => u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables),
+        (false, Some(CompressionMessageWord::Dynamic(message))) => {
+            u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables)
+        }
+        (_, Some(CompressionMessageWord::Constant(constant))) => {
+            let result =
+                u4_add_constant_and_terms(stack, *constant, vec![vb], vec![&mut va], tables);
+            *va = result;
+        }
         (_, None) => u4_add_direct(stack, vec![vb], vec![&mut va], tables),
     }
-    *va = stack.from_altstack_joined(8, &format!("state_{}", a));
+    if !matches!(m_two_i, Some(CompressionMessageWord::Constant(_))) {
+        *va = stack.from_altstack_joined(8, &format!("state_{}", a));
+    }
 
     let ret =
         xor_and_rotate_right_by_multiple_of_4(stack, var_map, d, a, 16, tables.use_full_tables);
@@ -589,18 +639,26 @@ fn g(
     let vb = var_map[&b];
     let mut va = var_map.get_mut(&a).unwrap();
     match (last_round, m_two_i_plus_one.as_mut()) {
-        (true, Some(message)) => u4_add_direct_ordered(
+        (true, Some(CompressionMessageWord::Dynamic(message))) => u4_add_direct_ordered(
             stack,
             vec![vb],
             vec![&mut va, message],
             tables,
             move_message_first,
         ),
-        (false, Some(message)) => u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables),
+        (false, Some(CompressionMessageWord::Dynamic(message))) => {
+            u4_add_direct(stack, vec![vb, *message], vec![&mut va], tables)
+        }
+        (_, Some(CompressionMessageWord::Constant(constant))) => {
+            let result =
+                u4_add_constant_and_terms(stack, *constant, vec![vb], vec![&mut va], tables);
+            *va = result;
+        }
         (_, None) => u4_add_direct(stack, vec![vb], vec![&mut va], tables),
     }
-
-    *va = stack.from_altstack_joined(8, &format!("state_{}", a));
+    if !matches!(m_two_i_plus_one, Some(CompressionMessageWord::Constant(_))) {
+        *va = stack.from_altstack_joined(8, &format!("state_{}", a));
+    }
 
     let ret =
         xor_and_rotate_right_by_multiple_of_4(stack, var_map, d, a, 8, tables.use_full_tables);
@@ -620,7 +678,7 @@ fn g(
 fn round(
     stack: &mut StackTracker,
     state_var_map: &mut HashMap<u8, StackVariable>,
-    message_var_map: &HashMap<u8, StackVariable>,
+    message_var_map: &HashMap<u8, CompressionMessageWord>,
     tables: &TablesVars,
     last_round: bool,
     round_index: u8,
@@ -684,7 +742,9 @@ fn round(
     }
 }
 
-fn permutate(message_var_map: &HashMap<u8, StackVariable>) -> HashMap<u8, StackVariable> {
+fn permutate(
+    message_var_map: &HashMap<u8, CompressionMessageWord>,
+) -> HashMap<u8, CompressionMessageWord> {
     let mut ret = HashMap::new();
     for i in 0..16_u8 {
         if let Some(message) = message_var_map.get(&MSG_PERMUTATION[i as usize]) {
@@ -735,13 +795,54 @@ pub(crate) fn compress(
     counter: u32,
     block_len: u32,
     flags: u32,
-    mut message: HashMap<u8, StackVariable>,
+    message: HashMap<u8, StackVariable>,
     tables: &TablesVars,
     final_rounds: u8,
     last_round: bool,
     direct_short_layout: bool,
 ) {
-    assert_eq!(final_rounds, 8);
+    compress_mixed(
+        stack,
+        chaining,
+        counter,
+        block_len,
+        flags,
+        message
+            .into_iter()
+            .map(|(index, word)| (index, CompressionMessageWord::Dynamic(word)))
+            .collect(),
+        tables,
+        final_rounds,
+        last_round,
+        direct_short_layout,
+    );
+}
+
+/// Compression entry point for a block containing both runtime and
+/// compile-time message words.  Constant words are currently supported only
+/// for chaining compressions, which is the shape used by the fixed-prefix
+/// Ed25519 challenge transcript.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn compress_mixed(
+    stack: &mut StackTracker,
+    chaining: bool,
+    counter: u32,
+    block_len: u32,
+    flags: u32,
+    mut message: HashMap<u8, CompressionMessageWord>,
+    tables: &TablesVars,
+    final_rounds: u8,
+    last_round: bool,
+    direct_short_layout: bool,
+) {
+    assert!((1..=8).contains(&final_rounds));
+    assert!(
+        chaining
+            || message
+                .values()
+                .all(|word| matches!(word, CompressionMessageWord::Dynamic(_))),
+        "constant message words require chaining compression"
+    );
 
     let (mut state, first_full_round) = if chaining {
         (init_state(stack, true, counter, block_len, flags), 0)
@@ -1374,6 +1475,159 @@ mod tests {
                 "final sum {sum}"
             );
         }
+    }
+
+    #[test]
+    #[ignore = "focused generated-Script regression; run explicitly"]
+    fn constant_word_addition_matches_wrapping_u32() {
+        let cases = [
+            (0_u32, 0_u32, 0_u32),
+            (0x1234_5678, 0x9abc_def0, 0x1020_3040),
+            (u32::MAX, u32::MAX, u32::MAX),
+        ];
+        for (a, b, constant) in cases {
+            let mut stack = StackTracker::new();
+            let tables = TablesVars::new(&mut stack, true);
+            let mut a_var = stack.number_u32(a);
+            let b_var = stack.number_u32(b);
+            let mut actual = u4_add_constant_and_terms(
+                &mut stack,
+                constant,
+                vec![b_var],
+                vec![&mut a_var],
+                &tables,
+            );
+            let mut expected = stack.number_u32(a.wrapping_add(b).wrapping_add(constant));
+            stack.equals(&mut actual, true, &mut expected, true);
+            stack.drop(b_var);
+            tables.drop(&mut stack);
+            stack.op_true();
+            assert!(
+                execute_script(stack.get_script()).success,
+                "a={a:#x} b={b:#x} constant={constant:#x}"
+            );
+        }
+    }
+
+    #[test]
+    #[ignore = "focused generated-Script regression; run explicitly"]
+    fn constant_message_g_matches_host_arithmetic() {
+        let initial: [u32; 16] =
+            std::array::from_fn(|index| 0x1020_3040_u32.wrapping_mul(index as u32 + 1));
+        let message = 0xf3e2_d1c0_u32;
+        let mut expected = initial;
+        expected[0] = expected[0].wrapping_add(expected[4]).wrapping_add(message);
+        expected[12] = (expected[12] ^ expected[0]).rotate_right(16);
+        expected[8] = expected[8].wrapping_add(expected[12]);
+        expected[4] = (expected[4] ^ expected[8]).rotate_right(12);
+        expected[0] = expected[0].wrapping_add(expected[4]);
+        expected[12] = (expected[12] ^ expected[0]).rotate_right(8);
+        expected[8] = expected[8].wrapping_add(expected[12]);
+        expected[4] = (expected[4] ^ expected[8]).rotate_right(7);
+
+        let mut stack = StackTracker::new();
+        let tables = TablesVars::new(&mut stack, true);
+        let mut state = initial
+            .into_iter()
+            .enumerate()
+            .map(|(index, value)| (index as u8, stack.number_u32(value)))
+            .collect::<HashMap<_, _>>();
+        g(
+            &mut stack,
+            &mut state,
+            0,
+            4,
+            8,
+            12,
+            Some(CompressionMessageWord::Constant(message)),
+            Some(CompressionMessageWord::Constant(0)),
+            &tables,
+            false,
+            false,
+        );
+        for lane in (0..16_u8).rev() {
+            let mut actual = state[&lane];
+            stack.move_var(actual);
+            let mut expected_word = stack.number_u32(expected[lane as usize]);
+            stack.equals(&mut actual, true, &mut expected_word, true);
+        }
+        tables.drop(&mut stack);
+        stack.op_true();
+        assert!(execute_script(stack.get_script()).success);
+    }
+
+    #[test]
+    #[ignore = "focused generated-Script regression; run explicitly"]
+    fn mixed_message_round_matches_host_arithmetic() {
+        fn host_g(state: &mut [u32; 16], a: usize, b: usize, c: usize, d: usize, x: u32, y: u32) {
+            state[a] = state[a].wrapping_add(state[b]).wrapping_add(x);
+            state[d] = (state[d] ^ state[a]).rotate_right(16);
+            state[c] = state[c].wrapping_add(state[d]);
+            state[b] = (state[b] ^ state[c]).rotate_right(12);
+            state[a] = state[a].wrapping_add(state[b]).wrapping_add(y);
+            state[d] = (state[d] ^ state[a]).rotate_right(8);
+            state[c] = state[c].wrapping_add(state[d]);
+            state[b] = (state[b] ^ state[c]).rotate_right(7);
+        }
+
+        let initial: [u32; 16] =
+            std::array::from_fn(|index| 0x1020_3040_u32.wrapping_mul(index as u32 + 1));
+        let words: [u32; 16] = std::array::from_fn(|index| {
+            0xf3e2_d1c0_u32.wrapping_add(0x0711_1923_u32.wrapping_mul(index as u32))
+        });
+        let mut expected = initial;
+        for (a, b, c, d, x, y) in [
+            (0, 4, 8, 12, 0, 1),
+            (1, 5, 9, 13, 2, 3),
+            (2, 6, 10, 14, 4, 5),
+            (3, 7, 11, 15, 6, 7),
+            (0, 5, 10, 15, 8, 9),
+            (1, 6, 11, 12, 10, 11),
+            (2, 7, 8, 13, 12, 13),
+            (3, 4, 9, 14, 14, 15),
+        ] {
+            host_g(&mut expected, a, b, c, d, words[x], words[y]);
+        }
+
+        let mut stack = StackTracker::new();
+        let tables = TablesVars::new(&mut stack, true);
+        let mut message = HashMap::new();
+        for index in 0..8_u8 {
+            message.insert(
+                index,
+                CompressionMessageWord::Dynamic(stack.number_u32(words[index as usize])),
+            );
+        }
+        for index in 8..16_u8 {
+            message.insert(
+                index,
+                CompressionMessageWord::Constant(words[index as usize]),
+            );
+        }
+        let mut state = initial
+            .into_iter()
+            .enumerate()
+            .map(|(index, value)| (index as u8, stack.number_u32(value)))
+            .collect::<HashMap<_, _>>();
+        round(
+            &mut stack, &mut state, &message, &tables, false, 0, 64, [false; 4], false,
+        );
+        for lane in (0..16_u8).rev() {
+            let mut actual = state[&lane];
+            stack.move_var(actual);
+            let mut expected_word = stack.number_u32(expected[lane as usize]);
+            stack.equals(&mut actual, true, &mut expected_word, true);
+        }
+        for word in (0..8_u8).rev() {
+            let CompressionMessageWord::Dynamic(value) = message[&word] else {
+                unreachable!()
+            };
+            let moved = stack.move_var(value);
+            stack.drop(moved);
+        }
+        tables.drop(&mut stack);
+        stack.op_true();
+        assert!(execute_script(stack.get_script()).success);
     }
 
     #[test]

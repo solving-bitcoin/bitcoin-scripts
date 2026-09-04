@@ -9,6 +9,8 @@ Paths name the field before the backend:
 
 | Field family | Backend | Canonical module |
 | --- | --- | --- |
+| Ed25519 base field | biased centered radix-`2^5` signed-table multiply, ordinary domain | `fields::ed25519::u5_balanced_table` |
+| Ed25519 base field | balanced radix-`2^9` bigint, factor-8 profile | `fields::ed25519::bigint9` |
 | secp256k1 base field | balanced radix-`2^9` bigint, ordinary profile | `fields::secp256k1::bigint9` |
 | secp256k1 base field | balanced radix-`2^9` bigint, factor-16 profile | `fields::secp256k1::bigint9::factor16` |
 | secp256k1 base field | 46-prime certified RNS | `fields::secp256k1::rns` |

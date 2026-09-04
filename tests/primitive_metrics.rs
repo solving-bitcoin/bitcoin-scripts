@@ -21,6 +21,7 @@ use bitcoin_lab::{
     fields::{
         babybear::babybear4::BabyBear4,
         bn254::bigint29::{fp254::Fp254Impl, fq::Fq, fq12::Fq12, fq2::Fq2, fq6::Fq6, fr::Fr},
+        ed25519::{bigint9 as ed25519_baseline, u5_balanced_table as ed25519},
         f12289::{radix as f12289_radix, u31::F12289},
         f257::{lookup as f257_lookup, u31::F257},
         m31::{qm31::QM31, u31::M31},
@@ -353,6 +354,44 @@ fn metrics() -> Vec<Metric> {
             prime_rns_batch_input_items.push(scriptnum(i64::from(prime_rns_batch_rhs[coordinate])));
         }
     }
+    let ed25519_modulus = ed25519::modulus();
+    let ed25519_lhs_stored = [0; ed25519::FIELD_DIGIT_COUNT];
+    let mut ed25519_rhs_stored = [31; ed25519::FIELD_DIGIT_COUNT];
+    ed25519_rhs_stored[0] = 12;
+    let ed25519_lhs = ed25519::value_from_field_digits(&ed25519_lhs_stored);
+    let ed25519_rhs = ed25519::value_from_field_digits(&ed25519_rhs_stored);
+    debug_assert!(ed25519_lhs < ed25519_modulus && ed25519_rhs < ed25519_modulus);
+    let ed25519_hints = ed25519::hinted_mul(&ed25519_lhs, &ed25519_rhs);
+    let ed25519_mul = ed25519::mul_mod_hinted(0);
+    let ed25519_cost = ed25519::one_shot_cost_breakdown();
+    let ed25519_opcodes = static_non_push_opcodes(ed25519_mul.clone());
+    let ed25519_standalone = ed25519::mul_mod_hinted_from_raw_witness(0);
+    let ed25519_hint_items = ed25519_hints.witness_items();
+    let mut ed25519_full_input_items = Vec::new();
+    for value in [&ed25519_lhs, &ed25519_rhs] {
+        for digit in ed25519::field_digits(value).iter().rev() {
+            ed25519_full_input_items.push(scriptnum(i64::from(*digit)));
+        }
+    }
+    ed25519_full_input_items.extend(ed25519_hint_items.iter().cloned());
+    let ed25519_baseline_modulus = ed25519_baseline::modulus();
+    let ed25519_baseline_logical = &ed25519_baseline_modulus - BigUint::one();
+    let ed25519_baseline_lhs = ed25519_baseline::encode(&ed25519_baseline_logical);
+    let ed25519_baseline_rhs = ed25519_baseline_lhs.clone();
+    let ed25519_baseline_hints =
+        ed25519_baseline::hinted_mul(&ed25519_baseline_lhs, &ed25519_baseline_rhs);
+    let ed25519_baseline_mul = ed25519_baseline::mul_mod_hinted(0);
+    let ed25519_baseline_cost = ed25519_baseline::one_shot_cost_breakdown();
+    let ed25519_baseline_opcodes = static_non_push_opcodes(ed25519_baseline_mul.clone());
+    let ed25519_baseline_standalone = ed25519_baseline::mul_mod_hinted_from_raw_witness(0);
+    let ed25519_baseline_hint_items = ed25519_baseline_hints.witness_items();
+    let mut ed25519_baseline_full_input_items = Vec::new();
+    for value in [&ed25519_baseline_lhs, &ed25519_baseline_rhs] {
+        for digit in ed25519_baseline::field_digits(value).iter().rev() {
+            ed25519_baseline_full_input_items.push(scriptnum(i64::from(*digit)));
+        }
+    }
+    ed25519_baseline_full_input_items.extend(ed25519_baseline_hint_items.iter().cloned());
     let secp256k1_modulus = secp256k1::modulus();
     let secp256k1_lhs = &secp256k1_modulus - BigUint::one();
     let secp256k1_rhs = secp256k1_lhs.clone();
@@ -1622,6 +1661,164 @@ fn metrics() -> Vec<Metric> {
             value: script_len(u31::u31_mul_by_constant::<M31>(0x1234_5678)),
         },
         Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul",
+            value: script_len(ed25519_mul.clone()),
+        },
+        Metric {
+            readme: "knowledge/comparisons/arithmetic.md",
+            key: "ed25519_field_mul",
+            value: script_len(ed25519_mul.clone()),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_table_setup",
+            value: ed25519_cost.table_setup,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_relation",
+            value: ed25519_cost.folded_relation,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_cleanup",
+            value: ed25519_cost.cleanup,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_opcodes",
+            value: ed25519_opcodes,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_hint_items",
+            value: ed25519_hint_items.len(),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_hint_witness",
+            value: witness_size(&ed25519_hint_items),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { ed25519_mul.clone() }
+                    for _ in 0..ed25519::FIELD_DIGIT_COUNT { OP_DROP }
+                    OP_TRUE
+                },
+                ed25519_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_standalone",
+            value: script_len(ed25519_standalone.clone()),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_standalone_witness",
+            value: witness_size(&ed25519_full_input_items),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_field_mul_standalone_stack",
+            value: max_stack_items(
+                script! {
+                    { ed25519_standalone }
+                    for _ in 0..ed25519::FIELD_DIGIT_COUNT { OP_DROP }
+                    OP_TRUE
+                },
+                ed25519_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul",
+            value: script_len(ed25519_baseline_mul.clone()),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_table_setup",
+            value: ed25519_baseline_cost.table_setup,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_table_drop",
+            value: ed25519_baseline_cost.table_drop,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_product_generation",
+            value: ed25519_baseline_cost.product_generation,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_relation",
+            value: ed25519_baseline_cost.folded_relation,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_cleanup",
+            value: ed25519_baseline_cost.cleanup,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_computation",
+            value: ed25519_baseline_cost.computation(),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_opcodes",
+            value: ed25519_baseline_opcodes,
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_hint_items",
+            value: ed25519_baseline_hint_items.len(),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_hint_witness",
+            value: witness_size(&ed25519_baseline_hint_items),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_stack",
+            value: max_stack_items(
+                script! {
+                    { ed25519_baseline_mul.clone() }
+                    for _ in 0..ed25519_baseline::FIELD_DIGIT_COUNT { OP_DROP }
+                    OP_TRUE
+                },
+                ed25519_baseline_full_input_items.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_standalone",
+            value: script_len(ed25519_baseline_standalone.clone()),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_standalone_witness",
+            value: witness_size(&ed25519_baseline_full_input_items),
+        },
+        Metric {
+            readme: "src/fields/ed25519/bigint9/README.md",
+            key: "ed25519_bigint9_mul_standalone_stack",
+            value: max_stack_items(
+                script! {
+                    { ed25519_baseline_standalone }
+                    for _ in 0..ed25519_baseline::FIELD_DIGIT_COUNT { OP_DROP }
+                    OP_TRUE
+                },
+                ed25519_baseline_full_input_items.clone(),
+            ),
+        },
+        Metric {
             readme: "src/fields/secp256k1/bigint9/README.md",
             key: "secp256k1_field_mul",
             value: script_len(secp256k1_mul.clone()),
@@ -2803,6 +3000,7 @@ fn metrics() -> Vec<Metric> {
 }
 
 #[test]
+#[ignore = "expensive full-repository metric regeneration; run explicitly with --ignored"]
 fn readme_metrics_are_current() {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));

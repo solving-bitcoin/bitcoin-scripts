@@ -16,6 +16,103 @@ Two input profiles are public:
 Both profiles implement unkeyed 32-byte hashing only. Keyed mode, derive-key
 mode, XOF output, and the multi-chunk tree API are not implemented.
 
+The experimental `ed25519_challenge` module also exposes custom-signature
+transcript shapes. These are not stable hash APIs and do not implement RFC
+8032 Ed25519:
+
+These experimental generators now use only the repository's centralized
+compilation policy. In particular, wrappers larger than 32 KiB receive
+`CompileOptions::NONE` and do not run a second fixed-point optimizer pass after
+`compile_with_policy()`.
+
+| Experimental transcript | Script bytes | Data items | Hint items | Peak/bound |
+| --- | ---: | ---: | ---: | ---: |
+| `BLAKE3(R32 || A32 || M32)` | 125,687 | 192 checked u4 | 0 | <=655 |
+| `BLAKE3(D32 || A32 || R32 || M32)`, fixed `D32,A32` | 65,208 | 128 checked u4 | 0 | <=591 |
+| low 128 bits of fixed-`D32,A32` form | 64,760 | 128 checked u4 | 0 | <=591 |
+| low 128 bits, caller-certified u4 input | 63,764 | 128 certified u4 | 0 | <=591 |
+| caller-certified input with 337 H16 items preserved | 65,123 | 128 certified u4 + 337 preserved | 0 | 928 combined |
+| fixed-`M32` binder + specialized low-128 hash at the H16 frontier | 64,118 | 128 certified u4 + 337 preserved at entry; 64 u4 + 337 after binding | 0 | 864 combined |
+| fixed-`M32` hash copied from later-certified packed R | 67,806 | 297 preserved items, including 8 packed R words | 0 | 824 combined |
+| fixed-`M32` hash from canonical-u5 R | 67,137 | 391 preserved items, including 51 R digits | 0 | 918 combined |
+
+The second form precomputes the non-root chaining value for the fixed first
+block and runs only the final `CHUNK_END|ROOT` compression in Script. A
+deterministic host-only test matches the ordinary unkeyed BLAKE3 digest of the
+complete 128-byte transcript. Runtime `R` digits must be bound to the same
+canonical point encoding used by the curve
+equation, and runtime `M32` digits to the intended message source. Both forms
+use exactly zero auxiliary witness-hint items.
+
+`key_specialized_compute_script_preserving_truncated_128` omits the four
+unused root-output words for a 128-bit challenge schedule. It saves 448 script
+bytes and returns 32 rather than 64 u4 items. It is truncation of ordinary
+BLAKE3 output, not a different compression function. The generated Script was
+not executed, so this row has the same `inspected`/`unclassified` boundary.
+The caller-certified variant saves another 996 bytes by relying on a preceding
+carrier decoder to prove every transcript item is in `0..16`; using it on raw
+witness items would be unsound.
+
+The 337-item preserving instantiation is the exact H16 slope-chain hash
+frontier: 288 future packet items, a 41-item current state, and eight packed
+`Rtilde` words remain live below the 128 transcript nibbles. The previously
+reported 63,766-byte generator was not executable with a prefix:
+the packed-XOR backend's `OP_DEPTH` addressing requires its 330 lookup-table
+items at the bottom of the main stack. Correctly parking and restoring the 337
+preserved items around table construction and cleanup makes the variable-`M32`
+hash 65,123 bytes. A strict focused execution reaches 928 combined items.
+
+For the linked constant `M32`, a 128-byte binder instead verifies and consumes
+the 64 hostile message nibbles. The specialized compressor folds those eight
+fixed words into its addition-table addresses, so its hash frontier is only
+337 preserved items plus 64 `R32` nibbles. Binder plus hash is 64,118 bytes
+(128 + 63,990) and reaches 864 combined items in a strict focused execution.
+The fixture
+matches the standard `blake3` crate's low 128 output bits, preserves exact
+prefix/`R` order, and rejects malformed, reordered, or extra input. It uses
+zero hint items. Applying the policy-only hash delta to the generation-only
+H16 component account projects a 3,828,057-byte leaf with
+792 entry items (88 hints and 704 trace-data items, all coexisting) and a
+strict peak-equivalent schedule of 999. The multi-megabyte leaf itself has not
+been executed.
+
+The separate G29 q-free H16 schedule has no transcript carriers. At its hash
+boundary, 256 challenge-trace items and the 41-item current state remain. The
+67,806-byte helper deep-copies the eight packed R words at word-zero depth 289,
+derives their 64 u4 items, hashes the fixed message, and preserves all 297
+original items. A focused strict execution peaks at 824, matches host BLAKE3,
+preserves the prefix byte-for-byte, and rejects extra input. Packed-word
+canonicality is intentionally supplied later by the final derived slope
+transition over those untouched originals; omitting that later certification
+would be unsound. This boundary has exactly zero hint items. It is composed in
+the policy-corrected additive 3,896,335-byte q-free projection, whose 712 entry
+data items also contain zero hints and whose analytical arithmetic frontier is
+912. The multi-megabyte leaf was not executed.
+
+The G32 hybrid-u5 helper receives 391 preserved items: the 51 canonical
+radix-32 `Rtilde` digits, the remaining fifteen challenge packets, and the
+92-item current state. Its 2,931-byte converter copies and packs R into 64 u4
+items while checking every digit and rejecting the 19-value noncanonical gap;
+the fixed-message BLAKE3 body is 64,206 bytes. The 67,137-byte pair contains
+45,452 static non-push opcodes, preserves all original items byte-for-byte,
+returns 32 digest nibbles, uses exactly zero hint items, and strict-peaks at
+918. A focused fixture matches host BLAKE3 and
+rejects an out-of-range digit, the first gap encoding, and extra input. The
+original 51 R digits remain available for the terminal slope relation.
+Together with the four-item first-kernel pool, it gives a 2,999,983-byte
+generation-only G32 leaf. That leaf has
+803 coexisting entry-data items, zero hints across all 47 transitions, and an
+analytical combined-stack maximum of 999. Its multi-megabyte Script
+has not been executed, and fixed `M32` is not transaction authorization.
+
+`key_specialized_compute_script_preserving` exposes the same one-compression
+construction while preserving a caller-selected main-stack prefix. Preserved
+prefixes must use the same table-below-prefix staging described above; older
+size projections that counted only a deeper exact-depth constant are invalid.
+A separate inspected carrier model stores the 64 runtime transcript bytes in
+existing signed-23-bit quotient items, leaving the G29 entry at 764 items; that
+composed metric has intentionally not been run.
+
 ## Short-input specialization
 
 The short profile keeps only message words that overlap the declared input.

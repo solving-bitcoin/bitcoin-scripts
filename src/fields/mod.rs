@@ -6,6 +6,7 @@
 
 pub mod babybear;
 pub mod bn254;
+pub mod ed25519;
 pub mod f12289;
 pub mod f257;
 pub mod m31;

@@ -10,11 +10,13 @@ when callers must choose.
 ## Script metrics
 
 State exactly what each measurement includes. Script and serialized witness
-sizes must use metric markers maintained by `tests/primitive_metrics.rs`.
+sizes must use metric markers maintained by `tests/primitive_metrics.rs`. Every
+hinted configuration must show the exact number of hint stack items as well as
+their serialized size. Use `0 (none)` for a configuration without hints.
 
-| Configuration | Locking script | Unlocking witness | Maximum stack items |
-| --- | ---: | ---: | ---: |
-| Default | <!-- metric:key -->0<!-- /metric:key --> bytes | ... | ... |
+| Configuration | Locking script | Unlocking witness | Hint items | Maximum stack items |
+| --- | ---: | ---: | ---: | ---: |
+| Default | <!-- metric:key -->0<!-- /metric:key --> bytes | ... | ... | ... |
 
 ## Security
 
@@ -31,7 +33,14 @@ compatibility from consensus limits and relay/mining policy. Link to
 ## Witness and hints
 
 Document item order, encoding, public/secret status, and whether hints are
-mandatory.
+mandatory. Report the exact hint-item count per invocation and the cumulative
+count for every measured repeated or batched configuration. Distinguish that
+count from operands and other witness data, give the complete witness/data item
+count for a complete wrapper, and say whether the hints all coexist at script
+entry or what narrower fragment boundary is being measured. Serialized bytes
+are not a substitute for the item count. Explain how hint coexistence and all
+other live state affect composition under the 1,000-item combined main-plus-
+alt-stack limit.
 
 ## Stack contract
 

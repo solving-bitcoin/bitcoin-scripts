@@ -12,6 +12,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [u32 word arithmetic](u32.md)
 - [u31 prime-field arithmetic](u31.md)
 - [Native secp256k1 base-field arithmetic](secp256k1-field.md)
+- [Ed25519 base-field multiplication](ed25519-field.md)
 - [F257 lookup arithmetic](f257.md)
 - [F12289 radix arithmetic](f12289.md)
 - [Multi-limb big integers](bigint.md)
@@ -33,6 +34,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [SHA-256 over u4 digits](sha256-u4.md)
 - [BLAKE3 over tracked limbs](blake3-limb29.md)
 - [BLAKE3 sparse direct-u4 short inputs](blake3-short-u4.md)
+- [BLAKE3 Ed25519-style challenge transcripts](blake3-ed25519-challenge.md)
 - [SHAKE256 over byte lanes](shake256-byte.md)
 - [AES-128 over u4 digits](aes128-u4.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)
@@ -41,6 +43,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Point locks](point-locks.md)
 - [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
+- [BLAKE3 Ed25519-style Montgomery slope verifier candidate](ed25519-blake3-montgomery-slope.md) — historical G29 hinted/q-free leaves and the G32 hybrid-u5 zero-hint successor
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)
 - [Base-16 Winternitz signatures](winternitz-base16.md)
@@ -48,6 +51,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Curves and pairings
 
+- [Ed25519 fixed-base scalar multiplication](ed25519-fixed-base-scalar.md)
 - [BN254 fields](bn254-fields.md)
 - [BN254 groups and MSM](bn254-groups.md)
 - [BN254 pairing verifier](bn254-pairing.md)

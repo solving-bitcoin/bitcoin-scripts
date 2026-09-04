@@ -11,7 +11,18 @@ For every hinted construction, document:
 - range and canonicality checks;
 - behavior for malformed or adversarial hints;
 - whether original operands remain available for binding;
-- witness bytes and stack peak attributable to hints.
+- the exact hint stack-item count per invocation and for every measured
+  repeated or batched configuration;
+- the complete witness/data item count and whether all hints coexist at script
+  entry or a narrower fragment boundary is being measured;
+- serialized hint bytes and the combined main-plus-alt-stack peak.
+
+These are separate metrics. A small serialized hint can still consume one
+stack item, and every witness item in a complete leaf is present on the initial
+stack. Hint items therefore compete with operands, tables, intermediates,
+outputs, and unrelated protocol state for Bitcoin's 1,000-item combined stack
+limit. Do not infer a safe repetition count from
+`floor(1000 / hint_items)` without measuring the complete composition.
 
 Local examples include ScriptNum quotient hints and BN254 intermediate field
 values. Prime RNS shows why the binding question is separate from the local
@@ -53,3 +64,21 @@ incremental witness has 29 items and serializes to 37 bytes for encoded
 `(p-1)^2` (84–92 bytes across the pinned 256-case random sample). A raw
 canonical digit vector is still not a verified-path certificate, and a caller
 must not reinterpret factor-16 output as an ordinary-domain value.
+
+The historical hinted Ed25519 Montgomery slope experiment demonstrates that
+one mandatory hint item can transport additional certified bits without
+changing the hint-item count. Its
+[signed ScriptNum carrier](signed-scriptnum-metadata-carriers.md) recovers the
+exact quotient and metadata separately. This is only a storage optimization:
+the arithmetic relation must still bind the quotient, the metadata consumer
+must bind every transported bit, and all 88 logical quotient hints still
+coexist at that complete script entry.
+
+The successor G32 slope leaf is a contrasting zero-hint construction. It
+derives each relation quotient from the five low radix-32 accumulator
+coefficients, then verifies the complete carry recurrence. Its transient
+four- and sixteen-item power pools are authored by the locking script; they
+are table memory, not witness hints or entry data. The leaf therefore reports
+exactly zero auxiliary hint items per transition and zero across all 47
+transitions, while still separately reporting its 803 coexisting entry-data
+items and combined stack peak.

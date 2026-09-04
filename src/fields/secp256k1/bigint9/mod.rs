@@ -518,7 +518,7 @@ fn convolution(lhs: &[i32], rhs: &[i32]) -> Vec<i64> {
 /// schoolbook coefficients. Their evaluation at `X = 512` is still exactly
 /// `lhs * rhs`; the carry witness must therefore be generated in this same
 /// basis.
-fn karatsuba_coefficients(lhs: &FieldDigits, rhs: &FieldDigits) -> [i64; 57] {
+pub(crate) fn karatsuba_coefficients(lhs: &FieldDigits, rhs: &FieldDigits) -> [i64; 57] {
     let z0 = convolution(&lhs[..KARATSUBA_SPLIT], &rhs[..KARATSUBA_SPLIT]);
     let z2 = convolution(&lhs[KARATSUBA_SPLIT..], &rhs[KARATSUBA_SPLIT..]);
     let lhs_difference = normalized_difference(&lhs[..KARATSUBA_SPLIT], &lhs[KARATSUBA_SPLIT..]);

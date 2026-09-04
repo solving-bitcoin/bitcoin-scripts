@@ -36,7 +36,7 @@ pub const RELATION_CARRY_ABS_BOUND: i32 = 407_878;
 /// Rigorous absolute bound before any radix-512 carry extraction.
 pub const PRE_CARRY_ABS_BOUND: i32 = 208_833_836;
 
-const STORED_COEFFICIENT_COUNT: usize = KARATSUBA_STORED_COEFFICIENTS;
+pub(crate) const STORED_COEFFICIENT_COUNT: usize = KARATSUBA_STORED_COEFFICIENTS;
 
 /// Exact relation carries, least-significant first.
 pub type RelationCarries = [i32; RELATION_CARRY_COUNT];
@@ -338,7 +338,7 @@ fn difference_product_coefficient(coefficient_index: usize) -> Script {
     }
 }
 
-fn product_arrays() -> Script {
+pub(crate) fn product_arrays() -> Script {
     script! {
         for coefficient_index in 0..KARATSUBA_LOW_COEFFICIENTS {
             { operand_product_coefficient(0, 0, KARATSUBA_SPLIT, coefficient_index) }
@@ -372,7 +372,7 @@ fn product_arrays() -> Script {
 
 // Add C[index] to a temporary accumulator. `extra_items` are live between
 // that accumulator and the three stored Karatsuba arrays.
-fn add_product_coefficient(coefficient_index: usize, extra_items: u32) -> Script {
+pub(crate) fn add_product_coefficient(coefficient_index: usize, extra_items: u32) -> Script {
     script! {
         if coefficient_index < KARATSUBA_LOW_COEFFICIENTS {
             { 1 + extra_items + coefficient_index as u32 } OP_PICK OP_ADD
@@ -406,7 +406,7 @@ fn add_product_coefficient(coefficient_index: usize, extra_items: u32) -> Script
     }
 }
 
-fn add_scaled_product(
+pub(crate) fn add_scaled_product(
     coefficient_index: usize,
     multiplier: i32,
     has_outer_accumulator: bool,

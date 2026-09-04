@@ -54,6 +54,14 @@ the stack limit. Record that distinction in every result that uses it.
 - Use deterministic inputs and RNG seeds. Record configuration parameters.
 - Report locking-script bytes, serialized witness bytes, stack peak, executed
   opcodes or validation budget when available, and the execution class.
+- For every primitive that requires witness hints, report the exact number of
+  hint stack items per invocation and for every measured repeated or batched
+  configuration. Distinguish incremental hint items from the complete
+  witness/data item count, state whether all hints coexist at script entry or
+  describe the fragment boundary used, include them in the measured combined
+  main-plus-alt-stack peak, and explain composition under Bitcoin's 1,000-item
+  limit. Serialized hint bytes and total stack peak do not substitute for the
+  explicit hint-item count.
 - Compare like with like. Setup, cleanup, input pushes, output checks, and
   witness serialization must either be included on both sides or excluded on
   both sides.

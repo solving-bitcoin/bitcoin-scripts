@@ -11,6 +11,8 @@ differ. Follow each catalog configuration before comparing numbers.
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
+| Ed25519 ordinary-domain multiply | 51 biased centered radix-32 digits, 13 signed tables | <!-- metric:ed25519_field_mul -->9893<!-- /metric:ed25519_field_mul --> | 245-byte/51-item incremental hint; certified operands; 523-item strict peak |
+| Ed25519 factor-8 multiply | `E(x)=x/8`, folded normalized Karatsuba | 19,903 | 31-byte/29-item incremental hint; certified encoded operands; 719-item strict peak |
 | Native secp256k1 ordinary-domain multiply | 29 balanced radix-512 digits, normalized Karatsuba | 20,500 | 94-byte/67-item incremental hint; certified operands; 757-item strict peak |
 | Native secp256k1 factor-16 multiply | `E(x)=x/16`, folded normalized Karatsuba | 20,447 | 37-byte/29-item incremental hint; certified encoded operands; 719-item strict peak |
 | Native secp256k1 base-field square | 29 balanced radix-512 digits, symmetry-specialized | 14,541 | 94-byte/67-item incremental hint; certified operand; 614-item strict peak |
@@ -31,6 +33,31 @@ but longer expressions remain modular unless their bound is proved below its
 513-bit composite modulus. Range checks and conversion remain outside a row
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
+
+The 9,893-byte Ed25519 row is the current locking-script-size winner for this
+field. It keeps host values in the ordinary field domain but uses a unique
+51-digit centered stack encoding. Thirteen operand-derived 32-entry tables bind
+663 schoolbook products; `32^51=p+19`, one scalar quotient, and 50 carries bind
+the complete reduction. Its `fragment-with-memory` boundary includes 2,227
+bytes of table setup/routing, 7,299 bytes of folded product/relation, and 367
+bytes of cleanup and canonical output restoration. The 11,180-byte raw wrapper
+adds certification for both hostile operand vectors and consumes a
+representative 398-byte/153-item complete data witness.
+
+The retained Ed25519 factor-8 row uses the same sound normalized-Karatsuba
+product boundary as the native secp256k1 factor-16 row. Its modulus identity
+`8*512^28=p+19` materially simplifies reduction, but the 646 bound digit
+products still dominate total bytes. It remains attractive when its 31-byte
+incremental hint or factor-8 circuit domain matters; it is not the current
+size winner. Neither sound row substantiates the proposed 2–3 KB estimate;
+NR-030 records the missing shifted-product binding in that estimate and the
+cost of the repaired lookup-table designs.
+
+Both Ed25519 rows are `locally-reproduced` and `unclassified`. The radix-32
+benchmark used `bitcoin-scriptexec` in tapscript context with the 1,000-item
+combined stack limit enabled; its generated-Script boundary and adversarial
+test suites remain ignored by default. Neither row has Bitcoin Core
+differential validation or a complete transaction measurement.
 
 The native 20,500-byte ordinary row checks the same field operation as the 31,257-byte
 composable RNS row at a broadly comparable certificate boundary: both consume

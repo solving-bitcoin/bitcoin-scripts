@@ -10,6 +10,13 @@ boundary is not comparable evidence.
   `includes` says otherwise.
 - **Unlocking witness bytes:** consensus serialization of the complete witness
   item vector being measured, including item count and CompactSize lengths.
+- **Hint stack items:** exact number of mandatory auxiliary witness items for
+  the stated boundary. Report the per-invocation count and the cumulative count
+  for every repeated or batched configuration; distinguish hints from operands
+  and other witness data, and state whether all hints coexist at script entry
+  or a narrower fragment boundary is being modeled. Hint-item count, serialized
+  hint bytes, complete witness/data item count, and maximum stack items are
+  separate metrics; none substitutes for another.
 - **Transaction weight:** base bytes multiplied by four plus witness bytes.
   Record only for a complete transaction.
 - **Maximum stack items:** peak combined main and alt stack unless a record
@@ -62,8 +69,13 @@ total(n) = setup + cleanup + n * per_use
 amortized(n) = total(n) / n
 ```
 
-State stack coexistence constraints; byte amortization alone can select a
-construction that cannot compose under the 1,000-item limit.
+State stack coexistence constraints. For each measured `n`, report cumulative
+hint items and the complete input item count when hints are used. Every witness
+item in a complete leaf is present on the initial stack, and operands, tables,
+intermediates, outputs, and unrelated protocol state also count while live, so
+do not derive a repetition limit from `floor(1000 / hint_items)` alone. Byte
+amortization can select a construction that cannot compose under the 1,000-item
+combined main-plus-alt-stack limit.
 
 ## Execution environment
 
