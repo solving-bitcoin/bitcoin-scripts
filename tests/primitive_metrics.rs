@@ -28,7 +28,7 @@ use bitcoin_lab::{
     },
     hashes::{blake3, ripemd160, sha1, sha256, shake256},
     signatures::{
-        hors, lamport,
+        hors, lamport, schnorr,
         winternitz::{FastWots32, Wots, Wots32},
     },
     support::{execution::execute_script_with_inputs, script::ScriptCompilation},
@@ -506,6 +506,23 @@ fn metrics() -> Vec<Metric> {
     let hors_preimages = (0u8..32).map(|i| vec![i; 32]).collect::<Vec<_>>();
     let hors_public_keys = hors::hors_public_keys(&hors_preimages);
     let hors_witness = hors::hors_unlocking_witness(&hors_preimages, &(0..8).collect::<Vec<_>>());
+    let schnorr_context = bitcoin::secp256k1::Secp256k1::new();
+    let schnorr_secret = bitcoin::secp256k1::SecretKey::from_slice(&[3u8; 32]).unwrap();
+    let schnorr_keypair =
+        bitcoin::secp256k1::Keypair::from_secret_key(&schnorr_context, &schnorr_secret);
+    let (schnorr_public, _) = bitcoin::secp256k1::XOnlyPublicKey::from_keypair(&schnorr_keypair);
+    let schnorr_message = [42u8; 32];
+    let schnorr_signature = schnorr_context.sign_schnorr_no_aux_rand(
+        &bitcoin::secp256k1::Message::from_digest(schnorr_message),
+        &schnorr_keypair,
+    );
+    let schnorr_program = schnorr::hinted_verify(
+        schnorr_public.serialize(),
+        schnorr_message,
+        *schnorr_signature.as_ref(),
+    );
+    let schnorr_script = schnorr_program.script();
+    let schnorr_witness = schnorr_program.witness();
 
     let wots_secret = vec![0x42; 20];
     let wots_message = [0u8; 32];
@@ -2371,6 +2388,31 @@ fn metrics() -> Vec<Metric> {
             readme: "src/signatures/hors/README.md",
             key: "hors_witness_n32_t8",
             value: witness_size(&hors_witness),
+        },
+        Metric {
+            readme: "src/signatures/schnorr/README.md",
+            key: "secp256k1_schnorr_script",
+            value: script_len(schnorr_script.clone()),
+        },
+        Metric {
+            readme: "src/signatures/schnorr/README.md",
+            key: "secp256k1_schnorr_witness",
+            value: witness_size(&schnorr_witness),
+        },
+        Metric {
+            readme: "src/signatures/schnorr/README.md",
+            key: "secp256k1_schnorr_witness_items",
+            value: schnorr_witness.len(),
+        },
+        Metric {
+            readme: "src/signatures/schnorr/README.md",
+            key: "secp256k1_schnorr_opcodes",
+            value: static_non_push_opcodes(schnorr_script.clone()),
+        },
+        Metric {
+            readme: "src/signatures/schnorr/README.md",
+            key: "secp256k1_schnorr_stack",
+            value: max_stack_items(schnorr_script, schnorr_witness),
         },
         Metric {
             readme: "src/signatures/winternitz/README.md",

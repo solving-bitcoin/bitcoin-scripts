@@ -1,4 +1,37 @@
-# One-time authentication
+# Signature verification and one-time authentication
+
+## Secp256k1 Schnorr
+
+| Construction | Public-input boundary | Script bytes | Witness bytes/items | Stack peak | Execution |
+| --- | --- | ---: | ---: | ---: | --- |
+| Native `OP_CHECKSIG` | Spend-time BIP340 signature and transaction digest | 34-byte x-only-key/checksig template, excluding spend context | signature-dependent | signature-dependent | consensus opcode; not measured here |
+| Explicit affine CSFS | Public key fixed; 32-byte message and signature selected in witness | 8,292,228 | 81,740 / 32,556 | 33,589 | `research-unlimited`; known consensus-incompatible resource use |
+| Explicit CSFS + conceptual `2^32` low-`s` taptree | As above, with one 32-bit signature chunk fixed by the selected leaf | 7,850,893 representative leaf | 77,869 arithmetic/input witness; depth-32 control block adds 1,026 versus depth zero | not remeasured; still far above 1,000 | `research-unlimited`; full tree not constructed |
+| Native-field instance proof | Key, 32-byte message, and signature fixed before leaf generation | 58,596 | 1,039 / 346 | 882 | strict local tapscript; unclassified deployment |
+
+These are not substitutes on the same boundary. The explicit CSFS row really
+does place `r`, `s`, and the message in the witness, computes the tagged hash,
+validates the supplied even nonce, and checks `sG-eP=R`; its size, stack, and
+weight make it a research circuit rather than a deployable opcode replacement.
+The native-field instance construction is useful only when a protocol needs an
+explicit, inspectable field certificate for an already-fixed BIP340 instance.
+Its GLV/wNAF/Jacobian engine runs in the trusted deterministic generator;
+Script certifies only the final affine equation. Ordinary transaction-context
+signatures should use `OP_CHECKSIG`.
+
+The gigantic-taptree row moves four of the generator scalar's fixed-position
+windows into leaf selection. The locally executed representative saves 441,335
+script bytes and 3,871 arithmetic-witness bytes; after the 1,026-byte serialized
+control-path penalty, the revealed-path saving is 444,180 bytes. The conceptual
+tree requires `2^32` distinct leaves and roughly 33.7 PB of naïve leaf material,
+so this is a lookup thought experiment, not a deployment path.
+
+Within the explicit field certificate, the retained 2M/1S schedule has a
+57,241-byte raw-certified core. It is 5,978 bytes smaller than a three-general-
+product shared batch and 8,075 bytes smaller than three isolated general
+multipliers. The specialized square also lowers peak stack use from 993 to 882.
+
+## One-time authentication
 
 | Construction | Authenticated object | Script bytes | Witness bytes | Stack peak | Verification work / missing protocol work |
 | --- | --- | ---: | ---: | ---: | --- |

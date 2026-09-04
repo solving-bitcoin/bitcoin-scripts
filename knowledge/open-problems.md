@@ -203,3 +203,19 @@ measured; and at least one complete leaf is differentially validated against a
 pinned Bitcoin Core revision. The current ordinary three-multiply and
 five-square batches peak at 993 and 998 items, so any claimed larger batch must demonstrate
 an explicit strict layout rather than extrapolate byte amortization.
+
+## OP-016 — Spend-time explicit BIP340 verification
+
+Remove the fixed-instance generator trust boundary without falling back to
+`OP_CHECKSIG`. **Complete when:** one tapleaf accepts a signature selected in
+the unlocking witness, binds `r` and `s` to the BIP340 tagged-hash challenge,
+verifies the complete double-scalar multiplication with hostile intermediate
+state, stays within consensus stack/element/transaction limits, and is
+differentially validated against a pinned Bitcoin Core revision. The current
+8,292,228-byte affine prototype meets the hostile spend-time input and
+double-scalar semantics under `research-unlimited` execution, but its 32,556-
+item witness, 33,589-item peak, and transaction weight are consensus-
+incompatible. The separate 58,596-byte construction stays below the stack
+limit only by fixing the key, message, and signature before generation and
+trusting public challenge/GLV/wNAF/Jacobian work. Neither meets the complete
+deployment criterion.

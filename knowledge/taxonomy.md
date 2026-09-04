@@ -14,6 +14,7 @@ constructions from being hidden behind local module names.
 - `commitment/integer`: openings that authenticate and return small integers.
 - `hash/fixed`: fixed-output hashes.
 - `hash/xof`: extendable-output functions.
+- `signature/schnorr`: secp256k1 Schnorr verification constructions.
 - `signature/one-time`: hash-based one-time authentication constructions.
 - `introspection/transaction`: constructions that expose or bind transaction
   information through existing signature and Script semantics.
@@ -26,7 +27,9 @@ constructions from being hidden behind local module names.
 - `lookup-table`, `half-table`, `log-exp-table`, `radix-table`, `streaming-table`
 - `batch-lookup`, `branch-map`
 - `addition-chain`, `limb-arithmetic`, `digit-arithmetic`, `rns`
-- `witness-hints`, `constant-embedding`, `tracked-stack`
+- `witness-hints`, `constant-embedding`, `tracked-stack`, `batch-inversion`
+- `affine-coordinates`, `glv-endomorphism`, `jacobian-coordinates`,
+  `signed-window`, `taptree-lookup`, `wnaf`
 - `hash-chain`, `mixed-hash-path`, `sponge`, `pairing`
 
 ## Status is not evidence

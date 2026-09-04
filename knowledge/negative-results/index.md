@@ -498,3 +498,74 @@ destructively consumes the final single XOR lookup. These rejected generators
 and their deterministic digest checks are `locally-reproduced`; the routing
 trace is an `inspected` lower bound for the enumerated native-pair patterns, not
 a proof against every fused BLAKE3 circuit.
+
+## NR-026: Three general products are dominated in the fixed Schnorr equation
+
+The affine BIP340 relation needs two products and one square. Treating all three
+as ordinary native secp256k1 products gives a 63,219-byte raw-certified shared
+batch and a 993-item peak. Three independent raw multipliers total 65,316
+bytes. Scheduling the specialized square first while preserving two pending
+product groups, then consuming those products in one batch, costs 57,241 bytes
+and peaks at 882. It saves 5,978 bytes (9.5%) against the shared all-general
+batch and 8,075 bytes (12.4%) against isolated gates.
+
+This is `locally-reproduced` for the exact fixed-instance affine certificate
+boundary. It does not establish that affine verification globally dominates a
+runtime GLV/Jacobian trace, an x-only proof, or a future batch-constraint
+system; those alternatives close different trust and input boundaries.
+
+## NR-027: Untrusted Jacobian public inputs do not shrink the fixed Schnorr leaf
+
+Providing BIP340's public key and nonce as affine `(x,y)` values merely moves
+the generator's even-y lift into the witness: Script must still bind x, prove
+`y^2 = x^3 + 7`, and enforce normalized even y. Providing arbitrary Jacobian
+`(X,Y,Z)` adds a nonzero-Z check plus `x=X/Z^2`, `y=Y/Z^3`, curve, and parity
+constraints. The retained generator already promotes trusted lifted affine
+points to `(x,y,1)` and uses Jacobian coordinates internally, so neither input
+shape removes one of the final 2M/1S affine relations.
+
+This is an `inspected` boundary argument, not a measured universal lower bound.
+Full points may still help a spend-time verifier whose surrounding protocol
+already authenticates normalized affine coordinates or projective state.
+
+## NR-028: Projective and GLV machinery do not shrink the standalone CSFS trace
+
+In the spend-time verifier, affine inversion is already an off-chain hint.
+Script binds the slope to its numerator and denominator with one field product,
+so a general affine transition executes 2M+1S and a doubling executes 2M+2S.
+Representative mixed-Jacobian formulas instead require roughly 7M+4S per
+addition and 2M+5S per doubling before complete exception handling or final
+normalization. An untrusted `(X,Y,Z)` input adds nonzero-Z, curve,
+normalization, affine-x, and even-y obligations. This is an `inspected`
+operation-count comparison; no projective CSFS configuration is claimed as
+locally executed.
+
+GLV is likewise dominated for the current position-specific lookup layout.
+Splitting both 256-bit dynamic scalars into four roughly 128-bit components
+retains approximately the same aggregate number of fixed-window positions,
+table entries, and affine additions, while adding scalar-decomposition, sign,
+and range constraints. Dynamic wNAF lowers the honest number of nonzero
+digits, but an unrolled Script must still carry conditional group logic for
+every possible position or authenticate a compressed position list. These are
+construction-specific boundary results, not universal claims against GLV,
+wNAF, or projective arithmetic.
+
+## NR-029: A 2^32-leaf taptree saves one 32-bit lookup at absurd setup cost
+
+One locally executed CSFS leaf commits to the low 32 bits of `s`, embeds their
+signed fixed-base contribution, verifies the corresponding four recoded
+digits, and removes four table selections and complete affine transitions.
+For the deterministic Schnorr fixture, the ordinary leaf is 8,292,228 bytes
+and the specialized leaf is 7,850,893 bytes: 441,335 locking-script bytes
+(5.32%) are saved. Arithmetic/input witness serialization falls from 81,740 to
+77,869 bytes. A depth-32 control block adds 1,026 serialized bytes relative to
+a depth-zero block, leaving a net 444,180-byte reduction in the representative
+revealed script-path witness.
+
+The single-leaf result is `locally-reproduced`; the full-tree resource estimate
+is `inspected`. A naïve `2^32` materialization at roughly 7.85 MB per leaf is
+about 33.7 PB of script data plus billions of hashes, even though only the root
+is placed in the output and one path is revealed. The trick does not repair
+the verifier's 33,589-item relaxed stack peak or block-weight infeasibility.
+Specializing another independent 32-bit chunk through the same Cartesian
+lookup raises the conceptual space to `2^64` leaves.

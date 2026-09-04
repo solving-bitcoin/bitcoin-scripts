@@ -37,7 +37,9 @@ the source. Read a page together with its comparison page and evidence record.
 - [AES-128 over u4 digits](aes128-u4.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)
 
-## One-time authentication
+## Signatures and one-time authentication
+
+- [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
 
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)

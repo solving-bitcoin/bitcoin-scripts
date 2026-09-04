@@ -157,8 +157,25 @@ fn execute_script_buf_optional_stack_limit(
 }
 
 pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) -> ExecuteInfo {
+    execute_raw_script_with_inputs_optional_stack_limit(script, witness, false)
+}
+
+/// Execute a tapscript with an explicit witness while enforcing Bitcoin's
+/// combined 1,000-item main/alt-stack limit.
+pub fn execute_raw_script_with_inputs_strict(
+    script: Vec<u8>,
+    witness: Vec<Vec<u8>>,
+) -> ExecuteInfo {
+    execute_raw_script_with_inputs_optional_stack_limit(script, witness, true)
+}
+
+fn execute_raw_script_with_inputs_optional_stack_limit(
+    script: Vec<u8>,
+    witness: Vec<Vec<u8>>,
+    stack_limit: bool,
+) -> ExecuteInfo {
     let opts = Options {
-        enforce_stack_limit: false,
+        enforce_stack_limit: stack_limit,
         ..Default::default()
     };
 
@@ -201,6 +218,15 @@ pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) ->
 
 pub fn execute_script_with_inputs(script: script::Script, witness: Vec<Vec<u8>>) -> ExecuteInfo {
     execute_raw_script_with_inputs(script.compile_with_policy().to_bytes(), witness)
+}
+
+/// Compile with the repository policy and execute an explicit tapscript
+/// witness with the combined stack limit enabled.
+pub fn execute_script_with_inputs_strict(
+    script: script::Script,
+    witness: Vec<Vec<u8>>,
+) -> ExecuteInfo {
+    execute_raw_script_with_inputs_strict(script.compile_with_policy().to_bytes(), witness)
 }
 
 pub fn dry_run_taproot_input(

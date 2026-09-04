@@ -2080,6 +2080,180 @@
       ]
     },
     {
+      "id": "signature/secp256k1-schnorr-fixed",
+      "name": "Instance-specialized secp256k1 Schnorr verification",
+      "class": "signature/schnorr",
+      "summary": "BIP340 fixed-instance verification using a GLV/wNAF/Jacobian public generator and exact bigint9 field certificates for the final affine equation.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "unclassified",
+      "as_of": "2026-09-03",
+      "knowledge_page": "knowledge/primitives/secp256k1-schnorr.md",
+      "implementation": "src/signatures/schnorr/mod.rs",
+      "documentation": "src/signatures/schnorr/README.md",
+      "tests": [
+        "signatures::schnorr::tests"
+      ],
+      "references": [
+        "bip-340",
+        "rust-secp256k1-0.29.1",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "batch-inversion",
+        "constant-embedding",
+        "glv-endomorphism",
+        "jacobian-coordinates",
+        "lookup-table",
+        "witness-hints",
+        "wnaf"
+      ],
+      "security": "BIP340 range and even-y lift rules are enforced by the deterministic generator. Script binds all hostile arithmetic operands to the fixed instance and checks exact quotient/carry reductions. Correctness additionally trusts the generator's public tagged hash and scalar multiplications; this is not a spend-time signature verifier.",
+      "stack_contract": "Witness is G1 | G0 | S: two 125-item raw multiplication groups followed by one 96-item raw square group. The square is consumed first, then the two-product batch; success consumes all 346 items and leaves one truthy item at a strict 882-item peak.",
+      "configurations": [
+        {
+          "id": "glv-wnaf-jacobian-2m1s",
+          "label": "Fixed BIP340 instance with GLV/wNAF/Jacobian generator and 2M/1S field proof",
+          "parameters": {
+            "message_bytes": 32,
+            "scalar_window_width": 5,
+            "glv_components": 2,
+            "maximum_component_bits": 129,
+            "odd_multiples_per_base": 8,
+            "field_products": 2,
+            "field_squares": 1,
+            "field_proof_script_bytes": 57241,
+            "three_general_product_field_proof_bytes": 63219,
+            "independent_general_product_field_proof_bytes": 65316,
+            "optimizer": "CompileOptions::NONE above the 32-KiB policy cutoff",
+            "static_non_push_opcodes": 37323
+          },
+          "includes": "complete-leaf: fixed-instance BIP340 operand binding, raw canonical operand certification, exact hinted reduction for one specialized square and two shared-table multiplications, all three output comparisons, complete arithmetic-witness consumption, and a clean terminal truthy result; excludes public tagged-hash and GLV/wNAF/Jacobian scalar-multiplication generator work, tapleaf/control-block serialization, complete transaction context, and Bitcoin Core validation; witness bytes are for the deterministic key [3;32], message [42;32], and no-aux libsecp256k1 signature",
+          "script_bytes": 58596,
+          "witness_bytes": 1039,
+          "witness_bytes_max": null,
+          "max_stack_items": 882,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 3586,
+          "per_use_script_bytes": 58596,
+          "metric_keys": [
+            "secp256k1_schnorr_script",
+            "secp256k1_schnorr_witness",
+            "secp256k1_schnorr_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "The key, message, and signature are fixed before script generation; spend-time signature selection is not supported",
+        "Public tagged hashing and scalar multiplication are trusted generator computations rather than Script constraints",
+        "The measured script is unoptimized because it exceeds the repository's 32-KiB optimizer cutoff",
+        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Legacy and P2WSH script-size/opcode limits are exceeded",
+        "Rare affine exceptional cases compile to a fixed outcome instead of the common three-relation field proof"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-016"
+      ]
+    },
+    {
+      "id": "signature/secp256k1-schnorr-csfs",
+      "name": "Explicit witness-driven secp256k1 Schnorr verification",
+      "class": "signature/schnorr",
+      "summary": "BIP340 check-signature-from-stack research verifier with witness-selected message/signature, Script-computed challenge, and hinted affine double-scalar multiplication.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-03",
+      "knowledge_page": "knowledge/primitives/secp256k1-schnorr.md",
+      "implementation": "src/signatures/schnorr/csfs.rs",
+      "documentation": "src/signatures/schnorr/README.md",
+      "tests": [
+        "signatures::schnorr::csfs::tests"
+      ],
+      "references": [
+        "bip-340",
+        "bip-341",
+        "rust-secp256k1-0.29.1",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "affine-coordinates",
+        "constant-embedding",
+        "lookup-table",
+        "signed-window",
+        "taptree-lookup",
+        "witness-hints"
+      ],
+      "security": "The public key is fixed by the script. Hostile witness inputs supply the message, r, s, even nonce y-coordinate, and arithmetic hints. Script computes the tagged challenge, validates s<n and the nonce lift/parity, and checks exact field relations for sG-eP=R. The relaxed local executor disables the consensus stack limit.",
+      "stack_contract": "Arithmetic hints precede R.y | r | s | message. The deterministic configuration has 32,556 serialized witness items and peaks at 33,589 combined stack items under relaxed execution, so it is known to exceed Bitcoin's 1,000-item limit.",
+      "configurations": [
+        {
+          "id": "signed-window8-affine",
+          "label": "Witness-driven BIP340 verifier with signed width-8 position tables",
+          "parameters": {
+            "message_bytes": 32,
+            "scalar_window_width": 8,
+            "scalar_windows_per_base": 32,
+            "dynamic_scalars": 2,
+            "affine_general_products": 2,
+            "affine_general_squares": 1,
+            "optimizer": "CompileOptions::NONE above the 32-KiB policy cutoff",
+            "static_non_push_opcodes": 4593240
+          },
+          "includes": "complete-leaf: public-key-specialized BIP340 challenge hashing, hostile r/s/message parsing, supplied R.y field/curve/evenness validation, signed-window recoding, fixed-base table selection, complete hinted affine transitions, final point equality, and clean terminal true; excludes tapleaf/control-block serialization, complete transaction context, and Bitcoin Core validation; witness bytes use key [3;32], message [42;32], and the no-aux libsecp256k1 signature",
+          "script_bytes": 8292228,
+          "witness_bytes": 81740,
+          "witness_bytes_max": null,
+          "max_stack_items": 33589,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 8292228,
+          "metric_keys": []
+        },
+        {
+          "id": "signed-window8-affine-taptree-low32",
+          "label": "Representative leaf of a conceptual 2^32 low-s lookup taptree",
+          "parameters": {
+            "specialized_scalar_bits": 32,
+            "conceptual_leaf_count": 4294967296,
+            "tree_depth": 32,
+            "control_block_serialized_delta": 1026,
+            "script_savings": 441335,
+            "arithmetic_witness_savings": 3871,
+            "net_revealed_witness_savings": 444180,
+            "full_tree_materialization": "not constructed; approximately 33.7 PB by representative-leaf extrapolation"
+          },
+          "includes": "complete-leaf: one locally executed public-key- and low-32-bit-s-specialized leaf with four recoded-digit checks, one embedded generator contribution, the remaining CSFS verifier, and arithmetic/input witness; excludes construction of the other 2^32-1 leaves, taptree root generation, tapleaf/control-block bytes from the script/witness columns, complete transaction context, and Bitcoin Core validation",
+          "script_bytes": 7850893,
+          "witness_bytes": 77869,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 7850893,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "The relaxed witness and execution exceed Bitcoin's combined 1,000-item stack limit",
+        "The revealed script cannot fit within Bitcoin transaction/block weight limits",
+        "The measured script is unoptimized because it exceeds the repository's 32-KiB optimizer cutoff",
+        "The public key is fixed by the script; a witness-selected public key is not supported",
+        "The 2^32 taptree row constructs and executes only one representative leaf, not the complete tree",
+        "Bitcoin Core consensus and relay-policy validation have not been performed"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-016"
+      ]
+    },
+    {
       "id": "signature/lamport-2bit",
       "name": "Lamport 2-bit commitment",
       "class": "signature/one-time",

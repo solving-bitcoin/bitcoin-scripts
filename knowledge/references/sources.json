@@ -31,6 +31,20 @@
       "revision": "final specification"
     },
     {
+      "id": "bip-340",
+      "title": "BIP 340: Schnorr Signatures for secp256k1",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki",
+      "revision": "final specification"
+    },
+    {
+      "id": "rust-secp256k1-0.29.1",
+      "title": "rust-secp256k1 0.29.1 and libsecp256k1",
+      "kind": "reference-implementation",
+      "url": "https://github.com/rust-bitcoin/rust-secp256k1/tree/v0.29.1",
+      "revision": "crate 0.29.1 pinned by Cargo.lock checksum 9465315bc9d4566e1724f0fffcbcc446268cb522e60f9a27bcded6b19c108113"
+    },
+    {
       "id": "bitcoin-core-interpreter",
       "title": "Bitcoin Core Script interpreter",
       "kind": "upstream-source",
