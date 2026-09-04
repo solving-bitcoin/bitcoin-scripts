@@ -41,7 +41,6 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Point locks](point-locks.md)
 - [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
-
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)
 - [Base-16 Winternitz signatures](winternitz-base16.md)

@@ -7,11 +7,14 @@ contains local reference implementations that support some of its claims.
 ## Start here
 
 1. Read [`knowledge/index.md`](knowledge/index.md).
-2. Read [`knowledge/cost-model.md`](knowledge/cost-model.md) before comparing
+2. Read [`knowledge/bitcoin-script-reference.md`](knowledge/bitcoin-script-reference.md)
+   for the execution model, opcodes, script types, signature hashing, resource
+   limits, standardness policy, and historical quirks of Bitcoin Script.
+3. Read [`knowledge/cost-model.md`](knowledge/cost-model.md) before comparing
    measurements.
-3. Query [`knowledge/catalog.json`](knowledge/catalog.json) with
+4. Query [`knowledge/catalog.json`](knowledge/catalog.json) with
    `python3 tools/kb.py list`, `show`, `best`, or `search`.
-4. Follow links from a catalog record to its knowledge page, implementation
+5. Follow links from a catalog record to its knowledge page, implementation
    README, source, tests, and references.
 
 Do not assume that absence from the catalog means that a construction does not

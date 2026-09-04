@@ -12,7 +12,7 @@ Eleven mixed-width quotient digits and 56 exact radix-512 carries are witness
 hints. The remainder is derived by Script, range checked, proved smaller than
 `p = 2^256 - 2^32 - 977`, and returned in the same 29-digit representation.
 
-### Parameters
+## Parameters
 
 - The modulus, radix, 14/15-digit Karatsuba split, 513-entry quarter-square
   table, quotient chunk widths, and carry count are fixed.
@@ -22,11 +22,11 @@ hints. The remainder is derived by Script, range checked, proved smaller than
   certified on the same verified path. The `_from_raw_witness` wrappers add
   operand certification at the operation boundary.
 - Ordinary-domain preloaded multiplication supports up to three products; the
-  selected dispatcher uses the smallest one-shot path for one product, the 85-slot
-  normalized-Karatsuba relation for two, and a 57-slot destructive
+  selected dispatcher uses the smallest one-shot path for one product, the
+  85-slot normalized-Karatsuba relation for two, and a 57-slot destructive
   recombination for three. Pure-square batches support up to five products.
 
-### Script metrics
+## Script metrics
 
 Every row is a generated fragment and excludes input pushes, terminal
 predicate, output comparison, tapleaf/control-block serialization, and
@@ -116,7 +116,7 @@ bytes, and total non-table computation is
 bytes. It averages 13,014.8 bytes per square but leaves only two stack items of
 consensus headroom.
 
-### Security and hint binding
+## Security and hint binding
 
 The small gate is sound only for operands certified as canonical field values.
 `certify_value`, `certify_mul_operands`, and the raw wrappers establish that
@@ -140,7 +140,7 @@ non-field remainders, exercise deterministic boundaries and random values, and
 execute at exactly the 1,000-item combined main/altstack limit while preserving
 unrelated state.
 
-### Script compatibility and standardness
+## Script compatibility and standardness
 
 The arithmetic opcodes are available in tapscript, but these fragments exceed
 legacy/P2WSH script-size and opcode-count limits. Local strict
@@ -151,7 +151,7 @@ The evidence is therefore `locally-reproduced` and deployment remains
 field digits, not a terminal boolean, so callers must consume or compare every
 output and arrange cleanstack.
 
-### Witness and stack contract
+## Witness and stack contract
 
 For ordinary multiplication, input is
 `preserved | lhs[28..0] | rhs[28..0] | q[10..0] | c[55..0]`, with digit/carry
@@ -161,7 +161,7 @@ Squaring uses the analogous one-operand layout. Batch group zero is nearest the
 top, is processed first, and its result is returned nearest the top. Both main
 and altstack items count toward `preserved_items` and the declared peak.
 
-### Comparison boundary
+## Comparison boundary
 
 The 20,500-byte ordinary native gate and the 31,257-byte prime-RNS composable gate both
 consume two previously certified secp256k1 field values, bind hostile reduction
