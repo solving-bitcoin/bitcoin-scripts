@@ -1,5 +1,21 @@
 # Signature verification and one-time authentication
 
+## Point locks
+
+| Construction | Script family | Script bytes | Witness bytes | Setup / security boundary |
+| --- | --- | ---: | ---: | --- |
+| Schnorr adaptor signature | Tapscript | 34 for the ordinary x-only-key/checksig leaf | 66 for a default 64-byte signature | Interactive adaptor transcript; discrete-log/adaptor security |
+| ECDSA `G/2` small-R | Legacy, P2SH, or P2WSH | 40 | 62 representative and maximum | Non-interactive; conservatively about 80-bit security, not locally established |
+| Committed ECDSA | Legacy or P2SH only | 71 | 73 representative, at most 74 for low-S | Off-chain ZK proof of the SHA-256/DER-r relation; SHA-256 binding |
+
+All rows are complete success predicates but exclude refund branches and
+wrapper/control-block costs. The first row is only the ordinary on-chain
+BIP340 check; adaptor creation and validation are off chain. The small-R row
+uses the 21-byte x-coordinate of `G/2`. The committed row hashes the exact
+`DER(r,s) || 0x03` item and relies on the pre-SegWit SIGHASH_SINGLE bug; it is
+not a P2WSH construction. See the [point-lock page](../primitives/point-locks.md)
+for extraction equations and evidence qualifications.
+
 ## Secp256k1 Schnorr
 
 | Construction | Public-input boundary | Script bytes | Witness bytes/items | Stack peak | Execution |

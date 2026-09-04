@@ -28,7 +28,7 @@ use bitcoin_lab::{
     },
     hashes::{blake3, ripemd160, sha1, sha256, shake256},
     signatures::{
-        hors, lamport, schnorr,
+        hors, lamport, pointlocks, schnorr,
         winternitz::{FastWots32, Wots, Wots32},
     },
     support::{execution::execute_script_with_inputs, script::ScriptCompilation},
@@ -523,6 +523,23 @@ fn metrics() -> Vec<Metric> {
     );
     let schnorr_script = schnorr_program.script();
     let schnorr_witness = schnorr_program.witness();
+    let pointlock_secret = bitcoin::secp256k1::SecretKey::from_slice(&[7u8; 32]).unwrap();
+    let pointlock_target_secret = bitcoin::secp256k1::SecretKey::from_slice(&[11u8; 32]).unwrap();
+    let pointlock_public =
+        bitcoin::secp256k1::PublicKey::from_secret_key(&schnorr_context, &pointlock_secret);
+    let small_r_signature = pointlocks::sign_with_g_half(
+        pointlocks::sighash_single_bug_message(),
+        pointlock_secret,
+        bitcoin::EcdsaSighashType::Single,
+    )
+    .unwrap();
+    let committed_signature =
+        pointlocks::sign_committed(pointlock_secret, pointlock_target_secret).unwrap();
+    let small_r_point_lock = pointlocks::g_half_point_lock(pointlock_public);
+    let committed_point_lock = pointlocks::committed_point_lock(
+        pointlock_public,
+        pointlocks::signature_commitment(&committed_signature),
+    );
 
     let wots_secret = vec![0x42; 20];
     let wots_message = [0u8; 32];
@@ -2388,6 +2405,26 @@ fn metrics() -> Vec<Metric> {
             readme: "src/signatures/hors/README.md",
             key: "hors_witness_n32_t8",
             value: witness_size(&hors_witness),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/README.md",
+            key: "pointlock_small_r_script",
+            value: script_len(small_r_point_lock),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/README.md",
+            key: "pointlock_small_r_witness",
+            value: witness_size(&[small_r_signature.to_vec()]),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/README.md",
+            key: "pointlock_committed_script",
+            value: script_len(committed_point_lock),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/README.md",
+            key: "pointlock_committed_witness",
+            value: witness_size(&[committed_signature.to_vec()]),
         },
         Metric {
             readme: "src/signatures/schnorr/README.md",

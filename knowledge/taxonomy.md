@@ -15,6 +15,8 @@ constructions from being hidden behind local module names.
 - `hash/fixed`: fixed-output hashes.
 - `hash/xof`: extendable-output functions.
 - `signature/schnorr`: secp256k1 Schnorr verification constructions.
+- `signature/point-lock`: conditions whose successful spend reveals the
+  discrete logarithm of a public secp256k1 point.
 - `signature/one-time`: hash-based one-time authentication constructions.
 - `introspection/transaction`: constructions that expose or bind transaction
   information through existing signature and Script semantics.
@@ -30,6 +32,8 @@ constructions from being hidden behind local module names.
 - `witness-hints`, `constant-embedding`, `tracked-stack`, `batch-inversion`
 - `affine-coordinates`, `glv-endomorphism`, `jacobian-coordinates`,
   `signed-window`, `taptree-lookup`, `wnaf`
+- `adaptor-signature`, `signature-size-constraint`, `signature-commitment`,
+  `sighash-single-bug`
 - `hash-chain`, `mixed-hash-path`, `sponge`, `pairing`
 
 ## Status is not evidence

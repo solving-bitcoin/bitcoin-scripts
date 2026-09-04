@@ -2080,6 +2080,192 @@
       ]
     },
     {
+      "id": "signature/point-lock-schnorr-adaptor",
+      "name": "Schnorr adaptor-signature point lock",
+      "class": "signature/point-lock",
+      "summary": "Interactive Schnorr adaptor transcript whose completed BIP340 spend signature reveals a discrete logarithm.",
+      "status": "literature-only",
+      "evidence": "reported",
+      "execution": "unclassified",
+      "as_of": "2026-09-03",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": null,
+      "documentation": null,
+      "tests": [],
+      "references": [
+        "bip-340",
+        "bip-342",
+        "one-time-ves"
+      ],
+      "techniques": [
+        "adaptor-signature"
+      ],
+      "security": "Requires a sound, verified adaptor transcript, fresh nonces, correct BIP340 parity handling, and hardness of the secp256k1 discrete logarithm problem.",
+      "stack_contract": "One completed BIP340 signature is consumed by the ordinary tapscript x-only-key OP_CHECKSIG leaf and leaves true; scalar extraction additionally consumes the off-chain adaptor transcript.",
+      "configurations": [
+        {
+          "id": "native-bip340-leaf",
+          "label": "Ordinary completed BIP340 signature",
+          "parameters": {
+            "public_key_bytes": 32,
+            "default_signature_bytes": 64,
+            "setup": "interactive adaptor transcript"
+          },
+          "includes": "complete-leaf: x-only public-key push and OP_CHECKSIG plus serialization of one default-sighash BIP340 witness item; excludes adaptor creation, verification, extraction, refund branch, tapleaf/control block, and transaction context",
+          "script_bytes": 34,
+          "witness_bytes": 66,
+          "witness_bytes_max": 67,
+          "max_stack_items": 2,
+          "executed_opcodes": 1,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 34,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "Interactive setup: a counterparty must create and the beneficiary must verify the adaptor signature before funding",
+        "No local adaptor-signature implementation or differential test",
+        "On-chain observation alone is insufficient for extraction without the retained adaptor transcript"
+      ],
+      "open_problems": [
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
+      "id": "signature/point-lock-ecdsa-small-r",
+      "name": "ECDSA G/2 small-R point lock",
+      "class": "signature/point-lock",
+      "summary": "ECDSA point lock that bounds signature size so an honest spender can use the known nonce G/2 and reveal the signing key.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-03",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/mod.rs",
+      "documentation": "src/signatures/pointlocks/README.md",
+      "tests": [
+        "signatures::pointlocks::tests"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "bitcoin-scriptexec-locked",
+        "rust-secp256k1-0.29.1"
+      ],
+      "techniques": [
+        "signature-size-constraint"
+      ],
+      "security": "The intended nonce G/2 has a 21-byte DER r value, but Script only constrains total signature length. Use a conservative roughly 80-bit security estimate until the best generic forgery bound is reproduced; production signing also requires constant-time code.",
+      "stack_contract": "... bitcoin_ecdsa_signature -> ... true; the complete predicate uses at most three main-stack items and no altstack.",
+      "configurations": [
+        {
+          "id": "max-60-byte-signature",
+          "label": "G/2 nonce with a 60-byte signature-item ceiling",
+          "parameters": {
+            "nonce": "2^-1 mod secp256k1 group order",
+            "r_hex": "3b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63",
+            "r_der_bytes": 21,
+            "maximum_signature_item_bytes": 60,
+            "representative_signing_key": "07 repeated 32 times",
+            "representative_message": "legacy SIGHASH_SINGLE bug digest bytes"
+          },
+          "includes": "complete-leaf: signature-size ceiling, compressed public-key push, terminal legacy ECDSA OP_CHECKSIG, and serialized one-item representative witness; excludes P2SH/P2WSH wrapper, complete transaction, timeout branch, and the semantic NOP padding used only to avoid a pinned-scriptexec legacy FindAndDelete underflow",
+          "script_bytes": 40,
+          "witness_bytes": 62,
+          "witness_bytes_max": 62,
+          "max_stack_items": 3,
+          "executed_opcodes": 4,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 40,
+          "metric_keys": [
+            "pointlock_small_r_script",
+            "pointlock_small_r_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Conservative roughly 80-bit security claim is reported rather than reproduced",
+        "The size predicate accepts any valid signature of at most 60 bytes, not only the G/2 nonce",
+        "Research signing helpers use non-constant-time bigint arithmetic",
+        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Tapscript OP_CHECKSIG does not use ECDSA"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
+      "id": "signature/point-lock-ecdsa-committed",
+      "name": "Committed ECDSA point lock",
+      "class": "signature/point-lock",
+      "summary": "SHA256-committed ECDSA signature whose nonce is the locked point and whose fixed message comes from the legacy SIGHASH_SINGLE bug.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-03",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/mod.rs",
+      "documentation": "src/signatures/pointlocks/README.md",
+      "tests": [
+        "signatures::pointlocks::tests"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "bitcoin-scriptexec-locked",
+        "rust-secp256k1-0.29.1"
+      ],
+      "techniques": [
+        "signature-commitment",
+        "sighash-single-bug"
+      ],
+      "security": "Requires SHA-256 second-preimage resistance, ECDSA verification, public disclosure of the signing scalar, and a sound off-chain proof that the committed DER r field equals the target point x-coordinate. The proof need not duplicate curve or signature verification.",
+      "stack_contract": "... committed_sighash_single_signature -> ... true; the complete predicate uses at most three main-stack items and no altstack.",
+      "configurations": [
+        {
+          "id": "sha256-der-sighash-commitment",
+          "label": "SHA256(DER(r,s) || 0x03) commitment",
+          "parameters": {
+            "hash": "SHA256",
+            "sighash_byte": 3,
+            "signature_context": "legacy input_index >= output_count",
+            "representative_public_signing_secret": "07 repeated 32 times",
+            "representative_point_secret": "0b repeated 32 times"
+          },
+          "includes": "complete-leaf: signature duplication, SHA-256 commitment equality, compressed public-key push, terminal legacy ECDSA OP_CHECKSIG, and serialized one-item representative witness; excludes P2SH wrapper, off-chain zero-knowledge proof, complete transaction, and timeout branch",
+          "script_bytes": 71,
+          "witness_bytes": 73,
+          "witness_bytes_max": 74,
+          "max_stack_items": 3,
+          "executed_opcodes": 4,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 71,
+          "metric_keys": [
+            "pointlock_committed_script",
+            "pointlock_committed_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Requires an off-chain zero-knowledge setup proof; no proving backend is integrated locally",
+        "The constant SIGHASH_SINGLE digest is available only to legacy pre-SegWit signature hashing, not P2WSH",
+        "Research signing helpers use non-constant-time bigint arithmetic",
+        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Tapscript OP_CHECKSIG does not use ECDSA"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
       "id": "signature/secp256k1-schnorr-fixed",
       "name": "Instance-specialized secp256k1 Schnorr verification",
       "class": "signature/schnorr",

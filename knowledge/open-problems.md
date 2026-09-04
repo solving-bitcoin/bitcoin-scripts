@@ -219,3 +219,16 @@ incompatible. The separate 58,596-byte construction stays below the stack
 limit only by fixing the key, message, and signature before generation and
 trusting public challenge/GLV/wNAF/Jacobian work. Neither meets the complete
 deployment criterion.
+
+## OP-017 — Point-lock security and deployment validation
+
+Close the remaining gap between functional point-lock tests and protocol
+security. **Complete when:** the best generic forgery attack against the
+60-byte `G/2` ECDSA predicate is reproduced or tightly bounded, reconciling the
+conservative roughly 80-bit estimate with the Binohash paper's approximately
+97-bit smaller-R search; both ECDSA leaves are validated against a pinned
+Bitcoin Core revision under consensus and applicable relay policy; the
+committed-ECDSA setup statement has a byte-exact circuit and proof transcript
+for at least one pinned zkVM backend; and the Schnorr adaptor flow is tested
+against an independently maintained implementation with explicit nonce,
+parity, transcript, and extraction checks.

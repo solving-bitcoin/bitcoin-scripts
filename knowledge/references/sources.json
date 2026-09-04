@@ -108,6 +108,13 @@
       "revision": "2026 PDF reviewed 2026-09-01"
     },
     {
+      "id": "one-time-ves",
+      "title": "One-Time Verifiably Encrypted Signatures A.K.A. Adaptor Signatures",
+      "kind": "paper",
+      "url": "https://github.com/LLFourn/one-time-VES/blob/master/main.pdf",
+      "revision": "Lloyd Fournier paper linked by the secp256k1-zkp ECDSA adaptor module; reviewed 2026-09-03"
+    },
+    {
       "id": "on-proving-pairings",
       "title": "On Proving Pairings",
       "kind": "paper",
