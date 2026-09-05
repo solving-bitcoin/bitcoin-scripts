@@ -2268,7 +2268,10 @@
       "documentation": "src/ciphers/prince/README.md",
       "tests": [
         "ciphers::prince::tests::test_prince_script_matches_reference",
-        "ciphers::prince::tests::test_prince_script_randomized_differential"
+        "ciphers::prince::tests::test_prince_script_randomized_differential",
+        "prince_differential::prince_randomized_differential_compiled_once",
+        "prince_differential::prince_script_matches_upstream_c_vectors",
+        "primitive_metrics::prince_metrics_are_current"
       ],
       "references": [
         "princev2-reference",
@@ -2288,29 +2291,32 @@
           "parameters": {
             "key": 0
           },
-          "includes": "fragment-with-memory: full encryption fragment; witness serializes plaintext nibbles",
-          "script_bytes": 6277,
+          "includes": "fragment-with-memory: policy-compiled setup, encryption, output ordering and cleanup; excludes input pushes and output check; witness serializes 16 plaintext ScriptNums only, with zero hints and no leaf/control block; strict tapscript fixture",
+          "script_bytes": 6136,
           "witness_bytes": 17,
           "witness_bytes_max": 33,
           "max_stack_items": 633,
-          "executed_opcodes": null,
-          "validation_weight": null,
+          "executed_opcodes": 3988,
+          "validation_weight": 0,
           "setup_script_bytes": null,
-          "per_use_script_bytes": 6277,
+          "per_use_script_bytes": 6136,
           "metric_keys": [
             "prince_encrypt",
             "prince_witness_min",
             "prince_witness_max",
-            "prince_stack"
+            "prince_stack",
+            "prince_non_push_ops"
           ]
         }
       ],
       "limitations": [
         "Not semantically interchangeable with AES",
-        "Script size is mildly dependent on the embedded key"
+        "Script size and table/stack use depend on the embedded key",
+        "Caller must validate plaintext nibble ranges and canonical encoding"
       ],
       "open_problems": [
-        "OP-003"
+        "OP-003",
+        "OP-019"
       ]
     },
     {

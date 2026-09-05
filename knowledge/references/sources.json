@@ -210,7 +210,7 @@
       "title": "PRINCEv2 reference implementation",
       "kind": "reference-implementation",
       "url": "https://github.com/rub-hgi/princev2",
-      "revision": "0c6172dcd85f1fe6a269519093a79c7350fe6e55"
+      "revision": "0c6172dcd85f1fe6a269519093a79c7350fe6e55; 37 C-generated fixtures in tests/data/princev2_upstream_vectors.json, reproduced by tools/prince_reference_vectors.c"
     },
     {
       "id": "u31-bitvm-source",

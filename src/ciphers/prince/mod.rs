@@ -524,7 +524,7 @@ fn script_m_layer() -> Script {
     }
 }
 
-// Native Rust translation of:
+// Fixed-key/table-layout specialization of the native Rust translation of:
 // https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js
 mod optimized {
     use std::{
@@ -550,16 +550,17 @@ mod optimized {
     use super::{BETA, M0, M1, M2, M3, RC, SBOX, SBOX_INV, SHIFT, SHIFT_INV};
 
     const SIZE_STATE: usize = 16;
-    const SIZE_MEMORY: usize = 626;
 
-    const ADDR_SBOX_TABLE: i32 = 16;
+    // The final M-hat row uses address - 1: placing its selector at 16 lets
+    // every quartet encode that address as OP_15. It is used more often than
+    // the unfused S-box, which instead occupies the deeper hot-table slot.
+    const ADDR_SBOX_TABLE: i32 = 64;
     const ADDR_PAIR01_ROW_TABLE: i32 = 32;
     const ADDR_PAIR23_ROW_TABLE: i32 = 48;
-    const ADDR_PAIR01_FINAL_ROW_TABLE: i32 = 64;
+    const ADDR_PAIR01_FINAL_ROW_TABLE: i32 = 16;
     const ADDR_NIBBLE_TABLE: i32 = 80;
     const ADDR_XOR_TABLE: i32 = ADDR_NIBBLE_TABLE;
     const ADDR_PAIR23_TABLE: i32 = ADDR_NIBBLE_TABLE;
-    const ADDR_PAIR01_TABLE: i32 = 530;
 
     const M: [i32; 4] = [M0 as i32, M1 as i32, M2 as i32, M3 as i32];
 
@@ -573,6 +574,16 @@ mod optimized {
     struct Program(Vec<Token>);
 
     impl Program {
+        fn byte_len(&self) -> usize {
+            self.0
+                .iter()
+                .map(|token| match token {
+                    Token::Push(value) => script_num_push_cost(*value),
+                    Token::Op(_) => 1,
+                })
+                .sum()
+        }
+
         fn push(&mut self, value: i32) {
             self.0.push(Token::Push(value));
         }
@@ -692,6 +703,8 @@ mod optimized {
     }
 
     struct LookupTables {
+        order: Vec<String>,
+        memory_size: usize,
         cold_push: Program,
         hot_push: Program,
         xor_offsets: [i32; 16],
@@ -805,12 +818,23 @@ mod optimized {
 
     impl LookupTables {
         fn new() -> Self {
-            const COLD_ORDER: [&str; 41] = [
-                "SI", "X4", "X12", "P4", "P0", "X0", "P12", "P8", "X8", "P6", "P2", "X2", "X14",
-                "X6", "P14", "P10", "X10", "I13", "I7", "F8", "F4", "F12", "X3", "X11", "X7",
-                "X15", "X1", "X9", "X5", "X13", "F2", "F14", "F6", "I12", "F9", "F1", "I9", "I3",
-                "F3", "I5", "I8",
+            // Deterministic seed layout from the optional table-layout search.
+            // Per-key row selection below can add or retire fused rows.
+            const COLD_ORDER: [&str; 42] = [
+                "SI", "I8", "I12", "I5", "X4", "X12", "P4", "P0", "X0", "P12", "P8", "X8", "P6",
+                "P2", "X2", "X14", "X6", "P14", "P10", "X10", "I10", "I13", "I7", "F8", "F4",
+                "F12", "X3", "X11", "X7", "X15", "X1", "X9", "X5", "X13", "F2", "F14", "F6", "F9",
+                "F1", "I9", "I3", "F3",
             ];
+            Self::from_order(
+                &COLD_ORDER
+                    .iter()
+                    .map(|key| (*key).to_owned())
+                    .collect::<Vec<_>>(),
+            )
+        }
+
+        fn from_order(order: &[String]) -> Self {
             let mut rows: HashMap<String, Vec<i32>> = HashMap::new();
             rows.insert("SI".to_owned(), SBOX_INV.map(i32::from).to_vec());
             for row in 0..16i32 {
@@ -825,7 +849,7 @@ mod optimized {
                     (0..16).map(|x0| (u & M[3]) ^ (x0 & M[0])).collect(),
                 );
             }
-            for constant in [3, 5, 7, 8, 9, 12, 13] {
+            for constant in 1..16 {
                 rows.insert(
                     format!("I{constant}"),
                     SBOX_INV
@@ -834,7 +858,7 @@ mod optimized {
                         .collect(),
                 );
             }
-            for constant in [1usize, 2, 3, 4, 6, 8, 9, 12, 14] {
+            for constant in 1usize..16 {
                 rows.insert(
                     format!("F{constant}"),
                     (0..16)
@@ -843,19 +867,23 @@ mod optimized {
                 );
             }
 
-            let order: Vec<String> = COLD_ORDER.iter().map(|key| (*key).to_owned()).collect();
-            let packed = pack_lookup_rows(&rows, &order);
+            let packed = pack_lookup_rows(&rows, order);
+            let pair01_address = ADDR_NIBBLE_TABLE + packed.values.len() as i32;
             let xor_offsets = std::array::from_fn(|row| packed.offsets[&format!("X{row}")]);
 
             let mut sbox_xor_addresses = [None; 16];
-            for constant in [1usize, 2, 3, 4, 6, 8, 9, 12, 14] {
-                sbox_xor_addresses[constant] =
-                    Some(ADDR_NIBBLE_TABLE + packed.offsets[&format!("F{constant}")]);
+            for constant in 1usize..16 {
+                sbox_xor_addresses[constant] = packed
+                    .offsets
+                    .get(&format!("F{constant}"))
+                    .map(|offset| ADDR_NIBBLE_TABLE + offset);
             }
             let mut sbox_inv_xor_addresses = [None; 16];
-            for constant in [3usize, 5, 7, 8, 9, 12, 13] {
-                sbox_inv_xor_addresses[constant] =
-                    Some(ADDR_NIBBLE_TABLE + packed.offsets[&format!("I{constant}")]);
+            for constant in 1usize..16 {
+                sbox_inv_xor_addresses[constant] = packed
+                    .offsets
+                    .get(&format!("I{constant}"))
+                    .map(|offset| ADDR_NIBBLE_TABLE + offset);
             }
 
             let mut cold_values = Vec::new();
@@ -878,11 +906,7 @@ mod optimized {
             cold_values.extend(pair01.values.iter().rev().copied());
             cold_values.extend(packed.values.iter().rev().copied());
             let mut hot_values = Vec::new();
-            hot_values.extend(
-                (0..16i32)
-                    .rev()
-                    .map(|x| ADDR_PAIR01_TABLE - 2 + pair01.offsets[&(x & M[1])]),
-            );
+            hot_values.extend(SBOX.iter().rev().map(|&value| i32::from(value)));
             hot_values.extend((0..16i32).rev().map(|x| {
                 let key = x & M[3];
                 ADDR_PAIR23_TABLE + 1 + packed.offsets[&format!("P{key}")]
@@ -890,11 +914,17 @@ mod optimized {
             hot_values.extend(
                 (0..16i32)
                     .rev()
-                    .map(|x| ADDR_PAIR01_TABLE + 2 + pair01.offsets[&(x & M[1])]),
+                    .map(|x| pair01_address + 2 + pair01.offsets[&(x & M[1])]),
             );
-            hot_values.extend(SBOX.iter().rev().map(|&value| i32::from(value)));
+            hot_values.extend(
+                (0..16i32)
+                    .rev()
+                    .map(|x| pair01_address - 2 + pair01.offsets[&(x & M[1])]),
+            );
 
             Self {
+                order: order.to_vec(),
+                memory_size: ADDR_NIBBLE_TABLE as usize + packed.values.len() + pair01.values.len(),
                 cold_push: optimize_push_sequence(&cold_values),
                 hot_push: optimize_push_sequence(&hot_values),
                 xor_offsets,
@@ -1047,6 +1077,12 @@ mod optimized {
         prep: PrepPlan,
     }
 
+    type PairPlanKey = (Env, [usize; 4], usize);
+
+    // Stack scheduling is independent of the embedded key and lookup-table
+    // values. Share these plans across quartet-order searches and keys.
+    static PAIR_PLANS: OnceLock<Mutex<HashMap<PairPlanKey, PairPlan>>> = OnceLock::new();
+
     #[derive(Clone, Copy)]
     enum PreAction {
         Initial,
@@ -1074,14 +1110,102 @@ mod optimized {
             let upper = split_nibbles_lsb((key >> 64) as u64);
             let lower = split_nibbles_lsb(key as u64);
             let key = std::array::from_fn(|i| if i < 16 { upper[i] } else { lower[i - 16] });
-            Self {
+            let mut generator = Self {
                 tables: LookupTables::new(),
-                env: std::array::from_fn(|i| i),
+                env: std::array::from_fn(|i| SIZE_STATE - 1 - i),
                 key,
                 permutations: permutations4(),
                 prep_prefixes: prep_prefixes(),
                 round_constants: RC.map(split_nibbles_lsb),
                 beta: split_nibbles_lsb(BETA),
+            };
+            generator.select_fused_rows();
+            generator
+        }
+
+        // The quartet plan is independent of table contents. Price the entire
+        // changing part of the representation: setup, all round lookups and
+        // cleanup. Shortest packed memory alone is not the byte objective.
+        fn table_cost(&self) -> usize {
+            let mut cost = self.tables.cold_push.byte_len()
+                + self.tables.hot_push.byte_len()
+                + (self.tables.memory_size - SIZE_STATE).div_ceil(2);
+            for action in [
+                PreAction::Initial,
+                PreAction::Forward(2),
+                PreAction::Forward(3),
+                PreAction::Forward(4),
+                PreAction::Forward(5),
+                PreAction::MiddleForward,
+                PreAction::MiddleInverse,
+                PreAction::Inverse(7),
+                PreAction::Inverse(8),
+                PreAction::Inverse(9),
+                PreAction::Inverse(10),
+            ] {
+                for state in 0..SIZE_STATE {
+                    cost += self.emit_pre_action(action, state).byte_len();
+                }
+            }
+            for (processed, state) in (0..SIZE_STATE).rev().enumerate() {
+                cost += self
+                    .op_sbox_inv_xor_constant(
+                        self.beta[state] ^ self.key[state + SIZE_STATE],
+                        -(processed as i32),
+                    )
+                    .byte_len();
+            }
+            cost
+        }
+
+        fn select_fused_rows(&mut self) {
+            for _ in 0..32 {
+                let order = self.tables.order.clone();
+                let mut best_order = order.clone();
+                let mut best_cost = (self.table_cost(), self.tables.memory_size);
+                for (index, row) in order.iter().enumerate() {
+                    if !row.starts_with('F') && !row.starts_with('I') {
+                        continue;
+                    }
+                    let mut candidate = order.clone();
+                    candidate.remove(index);
+                    self.tables = LookupTables::from_order(&candidate);
+                    let cost = (self.table_cost(), self.tables.memory_size);
+                    if cost < best_cost {
+                        best_cost = cost;
+                        best_order = candidate;
+                    }
+                }
+                // A key may benefit from a fused row absent from the original
+                // zero-key layout. Price every insertion position, including
+                // its effect on overlap, address widths and cleanup.
+                for prefix in ['F', 'I'] {
+                    for constant in 1..16 {
+                        let row = format!("{prefix}{constant}");
+                        if order.contains(&row) {
+                            continue;
+                        }
+                        for index in 1..=order.len() {
+                            let mut candidate = order.clone();
+                            candidate.insert(index, row.clone());
+                            self.tables = LookupTables::from_order(&candidate);
+                            // Reserve ten transient slots below the combined
+                            // stack ceiling (the current core needs seven).
+                            if self.tables.memory_size > 990 {
+                                continue;
+                            }
+                            let cost = (self.table_cost(), self.tables.memory_size);
+                            if cost < best_cost {
+                                best_cost = cost;
+                                best_order = candidate;
+                            }
+                        }
+                    }
+                }
+                self.tables = LookupTables::from_order(&best_order);
+                if best_order == order {
+                    break;
+                }
             }
         }
 
@@ -1141,33 +1265,6 @@ mod optimized {
             let mut out = self.op_sbox_inv(scratch);
             out.extend(self.op_xor_constant(constant, scratch));
             out
-        }
-
-        fn move_state_to_top(&mut self, state: usize, scratch: i32) -> Program {
-            let old_position = self.env[state];
-            for candidate in 0..SIZE_STATE {
-                if candidate != state && self.env[candidate] > old_position {
-                    self.env[candidate] -= 1;
-                }
-            }
-            for candidate in 0..SIZE_STATE {
-                if candidate != state {
-                    self.env[candidate] += 1;
-                }
-            }
-            self.env[state] = 0;
-
-            let position = old_position as i32 + scratch;
-            match position {
-                0 => Program::default(),
-                1 => op(OP_SWAP),
-                2 => op(OP_ROT),
-                _ => {
-                    let mut out = push(position);
-                    out.op(OP_ROLL);
-                    out
-                }
-            }
         }
 
         fn sim_pair_group(
@@ -1280,7 +1377,7 @@ mod optimized {
 
             PairPlan {
                 env: simulated,
-                cost: 83 + prep.cost,
+                cost: 82 + prep.cost,
                 prep,
             }
         }
@@ -1291,6 +1388,17 @@ mod optimized {
             state_indices: [usize; 4],
             rotation: usize,
         ) -> PairPlan {
+            let cache = PAIR_PLANS.get_or_init(|| Mutex::new(HashMap::new()));
+            let cache_key = (*env, state_indices, rotation);
+            if let Some(plan) = cache
+                .lock()
+                .expect("PRINCEv2 quartet-plan cache poisoned")
+                .get(&cache_key)
+                .cloned()
+            {
+                return plan;
+            }
+
             let mut best: Option<PairPlan> = None;
             for k in 0..4 {
                 let candidate = self.sim_pair_group(env, state_indices, rotation, k);
@@ -1301,7 +1409,12 @@ mod optimized {
                     best = Some(candidate);
                 }
             }
-            best.expect("one cyclic M-hat plan must exist")
+            let plan = best.expect("one cyclic M-hat plan must exist");
+            cache
+                .lock()
+                .expect("PRINCEv2 quartet-plan cache poisoned")
+                .insert(cache_key, plan.clone());
+            plan
         }
 
         fn emit_base_rotation(delta: usize) -> Program {
@@ -1459,6 +1572,19 @@ mod optimized {
                     total_cost += plan.cost;
                     simulated = plan.env;
                 }
+                if matches!(pre_action, PreAction::Inverse(10)) {
+                    // The final group order also determines the cost of
+                    // gathering ciphertext for table-memory cleanup.
+                    let mut remaining = env_top_order(&simulated);
+                    for state in (0..SIZE_STATE).rev() {
+                        let depth = remaining
+                            .iter()
+                            .position(|&candidate| candidate == state)
+                            .expect("ciphertext state missing from planned stack");
+                        total_cost += roll_cost(depth);
+                        remaining.remove(depth);
+                    }
+                }
                 if total_cost < best_cost {
                     best_cost = total_cost;
                     best_permutation = Some(permutation);
@@ -1491,7 +1617,9 @@ mod optimized {
             for _ in 0..SIZE_STATE {
                 out.op(OP_FROMALTSTACK);
             }
-            self.env = std::array::from_fn(|i| i);
+            // Logical state identifiers are LSB-first, while the public stack
+            // layout has the MSB on top. Track that order without moving it.
+            self.env = std::array::from_fn(|i| SIZE_STATE - 1 - i);
             out
         }
 
@@ -1514,23 +1642,26 @@ mod optimized {
                 out.extend(self.m_layer(PreAction::Inverse(round)));
             }
 
+            // Retire each ciphertext nibble immediately. Later lookups then
+            // cross only the remaining inputs, with adjusted table addresses.
+            // MSB-first evacuation restores the public MSB-on-top layout.
+            let mut remaining = env_top_order(&self.env);
             for state in (0..SIZE_STATE).rev() {
-                out.extend(self.move_state_to_top(state, 0));
-                out.extend(
-                    self.op_sbox_inv_xor_constant(
-                        self.beta[state] ^ self.key[state + SIZE_STATE],
-                        0,
-                    ),
-                );
-            }
-
-            for _ in 0..SIZE_STATE {
+                let scratch = remaining.len() as i32 - SIZE_STATE as i32;
+                let moved = move_state_in_order(&remaining, state);
+                out.extend(moved.emit);
+                out.extend(self.op_sbox_inv_xor_constant(
+                    self.beta[state] ^ self.key[state + SIZE_STATE],
+                    scratch,
+                ));
                 out.op(OP_TOALTSTACK);
+                remaining = moved.order;
+                remaining.remove(0);
             }
-            for _ in 0..(SIZE_MEMORY - SIZE_STATE) / 2 {
+            for _ in 0..(self.tables.memory_size - SIZE_STATE) / 2 {
                 out.op(OP_2DROP);
             }
-            if (SIZE_MEMORY - SIZE_STATE) & 1 != 0 {
+            if (self.tables.memory_size - SIZE_STATE) & 1 != 0 {
                 out.op(OP_DROP);
             }
             for _ in 0..SIZE_STATE {
@@ -1551,35 +1682,19 @@ mod optimized {
             .clone();
         Script::new("optimized PRINCEv2 engine").push_script(script)
     }
-}
 
-/// Reverse the top 16 stack items without disturbing anything below them.
-fn reverse_top_block() -> Script {
-    script! {
-        for depth in (1..16usize).rev() {
-            { depth as u32 } OP_ROLL OP_TOALTSTACK
-        }
-        OP_TOALTSTACK
-        for _ in 0..16 { OP_FROMALTSTACK }
-    }
+    #[cfg(test)]
+    mod schedule_tests;
+
+    #[cfg(test)]
+    mod table_tests;
 }
 
 /// Full PRINCEv2 encryption with hardcoded key.
 /// Input: 16 state nibbles (nibble[0]=MSB on top, nibble[15]=LSB at depth 15).
 /// Output: 16 ciphertext nibbles in same layout.
-fn prince_encrypt_with_engine(engine: Script) -> Script {
-    script! {
-        // The public Rust API keeps the established MSB-on-top state layout.
-        // The optimized engine uses LSB-on-top, so adapt at both boundaries.
-        { reverse_top_block() }
-
-        { engine }
-        { reverse_top_block() }
-    }
-}
-
 pub fn prince_encrypt(key: u128) -> Script {
-    prince_encrypt_with_engine(optimized::engine(key))
+    optimized::engine(key)
 }
 
 // ---------------------------------------------------------------------------
@@ -1820,17 +1935,13 @@ mod tests {
         let key = (k1 as u128) << 64 | k0 as u128;
 
         let zero_key_engine = optimized::engine(0).compile_with_policy();
-        assert_eq!(zero_key_engine.len(), 6_171);
+        assert_eq!(zero_key_engine.len(), 6_136);
         assert_eq!(
-            Sha256::digest(zero_key_engine.as_bytes()).as_slice(),
-            &[
-                0xa4, 0x5a, 0x6d, 0x89, 0x57, 0xda, 0x0c, 0xa9, 0x0b, 0xbf, 0xdc, 0x06, 0xc5, 0x26,
-                0x31, 0xb6, 0xa7, 0x4a, 0x5c, 0xf5, 0x30, 0xdf, 0xa5, 0x89, 0xbc, 0x27, 0x26, 0x74,
-                0x86, 0x5f, 0xa4, 0x35,
-            ]
+            format!("{:x}", Sha256::digest(zero_key_engine.as_bytes())),
+            "ee0c2d8534e505de791ce1d436855a9ea9d6912e242646934b836e2c7fe757b3"
         );
-        assert_eq!(prince_encrypt(0).compile_with_policy().len(), 6_277);
-        assert_eq!(execute_encryption(key, plaintext, expected), 633);
+        assert_eq!(prince_encrypt(0).compile_with_policy().len(), 6_136);
+        assert_eq!(execute_encryption(key, plaintext, expected), 685);
     }
 
     #[test]

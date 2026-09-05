@@ -87,6 +87,52 @@ fn max_stack_items_strict(script: bitcoin_script::Script, witness: Vec<Vec<u8>>)
     result.stats.max_nb_stack_items
 }
 
+fn prince_metrics() -> Vec<Metric> {
+    let fragment = prince::prince_encrypt(0);
+    let compiled = fragment.clone().compile_with_policy();
+    let non_push_ops = compiled
+        .instructions()
+        .map(|instruction| instruction.expect("generated PRINCE script must parse"))
+        .filter(
+            |instruction| matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60),
+        )
+        .count();
+    let stack_script = script! {
+        { fragment }
+        for _ in 0..8 {
+            OP_2DROP
+        }
+        OP_1
+    };
+    vec![
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_encrypt",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_witness_min",
+            value: witness_size(&vec![Vec::new(); 16]),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_witness_max",
+            value: witness_size(&vec![vec![1]; 16]),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_stack",
+            value: max_stack_items_strict(stack_script, vec![Vec::new(); 16]),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_non_push_ops",
+            value: non_push_ops,
+        },
+    ]
+}
+
 fn metrics() -> Vec<Metric> {
     let blake3_message: [u8; 64] = std::array::from_fn(|index| index as u8);
     let blake3_expected = *::blake3::hash(&blake3_message).as_bytes();
@@ -726,14 +772,6 @@ fn metrics() -> Vec<Metric> {
         }
         OP_1
     };
-    let prince_stack_script = script! {
-        { prince::prince_encrypt(0) }
-        for _ in 0..8 {
-            OP_2DROP
-        }
-        OP_1
-    };
-
     let bn254_fq_a = ark_bn254::Fq::from(0x1234_5678u64);
     let bn254_fq_b = ark_bn254::Fq::from(0x8765_4321u64);
     let bn254_fq2_a = ark_bn254::Fq2 {
@@ -2839,26 +2877,6 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
-            readme: "src/ciphers/prince/README.md",
-            key: "prince_encrypt",
-            value: script_len(prince::prince_encrypt(0)),
-        },
-        Metric {
-            readme: "src/ciphers/prince/README.md",
-            key: "prince_witness_min",
-            value: witness_size(&vec![Vec::new(); 16]),
-        },
-        Metric {
-            readme: "src/ciphers/prince/README.md",
-            key: "prince_witness_max",
-            value: witness_size(&vec![vec![1]; 16]),
-        },
-        Metric {
-            readme: "src/ciphers/prince/README.md",
-            key: "prince_stack",
-            value: max_stack_items_strict(prince_stack_script, vec![Vec::new(); 16]),
-        },
-        Metric {
             readme: "src/ciphers/aes/README.md",
             key: "aes128_encrypt",
             value: script_len(aes::aes128_encrypt(aes_zero_key)),
@@ -3029,12 +3047,22 @@ fn metrics() -> Vec<Metric> {
             value: script_len(G2Affine::is_zero_keep_element()),
         },
     ]
+    .into_iter()
+    .chain(prince_metrics())
+    .collect()
 }
 
 #[test]
 #[ignore = "expensive full-repository metric regeneration; run explicitly with --ignored"]
 fn readme_metrics_are_current() {
     check_readme_metrics(metrics());
+}
+
+/// Check or intentionally refresh only the PRINCEv2 metric markers, without
+/// generating scripts for the full-repository metric suite.
+#[test]
+fn prince_metrics_are_current() {
+    check_readme_metrics(prince_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

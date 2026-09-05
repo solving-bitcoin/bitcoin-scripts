@@ -24,6 +24,12 @@ can query values embedded on the stack. Local constructions use several forms:
   avoids placing every map entry on the stack, at the cost of a larger locking
   script and branch-hint witness.
 - **Addition chain:** embed no persistent table; unroll doubles and adds.
+- **Key-specific fused rows:** combine a fixed XOR and S-box lookup into a
+  unary table. Price row installation, frequency, address encodings and cleanup
+  jointly, then derive all downstream addresses from the resulting packing.
+  PRINCEv2 uses a bounded deterministic search for these rows. Its hot final-row
+  selector is placed at depth 16 so each quartet's selector literal is `OP_15`;
+  moving the S-box deeper trades lookup costs against 44 repeated core uses.
 
 The crossover depends on reuse count, preserved stack depth, representation,
 and whether setup can coexist with protocol state. See the checked F257 results

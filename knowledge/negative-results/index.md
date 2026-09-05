@@ -3,6 +3,13 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
+
+The [PRINCEv2 layout search](princev2-layout.md) records the discarded shared
+final-selector variant, invalid fixed-address row-removal experiment, and
+bounded global scheduling/CNOT searches. The retained result is a 6,136-byte
+zero-key fragment with zero hints and a strict 633-item combined peak.
+
 ## NR-001: Raw 1,024-byte SHAKE256 output exceeds the stack limit
 
 The current byte-lane SHAKE256 leaves 1,024 output items, already exceeding the

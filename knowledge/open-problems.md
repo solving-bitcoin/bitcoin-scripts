@@ -3,6 +3,18 @@
 Each problem has a falsifiable completion criterion. Update comparisons and
 negative results when closing one.
 
+## OP-019 — PRINCEv2 M-hat circuit frontier
+
+Find a smaller repeated M-hat circuit for generation-time-key encryption.
+**Complete when:** a fragment below 5,000 policy-produced bytes, including
+table setup and cleanup and excluding plaintext pushes/output comparison,
+matches the pinned upstream C fixtures plus seeded random keys/plaintexts,
+uses zero hints and 16 input data items, and executes with the combined
+1,000-item stack limit enabled. Report zero and nonzero keys separately.
+The current zero-key baseline is 6,136 bytes and a 633-item peak. Table packing
+and algebraic sketches without a priced executable circuit do not satisfy
+this criterion; see [the layout search](negative-results/princev2-layout.md).
+
 ## OP-001 — Strict execution matrix
 
 Add explicit legacy/P2WSH/tapscript strict and research-unlimited execution
