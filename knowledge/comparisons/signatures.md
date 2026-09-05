@@ -2,10 +2,11 @@
 
 ## Point locks
 
-| Construction | Script family | Script bytes | Witness bytes | Setup / security boundary |
+| Construction | Script family | Script bytes | Revelation data | Setup / security boundary |
 | --- | --- | ---: | ---: | --- |
 | Schnorr adaptor signature | Tapscript | 34 for the ordinary x-only-key/checksig leaf | 66 for a default 64-byte signature | Interactive adaptor transcript; discrete-log/adaptor security |
 | ECDSA `G/2` small-R | Legacy, P2SH, or P2WSH | 40 | 62 representative and maximum | Non-interactive; conservatively about 80-bit security, not locally established |
+| Three-check ECDSA | Bare legacy or P2SH | 79 | 60-byte representative signature; 61-byte bare scriptSig | `T` alone; DLP hiding and related-scriptCode reduced-sighash collision resistance |
 | Committed ECDSA | Legacy or P2SH only | 71 | 73 representative, at most 74 for low-S | Off-chain ZK proof of the SHA-256/DER-r relation; SHA-256 binding |
 
 All rows are complete success predicates but exclude refund branches and
@@ -13,8 +14,11 @@ wrapper/control-block costs. The first row is only the ordinary on-chain
 BIP340 check; adaptor creation and validation are off chain. The small-R row
 uses the 21-byte x-coordinate of `G/2`. The committed row hashes the exact
 `DER(r,s) || 0x03` item and relies on the pre-SegWit SIGHASH_SINGLE bug; it is
-not a P2WSH construction. See the [point-lock page](../primitives/point-locks.md)
-for extraction equations and evidence qualifications.
+not a P2WSH construction. The three-check row is a legacy scriptSig boundary,
+not witness serialization; its size guard eliminates the `r+n` coordinate
+case rather than enforcing a small nonce. See the
+[point-lock page](../primitives/point-locks.md) for extraction equations and
+evidence qualifications.
 
 ## Secp256k1 Schnorr
 

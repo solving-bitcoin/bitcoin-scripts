@@ -33,7 +33,7 @@ constructions from being hidden behind local module names.
 - `affine-coordinates`, `glv-endomorphism`, `jacobian-coordinates`,
   `signed-window`, `taptree-lookup`, `wnaf`
 - `adaptor-signature`, `signature-size-constraint`, `signature-commitment`,
-  `sighash-single-bug`
+  `sighash-single-bug`, `code-separator`, `related-key`
 - `hash-chain`, `mixed-hash-path`, `sponge`, `pairing`
 
 ## Status is not evidence

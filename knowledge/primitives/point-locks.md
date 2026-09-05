@@ -16,6 +16,7 @@ Taproot control blocks, P2SH wrappers, or complete transactions.
 | --- | --- | --- | --- |
 | Schnorr adaptor signature | Interactive; counterparty creates and verifies an encrypted signature | Ordinary tapscript BIP340 `OP_CHECKSIG` | Requires a valid adaptor transcript before funding |
 | ECDSA `G/2` small-R | Non-interactive after publishing `T` | Signature length plus legacy ECDSA `OP_CHECKSIG` | Only roughly 80-bit conservative security |
+| Three-check ECDSA | Non-interactive; constructed from `T` alone | One signature, two legacy `scriptCode` views, and related keys `T,Q` | Non-standard legacy-only construction; reduced-sighash collision assumption |
 | Committed ECDSA | Non-interactive on chain; spender proves the commitment relation off chain during setup | SHA-256 equality plus legacy ECDSA `OP_CHECKSIG` | Requires an off-chain ZK proof and the legacy SIGHASH_SINGLE bug |
 
 ## Schnorr adaptor signature
@@ -69,6 +70,60 @@ R-value. A conservative point-lock estimate is roughly 80 bits after allowing
 alternate `r`/`s` length allocations and generic attacks. That conservative
 bound has not been reproduced locally and remains an open analysis item.
 
+## Three-check ECDSA from `T` alone
+
+This construction removes the small-R search assumption, signature
+commitment, and setup proof. Let `k0=1/2 mod n`, `r0=x(G/2)`, and let `z0=2^248`
+be the ECDSA interpretation of the legacy out-of-range SIGHASH_SINGLE digest.
+From the public target derive
+
+```text
+Q = -(2*z0/r0)G - T.
+```
+
+Reject the publicly detectable cases `Q=infinity` and `Q=T`. The lock is:
+
+```text
+OP_SIZE 57 OP_GREATERTHAN OP_VERIFY
+OP_DUP <T>
+OP_2DUP OP_CHECKSIGVERIFY
+OP_CODESEPARATOR
+OP_CHECKSIGVERIFY
+<Q> OP_CHECKSIG
+```
+
+The first two checks verify the same signature under `T` using full and suffix
+legacy `scriptCode` views. The third verifies it under `Q` using the suffix
+view. The policy-produced predicate is 79 bytes, consumes one signature item,
+uses zero witness hints, and has a five-item combined-stack peak.
+
+For digests `zA,zB`, the target checks reconstruct nonce points
+
+```text
+RA = s^-1(zA*G + r*T),  RB = s^-1(zB*G + r*T).
+```
+
+The strict `length > 57` guard excludes every `r` for which the alternative
+field coordinate `r+n` can exist. Consequently `RA=+/-RB`. The opposite case
+reveals `t=-(zA+zB)/(2r) mod n`; the equal case requires `zA=zB mod n`, which
+is the stated related-scriptCode reduced-sighash collision exception. This
+does not rely on an attacker being unable to find an x-coordinate shorter than
+`x(G/2)`.
+
+For an honest spend, place the input at an index without a corresponding
+output and sign with SIGHASH_SINGLE and nonce `k0`. All checks then use `z0`.
+The `T,Q` checks force `r=r0`, and trying both nonce signs extracts `t`. A low-S
+signature is at most 60 bytes. If its DER integer is too short for the guard,
+the equivalent high-S encoding is 61 bytes and restores consensus-level
+completeness, at the cost of an additional policy violation.
+
+The Rust implementation and detailed compatibility matrix are in
+[`src/signatures/pointlocks/three_check/`](../../src/signatures/pointlocks/three_check/).
+Its deterministic tests reproduce the script, companion relation, intended
+legacy execution, both extraction branches, DER boundary, high-S fallback,
+and exceptional targets. Execution remains `unclassified`: the complete
+non-standard transaction has not been run through a pinned Bitcoin Core.
+
 ## Committed ECDSA over the SIGHASH_SINGLE bug
 
 Let `P = xG` be an ECDSA verification key whose scalar `x` is public protocol
@@ -119,9 +174,13 @@ wrong points, and wrong sighash flags.
 The small-R lock is meaningful in bare legacy, P2SH, and P2WSH scripts because
 extraction can use the actual public transaction digest. The committed lock is
 limited to bare legacy or P2SH: BIP143 SegWit v0 does not reproduce the
-SIGHASH_SINGLE constant-digest bug. Both ECDSA locks are incompatible with
-tapscript, where `OP_CHECKSIG` uses BIP340 and 33-byte keys have unknown-key
-semantics. The Schnorr adaptor construction is the tapscript alternative.
+SIGHASH_SINGLE constant-digest bug. The three-check lock is likewise limited
+to bare legacy or P2SH and is non-standard in both forms: bare arbitrary
+outputs are not standard templates, while executed `OP_CODESEPARATOR` violates
+`CONST_SCRIPTCODE` policy. It is incompatible with P2WSH because BIP143 fixes
+the required bug. All ECDSA locks are incompatible with tapscript, where
+`OP_CHECKSIG` uses BIP340 and 33-byte keys have unknown-key semantics. The
+Schnorr adaptor construction is the tapscript alternative.
 
 The local legacy tests use the pinned `bitcoin-scriptexec` interpreter rather
 than Bitcoin Core and do not establish relay policy. In the small-R success
@@ -138,6 +197,6 @@ predicate itself is not padded.
 - Fournier's one-time verifiably encrypted signature paper describes adaptor
   signature creation, adaptation, and extraction.
 
-The two ECDSA implementations are `locally-reproduced` with `unclassified`
+The three ECDSA implementations are `locally-reproduced` with `unclassified`
 deployment. The Schnorr adaptor construction is `reported` and unimplemented
 locally. None is claimed `policy-validated`.

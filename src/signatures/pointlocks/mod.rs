@@ -14,6 +14,8 @@ use num_traits::{One, Zero};
 
 use crate::support::script::*;
 
+pub mod three_check;
+
 /// The largest accepted serialized Bitcoin signature for the `G/2` lock.
 ///
 /// A low-S signature with the 21-byte x-coordinate of `G/2` is at most
@@ -209,12 +211,12 @@ pub fn sighash_single_bug_message() -> [u8; 32] {
     message
 }
 
-fn g_half_nonce() -> Result<SecretKey, PointLockError> {
+pub(super) fn g_half_nonce() -> Result<SecretKey, PointLockError> {
     let half = (group_order() + BigUint::one()) >> 1;
     secret_from_biguint(&half)
 }
 
-fn signature_scalars(signature: &bitcoin::ecdsa::Signature) -> (BigUint, BigUint) {
+pub(super) fn signature_scalars(signature: &bitcoin::ecdsa::Signature) -> (BigUint, BigUint) {
     let compact = signature.signature.serialize_compact();
     (
         BigUint::from_bytes_be(&compact[..32]),
@@ -222,7 +224,7 @@ fn signature_scalars(signature: &bitcoin::ecdsa::Signature) -> (BigUint, BigUint
     )
 }
 
-fn group_order() -> BigUint {
+pub(super) fn group_order() -> BigUint {
     BigUint::parse_bytes(
         b"fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",
         16,
@@ -230,7 +232,7 @@ fn group_order() -> BigUint {
     .expect("secp256k1 order parses")
 }
 
-fn inverse(value: &BigUint, modulus: &BigUint) -> BigUint {
+pub(super) fn inverse(value: &BigUint, modulus: &BigUint) -> BigUint {
     value.modpow(&(modulus - BigUint::from(2u8)), modulus)
 }
 
@@ -242,7 +244,7 @@ fn sub_mod(lhs: &BigUint, rhs: &BigUint, modulus: &BigUint) -> BigUint {
     }
 }
 
-fn scalar_bytes(value: &BigUint) -> Result<[u8; 32], PointLockError> {
+pub(super) fn scalar_bytes(value: &BigUint) -> Result<[u8; 32], PointLockError> {
     let bytes = value.to_bytes_be();
     if bytes.len() > 32 {
         return Err(PointLockError::InvalidScalar);
@@ -252,7 +254,7 @@ fn scalar_bytes(value: &BigUint) -> Result<[u8; 32], PointLockError> {
     Ok(scalar)
 }
 
-fn secret_from_biguint(value: &BigUint) -> Result<SecretKey, PointLockError> {
+pub(super) fn secret_from_biguint(value: &BigUint) -> Result<SecretKey, PointLockError> {
     SecretKey::from_slice(&scalar_bytes(value)?).map_err(|_| PointLockError::InvalidScalar)
 }
 

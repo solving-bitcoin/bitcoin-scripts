@@ -223,10 +223,14 @@ deployment criterion.
 ## OP-017 — Point-lock security and deployment validation
 
 Close the remaining gap between functional point-lock tests and protocol
-security. **Complete when:** the best generic forgery attack against the
+security. **Complete when:** the three-check ECDSA lock is executed as a
+complete bare and P2SH transaction against a pinned Bitcoin Core revision, its
+related-scriptCode reduced-sighash collision assumption receives a concrete
+single- and multi-instance analysis, and its high-S completeness fallback is
+confirmed under legacy consensus; the best generic forgery attack against the
 60-byte `G/2` ECDSA predicate is reproduced or tightly bounded, reconciling the
 conservative roughly 80-bit estimate with the Binohash paper's approximately
-97-bit smaller-R search; both ECDSA leaves are validated against a pinned
+97-bit smaller-R search; all three ECDSA leaves are validated against a pinned
 Bitcoin Core revision under consensus and applicable relay policy; the
 committed-ECDSA setup statement has a byte-exact circuit and proof transcript
 for at least one pinned zkVM backend; and the Schnorr adaptor flow is tested

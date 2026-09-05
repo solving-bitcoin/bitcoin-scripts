@@ -2336,6 +2336,81 @@
       ]
     },
     {
+      "id": "signature/point-lock-ecdsa-three-check",
+      "name": "Three-check ECDSA point lock",
+      "class": "signature/point-lock",
+      "summary": "Legacy point lock derived from T alone that reuses one signature across two scriptCode views and the related keys T and Q.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-04",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/three_check/mod.rs",
+      "documentation": "src/signatures/pointlocks/three_check/README.md",
+      "tests": [
+        "signatures::pointlocks::three_check::tests"
+      ],
+      "references": [
+        "bip-16",
+        "bip-66",
+        "bip-143",
+        "bitcoin-core-interpreter",
+        "bitcoin-scriptexec-locked",
+        "rust-bitcoin-0.32.102",
+        "rust-secp256k1-0.29.1"
+      ],
+      "techniques": [
+        "signature-size-constraint",
+        "sighash-single-bug",
+        "code-separator",
+        "related-key"
+      ],
+      "security": "Pre-spend hiding relies on secp256k1 discrete-log hardness. Extractability fails only through a related-scriptCode collision between legacy transaction hashes reduced modulo n, subject to strict DER parsing, the greater-than-57-byte guard, rejection of Q=infinity and Q=T, and exact legacy consensus behavior. The 128-bit classification is a conservative design target rather than an audited reduction.",
+      "stack_contract": "... bitcoin_ecdsa_signature -> ... true; the complete predicate consumes one signature, uses no altstack or witness hints, and reaches a five-item combined-stack peak.",
+      "configurations": [
+        {
+          "id": "bare-legacy-revelation",
+          "label": "One-signature three-check bare legacy predicate",
+          "parameters": {
+            "target": "T=tG",
+            "companion": "Q=-(2*z0/r0)G-T",
+            "nonce": "2^-1 mod secp256k1 group order",
+            "minimum_signature_item_bytes": 58,
+            "representative_signature_item_bytes": 60,
+            "representative_script_sig_bytes": 61,
+            "hint_items": 0,
+            "complete_input_items": 1,
+            "representative_target_secret": "07 repeated 32 times"
+          },
+          "includes": "complete-leaf: policy-produced 79-byte bare legacy locking predicate with both compressed keys, size guard, two target-key checks, executed OP_CODESEPARATOR, companion-key check, and one representative 60-byte signature item whose minimally pushed scriptSig is 61 bytes; excludes transaction framing, funding output, payment authorization, refund branch, P2SH wrapper, and local-interpreter-only NOP padding",
+          "script_bytes": 79,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 9,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 79,
+          "metric_keys": [
+            "pointlock_three_check_script"
+          ]
+        }
+      ],
+      "limitations": [
+        "Bare legacy outputs and P2SH spends using executed OP_CODESEPARATOR are non-standard under current relay policy",
+        "P2WSH is incompatible because BIP143 fixes the required out-of-range SIGHASH_SINGLE digest; tapscript uses Schnorr rather than ECDSA",
+        "The rare 61-byte high-S completeness fallback is consensus-valid in legacy Script but non-standard and cannot be executed by the pinned local interpreter's low-S-only libsecp256k1 path",
+        "The related-scriptCode reduced-sighash collision argument has not received independent cryptographic review or multi-instance analysis",
+        "A complete transaction has not been validated against a pinned Bitcoin Core revision",
+        "Research signing helpers use non-constant-time bigint arithmetic"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
       "id": "signature/point-lock-ecdsa-committed",
       "name": "Committed ECDSA point lock",
       "class": "signature/point-lock",

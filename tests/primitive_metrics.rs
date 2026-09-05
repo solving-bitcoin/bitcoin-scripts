@@ -588,6 +588,9 @@ fn metrics() -> Vec<Metric> {
         pointlock_public,
         pointlocks::signature_commitment(&committed_signature),
     );
+    let three_check_signature = pointlocks::three_check::sign(pointlock_secret).unwrap();
+    let three_check_point_lock = pointlocks::three_check::point_lock(pointlock_public).unwrap();
+    assert_eq!(three_check_signature.to_vec().len(), 60);
 
     let wots_secret = vec![0x42; 20];
     let wots_message = [0u8; 32];
@@ -2638,6 +2641,11 @@ fn metrics() -> Vec<Metric> {
             readme: "src/signatures/pointlocks/README.md",
             key: "pointlock_committed_witness",
             value: witness_size(&[committed_signature.to_vec()]),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/three_check/README.md",
+            key: "pointlock_three_check_script",
+            value: script_len(three_check_point_lock),
         },
         Metric {
             readme: "src/signatures/schnorr/README.md",

@@ -10,6 +10,20 @@
       "revision": "accepted specification"
     },
     {
+      "id": "bip-66",
+      "title": "BIP 66: Strict DER signatures",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki",
+      "revision": "final specification"
+    },
+    {
+      "id": "bip-143",
+      "title": "BIP 143: SegWit v0 transaction signature verification",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki",
+      "revision": "final specification"
+    },
+    {
       "id": "bip-141",
       "title": "BIP 141: Segregated Witness",
       "kind": "specification",
@@ -43,6 +57,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/rust-bitcoin/rust-secp256k1/tree/v0.29.1",
       "revision": "crate 0.29.1 pinned by Cargo.lock checksum 9465315bc9d4566e1724f0fffcbcc446268cb522e60f9a27bcded6b19c108113"
+    },
+    {
+      "id": "rust-bitcoin-0.32.102",
+      "title": "rust-bitcoin 0.32.102",
+      "kind": "reference-implementation",
+      "url": "https://github.com/rust-bitcoin/rust-bitcoin/tree/bitcoin-0.32.102",
+      "revision": "crate 0.32.102 resolved by Cargo.lock"
     },
     {
       "id": "bitcoin-core-interpreter",

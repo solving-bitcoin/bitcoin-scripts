@@ -2,9 +2,14 @@
 
 A point lock has a public point `T = tG` and makes a successful spend reveal
 its discrete logarithm `t`, analogously to a hash lock revealing a preimage.
-This module implements two ECDSA constructions. Schnorr adaptor signatures are
+This module implements three ECDSA constructions. Schnorr adaptor signatures are
 covered in the knowledge page because their meaningful construction and
 verification happen between counterparties off chain.
+
+The strongest point-only candidate is implemented in the dedicated
+[`three_check`](three_check/) folder. It derives a companion key from `T`
+alone and reuses one signature across three legacy ECDSA checks. It requires
+neither a signature commitment nor a setup proof.
 
 ## Parameters
 
@@ -28,6 +33,9 @@ serializations of a one-item vector and depend on the concrete `s` encoding.
 | --- | ---: | ---: | ---: |
 | `G/2` small-R lock | <!-- metric:pointlock_small_r_script -->40<!-- /metric:pointlock_small_r_script --> bytes | <!-- metric:pointlock_small_r_witness -->62<!-- /metric:pointlock_small_r_witness --> bytes | 3 |
 | Committed signature lock | <!-- metric:pointlock_committed_script -->71<!-- /metric:pointlock_committed_script --> bytes | <!-- metric:pointlock_committed_witness -->73<!-- /metric:pointlock_committed_witness --> bytes | 3 |
+
+See the three-check README for its legacy `scriptSig` metrics rather than a
+witness-vector proxy.
 
 The first script is:
 
