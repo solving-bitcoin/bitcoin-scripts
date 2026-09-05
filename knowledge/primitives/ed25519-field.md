@@ -45,6 +45,18 @@ partial products. The optimized backends retain the useful operand-specific
 table idea while checking a complete exact polynomial identity; NR-030 records
 the distinction.
 
+The separate `u5_packed_grouped` wire decoder consumes eight compressed-u32
+data items with zero auxiliary hints. Its partial-word extraction returns
+either sixteen centered slope-product limbs (3,590 policy-produced bytes,
+62-item strict combined peak) or 51 certified biased digits (4,072 bytes,
+93-item peak). Both include sixteen temporary Script-authored powers, reject
+padding and the 19-value field gap, preserve existing altstack contents, and
+append no terminal predicate. They do not perform field multiplication.
+Their G32 use counts are respectively 46 and 47, with zero cumulative hints;
+all 803 complete verifier data items still coexist at entry. The
+[field README](../../src/fields/ed25519/README.md#eight-item-packed-circuit-wires)
+states the byte-encoding and composition contracts.
+
 ## Evidence
 
 `locally-reproduced`, `unclassified`. Deterministic local tests execute in a

@@ -425,21 +425,33 @@ challenge bytes, for 47 transitions. Second, its final challenge packet carries
 helper checks and copies those digits into BLAKE3 while preserving the original
 field for the fused terminal relation. Third, each curve relation uses a
 symmetry-specialized square, and quotient derivation shares Script-authored
-power-of-two pools within two phases. The square removes 2,887 integrated bytes
-per transition, while the split pools remove another 19,365 bytes and leave no
-pool across the hash boundary. The first transition deliberately keeps only
-four powers for bits 23 through 26, spending 37 bytes versus the five-item byte
-minimum to retain one stack slot of headroom. The pools add no witness data and are not hints.
+power-of-two pools within two phases. The current first transition uses fifteen
+powers for bits 16 through 30; later transitions use sixteen powers for bits
+15 through 30. The pools add no witness data or hints and leave no residue
+across the hash boundary.
 The exact entry is **803 coexisting circuit-data items and zero auxiliary hint
 items per transition and in total across all 47 transitions**. The analytical
-combined main-plus-alt-stack maximum is exactly **999**, including the
+combined main-plus-alt-stack maximum is **995**, including the
 script-authored pools; focused routing and individual kernel/hash interfaces
 are strict-executed separately. Generated long-running tests and whole-leaf
 execution remain opt-in.
 
-The final policy-produced G32 serialization is **2,999,983 bytes** and contains
-1,729,242 static non-push opcodes. Its disjoint component account is exact with
-zero cross-component optimizer delta: 1,931,479 response bytes, 1,000,204
+The current implementation replaces full-word expansion with partial
+decoding into the consumer's exact representation: 46 grouped-u decodes and
+47 lambda-digit decodes consume eight data items each, require zero auxiliary
+hints per invocation and in total, and have strict local peaks of 62 and 93
+items including sixteen temporary Script-authored powers. Its relation
+reducers use a single Horner residue and fuse sparse coefficient passes.
+[NR-036](negative-results/index.md) records the bounded fragment comparisons.
+Acceptance for a further reduction is a smaller policy-produced complete leaf
+with all 803 entry items and zero hints retained, a combined-stack bound below
+1,000 including decoder/pool coexistence, and focused malformed-input checks
+against the original exact relation. Whole-leaf execution and Bitcoin Core
+validation remain separate unmet acceptance criteria.
+
+The final policy-produced G32 serialization is **2,834,653 bytes** and contains
+1,663,690 static non-push opcodes. Its disjoint component account is exact with
+zero cross-component optimizer delta: 1,821,324 response bytes, 945,029
 challenge bytes, 67,137 canonical-u5 fixed-message BLAKE3 bytes, 389 recoder
 bytes, and 774 scalar-validator bytes. Because the whole leaf exceeds 32 KiB,
 the compilation policy applies `CompileOptions::NONE`; the reported whole size
@@ -448,15 +460,16 @@ host fixture serializes all 803 argument items to 3,863 bytes and commits them
 with BLAKE3 digest
 `896812f002f5c8b1a2816eed80ceb84e9822a9202ae226771a48091a6ef8c5d1`.
 Its exact complete-witness, target, and minimum-block formulas are `S+3,902`,
-`S+4,280`, and `S+5,048`; at the measured `S`, they are 3,003,885 bytes,
-3,004,263 WU, and 3,005,031 WU, leaving 994,969 WU below four million. A
+`S+4,280`, and `S+5,048`; at the measured `S`, they are 2,838,555 bytes,
+2,838,933 WU, and 2,839,701 WU, leaving 1,160,299 WU below four million. A
 representation-aware conservative argument instead gives target/minimum-block
-formulas `S+5,034` and `S+5,802`, leaving 994,215 WU.
+formulas `S+5,034` and `S+5,802`, leaving 1,159,545 WU.
 
-A measured but non-selected lifecycle carries the later 16-item Script-authored
+A historical measured but non-selected lifecycle at `f7bb0c2` carries the
+later 16-item Script-authored
 power pool through canonical-u5 BLAKE3 and the recoder. It is technically
 feasible, uses zero hints, and strict-peaks at 934 inside that boundary, but
-saves only 25 bytes: 2,999,958 versus the retained 2,999,983-byte split. It
+saves only 25 bytes: 2,999,958 versus that revision's 2,999,983-byte split. It
 also couples the hash and recoder to a nonempty alt stack. Production keeps the
 explicit empty hash/final boundaries; [NR-035](negative-results/index.md)
 records this operational tradeoff.

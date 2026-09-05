@@ -5,6 +5,9 @@
 //! relation, or a complete multi-megabyte leaf. It strictly executes only
 //! distinguishable table/kernel stubs to prove packet, scalar, control, and
 //! 92-item state routing for both candidate response partitions.
+//! The synthetic execution audit is opt-in (`--run-synthetic`): even its
+//! sub-32-KiB optimization can be slow in debug builds. Default mode only
+//! reports the frozen, independently measured component account.
 //!
 //! Entry remains trace-only: `challenge_trace[16] | response_trace[G-1] |
 //! scalar[8]`. A successful first transition expands the 25-item initializer
@@ -54,14 +57,14 @@ pub(crate) const HYBRID_HASH_R_WORD0_DEPTH: usize =
     PACKED_WORDS + (CHALLENGE_GROUPS - 1) * TRACE_ITEMS_PER_PACKET + HYBRID_STATE_ITEMS;
 
 // Exact policy-produced sizes and strict local peaks reproduced by
-// `ed25519_montgomery_slope_shared_constants_probe`. Each kernel first policy-
+// `ed25519_montgomery_slope_optimized_probe`. Each kernel first policy-
 // compiles its sub-32-KiB semantic steps; its assembled wrapper is then larger
 // than 32 KiB, so policy applies no second optimizer pass to that wrapper.
-const HYBRID_FIRST_KERNEL_BYTES: usize = 37_109;
-const HYBRID_INITIALIZE_PERSISTENT_KERNEL_BYTES: usize = 49_921;
-const HYBRID_PERSISTENT_KERNEL_BYTES: usize = 49_888;
-const HYBRID_FINALIZE_PERSISTENT_KERNEL_BYTES: usize = 49_880;
-const HYBRID_FIRST_LOCAL_PEAK: usize = 212;
+const HYBRID_FIRST_KERNEL_BYTES: usize = 33_409;
+const HYBRID_INITIALIZE_PERSISTENT_KERNEL_BYTES: usize = 46_401;
+const HYBRID_PERSISTENT_KERNEL_BYTES: usize = 46_368;
+const HYBRID_FINALIZE_PERSISTENT_KERNEL_BYTES: usize = 46_360;
+const HYBRID_FIRST_LOCAL_PEAK: usize = 204;
 const HYBRID_INITIALIZE_PERSISTENT_LOCAL_PEAK: usize = 224;
 const HYBRID_PERSISTENT_LOCAL_PEAK: usize = 240;
 const HYBRID_FINALIZE_PERSISTENT_LOCAL_PEAK: usize = 240;
@@ -69,20 +72,21 @@ const HYBRID_FINALIZE_PERSISTENT_LOCAL_PEAK: usize = 240;
 // Independently focused component measurements. They are summed here without
 // constructing any authenticated table, hash fragment, or complete leaf.
 const G31_RESPONSE_TABLE_BYTES: usize = 451_272;
-const G32_PARITY_CORRECT_RESPONSE_TABLE_BYTES: usize = 383_004;
+const G32_PARITY_CORRECT_RESPONSE_TABLE_BYTES: usize = 382_149;
 const CHALLENGE_TABLE_BYTES: usize = 200_843;
+const G32_CHALLENGE_TABLE_BYTES: usize = 200_411;
 const PACKED_R_HASH_BYTES_AT_HYBRID_BOUNDARY: usize = 67_806;
 const INDEPENDENT_BYTE_RECODER_BYTES: usize = 389;
 const HYBRID_TERMINAL_BYTES: usize = HYBRID_STATE_ITEMS / 2 + 1;
-const EXPECTED_G31_PACKED_R_HYBRID_LEAF_BYTES: usize = 3_023_362;
-const EXPECTED_G32_PACKED_R_HYBRID_LEAF_BYTES: usize = 3_005_271;
+const EXPECTED_G31_PACKED_R_HYBRID_LEAF_BYTES: usize = 2_861_262;
+const EXPECTED_G32_PACKED_R_HYBRID_LEAF_BYTES: usize = 2_838_364;
 pub(crate) const HYBRID_U5_HASH_PRESERVED_ITEMS: usize =
     HYBRID_HASH_PRESERVED_ITEMS + U5_FINAL_PACKET_EXTRA_ITEMS;
 pub(crate) const HYBRID_U5_HASH_R_DIGIT0_DEPTH: usize = HYBRID_HASH_R_WORD0_DEPTH;
 const HYBRID_U5_HASH_BYTES: usize = 67_137;
-const HYBRID_U5_FINAL_TERMINAL_KERNEL_BYTES: usize = 45_179;
+const HYBRID_U5_FINAL_TERMINAL_KERNEL_BYTES: usize = 43_236;
 const HYBRID_U5_FINAL_LOCAL_PEAK: usize = 283;
-const EXPECTED_G32_U5_HYBRID_LEAF_BYTES: usize = 2_999_983;
+const EXPECTED_G32_U5_HYBRID_LEAF_BYTES: usize = 2_834_653;
 
 /// Exact exhaustive-placement winner for 31 response groups.
 pub(crate) fn g31_widths_low_to_high() -> Vec<usize> {
@@ -1016,6 +1020,7 @@ struct ScheduleReport {
     analytical_peak_transition: usize,
     response_table_bytes: usize,
     response_schedule_bytes: usize,
+    challenge_table_bytes: usize,
     challenge_schedule_bytes: usize,
     projected_packed_r_leaf_bytes: usize,
 }
@@ -1163,8 +1168,13 @@ fn run_schedule(name: &'static str, widths_low_to_high: &[usize]) -> ScheduleRep
     };
     let response_schedule_bytes =
         response_table_bytes + response_scaffolding_raw + response_kernel_bytes(response_groups);
+    let challenge_table_bytes = if name == "g32" {
+        G32_CHALLENGE_TABLE_BYTES
+    } else {
+        CHALLENGE_TABLE_BYTES
+    };
     let challenge_schedule_bytes =
-        CHALLENGE_TABLE_BYTES + challenge_scaffolding_raw + challenge_kernel_bytes();
+        challenge_table_bytes + challenge_scaffolding_raw + challenge_kernel_bytes();
     let projected_packed_r_leaf_bytes = validator_policy
         + response_schedule_bytes
         + PACKED_R_HASH_BYTES_AT_HYBRID_BOUNDARY
@@ -1200,6 +1210,7 @@ fn run_schedule(name: &'static str, widths_low_to_high: &[usize]) -> ScheduleRep
         analytical_peak_transition,
         response_table_bytes,
         response_schedule_bytes,
+        challenge_table_bytes,
         challenge_schedule_bytes,
         projected_packed_r_leaf_bytes,
     }
@@ -1306,7 +1317,7 @@ fn print_report(report: &ScheduleReport) {
         "response_schedule_projected_bytes={}",
         report.response_schedule_bytes
     );
-    println!("challenge_table_bytes={CHALLENGE_TABLE_BYTES}");
+    println!("challenge_table_bytes={}", report.challenge_table_bytes);
     println!(
         "challenge_schedule_projected_bytes={}",
         report.challenge_schedule_bytes
@@ -1409,18 +1420,18 @@ fn run_g32_u5_final_shape() {
         + response_scaffolding_raw
         + response_kernel_bytes(widths.len());
     let challenge_schedule_bytes =
-        CHALLENGE_TABLE_BYTES + challenge_scaffolding_raw + u5_challenge_kernel_bytes();
+        G32_CHALLENGE_TABLE_BYTES + challenge_scaffolding_raw + u5_challenge_kernel_bytes();
     let projected_leaf_bytes = validator_policy
         + response_schedule_bytes
         + HYBRID_U5_HASH_BYTES
         + INDEPENDENT_BYTE_RECODER_BYTES
         + challenge_schedule_bytes;
-    assert_eq!(response_schedule_bytes, 1_931_479);
-    assert_eq!(challenge_schedule_bytes, 1_000_204);
+    assert_eq!(response_schedule_bytes, 1_821_324);
+    assert_eq!(challenge_schedule_bytes, 945_029);
     assert_eq!(projected_leaf_bytes, EXPECTED_G32_U5_HYBRID_LEAF_BYTES);
     assert_eq!(
         EXPECTED_G32_PACKED_R_HYBRID_LEAF_BYTES - projected_leaf_bytes,
-        5_288
+        3_711
     );
 
     let scalar_states = scalar_items_after_response_transitions(&widths);
@@ -1448,7 +1459,7 @@ fn run_g32_u5_final_shape() {
     assert_eq!(first_preserved, 787);
     assert_eq!(chained_preserved, 771);
     assert_eq!(persistent_preserved, 754);
-    assert_eq!(first_combined_peak, 999);
+    assert_eq!(first_combined_peak, 991);
     assert_eq!(chained_combined_peak, 995);
     assert_eq!(persistent_combined_peak, 994);
     assert_eq!(HYBRID_U5_FINAL_LOCAL_PEAK, 283);
@@ -1474,15 +1485,18 @@ fn run_g32_u5_final_shape() {
     println!("response_schedule_projected_bytes={response_schedule_bytes}");
     println!("challenge_schedule_projected_bytes={challenge_schedule_bytes}");
     println!("projected_u5_hybrid_leaf_bytes={projected_leaf_bytes}");
-    println!("script_saving_vs_packed_r_hybrid_bytes=5288");
+    println!("script_saving_vs_packed_r_hybrid_bytes=3711");
     println!("shared_power_pool_items_first={HYBRID_FIRST_SHARED_POWER_ITEM_COUNT}");
     println!("shared_power_pool_items_later={HYBRID_LATER_SHARED_POWER_ITEM_COUNT}");
     println!("shared_power_pool_is_script_authored=true");
     println!("shared_power_pool_added_hint_items=0");
     println!("response_hash_boundary_alt_pool_items=0");
     println!("terminal_alt_pool_items=0");
-    println!("analytical_max_combined_stack_items={first_combined_peak}");
-    println!("analytical_peak_locations=response_transition_0");
+    let combined_peak = first_combined_peak
+        .max(chained_combined_peak)
+        .max(persistent_combined_peak);
+    println!("analytical_max_combined_stack_items={combined_peak}");
+    println!("analytical_peak_locations=response_transition_1");
     println!("response_transition_0_preserved_items={first_preserved}");
     println!("response_transition_1_preserved_items={chained_preserved}");
     println!("response_transition_2_preserved_items={persistent_preserved}");
@@ -1498,7 +1512,7 @@ fn run_g32_u5_final_shape() {
     println!("full_leaf_built_or_executed=false");
 }
 
-fn main() {
+fn run_synthetic_audit() {
     assert_eq!(HYBRID_STATE_ITEMS, 92);
     assert_eq!(HYBRID_STATE_ITEM_COUNT, HYBRID_STATE_ITEMS);
     assert_eq!(FIRST_DERIVED_COMPLETE_INPUT_ITEM_COUNT, 66);
@@ -1519,7 +1533,7 @@ fn main() {
     );
     assert_eq!(
         reports[0].projected_packed_r_leaf_bytes - reports[1].projected_packed_r_leaf_bytes,
-        18_091
+        22_898
     );
     println!("model=ed25519_montgomery_h16_hybrid_scheduler");
     println!("evidence=locally-reproduced");
@@ -1530,4 +1544,27 @@ fn main() {
         print_report(report);
     }
     run_g32_u5_final_shape();
+}
+
+fn main() {
+    match std::env::args().nth(1).as_deref() {
+        Some("--run-synthetic") => run_synthetic_audit(),
+        None | Some("--account-only") => {
+            assert_eq!(
+                hybrid_u5_entry_items_for_widths(&g32_widths_low_to_high()),
+                803
+            );
+            println!("model=ed25519_montgomery_h16_hybrid_scheduler");
+            println!("mode=component-accounting-only");
+            println!("synthetic_execution_audit=disabled-by-default");
+            println!("projected_g32_u5_leaf_bytes={EXPECTED_G32_U5_HYBRID_LEAF_BYTES}");
+            println!("complete_entry_data_items=803");
+            println!("hint_items_per_transition=0");
+            println!("hint_items_for_47_transitions=0");
+            println!("analytical_combined_stack_peak=995");
+            println!("opt_in_with=--run-synthetic");
+            println!("whole_leaf_built_or_executed=false");
+        }
+        Some(_) => panic!("use --account-only or --run-synthetic"),
+    }
 }

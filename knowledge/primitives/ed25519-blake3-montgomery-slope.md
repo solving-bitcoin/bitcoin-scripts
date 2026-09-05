@@ -121,6 +121,21 @@ it needs zero quotient hints. Its square relation exploits the symmetry of
 bilinear table updates. The final G32 transition consumes a canonical 51-item
 radix-32 `Rtilde` field and fuses the endpoint check, cleanup, and clean truth.
 
+The current kernel reduces each Horner stage while reading `h4..h0`, so only
+one low residue remains live. Reducing stage `i` modulo `2^(w-5i)` preserves
+the reconstructed value modulo `2^w`; the final inverse-of-minus-19 step still
+derives the same signed quotient. Starting the exact reverse recurrence at
+`-q` permits `d=32*d+h_i` and a negated low-column equation. Sparse linear
+terms share a coefficient traversal. All 94 relations still use zero hints.
+
+Partial-word decoding supplies each consumer's required representation:
+46 eight-item `u_next` inputs become sixteen centered limbs at a 62-item
+local combined peak, and 47 eight-item lambda inputs become 51 certified
+digits at a 93-item peak. The sixteen temporary powers are Script constants,
+removed before return. Both decoder sets use zero auxiliary hints per
+invocation and in total; padding and the canonical gap remain validated.
+[NR-036](../negative-results/index.md) records the decoder byte/stack tradeoff.
+
 Selected `u/a` values use sixteen direct centered limbs `[4x3,3x13]`.
 Selected `v/b` values use nine staggered limbs `[4,6x7,5]` at offsets
 `0,4,10,16,22,28,34,40,46`. A negative table digit negates those nine limbs
@@ -187,8 +202,8 @@ All 803 items coexist at script entry in physical order
 `challenge_p0_u5 | challenge_p1..p15_packed | response_packed[31] | scalar[8]`;
 `p0` is the last challenge packet consumed by the high-to-low schedule.
 Every one of the 47 transitions needs exactly zero auxiliary hint items, so
-the repeated total is also zero. The four-item first-transition pool holds
-bits 23 through 26; the
+the repeated total is also zero. The fifteen-item first-transition pool holds
+bits 16 through 30; the
 sixteen-item later-transition pools are constructed by Script and live only
 during their scheduled phases; they are lookup memory, not hints or witness
 data. Their lifetimes are included in the combined-stack analysis.
@@ -225,26 +240,29 @@ to:
 | G32 hybrid-u5 zero-hint component | Policy-produced bytes |
 | --- | ---: |
 | canonical G32 scalar validator | 774 |
-| response tables, stream, 31 derived kernels, pools, and routing | 1,931,479 |
+| response tables, stream, 31 derived kernels, pools, and routing | 1,821,324 |
 | canonical-u5 `Rtilde` conversion and fixed-message BLAKE3-128 | 67,137 |
 | independent bias-127 H16 challenge recoder | 389 |
-| challenge tables, 16 derived kernels, pools, fused terminal truth, and routing | 1,000,204 |
-| **Complete G32 linked leaf** | **2,999,983** |
+| challenge tables, 16 derived kernels, pools, fused terminal truth, and routing | 945,029 |
+| **Complete G32 linked leaf** | **2,834,653** |
 
-The response and challenge schedules contain 583,847 authenticated table
-bytes, 20,530 scaffold bytes, and 2,327,306 kernel bytes. Relative to the
-3,155,037-byte pre-square/pre-pool G32 account, the specialized square saves
-135,689 bytes and the split persistent pools save another 19,365. The final
-leaf is 828,074 bytes smaller than the policy-compliant hinted G29 projection
-and 896,352 bytes smaller than the corresponding zero-hint G29 projection.
+The response and challenge schedules contain 582,560 authenticated table
+bytes, 20,530 scaffold bytes, and 2,163,263 kernel bytes. The table split is
+382,149 response plus 200,411 challenge bytes. Relative to the 2,999,983-byte
+G32 baseline at `f7bb0c2`, partial decoding, fused sparse passes, Horner
+reduction, the larger first pool, and endpoint table selection save
+165,330 bytes (5.511%). The final leaf is 993,404 bytes smaller than the
+policy-compliant hinted G29 projection and 1,061,682 bytes smaller than the
+corresponding zero-hint G29 projection.
 These are whole-script byte comparisons at the same fixed-key/fixed-message
 clean-stack boundary.
-The measured G32 serialization contains 1,729,242 static non-push opcodes; its
+The whole serialization contains 1,663,690 static non-push opcodes; the
 disjoint component sum has zero cross-component optimizer delta.
 The [generic-square/per-transition-power baseline](../negative-results/index.md)
-is recorded as NR-034. NR-035 records the non-selected cross-hash pool layout:
-it projects 25 fewer bytes but couples BLAKE3 and the recoder to a nonempty alt
-stack, so the production schedule keeps explicit empty phase boundaries.
+is recorded as NR-034. NR-035 records the historical `f7bb0c2` cross-hash
+pool alternative, which projected 25 fewer bytes while coupling BLAKE3 and
+the recoder to a nonempty alt stack. The production schedule keeps explicit
+empty phase boundaries; NR-036 records the current relation/decoder changes.
 
 For history, the quotient-carrier G29 components now give the following
 policy-compliant additive projection. The complete linker has not been
@@ -310,9 +328,12 @@ identity, torsion translations, and the final group endpoint.
 
 The G32 raw entry is exactly 803 circuit-data items and **zero auxiliary hint
 items**. Its first transition has 787 preserved items plus a separately strict-
-measured 212-item local peak, giving the exact analytical maximum of **999
-combined main-plus-alt-stack items**, leaving one item of headroom. The next response rows are at most 995;
-the 391-item canonical-u5 BLAKE3 boundary strict-peaks at 918. All four- and
+measured 204-item local peak, giving 991 combined main-plus-alt-stack items.
+The analytical maximum is **995**, at response transition one; transition
+two reaches 994. The 391-item canonical-u5 BLAKE3 boundary strict-peaks at
+918. Independent abstract execution of all 679 first-kernel conditional
+branches confirms its 204-item local bound and 92-main-item/empty-alt exit.
+All fifteen- and
 sixteen-item shared-power pools are included in those local measurements and
 are authored by Script rather than supplied by the witness. A strict synthetic
 routing schedule and the real component interfaces were executed separately;
@@ -333,11 +354,11 @@ The fixture's curve q/carry intervals are `[-1228890,911978]` and
 `[-760980,643390]` and `[-31878743,32260603]`.
 For this fixture, adding a script of `S` bytes and a depth-zero control block
 gives exact complete-witness bytes `S+3,902`, target weight `S+4,280`, and
-minimum block weight `S+5,048`. At `S=2,999,983`, these are 3,003,885 bytes,
-3,004,263 WU, and 3,005,031 WU, leaving **994,969 WU** below four million in
+minimum block weight `S+5,048`. At `S=2,834,653`, these are 2,838,555 bytes,
+2,838,933 WU, and 2,839,701 WU, leaving **1,160,299 WU** below four million in
 the minimum-block model. A content-independent conservative argument bound is
 4,617 bytes; its target/minimum-block formulas are `S+5,034` and `S+5,802`,
-leaving 994,215 WU at this script size. Both projections exceed default
+leaving 1,159,545 WU at this script size. Both projections exceed default
 transaction policy and omit real miner overhead beyond the stated 768-WU
 minimum block model.
 
@@ -482,6 +503,11 @@ The focused implementations are
 [`ed25519_montgomery_h16_qfree_honest_witness.rs`](../../examples/ed25519_montgomery_h16_qfree_honest_witness.rs),
 [`ed25519_montgomery_slope_square_probe.rs`](../../examples/ed25519_montgomery_slope_square_probe.rs),
 [`ed25519_montgomery_slope_shared_constants_probe.rs`](../../examples/ed25519_montgomery_slope_shared_constants_probe.rs),
+[`ed25519_packed_grouped_decode_probe.rs`](../../examples/ed25519_packed_grouped_decode_probe.rs),
+[`ed25519_slope_quotient_horner_probe.rs`](../../examples/ed25519_slope_quotient_horner_probe.rs),
+[`ed25519_montgomery_slope_optimized_probe.rs`](../../examples/ed25519_montgomery_slope_optimized_probe.rs),
+[`ed25519_montgomery_first_stack_bound.rs`](../../examples/ed25519_montgomery_first_stack_bound.rs),
+[`ed25519_table_boundary_probe.rs`](../../examples/ed25519_table_boundary_probe.rs),
 [`ed25519_montgomery_h16_hybrid_scheduler.rs`](../../examples/ed25519_montgomery_h16_hybrid_scheduler.rs),
 [`ed25519_montgomery_h16_hybrid_u5_group_cost.rs`](../../examples/ed25519_montgomery_h16_hybrid_u5_group_cost.rs),
 [`ed25519_montgomery_h16_hybrid_u5_challenge_cost.rs`](../../examples/ed25519_montgomery_h16_hybrid_u5_challenge_cost.rs),

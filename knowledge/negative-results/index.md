@@ -784,7 +784,8 @@ recodings.
 
 ## NR-034: Generic squaring and per-transition powers are dominated in the G32 slope chain
 
-The zero-hint Montgomery-slope relation originally reused the general
+This historical comparison records the `f7bb0c2` G32 layout. The zero-hint
+Montgomery-slope relation originally reused the general
 bilinear product schedule for `lambda^2` and rebuilt every power of two inside
 every quotient-derivation kernel. Both choices preserve correctness, but lose
 locking-script bytes in the repeated G32 schedule.
@@ -809,7 +810,9 @@ is specific to this radix-32 relation and exact 47-transition layout.
 
 ## NR-035: A cross-hash persistent power pool saves 25 bytes but weakens the composition boundary
 
-Keeping the same 16 Script-authored power constants on the alt stack through
+This historical comparison records the `f7bb0c2` G32 layout, before the
+partial-word/Horner changes in NR-036. Keeping the same 16 Script-authored
+power constants on the alt stack through
 canonical-u5 BLAKE3 and the independent-byte recoder is technically feasible.
 A focused strict sentinel probe passes at a combined peak of 934 rather than
 the hash helper's empty-boundary peak of 918. It adds no witness data, retains
@@ -818,7 +821,7 @@ items per each of 47 transitions and in total.
 
 The layout makes the response finalizer eight bytes larger because it parks
 the pool, then saves 33 bytes by omitting the challenge initializer: a net
-25-byte reduction, from the production 2,999,983-byte leaf to a projected
+25-byte reduction, from that revision's 2,999,983-byte leaf to a projected
 2,999,958 bytes. That small win couples both BLAKE3 and the recoder to a
 nonempty alt stack and removes their explicit phase-neutral interface. The
 production layout therefore retains split response/challenge pools and empty
@@ -827,3 +830,44 @@ not a claim that the persistent layout is unsound or larger. The focused
 boundary is `locally-reproduced`; the projected alternate whole was not
 generated and neither multi-megabyte leaf was executed, so overall evidence
 remains `inspected` and deployment `unclassified`.
+
+## NR-036: Full word expansion and separate coefficient passes cost repeated bytes
+
+The retained fast packed decoder expands every signed word through the
+31-bit splitter, even where its consumer immediately regroups those bits.
+Partial-word decoding keeps the low piece numeric and uses sixteen shared
+Script-authored powers for the remaining comparisons. Returning 51 certified
+digits costs 4,072 instead of 4,644 policy-produced bytes, but raises the
+local combined-stack peak from 81 to 93. This is a byte/stack tradeoff, not
+unconditional dominance. Directly returning sixteen centered slope-product
+limbs costs 3,590 bytes and peaks at 62 items; it avoids subsequent regrouping.
+Each boundary consumes eight coexisting data items and zero hints. The G32
+schedule uses 47 digit and 46 grouped decodes, still with zero cumulative
+hints. Decoder powers are temporary and included in all peak counts.
+
+The relation generator also avoids five separately reduced low residues,
+repeated sparse-coefficient traversals, and a subtraction-oriented carry
+recurrence. A reducing Horner pass retains one residue; fused linear updates
+retain the same coefficients; starting the carry at `-q` permits addition.
+These changes preserve both exact quotient relations, with zero hints per
+relation and zero across all 94 invocations. Bounds and source binding are
+unchanged; the largest newly introduced Horner temporary is 2,072,011,424.
+
+Against `f7bb0c2`, the first kernel saves 3,700 bytes, each of 45 ordinary
+later kernels saves 3,520, and the final u5 kernel saves 1,943: 164,043 kernel
+bytes in total. Endpoint-specialized table selection saves another 1,287.
+The exact complete serialization decreases from 2,999,983 to 2,834,653 bytes,
+a 165,330-byte reduction, while retaining 803 entry data items and zero hints.
+The analytical combined peak decreases from 999 to 995. The first-kernel
+204-item local bound is checked over all 679 conditional branches by
+`ed25519_montgomery_first_stack_bound`, giving 991 with its 787-item prefix;
+the schedule maximum occurs at the following transition.
+
+The bounded probes `ed25519_packed_grouped_decode_probe`,
+`ed25519_slope_quotient_horner_probe`, and
+`ed25519_montgomery_slope_optimized_probe` cover these fragment boundaries.
+Decoder outputs are `differentially-validated` against host bit extraction;
+relation execution evidence is `locally-reproduced`. Deployment remains
+`unclassified`; these probes do not execute a complete scalar/signature leaf.
+The whole serialization is `locally-reproduced` at the generation boundary;
+the overall verifier remains `inspected` and `unclassified`.

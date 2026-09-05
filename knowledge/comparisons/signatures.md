@@ -63,25 +63,30 @@ not authorize a Bitcoin transaction. The disclosed fixture secret
 | --- | ---: | ---: | --- | ---: |
 | Historical H16/G29 quotient carriers | 3,828,057-byte policy-compliant projection | 3,958 bytes | 704 data + 88 hints = 792 coexisting items; 2 hints per each of 44 transitions | 999 strict peak-equivalent schedule |
 | Historical H16/G29 q-free | 3,896,335-byte policy-compliant projection | 3,561 bytes | 712 coexisting data items; 0 hints per transition and total | 912 analytical |
-| **Current H16/G32 hybrid-u5 q-free** | **2,999,983 bytes** | **3,863 bytes** | **803 coexisting data items; 0 hints per each of 47 transitions and total** | **999 analytical** |
+| **Current H16/G32 hybrid-u5 q-free** | **2,834,653 bytes** | **3,863 bytes** | **803 coexisting data items; 0 hints per each of 47 transitions and total** | **995 analytical** |
 
 The current G32 leaf uses 31 response transitions and 16 challenge
 transitions, a canonical 51-digit radix-32 `Rtilde` hash boundary,
 symmetry-specialized squaring, and two phase-local Script-authored power pools.
 Those pools are constants created by the locking Script, not witness hints, and
-are included in the 999-item main-plus-alt-stack account. Its disjoint
-component sizes sum exactly to 2,999,983 bytes: response 1,931,479; challenge
-1,000,204; BLAKE3 67,137; recoder 389; and scalar validator 774. The whole
+are included in the 995-item main-plus-alt-stack account. Its disjoint
+component sizes sum exactly to 2,834,653 bytes: response 1,821,324; challenge
+945,029; BLAKE3 67,137; recoder 389; and scalar validator 774. The whole
 leaf exceeds 32 KiB and therefore uses `CompileOptions::NONE`; the reported
 whole size is unoptimized by upstream fixpoint passes.
+
+The current serialization contains 1,663,690 static non-push opcodes and is
+165,330 bytes (5.511%) smaller than the `f7bb0c2` G32 baseline. Partial-word
+decoding, fused sparse passes, Horner quotient reduction, the larger first
+power pool, and endpoint table selection account for that reduction.
 
 The two G29 totals are additive projections after applying the current hash
 compilation policy; their corrected whole Scripts were not regenerated. Their
 superseded pre-policy whole serializations were 3,826,949 and 3,895,323 bytes.
 
-At that size, the exact fixture produces a 3,003,885-byte complete witness, a
-3,004,263-WU target, and a 3,005,031-WU minimum-block projection, leaving
-994,969 WU below four million. This is generation and serialization evidence,
+At that size, the exact fixture produces a 2,838,555-byte complete witness, a
+2,838,933-WU target, and a 2,839,701-WU minimum-block projection, leaving
+1,160,299 WU below four million. This is generation and serialization evidence,
 not deployment evidence: the complete multi-megabyte Script has not been
 executed or checked by Bitcoin Core. The overall construction is `inspected`
 and `unclassified`; its square, transition, routing, hash, and host-witness

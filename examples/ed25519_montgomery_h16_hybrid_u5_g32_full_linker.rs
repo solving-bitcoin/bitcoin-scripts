@@ -38,28 +38,28 @@ const SCALAR_ITEMS: usize = 8;
 const ENTRY_ITEMS: usize = TRACE_ITEMS + SCALAR_ITEMS;
 const AUXILIARY_HINT_ITEMS: usize = 0;
 
-const EXPECTED_RESPONSE_TABLE_BYTES: usize = 383_004;
-const EXPECTED_CHALLENGE_TABLE_BYTES: usize = 200_843;
-const EXPECTED_TABLE_BYTES: usize = 583_847;
+const EXPECTED_RESPONSE_TABLE_BYTES: usize = 382_149;
+const EXPECTED_CHALLENGE_TABLE_BYTES: usize = 200_411;
+const EXPECTED_TABLE_BYTES: usize = 582_560;
 const EXPECTED_SCALAR_VALIDATOR_POLICY_BYTES: usize = 774;
 const EXPECTED_RESPONSE_SCAFFOLD_RAW_BYTES: usize = 14_701;
 const EXPECTED_CHALLENGE_SCAFFOLD_RAW_BYTES: usize = 5_829;
-const EXPECTED_FIRST_HYBRID_KERNEL_BYTES: usize = 37_109;
-const EXPECTED_INITIALIZE_PERSISTENT_KERNEL_BYTES: usize = 49_921;
-const EXPECTED_PERSISTENT_KERNEL_BYTES: usize = 49_888;
-const EXPECTED_FINALIZE_PERSISTENT_KERNEL_BYTES: usize = 49_880;
+const EXPECTED_FIRST_HYBRID_KERNEL_BYTES: usize = 33_409;
+const EXPECTED_INITIALIZE_PERSISTENT_KERNEL_BYTES: usize = 46_401;
+const EXPECTED_PERSISTENT_KERNEL_BYTES: usize = 46_368;
+const EXPECTED_FINALIZE_PERSISTENT_KERNEL_BYTES: usize = 46_360;
 const EXPECTED_RESPONSE_PERSISTENT_MIDDLE_KERNEL_BYTES: usize =
     28 * EXPECTED_PERSISTENT_KERNEL_BYTES;
 const EXPECTED_CHALLENGE_PERSISTENT_MIDDLE_KERNEL_BYTES: usize =
     14 * EXPECTED_PERSISTENT_KERNEL_BYTES;
-const EXPECTED_FINAL_U5_TERMINAL_KERNEL_BYTES: usize = 45_179;
-const EXPECTED_RESPONSE_SCHEDULE_BYTES: usize = 1_931_479;
-const EXPECTED_CHALLENGE_SCHEDULE_BYTES: usize = 1_000_204;
+const EXPECTED_FINAL_U5_TERMINAL_KERNEL_BYTES: usize = 43_236;
+const EXPECTED_RESPONSE_SCHEDULE_BYTES: usize = 1_821_324;
+const EXPECTED_CHALLENGE_SCHEDULE_BYTES: usize = 945_029;
 const EXPECTED_U5_R_HASH_BYTES: usize = 67_137;
 const EXPECTED_INDEPENDENT_RECODER_POLICY_BYTES: usize = 389;
-const EXPECTED_LINKED_SCRIPT_BYTES: usize = 2_999_983;
-const EXPECTED_LINKED_STATIC_NON_PUSH_OPCODES: usize = 1_729_242;
-const ANALYTICAL_COMBINED_STACK_PEAK: usize = 999;
+const EXPECTED_LINKED_SCRIPT_BYTES: usize = 2_834_653;
+const EXPECTED_LINKED_STATIC_NON_PUSH_OPCODES: usize = 1_663_690;
+const ANALYTICAL_COMBINED_STACK_PEAK: usize = 995;
 
 const FIXTURE_PUBLIC_KEY: [u8; 32] = [
     0x7d, 0xb0, 0xdc, 0x92, 0x22, 0xf3, 0xc1, 0x83, 0x45, 0x7d, 0xdd, 0xe4, 0xc7, 0x08, 0xde, 0x8e,
@@ -221,7 +221,10 @@ fn check_shape() {
     );
     assert_eq!(hybrid_scheduler::HYBRID_U5_HASH_PRESERVED_ITEMS, 391);
     assert_eq!(hybrid_scheduler::HYBRID_U5_HASH_R_DIGIT0_DEPTH, 340);
-    assert_eq!(HYBRID_FIRST_SHARED_POWER_BITS, [23, 24, 25, 26]);
+    assert_eq!(
+        HYBRID_FIRST_SHARED_POWER_BITS,
+        std::array::from_fn::<_, 15, _>(|i| i + 16)
+    );
     assert_eq!(HYBRID_LATER_SHARED_POWER_ITEM_COUNT, 16);
     assert!(ANALYTICAL_COMBINED_STACK_PEAK <= 1_000);
 
@@ -244,7 +247,7 @@ fn check_shape() {
         "shared_power_pool_first_items={}",
         HYBRID_FIRST_SHARED_POWER_BITS.len()
     );
-    println!("shared_power_pool_first_bits=23,24,25,26");
+    println!("shared_power_pool_first_bits=16..30");
     println!("shared_power_pool_later_items={HYBRID_LATER_SHARED_POWER_ITEM_COUNT}");
     println!("shared_power_pool_is_script_authored=true");
     println!("shared_power_pool_added_witness_items=0");
@@ -257,7 +260,7 @@ fn check_shape() {
     println!("expected_policy_script_bytes={EXPECTED_LINKED_SCRIPT_BYTES}");
     println!("expected_static_non_push_opcodes={EXPECTED_LINKED_STATIC_NON_PUSH_OPCODES}");
     println!("analytical_combined_stack_peak={ANALYTICAL_COMBINED_STACK_PEAK}");
-    println!("analytical_peak_locations=response_transition_0");
+    println!("analytical_peak_locations=response_transition_1");
     println!("run_explicit_measurement_with=--measure-bytes");
 }
 
@@ -317,7 +320,7 @@ fn account_components() {
         "shared_power_pool_first_items={}",
         HYBRID_FIRST_SHARED_POWER_BITS.len()
     );
-    println!("shared_power_pool_first_bits=23,24,25,26");
+    println!("shared_power_pool_first_bits=16..30");
     println!("shared_power_pool_later_items={HYBRID_LATER_SHARED_POWER_ITEM_COUNT}");
     println!("shared_power_pool_added_witness_items=0");
     println!("hash_boundary_alt_pool_items=0");
@@ -338,8 +341,9 @@ fn measure_bytes() {
     assert!(compiled.len() > MAX_OPTIMIZER_INPUT_BYTES);
     assert_eq!(compiled.len(), component_sum);
     assert_eq!(compiled.len(), EXPECTED_LINKED_SCRIPT_BYTES);
+    let measured_static_non_push_opcodes = static_non_push_opcodes(&compiled);
     assert_eq!(
-        static_non_push_opcodes(&compiled),
+        measured_static_non_push_opcodes,
         EXPECTED_LINKED_STATIC_NON_PUSH_OPCODES
     );
 
@@ -353,7 +357,7 @@ fn measure_bytes() {
     println!("whole_leaf_policy_bytes={}", compiled.len());
     println!(
         "whole_leaf_static_non_push_opcodes={}",
-        EXPECTED_LINKED_STATIC_NON_PUSH_OPCODES
+        measured_static_non_push_opcodes
     );
     println!("linked_component_sum_bytes={component_sum}");
     println!("cross_component_optimizer_delta_bytes=0");

@@ -647,6 +647,40 @@ fn bit_decision_tree(entries: &[TableEntry], width: usize, kind: TableKind) -> S
     }
 }
 
+/// G32 table control specialized to exactly `2^(width-1)+1` leaves.
+///
+/// The endpoint has its own numeric equality branch. Every remaining selector
+/// belongs to a complete `(width-1)`-bit trie, so its final zero residue binds
+/// the range without a one-sided branch chain. Bits stream through altstack
+/// during extraction, then return with the MSB nearest main-stack top. The
+/// routine restores any preexisting altstack contents before selecting a leaf.
+///
+/// This changes no coordinate encoding or hint boundary: one selector data
+/// item is consumed, the same 25 direct limbs are emitted, and zero auxiliary
+/// witness items are required. The G32 leaf invokes this 48 times, still with
+/// zero cumulative table hints and all 803 complete data items at entry.
+fn boundary_streamed_direct_bit_tree(entries: &[TableEntry], width: usize) -> Script {
+    assert!((2..=30).contains(&width));
+    let maximum = entries.len() - 1;
+    assert_eq!(maximum, 1usize << (width - 1));
+    let complete_indices = (0..maximum).collect::<Vec<_>>();
+    script! {
+        OP_DUP { maximum as u32 } OP_NUMEQUAL
+        OP_IF
+            OP_DROP { bit_tree_leaf(&entries[maximum], TableKind::Top) }
+        OP_ELSE
+            for bit in (0..width-1).rev() {
+                OP_DUP { (1u32 << bit) - 1 } OP_GREATERTHAN
+                OP_DUP OP_TOALTSTACK
+                OP_IF { 1u32 << bit } OP_SUB OP_ENDIF
+            }
+            OP_NOT OP_VERIFY
+            for _ in 0..width-1 { OP_FROMALTSTACK }
+            { bit_decision_tree_inner(entries, &complete_indices, width-1, width-1, TableKind::Top) }
+        OP_ENDIF
+    }
+}
+
 fn hybrid_bit_tree_leaf(entry: &TableEntry, width: usize, encoding: AdditionEncoding) -> Script {
     match entry {
         TableEntry::Identity => {
@@ -2003,13 +2037,19 @@ pub(crate) fn montgomery_direct_h16_qfree_g32_table_fragments_for_public_key(
 ) -> Result<MontgomeryDirectH16TableFragments, Ed25519PublicKeyError> {
     let (response_entries, challenge_entries, public_key_compressed) =
         montgomery_direct_h16_qfree_g32_entries_for_public_key(public_key_compressed)?;
-    Ok(montgomery_direct_h16_fragments_from_entries(
-        response_entries,
-        challenge_entries,
+    let response_widths = montgomery_direct_h16_qfree_g32_response_widths();
+    Ok(MontgomeryDirectH16TableFragments {
+        response_low_to_high: response_entries
+            .iter()
+            .zip(response_widths)
+            .map(|(entries, width)| boundary_streamed_direct_bit_tree(entries, width))
+            .collect(),
+        challenge_low_to_high: challenge_entries
+            .iter()
+            .map(|entries| boundary_streamed_direct_bit_tree(entries, 8))
+            .collect(),
         public_key_compressed,
-        &montgomery_direct_h16_qfree_g32_response_widths(),
-        8,
-    ))
+    })
 }
 
 /// Exact response-table result for an alternate canonical centered-window

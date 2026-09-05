@@ -7,6 +7,8 @@
 //! The relation-kernel checkpoints predate the later symmetric-square and
 //! shared-power-pool reductions, so these rows are retained as a superseded
 //! comparison model rather than the current G32 whole-leaf result.
+//! Frozen provenance: commit f7bb0c2. Reproduce these exact historical table
+//! assertions from that snapshot; current table generators may have changed.
 
 #[allow(dead_code)]
 #[path = "ed25519_fixed_table_actual_model.rs"]
@@ -163,6 +165,8 @@ fn widths_string(widths: &[usize]) -> String {
 }
 
 fn main() {
+    println!("metric_status=historical-projection");
+    println!("historical_source_commit=f7bb0c29235b5a2fddefb6748888394ff5c1186a");
     assert_eq!(CHALLENGE_SCHEDULE_BYTES, 1_053_059);
     assert_eq!(FIXED_NON_RESPONSE_BYTES, 1_120_585);
 

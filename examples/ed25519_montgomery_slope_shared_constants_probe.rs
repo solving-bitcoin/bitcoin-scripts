@@ -1,10 +1,12 @@
 //! Focused probe for sharing high power-of-two constants across the two
 //! quotient derivations in one hybrid Montgomery-slope transition.
 //!
-//! Default mode executes only the selected four-power first kernel at the
-//! exact G32-u5 frontier. The prior exhaustive search and redundant transition
-//! executions are available only through explicit `--full-audit`; neither mode
-//! builds a table schedule, hash, scalar multiplication, or whole leaf.
+//! Default mode executes only the selected fifteen-power first kernel at the
+//! exact G32-u5 frontier. The historical pre-Horner `--full-audit` is disabled:
+//! its byte-splice oracle describes commit f7bb0c2 and cannot certify the new
+//! quotient generator. Use `ed25519_slope_quotient_horner_probe` and
+//! `ed25519_montgomery_slope_optimized_probe` for current focused checks.
+//! Neither live mode builds a schedule, hash, scalar multiplication, or leaf.
 
 use bitcoin::ScriptBuf;
 use bitcoin_lab::{
@@ -49,9 +51,9 @@ const EXPECTED_EPHEMERAL_TWO_PHASE_SAVING: usize = 18_265;
 const EXPECTED_PERSISTENT_TWO_PHASE_SAVING: usize = 19_301;
 const EXPECTED_SPLIT_PERSISTENT_TWO_PHASE_SAVING: usize = 19_212;
 const EXPECTED_FUSED_SPLIT_PERSISTENT_SAVING: usize = 19_365;
-const EXPECTED_SELECTED_FIRST_KERNEL_POLICY_BYTES: usize = 37_109;
-const EXPECTED_SELECTED_FIRST_LOCAL_PEAK: usize = 212;
-const EXPECTED_SELECTED_FIRST_G32_PEAK: usize = 999;
+const EXPECTED_SELECTED_FIRST_KERNEL_POLICY_BYTES: usize = 33_409;
+const EXPECTED_SELECTED_FIRST_LOCAL_PEAK: usize = 204;
+const EXPECTED_SELECTED_FIRST_G32_PEAK: usize = 991;
 
 fn add_mod(lhs: &BigUint, rhs: &BigUint, p: &BigUint) -> BigUint {
     (lhs + rhs) % p
@@ -568,7 +570,10 @@ fn wrap_globally_hoisted_kernel(kernel: ScriptBuf, shared_bits: &[usize]) -> Scr
 }
 
 fn run_selected_first_kernel_probe() {
-    assert_eq!(HYBRID_FIRST_SHARED_POWER_BITS, [23, 24, 25, 26]);
+    assert_eq!(
+        HYBRID_FIRST_SHARED_POWER_BITS,
+        [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    );
     let p = bitcoin_lab::fields::ed25519::u5_balanced_table::modulus();
     let montgomery_a = BigUint::from(486_662u32);
     let u_prev = hex(b"123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
@@ -627,8 +632,8 @@ fn run_selected_first_kernel_probe() {
     println!("mode=selected-first-kernel");
     println!("evidence=locally-reproduced");
     println!("execution_class=unclassified");
-    println!("shared_constant_bits=23,24,25,26");
-    println!("shared_constant_items=4");
+    println!("shared_constant_bits=16,17,18,19,20,21,22,23,24,25,26,27,28,29,30");
+    println!("shared_constant_items=15");
     println!("shared_constants_are_script_authored=true");
     println!("auxiliary_hint_items_per_invocation=0");
     println!("witness_items_added=0");
@@ -649,6 +654,20 @@ fn run_selected_first_kernel_probe() {
 }
 
 fn run_full_audit() {
+    // The remainder is retained as a historical research artifact. It
+    // substitutes pre-Horner byte sequences and must not run against current
+    // production generators. Keep the old entry point informative and cheap.
+    if std::env::args().nth(1).as_deref() == Some("--full-audit") {
+        println!("model=ed25519_montgomery_slope_shared_constants_historical_audit");
+        println!("status=superseded-disabled");
+        println!("historical_source_commit=f7bb0c29235b5a2fddefb6748888394ff5c1186a");
+        println!("reason=pre-Horner byte-splice oracle no longer matches production");
+        println!("replacement_quotient_probe=ed25519_slope_quotient_horner_probe");
+        println!("replacement_kernel_probe=ed25519_montgomery_slope_optimized_probe");
+        println!("whole_scalar_leaf_built=false");
+        println!("whole_scalar_leaf_executed=false");
+        return;
+    }
     let shared_bits = HYBRID_FIRST_SHARED_POWER_BITS.as_slice();
     assert_eq!(shared_bits, [23, 24, 25, 26]);
 

@@ -3800,30 +3800,13 @@ fn signed_low_remainder(width: usize, max_abs: i64) -> Script {
     let input_bits = i64::BITS as usize - max_abs.leading_zeros() as usize;
     assert!(input_bits <= 31);
     script! {
-        OP_DUP 0 OP_LESSTHAN
-        OP_DUP OP_TOALTSTACK
-        OP_IF OP_NEGATE OP_ENDIF
+        // Keep the source itself as the sign carrier. This avoids routing a
+        // separate sign bit through alt while reducing its absolute value.
+        OP_DUP OP_ABS
         for bit in (width..input_bits).rev() {
             { subtract_power_if_at_least(bit) }
         }
-        OP_FROMALTSTACK OP_IF OP_NEGATE OP_ENDIF
-    }
-}
-
-fn reduce_signed_five_term_sum(width: usize) -> Script {
-    script! {
-        OP_DUP 0 OP_LESSTHAN
-        OP_DUP OP_TOALTSTACK
-        OP_IF OP_NEGATE OP_ENDIF
-        for bit in (width..=width + 2).rev() {
-            { subtract_power_if_at_least(bit) }
-        }
-        OP_FROMALTSTACK
-        OP_IF
-            OP_DUP OP_NOT OP_NOT OP_IF
-                { 1u32 << width } OP_SWAP OP_SUB
-            OP_ENDIF
-        OP_ENDIF
+        OP_SWAP 0 OP_LESSTHAN OP_IF OP_NEGATE OP_ENDIF
     }
 }
 
@@ -3936,39 +3919,57 @@ fn multiply_negative_nineteen_inverse_mod_power_of_two(
     }
 }
 
+/// Reducing during Horner composition avoids materializing five residues and
+/// subsequently reducing their sum. At stage i the temporary is
+/// `h_i + 32*r_(i+1)`, and its explicit bound is checked below. Every supported
+/// slope profile stays within four-byte ScriptNum arithmetic on hostile data.
+fn low_quotient_horner_stage_bounds(
+    signed_width: usize,
+    low_coefficient_abs_max: &[i64; LOW_QUOTIENT_COEFFICIENT_COUNT],
+) -> [i64; LOW_QUOTIENT_COEFFICIENT_COUNT] {
+    assert!(signed_width == 22 || signed_width == 23);
+    core::array::from_fn(|coefficient| {
+        let previous_remainder_bound = if coefficient + 1 == LOW_QUOTIENT_COEFFICIENT_COUNT {
+            0
+        } else {
+            32 * ((1i64 << (signed_width - 5 * (coefficient + 1))) - 1)
+        };
+        let bound = low_coefficient_abs_max[coefficient] + previous_remainder_bound;
+        assert!(bound > 0 && bound <= i64::from(scriptint::MAX_SCRIPTNUM));
+        bound
+    })
+}
+
 /// Derive an exact signed relation quotient from the accumulator itself.
 ///
-/// Input/output is `h[50..0] -> h[50..0] | q`, with `h0` nearest the top on
+/// Input/output is `h[50..0] -> h[50..0] | q`, with h0 nearest the top on
 /// entry and q nearest the top on exit. For `H=sum(h_i*32^i)` and
 /// `p=32^51-19`, an accepted relation has `H=q*p`; hence
-/// `q = signed_w(1_324_517 * H mod 2^w)`. The exact slope bounds restrict q
-/// to one signed 22- or 23-bit residue, and only h0 through h4 affect it.
-/// The default multiplier uses the bounded `(233*196+5)*29` chain. This
-/// fragment requires zero witness hints and preserves the accumulator.
+/// `q = signed_w(1_324_517 * H mod 2^w)`. Exact slope bounds restrict q to
+/// one signed 22- or 23-bit residue, and only h0 through h4 affect it.
+/// The bounded `(233*196+5)*29` multiplier is unchanged. Horner reduction
+/// preserves H modulo 2^w: each discarded term, after its remaining shifts,
+/// is a multiple of 2^w. This fragment takes zero auxiliary witness hints.
 fn derive_streamed_relation_quotient_with_multiplier(
     signed_width: usize,
     low_coefficient_abs_max: &[i64; LOW_QUOTIENT_COEFFICIENT_COUNT],
     multiplier: StreamedRelationQuotientMultiplier,
 ) -> Script {
     assert!(signed_width == 22 || signed_width == 23);
+    let stage_bounds = low_quotient_horner_stage_bounds(signed_width, low_coefficient_abs_max);
     script! {
-        for coefficient in 0..LOW_QUOTIENT_COEFFICIENT_COUNT {
-            { coefficient as u32 } OP_PICK
+        { (LOW_QUOTIENT_COEFFICIENT_COUNT - 1) as u32 } OP_PICK
+        { signed_low_remainder(signed_width - 20, stage_bounds[4]) }
+        for coefficient in (0..LOW_QUOTIENT_COEFFICIENT_COUNT - 1).rev() {
+            for _ in 0..5 { OP_DUP OP_ADD }
+            { (coefficient + 1) as u32 } OP_PICK OP_ADD
             { signed_low_remainder(
                 signed_width - 5 * coefficient,
-                low_coefficient_abs_max[coefficient],
+                stage_bounds[coefficient],
             ) }
-            OP_TOALTSTACK
         }
-
-        // Horner recomposition of the five signed low residues. Its absolute
-        // value is below 5*2^signed_width, so three subtractions suffice.
-        OP_FROMALTSTACK
-        for _coefficient in (0..LOW_QUOTIENT_COEFFICIENT_COUNT - 1).rev() {
-            for _ in 0..5 { OP_DUP OP_ADD }
-            OP_FROMALTSTACK OP_ADD
-        }
-        { reduce_signed_five_term_sum(signed_width) }
+        OP_DUP 0 OP_LESSTHAN
+        OP_IF { 1u32 << signed_width } OP_ADD OP_ENDIF
         { multiply_negative_nineteen_inverse_mod_power_of_two(signed_width, multiplier) }
 
         OP_DUP { 1u32 << (signed_width - 1) } OP_GREATERTHANOREQUAL
@@ -3992,19 +3993,22 @@ pub fn derive_streamed_relation_quotient(
 /// Input is `h[50..0] | q`. This has the same exact equality semantics as
 /// [`verify_streamed_relation`] but avoids rotating q below all 51
 /// coefficients. It consumes the accumulator and q and requires zero hints.
+/// Negating q lets the recurrence add each coefficient: `d'=32*d+h_i`.
+/// Its magnitude equals the previous subtraction recurrence at every step,
+/// while addition avoids reversing the operands for every coefficient.
 pub fn verify_streamed_relation_top_quotient() -> Script {
     script! {
-        OP_DUP
+        OP_NEGATE OP_DUP
         for coefficient in (1..FIELD_DIGIT_COUNT).rev() {
             { (coefficient + 2) as u32 } OP_ROLL
             OP_SWAP
             { scriptint::mul_by_constant(RADIX as u32) }
-            OP_SWAP OP_SUB
+            OP_ADD
         }
 
         OP_TOALTSTACK
         OP_DUP { scriptint::mul_by_constant(19) }
-        OP_ROT OP_ADD
+        OP_ROT OP_SUB
         OP_FROMALTSTACK { scriptint::mul_by_constant(RADIX as u32) }
         OP_NUMEQUALVERIFY
         OP_DROP
@@ -4120,34 +4124,11 @@ fn signed_low_remainder_with_shared_power_pool(
     let input_bits = i64::BITS as usize - max_abs.leading_zeros() as usize;
     assert!(input_bits <= 31);
     script! {
-        OP_DUP 0 OP_LESSTHAN
-        OP_DUP OP_TOALTSTACK
-        OP_IF OP_NEGATE OP_ENDIF
+        OP_DUP OP_ABS
         for bit in (width..input_bits).rev() {
-            { subtract_shared_power_if_at_least(bit, 1, shared_bits) }
+            { subtract_shared_power_if_at_least(bit, 2, shared_bits) }
         }
-        OP_FROMALTSTACK OP_IF OP_NEGATE OP_ENDIF
-    }
-}
-
-fn reduce_signed_five_term_sum_with_shared_power_pool(
-    width: usize,
-    shared_bits: &[usize],
-) -> Script {
-    script! {
-        OP_DUP 0 OP_LESSTHAN
-        OP_DUP OP_TOALTSTACK
-        OP_IF OP_NEGATE OP_ENDIF
-        for bit in (width..=width + 2).rev() {
-            { subtract_shared_power_if_at_least(bit, 1, shared_bits) }
-        }
-        OP_FROMALTSTACK
-        OP_IF
-            OP_DUP OP_NOT OP_NOT OP_IF
-                { copy_streamed_relation_shared_power(width, 1, shared_bits) }
-                OP_SWAP OP_SUB
-            OP_ENDIF
-        OP_ENDIF
+        OP_SWAP 0 OP_LESSTHAN OP_IF OP_NEGATE OP_ENDIF
     }
 }
 
@@ -4210,23 +4191,24 @@ fn derive_streamed_relation_quotient_with_shared_power_pool(
 ) -> Script {
     assert!(signed_width == 22 || signed_width == 23);
     validate_shared_power_pool_bits(shared_bits);
+    let stage_bounds = low_quotient_horner_stage_bounds(signed_width, low_coefficient_abs_max);
     script! {
-        for coefficient in 0..LOW_QUOTIENT_COEFFICIENT_COUNT {
-            { (coefficient + shared_bits.len()) as u32 } OP_PICK
+        { (LOW_QUOTIENT_COEFFICIENT_COUNT - 1 + shared_bits.len()) as u32 } OP_PICK
+        { signed_low_remainder_with_shared_power_pool(signed_width - 20, stage_bounds[4], shared_bits) }
+        for coefficient in (0..LOW_QUOTIENT_COEFFICIENT_COUNT - 1).rev() {
+            for _ in 0..5 { OP_DUP OP_ADD }
+            { (coefficient + 1 + shared_bits.len()) as u32 } OP_PICK OP_ADD
             { signed_low_remainder_with_shared_power_pool(
                 signed_width - 5 * coefficient,
-                low_coefficient_abs_max[coefficient],
+                stage_bounds[coefficient],
                 shared_bits,
             ) }
-            OP_TOALTSTACK
         }
-
-        OP_FROMALTSTACK
-        for _coefficient in (0..LOW_QUOTIENT_COEFFICIENT_COUNT - 1).rev() {
-            for _ in 0..5 { OP_DUP OP_ADD }
-            OP_FROMALTSTACK OP_ADD
-        }
-        { reduce_signed_five_term_sum_with_shared_power_pool(signed_width, shared_bits) }
+        OP_DUP 0 OP_LESSTHAN
+        OP_IF
+            { copy_streamed_relation_shared_power(signed_width, 1, shared_bits) }
+            OP_ADD
+        OP_ENDIF
         { multiply_negative_nineteen_inverse_with_shared_power_pool(
             signed_width,
             multiplier,
@@ -4250,18 +4232,18 @@ fn verify_streamed_relation_top_quotient_retaining_shared_power_pool(
 ) -> Script {
     assert!(shared_constant_count > 0);
     script! {
-        OP_DUP
+        OP_NEGATE OP_DUP
         for coefficient in (1..FIELD_DIGIT_COUNT).rev() {
             { (coefficient + 2 + shared_constant_count) as u32 } OP_ROLL
             OP_SWAP
             { scriptint::mul_by_constant(RADIX as u32) }
-            OP_SWAP OP_SUB
+            OP_ADD
         }
 
         OP_TOALTSTACK
         OP_DUP { scriptint::mul_by_constant(19) }
         { (shared_constant_count + 2) as u32 } OP_ROLL
-        OP_ADD
+        OP_SUB
         OP_FROMALTSTACK { scriptint::mul_by_constant(RADIX as u32) }
         OP_NUMEQUALVERIFY
         OP_DROP

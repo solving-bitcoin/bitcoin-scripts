@@ -1,7 +1,9 @@
 //! Focused strict probe for the continuity-first 92-item slope-chain state.
 //!
-//! This executes only one chained transition (plus one malformed rerun). It
-//! does not build a table schedule, hash, scalar multiplication, or whole leaf.
+//! Default mode checks the first, chained, terminal, preserved-prefix and
+//! malformed-input boundaries. `--measure-bytes` serializes the standalone
+//! kernels without executing them. Neither mode builds a schedule, hash,
+//! scalar multiplication, or whole leaf.
 
 use bitcoin::script::Instruction;
 use bitcoin_lab::{
@@ -28,12 +30,12 @@ use bitcoin_lab::{
 use num_bigint::BigUint;
 
 const PRESERVED_PROBE_ITEMS: usize = 712;
-// Frozen square-specialized, pre-shared-pool checkpoints. The pooled kernels
-// live behind separate explicit APIs and do not change these baselines.
-const EXPECTED_HYBRID_FIRST_BYTES: usize = 37_296;
-const EXPECTED_HYBRID_CHAINED_BYTES: usize = 50_306;
-const EXPECTED_HYBRID_U5_RETURNING_BYTES: usize = 45_834;
-const EXPECTED_HYBRID_U5_TERMINAL_BYTES: usize = 45_605;
+// Standalone current-generator checkpoints. The separate persistent-pool
+// variants are exercised by ed25519_montgomery_slope_optimized_probe.
+const EXPECTED_HYBRID_FIRST_BYTES: usize = 33_756;
+const EXPECTED_HYBRID_CHAINED_BYTES: usize = 46_752;
+const EXPECTED_HYBRID_U5_RETURNING_BYTES: usize = 43_857;
+const EXPECTED_HYBRID_U5_TERMINAL_BYTES: usize = 43_628;
 
 fn add_mod(lhs: &BigUint, rhs: &BigUint, p: &BigUint) -> BigUint {
     (lhs + rhs) % p
@@ -168,6 +170,23 @@ fn main() {
     let hybrid_u5_terminal =
         verify_chained_transition_derived_hybrid_state_certified_u_next_u5_terminal(0)
             .compile_with_policy();
+    if std::env::args().nth(1).as_deref() == Some("--measure-bytes") {
+        println!("model=ed25519_montgomery_slope_hybrid_state_probe");
+        println!("evidence=locally-reproduced");
+        println!("evidence_boundary=serialization");
+        println!("execution_class=unclassified");
+        println!("hybrid_first_policy_bytes={}", hybrid_first.len());
+        println!("hybrid_chained_policy_bytes={}", hybrid.len());
+        println!("hybrid_u5_returning_policy_bytes={}", hybrid_u5_final.len());
+        println!(
+            "hybrid_u5_terminal_policy_bytes={}",
+            hybrid_u5_terminal.len()
+        );
+        println!("kernel_execution_performed=false");
+        println!("whole_scalar_leaf_built=false");
+        println!("whole_scalar_leaf_executed=false");
+        return;
+    }
     assert_eq!(hybrid_first.len(), EXPECTED_HYBRID_FIRST_BYTES);
     assert_eq!(hybrid.len(), EXPECTED_HYBRID_CHAINED_BYTES);
     assert_eq!(hybrid_u5_final.len(), EXPECTED_HYBRID_U5_RETURNING_BYTES);

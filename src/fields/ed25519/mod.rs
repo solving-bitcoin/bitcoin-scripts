@@ -9,5 +9,7 @@ pub mod u4_table;
 pub mod u5_balanced_table;
 /// Eight-item packed wires for the centered radix-32 backend.
 pub mod u5_packed;
+/// Packed-word decoding directly to centered 20/15-bit grouped limbs.
+pub mod u5_packed_grouped;
 /// Radix-32 backend with 5-bit operand tables.
 pub mod u5_table;

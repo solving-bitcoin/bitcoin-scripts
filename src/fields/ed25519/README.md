@@ -65,6 +65,8 @@ items.
 
 | Packed codec boundary | Policy-produced script | Strict combined-stack peak |
 | --- | ---: | ---: |
+| Partial-word consume, return 16 centered `[20,20,20,15 x 13]`-bit limbs | <!-- metric:ed25519_packed_grouped_decode -->3590<!-- /metric:ed25519_packed_grouped_decode --> bytes | <!-- metric:ed25519_packed_grouped_decode_stack -->62<!-- /metric:ed25519_packed_grouped_decode_stack --> items |
+| Partial-word consume, return 51 certified digits | <!-- metric:ed25519_packed_digit_decode -->4072<!-- /metric:ed25519_packed_digit_decode --> bytes | <!-- metric:ed25519_packed_digit_decode_stack -->93<!-- /metric:ed25519_packed_digit_decode_stack --> items |
 | Fast consume, direct signed-word expansion | 4,644 bytes | 81 items |
 | Fast preserve, direct signed-word expansion | 4,678 bytes | 89 items |
 | Consume 8 packed items, return 51 certified digits | 6,241 bytes | 58 items |
@@ -72,17 +74,19 @@ items.
 | Consume 51 previously certified digits, return 8 packed items | 3,628 bytes | 61 items |
 | Certify 51 hostile digits, then pack | 4,209 bytes | 61 items |
 
-These are `fragment-only:` measurements including conversion, exact encoding
-checks, padding/canonical checks where applicable, and output ordering. They
+The two partial-word rows are `fragment-with-memory:` measurements including
+their threshold-table setup and cleanup. The remaining rows are
+`fragment-only:` measurements including conversion, exact encoding checks,
+padding/canonical checks where applicable, and output ordering. They
 exclude input pushes, witness serialization, a terminal predicate, and all
 field arithmetic. Every artifact is below the 32 KiB optimizer cutoff and was
 compiled with the repository policy. The deterministic maximum-canonical
 fixture's eight packed items serialize as 20 witness bytes; the representation
-has an eight-item, 48-byte serialized maximum (one item-count byte, eight
+has an eight-item, <!-- metric:ed25519_packed_decoder_witness_max -->48<!-- /metric:ed25519_packed_decoder_witness_max -->-byte serialized maximum (one item-count byte, eight
 one-byte lengths, seven words of at most five payload bytes, and a top word of
 at most four because its padding bit is zero).
 
-There are two decoder Pareto points. The direct signed-word path maps each
+The retained direct signed-word path maps each
 compressed word to its low 31 bits plus sign bit and invokes the shared
 31-bit decomposition once. It saves 1,597 bytes but raises the transient peak:
 the fast consuming and preserving variants permit 919 and 911 unrelated items,
@@ -104,6 +108,26 @@ decoder when byte-unique packed commitments are required. The 31-bit splitter
 alone is 385 policy-produced bytes per word (3,080 bytes for eight calls), so a
 roughly 2 KB decoder is not attainable by repeating that primitive; a smaller
 decoder requires a shared decomposition table or a different wire format.
+
+`u5_packed_grouped` adds a partial-word decoder for the slope circuit. It
+retains each word's low piece numerically, splits only the remaining high bits,
+and streams completed limbs and the cross-word carry through altstack. Sixteen
+Script-authored powers `2^15..2^30` replace repeated threshold literals; all
+sixteen are removed before return. `decode` directly returns sixteen centered
+limbs, avoiding a 51-digit expansion followed by regrouping. `decode_digits`
+returns the original certified digits and saves 572 bytes against
+`decode_fast`, at a 12-item increase in local peak.
+
+Both boundaries consume exactly **eight coexisting data items** and
+<!-- metric:ed25519_packed_decoder_hint_items -->0<!-- /metric:ed25519_packed_decoder_hint_items --> auxiliary hint items per invocation. The G32 schedule invokes direct grouped decoding 46 times
+and digit decoding 47 times, with **zero cumulative hints** for either set.
+The grouped contract is `preserved | word7..word0 -> preserved | limb15..limb0`;
+the digit contract ends in `digit50..digit0`. Their respective 62/93-item peaks
+include inputs, outputs, temporary powers, and both stacks. Preserved combined
+prefixes of 937/906 items have separately tested strict peaks of 999. Existing
+altstack contents are restored, and neither decoder appends a terminal
+predicate. Raw ScriptNum alias semantics match `decode_fast`; the padding bit
+and semantic 19-value gap are always checked from the decoded value.
 
 ## Optimization notes
 
@@ -251,6 +275,13 @@ canonical five-byte word, noncanonical word aliases, the padding bit, the
 19-value field gap, and out-of-range raw digits. The codec evidence level is
 `locally-reproduced`; its deployment class remains `unclassified` because it
 has not been exercised in a complete tapleaf or Bitcoin Core transaction.
+
+The bounded `ed25519_packed_grouped_decode_probe` example checks the new
+partial-word outputs against host bit extraction on boundary and deterministic
+seeded words, rejects every canonical-gap value and malformed word cases, and
+tests both 999-item composition frontiers. Those decoder results are
+`differentially-validated` against that host implementation and remain
+`unclassified`; no complete scalar leaf is executed by the probe.
 
 The quotient-only claimed-product measurement is reproduced separately with
 `cargo run --locked --release --example

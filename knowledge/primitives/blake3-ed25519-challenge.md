@@ -163,8 +163,8 @@ executed, so both constructions remain `inspected` and `unclassified`. Their
 superseded pre-policy whole serializations were 3,826,949 and 3,895,323 bytes.
 
 The current G32 linker composes the 67,137-byte canonical-u5 helper into a
-2,999,983-byte leaf with 803 coexisting entry-data items, exactly zero hints
-per each of 47 transitions and in total, and an analytical 999-item maximum
+2,834,653-byte leaf with 803 coexisting entry-data items, exactly zero hints
+per each of 47 transitions and in total, and an analytical 995-item maximum
 that includes its script-authored power pools. The complete leaf was generated
 but not executed. Its fixed `M32` is still not a transaction digest; this row
 does not provide transaction authorization or an RFC 8032 verification claim.

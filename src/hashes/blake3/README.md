@@ -99,10 +99,11 @@ returns 32 digest nibbles, uses exactly zero hint items, and strict-peaks at
 918. A focused fixture matches host BLAKE3 and
 rejects an out-of-range digit, the first gap encoding, and extra input. The
 original 51 R digits remain available for the terminal slope relation.
-Together with the four-item first-kernel pool, it gives a 2,999,983-byte
+Together with the fifteen-item first-kernel pool and partial-word decoding,
+it gives a 2,834,653-byte
 generation-only G32 leaf. That leaf has
 803 coexisting entry-data items, zero hints across all 47 transitions, and an
-analytical combined-stack maximum of 999. Its multi-megabyte Script
+analytical combined-stack maximum of 995. Its multi-megabyte Script
 has not been executed, and fixed `M32` is not transaction authorization.
 
 `key_specialized_compute_script_preserving` exposes the same one-compression

@@ -16,7 +16,7 @@ use num_bigint::BigUint;
 use crate::{
     fields::ed25519::{
         u5_balanced_table::{field_digits, modulus, FIELD_DIGIT_COUNT},
-        u5_packed,
+        u5_packed, u5_packed_grouped,
     },
     support::script::{script, Script, ScriptCompilation, MAX_OPTIMIZER_INPUT_BYTES},
 };
@@ -54,11 +54,12 @@ pub const OUTPUT_ITEM_COUNT: usize =
 /// `b[9] | a[16] | lambda_biased[51] | u[16]` for direct next-kernel reuse.
 pub const HYBRID_STATE_ITEM_COUNT: usize =
     PRODUCT_LIMB_COUNT + FIELD_DIGIT_COUNT + PRODUCT_LIMB_COUNT + LINEAR_LIMB_COUNT;
-/// Four script-authored powers used by the first response kernel. They add
-/// zero witness/hint items and raise that kernel's local stack peak by four.
-/// The five-power byte optimum reaches the consensus stack ceiling exactly;
-/// this profile deliberately spends 37 bytes to retain one item of headroom.
-pub const HYBRID_FIRST_SHARED_POWER_BITS: [usize; 4] = [23, 24, 25, 26];
+/// Fifteen script-authored powers used by the first response kernel. They
+/// add zero witness/hint items. Direct packed decoding opens enough stack
+/// room for this pool; bit15 costs one byte more than it saves at this
+/// boundary, so omitting it also preserves one additional stack slot.
+pub const HYBRID_FIRST_SHARED_POWER_BITS: [usize; 15] =
+    [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
 /// Sixteen script-authored powers used by every later response/challenge
 /// kernel. A persistent phase keeps these items on alt between callbacks;
 /// they are not witness hints but must count toward the 1,000-item peak.
@@ -189,12 +190,25 @@ pub struct SlopeHints {
 
 /// Host-only audit of one exact relation consumed by a derived-quotient
 /// verifier. The carry extrema cover the 50 radix-32 carries in the complete
-/// relation, including both endpoints.
+/// relation, including both endpoints. Stored extrema use the mathematical
+/// subtractive recurrence `c'=32*c-h_i`; derived scripts emit its negation
+/// `d'=32*d+h_i`. Accessors expose the actual emitted signed extrema without
+/// changing the historical audit serialization.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SlopeRelationHostAudit {
     pub quotient: i32,
     pub reverse_carry_min: i64,
     pub reverse_carry_max: i64,
+}
+
+impl SlopeRelationHostAudit {
+    pub const fn derived_emitted_carry_min(self) -> i64 {
+        -self.reverse_carry_max
+    }
+
+    pub const fn derived_emitted_carry_max(self) -> i64 {
+        -self.reverse_carry_min
+    }
 }
 
 /// Host-only audit of the two exact relations in one slope transition.
@@ -438,6 +452,133 @@ fn add_sparse_constants_to_accumulator(
     }
 }
 
+/// Apply several sparse linear terms in one traversal of the accumulator.
+///
+/// Source blocks remain in place below `h`. Consumed sources lose their low
+/// limb at each matching coefficient; preserved sources are copied. The
+/// coefficient order and arithmetic signs agree with separate sparse passes,
+/// while each of the 51 coefficients makes only one main/alt round trip.
+/// All inputs are already certified circuit state. This requires zero hints.
+fn add_sparse_terms_to_accumulator(
+    layout: &mut Layout,
+    terms: &[(Block, Grouping, bool, bool)],
+    constants: Option<(Grouping, &[i32], bool)>,
+) -> Script {
+    let route = layout.move_to_top(Block::Accumulator);
+    let mut coefficients = Vec::with_capacity(FIELD_DIGIT_COUNT);
+    for coefficient in 0..FIELD_DIGIT_COUNT {
+        let mut updates = Vec::new();
+        for &(block, grouping, negative, preserve) in terms {
+            let Some(limb) =
+                (0..grouping.limb_count()).find(|limb| grouping.limb_start(*limb) == coefficient)
+            else {
+                continue;
+            };
+            let source = layout
+                .blocks
+                .iter()
+                .position(|(b, _)| *b == block)
+                .expect("sparse source remains live until its last limb");
+            let depth = layout.blocks[source + 1..]
+                .iter()
+                .map(|(_, count)| *count)
+                .sum::<usize>()
+                + if preserve { limb } else { 0 };
+            updates.push(script! {
+                { depth as u32 }
+                if preserve { OP_PICK } else { OP_ROLL }
+                if negative { OP_SUB } else { OP_ADD }
+            });
+            if !preserve {
+                layout.blocks[source].1 -= 1;
+                if layout.blocks[source].1 == 0 {
+                    layout.blocks.remove(source);
+                }
+            }
+        }
+        if let Some((grouping, values, negative)) = constants {
+            if let Some(limb) =
+                (0..grouping.limb_count()).find(|limb| grouping.limb_start(*limb) == coefficient)
+            {
+                updates.push(script! {
+                    { values[limb] }
+                    if negative { OP_SUB } else { OP_ADD }
+                });
+            }
+        }
+        coefficients.push(script! {
+            for update in updates { { update } }
+            OP_TOALTSTACK
+        });
+        layout
+            .blocks
+            .last_mut()
+            .expect("accumulator remains at top")
+            .1 -= 1;
+    }
+    let top = layout
+        .blocks
+        .last_mut()
+        .expect("accumulator remains at top");
+    assert_eq!(*top, (Block::Accumulator, 0));
+    top.1 = ACCUMULATOR_COUNT;
+    script! {
+        { route }
+        for coefficient in coefficients { { coefficient } }
+        for _ in 0..ACCUMULATOR_COUNT { OP_FROMALTSTACK }
+    }
+}
+
+/// Initialize a sparse relation directly from live linear coordinate blocks.
+/// Absent coefficients are zero pushes; present coefficients are formed once.
+/// Consuming a source high-to-low keeps each lower source index unchanged.
+fn initialize_sparse_terms(layout: &mut Layout, terms: &[(Block, Grouping, bool, bool)]) -> Script {
+    layout.push(Block::Accumulator, 0);
+    let mut coefficients = Vec::with_capacity(ACCUMULATOR_COUNT);
+    for coefficient in (0..ACCUMULATOR_COUNT).rev() {
+        let mut updates = Vec::new();
+        let mut populated = false;
+        for &(block, grouping, negative, preserve) in terms {
+            let Some(limb) =
+                (0..grouping.limb_count()).find(|limb| grouping.limb_start(*limb) == coefficient)
+            else {
+                continue;
+            };
+            let source = layout
+                .blocks
+                .iter()
+                .position(|(b, _)| *b == block)
+                .expect("source remains live until its final coefficient");
+            let depth = layout.blocks[source + 1..]
+                .iter()
+                .map(|(_, count)| *count)
+                .sum::<usize>()
+                + limb
+                + usize::from(populated);
+            updates.push(script! {
+                { depth as u32 }
+                if preserve { OP_PICK } else { OP_ROLL }
+                if populated {
+                    if negative { OP_SUB } else { OP_ADD }
+                } else if negative { OP_NEGATE }
+            });
+            if !preserve {
+                layout.blocks[source].1 -= 1;
+                if layout.blocks[source].1 == 0 {
+                    layout.blocks.remove(source);
+                }
+            }
+            populated = true;
+        }
+        coefficients.push(script! {
+            if populated { for update in updates { { update } } } else { 0 }
+        });
+        layout.blocks.last_mut().expect("accumulator remains top").1 += 1;
+    }
+    layout.assert_top(&[(Block::Accumulator, ACCUMULATOR_COUNT)]);
+    script! { for coefficient in coefficients { { coefficient } } }
+}
+
 /// Copy `lhs-rhs` without consuming either centered limb vector.
 fn copy_limb_difference() -> Script {
     script! {
@@ -618,17 +759,21 @@ fn relation_host_audit(coefficients: &[i64; FIELD_DIGIT_COUNT]) -> SlopeRelation
     );
     assert_eq!(forward_carries.len(), FIELD_DIGIT_COUNT - 1);
 
-    // This is the recurrence used by the Script verifier after deriving q:
-    // recover c49 from 32q-h50, then recover c48..c0 top-down. Comparing it
-    // with the forward normalization makes the per-relation audit independent
-    // of the BigInt divisibility assertion in `exact_quotient`.
+    // Recover mathematical c49 from 32q-h50, then c48..c0 top-down.
+    // Comparing both subtractive and emitted additive recurrences with the
+    // forward normalization independently checks the exact carry relation.
     let mut reverse_carry = RADIX * quotient - coefficients[FIELD_DIGIT_COUNT - 1];
+    let mut emitted_carry = -RADIX * quotient + coefficients[FIELD_DIGIT_COUNT - 1];
     assert_eq!(reverse_carry, forward_carries[FIELD_DIGIT_COUNT - 2]);
+    assert_eq!(emitted_carry, -forward_carries[FIELD_DIGIT_COUNT - 2]);
     for coefficient_index in (1..FIELD_DIGIT_COUNT - 1).rev() {
         reverse_carry = RADIX * reverse_carry - coefficients[coefficient_index];
+        emitted_carry = RADIX * emitted_carry + coefficients[coefficient_index];
         assert_eq!(reverse_carry, forward_carries[coefficient_index - 1]);
+        assert_eq!(emitted_carry, -forward_carries[coefficient_index - 1]);
     }
     assert_eq!(RADIX * reverse_carry, coefficients[0] + 19 * quotient);
+    assert_eq!(RADIX * emitted_carry, -19 * quotient - coefficients[0]);
 
     SlopeRelationHostAudit {
         quotient: i32::try_from(quotient).expect("audited quotient fits i32"),
@@ -1175,6 +1320,16 @@ fn add_difference_product_from_digits(
     }
 }
 
+fn decode_hybrid_slope_digits(layout: &mut Layout, preserved_items: u32, steps: &mut Vec<Script>) {
+    steps.push(layout.move_to_top(Block::LambdaNextPacked));
+    let below = preserved_items as usize + layout.items() - u5_packed::PACKED_WORD_COUNT;
+    steps.push(u5_packed_grouped::decode_digits(below as u32));
+    layout.replace_top(
+        Block::LambdaNextPacked,
+        &[(Block::LambdaNextDigits, FIELD_DIGIT_COUNT)],
+    );
+}
+
 fn retain_outputs(layout: &mut Layout, steps: &mut Vec<Script>) {
     for block in [
         Block::UInitialLimbs,
@@ -1509,25 +1664,13 @@ fn build_hybrid_chained_continuity(
     shared_power_pool_mode: HybridSharedPowerPoolMode,
     steps: &mut Vec<Script>,
 ) {
-    initialize_continuity(layout, true, steps);
-    add_limb_block(
+    steps.push(initialize_sparse_terms(
         layout,
-        Block::BSelectedLimbs,
-        Block::Accumulator,
-        Grouping::SlopeLinear,
-        true,
-        true,
-        steps,
-    );
-    add_limb_block(
-        layout,
-        Block::BPrevLimbs,
-        Block::Accumulator,
-        Grouping::SlopeLinear,
-        true,
-        false,
-        steps,
-    );
+        &[
+            (Block::BSelectedLimbs, Grouping::SlopeLinear, true, true),
+            (Block::BPrevLimbs, Grouping::SlopeLinear, true, false),
+        ],
+    ));
     add_difference_product_from_digits(
         layout,
         Block::APrevLimbs,
@@ -1538,13 +1681,7 @@ fn build_hybrid_chained_continuity(
     );
     steps.push(layout.drop(Block::APrevLimbs));
 
-    decode_consuming(
-        layout,
-        Block::LambdaNextPacked,
-        Block::LambdaNextDigits,
-        preserved_items,
-        steps,
-    );
+    decode_hybrid_slope_digits(layout, preserved_items, steps);
     add_difference_product_from_digits(
         layout,
         Block::ASelectedLimbs,
@@ -1583,46 +1720,37 @@ fn build_hybrid_curve(
         (Block::Accumulator, ACCUMULATOR_COUNT),
     ]);
 
-    add_limb_block(
+    let a_limbs = grouped_limbs(&BigUint::from(MONTGOMERY_A as u32), Grouping::SlopeLinear);
+    steps.push(add_sparse_terms_to_accumulator(
         layout,
-        previous_u_limbs,
-        Block::Accumulator,
-        Grouping::SlopeMixed,
-        true,
-        false,
-        steps,
-    );
-    add_limb_block(
-        layout,
-        Block::ASelectedLimbs,
-        Block::Accumulator,
-        Grouping::SlopeMixed,
-        true,
-        true,
-        steps,
-    );
+        &[
+            (previous_u_limbs, Grouping::SlopeMixed, true, false),
+            (Block::ASelectedLimbs, Grouping::SlopeMixed, true, true),
+        ],
+        Some((Grouping::SlopeLinear, &a_limbs, true)),
+    ));
     if layout
         .blocks
         .iter()
         .any(|(block, _)| *block == Block::UNextPacked)
     {
-        decode_consuming(
-            layout,
+        steps.push(layout.move_to_top(Block::UNextPacked));
+        let below = preserved_items as usize + layout.items() - u5_packed::PACKED_WORD_COUNT;
+        steps.push(u5_packed_grouped::decode(below as u32));
+        layout.replace_top(
             Block::UNextPacked,
-            Block::UNextDigits,
-            preserved_items,
-            steps,
+            &[(Block::UNextLimbs, PRODUCT_LIMB_COUNT)],
         );
     } else {
         // The final-R boundary already certified this canonical biased u5
         // vector, so only route it to the conversion point.
         steps.push(layout.move_to_top(Block::UNextDigits));
+        steps.push(convert_top_digits_to_limbs(
+            layout,
+            Block::UNextDigits,
+            Block::UNextLimbs,
+        ));
     }
-    steps.push(convert_top_digits_to_limbs(
-        layout,
-        Block::UNextDigits,
-        Block::UNextLimbs,
-    ));
     add_limb_block(
         layout,
         Block::UNextLimbs,
@@ -1632,13 +1760,7 @@ fn build_hybrid_curve(
         true,
         steps,
     );
-    let a_limbs = grouped_limbs(&BigUint::from(MONTGOMERY_A as u32), Grouping::SlopeLinear);
     steps.push(layout.move_to_top(Block::Accumulator));
-    steps.push(add_sparse_constants_to_accumulator(
-        Grouping::SlopeLinear,
-        &a_limbs,
-        true,
-    ));
     push_hybrid_derived_relation(
         steps,
         23,
@@ -1658,32 +1780,14 @@ fn build_hybrid_first_continuity(
     shared_power_pool_mode: HybridSharedPowerPoolMode,
     steps: &mut Vec<Script>,
 ) {
-    initialize_continuity(layout, true, steps);
-    add_limb_block(
+    steps.push(initialize_sparse_terms(
         layout,
-        Block::BSelectedLimbs,
-        Block::Accumulator,
-        Grouping::SlopeLinear,
-        true,
-        true,
-        steps,
-    );
-    add_limb_block(
-        layout,
-        Block::VInitialLimbs,
-        Block::Accumulator,
-        Grouping::SlopeLinear,
-        false,
-        false,
-        steps,
-    );
-    decode_consuming(
-        layout,
-        Block::LambdaNextPacked,
-        Block::LambdaNextDigits,
-        preserved_items,
-        steps,
-    );
+        &[
+            (Block::BSelectedLimbs, Grouping::SlopeLinear, true, true),
+            (Block::VInitialLimbs, Grouping::SlopeLinear, false, false),
+        ],
+    ));
+    decode_hybrid_slope_digits(layout, preserved_items, steps);
     add_difference_product_from_digits(
         layout,
         Block::ASelectedLimbs,
@@ -1971,9 +2075,10 @@ pub fn verify_first_transition_derived_hybrid_state(preserved_items: u32) -> Scr
     )
 }
 
-/// First hybrid transition with an invocation-local four-power pool. These
-/// constants are script-authored, add exactly zero hint/witness items, and
-/// increase the measured local combined stack peak from 208 to 212 items.
+/// First hybrid transition with an invocation-local fifteen-power pool. These
+/// constants are script-authored and add exactly zero hint/witness items.
+/// All fifteen (`2^16` through `2^30`) are included in its 204-item local
+/// combined-stack peak. The pool is removed before this invocation returns.
 pub fn verify_first_transition_derived_hybrid_state_shared_power_pool(
     preserved_items: u32,
 ) -> Script {

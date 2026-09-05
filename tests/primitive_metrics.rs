@@ -21,7 +21,10 @@ use bitcoin_lab::{
     fields::{
         babybear::babybear4::BabyBear4,
         bn254::bigint29::{fp254::Fp254Impl, fq::Fq, fq12::Fq12, fq2::Fq2, fq6::Fq6, fr::Fr},
-        ed25519::{bigint9 as ed25519_baseline, u5_balanced_table as ed25519},
+        ed25519::{
+            bigint9 as ed25519_baseline, u5_balanced_table as ed25519,
+            u5_packed_grouped as ed25519_packed,
+        },
         f12289::{radix as f12289_radix, u31::F12289},
         f257::{lookup as f257_lookup, u31::F257},
         m31::{qm31::QM31, u31::M31},
@@ -3031,10 +3034,88 @@ fn metrics() -> Vec<Metric> {
 #[test]
 #[ignore = "expensive full-repository metric regeneration; run explicitly with --ignored"]
 fn readme_metrics_are_current() {
+    check_readme_metrics(metrics());
+}
+
+/// This isolated fixture exercises only the two small packed decoders. It
+/// stays runnable without enabling the ignored repository-wide metric suite.
+#[test]
+fn ed25519_packed_decoder_metrics_are_current() {
+    let words = [
+        0x8000_0000u32,
+        0x8000_0000,
+        0x8000_0000,
+        0x8000_0000,
+        0x8000_0000,
+        0x8000_0000,
+        0x8000_0000,
+        0x7fff_fffe,
+    ];
+    let witness = words
+        .iter()
+        .rev()
+        .map(|word| scriptnum(i64::from(*word as i32)))
+        .collect::<Vec<_>>();
+    let grouped = ed25519_packed::decode(0);
+    let digits = ed25519_packed::decode_digits(0);
+    let grouped_peak = max_stack_items_strict(
+        script! {
+            { grouped.clone() }
+            for _ in 0..ed25519_packed::OUTPUT_ITEM_COUNT { OP_DROP }
+            OP_1
+        },
+        witness.clone(),
+    );
+    let digit_peak = max_stack_items_strict(
+        script! {
+            { digits.clone() }
+            for _ in 0..ed25519_packed::DIGIT_OUTPUT_ITEM_COUNT { OP_DROP }
+            OP_1
+        },
+        witness.clone(),
+    );
+    assert_eq!(witness.len(), 8);
+    assert_eq!(witness_size(&witness), 48);
+    assert_eq!(ed25519_packed::HINT_ITEM_COUNT, 0);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_grouped_decode",
+            value: script_len(grouped),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_grouped_decode_stack",
+            value: grouped_peak,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_digit_decode",
+            value: script_len(digits),
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_digit_decode_stack",
+            value: digit_peak,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_decoder_hint_items",
+            value: ed25519_packed::HINT_ITEM_COUNT,
+        },
+        Metric {
+            readme: "src/fields/ed25519/README.md",
+            key: "ed25519_packed_decoder_witness_max",
+            value: witness_size(&witness),
+        },
+    ]);
+}
+
+fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
 
-    for metric in metrics() {
+    for metric in metrics {
         let path = root.join(metric.readme);
         let contents = fs::read_to_string(&path).unwrap();
         let start = format!("<!-- metric:{} -->", metric.key);

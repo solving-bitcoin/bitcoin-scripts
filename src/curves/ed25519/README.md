@@ -503,6 +503,31 @@ transition invocations has zero hints. The 51 R digits are copied, checked,
 and packed for BLAKE3 while the original field remains available to the fused
 terminal transition.
 
+Packed trace decoding now follows the representation needed by its consumer.
+The 46 packed `u_next` fields decode directly into sixteen centered limbs
+(3,590 policy-produced bytes, 62 local combined-stack items). All 47 packed
+lambda fields decode into 51 certified digits using partial-word extraction
+(4,072 bytes, 93 local items). Each invocation consumes eight data items and
+requires zero auxiliary hints; both repeated decoder sets therefore require
+zero hints in total. Their temporary sixteen-item power tables are authored by
+Script, counted in those peaks, and removed before return. Both preserve prior
+altstack contents and validate padding and the canonical field gap. See the
+[field decoder contract](../../fields/ed25519/README.md#eight-item-packed-circuit-wires).
+
+The relation generator forms its sparse linear coefficients together: the
+continuity accumulator begins directly with its two `b/v` terms, and the
+curve accumulator applies the old `u`, selected `a`, and Montgomery constant
+in one traversal. Sources retain their original limb representation and are
+consumed only after their final use. Quotient derivation reduces at each step
+of a five-coefficient Horner evaluation, retaining one residue instead of
+five independent residues. At coefficient `i`, reducing modulo `2^(w-5i)`
+preserves the final value modulo `2^w`; the signed inverse-of-minus-19 step and
+complete exact relation check remain. Carry closure starts at `-q` and uses
+`d = 32*d + h_i`, with the correspondingly negated low-column equation.
+These transformations introduce zero hints for each of the 94 relations.
+The largest new Horner temporary is bounded by 2,072,011,424, below the
+four-byte ScriptNum limit.
+
 The curve relation uses a 7,984-byte symmetry-specialized square rather than
 the 10,870-byte generic product accumulator. It performs 351 table updates
 (51 own terms and 300 doubled cross terms) instead of 663. Focused strict
@@ -512,47 +537,66 @@ the isolated local peak from 148 to 138. At the integrated kernel boundary it
 saves 2,887 bytes per transition, 135,689 bytes across all 47 transitions.
 
 Quotient derivation reuses Script-authored powers of two. The first transition
-uses an invocation-local four-item `[23,24,25,26]` pool; this spends 37 bytes
-relative to the five-item byte optimum to retain one stack slot of headroom.
+uses an invocation-local fifteen-item `2^16..2^30` pool, enabled by the
+smaller live-state footprint of the fused relation and decoder schedule.
 Later transitions keep a sixteen-item pool during each response or challenge
 phase and consume it before the BLAKE3 boundary or final truth. These constants
-add no witness items and are not hints. The selected first pool plus two split
-persistent phases save 19,365 more bytes while leaving no pool residue across
-the hash or at clean-stack success. Their locally executed kernel interfaces
+add no witness items and are not hints. No pool residue remains across the
+hash or at clean-stack success. Their locally executed kernel interfaces
 include the pool items in every reported combined-stack peak.
+
+The earlier square/pool comparison in `f7bb0c2` used a four-item first pool
+and measured 2,999,983 whole-leaf bytes. Partial decoding, fused sparse
+passes, Horner quotient reduction, the revised first pool, and endpoint table
+selection now reduce that account by **165,330 bytes (5.511%)**.
+
+| Current kernel boundary | Policy-produced bytes | Local combined peak | Auxiliary hints |
+|---|---:|---:|---:|
+| first, temporary fifteen-power pool | 33,409 | 204 | 0 |
+| initialize persistent later pool | 46,401 | 224 | 0 |
+| reuse persistent later pool | 46,368 | 240 | 0 |
+| finalize persistent later pool | 46,360 | 240 | 0 |
+| final canonical-u5 endpoint and truth | 43,236 | 283 | 0 |
 
 The generation-only linker measures this exact clean-stack composition:
 
 | G32 hybrid-u5 component | Policy-produced bytes |
 |---|---:|
 | canonical scalar validator | 774 |
-| response schedule | 1,931,479 |
+| response schedule | 1,821,324 |
 | canonical-u5 R conversion plus fixed-message BLAKE3-128 | 67,137 |
 | independent-byte challenge recoder | 389 |
-| challenge schedule and fused terminal predicate | 1,000,204 |
-| **Complete leaf** | **2,999,983** |
+| challenge schedule and fused terminal predicate | 945,029 |
+| **Complete leaf** | **2,834,653** |
 
-The policy-corrected whole serialization has 1,729,242 static non-push opcodes.
-Its component sum is exact, with zero cross-component optimizer delta. The
+The whole serialization contains 1,663,690 static non-push opcodes. Its
+component sum is exact, with zero cross-component optimizer delta. The
 803-item honest
 argument is 3,863 bytes and has BLAKE3 digest
 `896812f002f5c8b1a2816eed80ceb84e9822a9202ae226771a48091a6ef8c5d1`.
 At a depth-zero control path, exact complete-witness, target-weight, and
 minimum-block formulas are `S+3,902`, `S+4,280`, and `S+5,048`. For the
-measured Script they give 3,003,885 bytes, 3,004,263 WU, and 3,005,031 WU,
-leaving 994,969 WU in the minimum-block model. A representation-aware
+measured Script they give 2,838,555 bytes, 2,838,933 WU, and 2,839,701 WU,
+leaving 1,160,299 WU in the minimum-block model. A representation-aware
 conservative argument is 4,617 bytes; its target and minimum-block formulas
-are `S+5,034` and `S+5,802`.
+are `S+5,034` and `S+5,802`, yielding a 2,840,455-WU minimum block.
 
-The combined-stack maximum is an analytical **999 items**: 787 preserved
-items plus the separately strict-executed 212-item first-kernel interface.
-The next two response frontiers are 995 and 994; the canonical-u5 hash
-strict-peaks at 918. The synthetic full routing schedule strict-peaks at 905.
+The combined-stack maximum is an analytical **995 items** at response
+transition one. The first transition uses 787 preserved plus 204 local items
+for a 991-item frontier; the next two response frontiers are 995 and 994.
+The kernel bounds are independently checked across both outcomes of every
+conditional by `examples/ed25519_montgomery_first_stack_bound.rs --all`
+(679/678/678/477 conditionals for first/initialize/persistent/terminal).
+The analyzer includes the actual preserved prefixes and incoming alt pools,
+and proves the terminal single-truth/empty-alt exit shape. The canonical-u5 hash strict-peaks
+at 918. The synthetic full routing schedule strict-peaks at 905.
 These measurements include the script-authored pools and keep the hash and
 terminal alt-stack boundaries empty.
 
-The multi-megabyte generation and execution paths are opt-in. Default probes
-perform bounded shape, routing, algebra, and component checks; generated long-
+The multi-megabyte generation and execution paths are opt-in. The hybrid
+scheduler's synthetic routing audit also requires `--run-synthetic`; its
+small-script optimizer can be slow in debug builds. Default probes
+perform bounded shape, algebra, and component checks; generated long-
 running tests remain ignored. The complete leaf is larger than the 32 KiB
 optimizer cutoff and therefore receives `CompileOptions::NONE`; reported
 whole-leaf bytes are explicitly unoptimized by the upstream fixpoint passes.

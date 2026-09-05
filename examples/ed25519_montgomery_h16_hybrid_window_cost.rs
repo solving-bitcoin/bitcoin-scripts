@@ -4,6 +4,9 @@
 //! the per-offset authenticated-table byte oracle and the exact next-input-
 //! order hybrid scheduler scaffold. It does not concatenate or execute a
 //! scalar schedule, BLAKE3 fragment, or complete leaf.
+//! Its table-byte checkpoints are the historical f7bb0c2 snapshot. Later
+//! table-boundary changes can invalidate these frozen assertions; reproduce
+//! the original comparison from that commit, not as current whole-leaf cost.
 
 #[allow(dead_code)]
 #[path = "ed25519_fixed_table_actual_model.rs"]
@@ -45,6 +48,8 @@ fn for_each_placement(mut visitor: impl FnMut([usize; 3])) {
 }
 
 fn main() {
+    println!("metric_status=historical-window-comparison");
+    println!("historical_source_commit=f7bb0c29235b5a2fddefb6748888394ff5c1186a");
     let mut queries = BTreeSet::<(usize, usize)>::new();
     for_each_placement(|positions| {
         let widths = widths(positions);

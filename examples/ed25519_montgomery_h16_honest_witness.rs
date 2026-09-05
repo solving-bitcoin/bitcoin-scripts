@@ -110,8 +110,8 @@ const EXPECTED_G32_FIRST_CONTINUITY_QUOTIENT: i32 = -249_700;
 const EXPECTED_G32_FIRST_CONTINUITY_CARRY_INTERVAL: (i64, i64) = (-16_963_155, 14_977_586);
 const EXPECTED_G32_CHAINED_CONTINUITY_QUOTIENT_INTERVAL: (i32, i32) = (-760_980, 643_390);
 const EXPECTED_G32_CHAINED_CONTINUITY_CARRY_INTERVAL: (i64, i64) = (-31_878_743, 32_260_603);
-const G32_HYBRID_U5_LINKED_SCRIPT_BYTES: usize = 2_999_983;
-const G32_HYBRID_U5_LINKED_SCRIPT_STATIC_NON_PUSH_OPCODES: usize = 1_729_242;
+const G32_HYBRID_U5_LINKED_SCRIPT_BYTES: usize = 2_834_653;
+const G32_HYBRID_U5_LINKED_SCRIPT_STATIC_NON_PUSH_OPCODES: usize = 1_663_690;
 const SCALAR_BITS: usize = 253;
 const SCALAR_CARRIER_ITEMS: usize = 29;
 const SCALAR_CARRIER_BITS: usize = 9;
@@ -864,6 +864,14 @@ fn audit_hybrid_transition_states(
     states
 }
 
+fn print_derived_carry_intervals(label: &str, mathematical_min: i64, mathematical_max: i64) {
+    println!("{label}_mathematical_reverse_carry_actual_interval=[{mathematical_min},{mathematical_max}]");
+    println!(
+        "{label}_derived_emitted_carry_actual_interval=[{},{}]",
+        -mathematical_max, -mathematical_min
+    );
+}
+
 fn transition_audit_hash(
     response_packets: &[Packet],
     challenge_packets: &[Packet],
@@ -1387,19 +1395,24 @@ fn run_honest_fixture(qfree_mode: bool) {
         println!("quotients_materialized_on_host_for_audit_only=true");
         println!("quotients_are_verifier_derived_not_witness_supplied=true");
         println!("curve_quotient_actual_interval=[{curve_quotient_min},{curve_quotient_max}]");
-        println!("curve_reverse_carry_actual_interval=[{curve_carry_min},{curve_carry_max}]");
+        print_derived_carry_intervals("curve", curve_carry_min, curve_carry_max);
         println!(
             "first_continuity_quotient_actual={}",
             first.audit.continuity.quotient
         );
-        println!(
-            "first_continuity_reverse_carry_actual_interval=[{},{}]",
-            first.audit.continuity.reverse_carry_min, first.audit.continuity.reverse_carry_max
+        print_derived_carry_intervals(
+            "first_continuity",
+            first.audit.continuity.reverse_carry_min,
+            first.audit.continuity.reverse_carry_max,
         );
         println!("chained_continuity_quotient_actual_interval=[{chained_continuity_quotient_min},{chained_continuity_quotient_max}]");
-        println!("chained_continuity_reverse_carry_actual_interval=[{chained_continuity_carry_min},{chained_continuity_carry_max}]");
+        print_derived_carry_intervals(
+            "chained_continuity",
+            chained_continuity_carry_min,
+            chained_continuity_carry_max,
+        );
         println!("continuity_quotient_actual_interval=[{continuity_quotient_min},{continuity_quotient_max}]");
-        println!("continuity_reverse_carry_actual_interval=[{continuity_carry_min},{continuity_carry_max}]");
+        print_derived_carry_intervals("continuity", continuity_carry_min, continuity_carry_max);
         println!("all_trace_payloads_at_most_five_bytes=true");
         println!("all_scalar_payloads_at_most_five_bytes=true");
         println!("exact_704_trace_item_vector_bytes={exact_trace_vector_bytes}");
@@ -2059,23 +2072,26 @@ fn run_g31_qfree_honest_fixture() {
     println!("quotients_materialized_on_host_for_audit_only=true");
     println!("quotients_are_verifier_derived_not_witness_supplied=true");
     println!("curve_quotient_actual_interval=[{curve_quotient_min},{curve_quotient_max}]");
-    println!("curve_reverse_carry_actual_interval=[{curve_carry_min},{curve_carry_max}]");
+    print_derived_carry_intervals("curve", curve_carry_min, curve_carry_max);
     println!(
         "first_continuity_quotient_actual={}",
         first.audit.continuity.quotient
     );
-    println!(
-        "first_continuity_reverse_carry_actual_interval=[{},{}]",
-        first.audit.continuity.reverse_carry_min, first.audit.continuity.reverse_carry_max
+    print_derived_carry_intervals(
+        "first_continuity",
+        first.audit.continuity.reverse_carry_min,
+        first.audit.continuity.reverse_carry_max,
     );
     println!("chained_continuity_quotient_actual_interval=[{chained_continuity_quotient_min},{chained_continuity_quotient_max}]");
-    println!("chained_continuity_reverse_carry_actual_interval=[{chained_continuity_carry_min},{chained_continuity_carry_max}]");
+    print_derived_carry_intervals(
+        "chained_continuity",
+        chained_continuity_carry_min,
+        chained_continuity_carry_max,
+    );
     println!(
         "continuity_quotient_actual_interval=[{continuity_quotient_min},{continuity_quotient_max}]"
     );
-    println!(
-        "continuity_reverse_carry_actual_interval=[{continuity_carry_min},{continuity_carry_max}]"
-    );
+    print_derived_carry_intervals("continuity", continuity_carry_min, continuity_carry_max);
     println!("exact_736_trace_item_vector_bytes={exact_trace_vector_bytes}");
     println!("exact_8_scalar_item_vector_bytes={exact_scalar_vector_bytes}");
     println!("exact_744_argument_witness_bytes={exact_witness_bytes}");
@@ -2580,17 +2596,22 @@ fn run_g32_qfree_honest_fixture(canonical_u5_final_r: bool) {
         println!("final_r_packed_words_host_canonical_and_reconstruct_rtilde=true");
     }
     println!("curve_quotient_actual_interval=[{curve_quotient_min},{curve_quotient_max}]");
-    println!("curve_reverse_carry_actual_interval=[{curve_carry_min},{curve_carry_max}]");
+    print_derived_carry_intervals("curve", curve_carry_min, curve_carry_max);
     println!(
         "first_continuity_quotient_actual={}",
         first.audit.continuity.quotient
     );
-    println!(
-        "first_continuity_reverse_carry_actual_interval=[{},{}]",
-        first.audit.continuity.reverse_carry_min, first.audit.continuity.reverse_carry_max
+    print_derived_carry_intervals(
+        "first_continuity",
+        first.audit.continuity.reverse_carry_min,
+        first.audit.continuity.reverse_carry_max,
     );
     println!("chained_continuity_quotient_actual_interval=[{chained_continuity_quotient_min},{chained_continuity_quotient_max}]");
-    println!("chained_continuity_reverse_carry_actual_interval=[{chained_continuity_carry_min},{chained_continuity_carry_max}]");
+    print_derived_carry_intervals(
+        "chained_continuity",
+        chained_continuity_carry_min,
+        chained_continuity_carry_max,
+    );
     println!("exact_trace_item_vector_bytes={exact_trace_vector_bytes}");
     println!("exact_8_scalar_item_vector_bytes={exact_scalar_vector_bytes}");
     println!("exact_argument_witness_bytes={exact_witness_bytes}");
@@ -2622,10 +2643,10 @@ fn run_g32_qfree_honest_fixture(canonical_u5_final_r: bool) {
             G32_HYBRID_U5_LINKED_SCRIPT_BYTES + exact_target_weight_constant;
         let projected_exact_minimum_block_weight =
             G32_HYBRID_U5_LINKED_SCRIPT_BYTES + exact_minimum_block_weight_constant;
-        assert_eq!(projected_exact_complete_witness, 3_003_885);
-        assert_eq!(projected_exact_target_weight, 3_004_263);
-        assert_eq!(projected_exact_minimum_block_weight, 3_005_031);
-        assert_eq!(4_000_000 - projected_exact_minimum_block_weight, 994_969);
+        assert_eq!(projected_exact_complete_witness, 2_838_555);
+        assert_eq!(projected_exact_target_weight, 2_838_933);
+        assert_eq!(projected_exact_minimum_block_weight, 2_839_701);
+        assert_eq!(4_000_000 - projected_exact_minimum_block_weight, 1_160_299);
         println!("linked_script_bytes_for_envelope={G32_HYBRID_U5_LINKED_SCRIPT_BYTES}");
         println!("linked_script_static_non_push_opcodes={G32_HYBRID_U5_LINKED_SCRIPT_STATIC_NON_PUSH_OPCODES}");
         println!("linked_script_metric_status=locally_reproduced_generation_only_serialization");
