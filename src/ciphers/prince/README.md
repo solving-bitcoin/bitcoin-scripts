@@ -19,19 +19,31 @@ nibbles; it varies only with the number of zero nibbles.
 
 | Fragment | Script size |
 | --- | ---: |
-| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->7685<!-- /metric:prince_encrypt --> bytes |
+| `prince_encrypt(0)` | <!-- metric:prince_encrypt -->6277<!-- /metric:prince_encrypt --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:prince_witness_min -->17<!-- /metric:prince_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:prince_witness_max -->33<!-- /metric:prince_witness_max --> bytes |
+| Maximum combined main/alt-stack depth | <!-- metric:prince_stack -->633<!-- /metric:prince_stack --> items |
 
-The fragment consists of a 7,547-byte optimized engine and a 188-byte adapter
-that embeds the key and preserves this crate's stack convention. Maximum
-combined main/alt-stack depth is 681 items. Tests pin both measurements and run
-the published vector plus varied key/plaintext pairs against the Rust reference.
+The zero-key fragment consists of a 6,171-byte optimized engine and a 106-byte
+stack-order adapter. The engine is specialized for its generation-time key:
+key XORs are folded into round operations, and no runtime key stack region or
+key-to-XOR-row selector is emitted. This reduces the engine memory from 674 to
+626 items and the measured maximum combined main/alt-stack depth from 681 to
+633 items. Tests pin the zero-key measurements and run the published vector
+plus varied key/plaintext pairs against the Rust reference.
 
 The engine is generated and cached by a native Rust translation of BitVM's
 [`prince_v2_optimized10.js`](https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js),
 pinned to commit `b931a6711ab332fd5923e708c869bed02e39984e`. Tests pin the
-generated engine's exact byte length and SHA-256 digest.
+generated zero-key engine's exact byte length and SHA-256 digest. Script size
+is key-dependent because fused constants select different lookup paths.
+
+`prince_encrypt_ref` is a direct Rust translation of the upstream PRINCEv2 C
+reference at commit `0c6172dcd85f1fe6a269519093a79c7350fe6e55`. The ignored
+`test_prince_script_randomized_differential` test uses a deterministic ChaCha20
+seed and compares randomized embedded keys and plaintexts against that oracle.
+Its key count, plaintexts per key, and seed are configurable through
+`PRINCE_FUZZ_KEYS`, `PRINCE_FUZZ_PLAINTEXTS_PER_KEY`, and `PRINCE_FUZZ_SEED`.
 
 ## Security
 
@@ -50,7 +62,9 @@ caller must compare or consume all 16 and leave one truthy item.
 
 ## Witness and hints
 
-No hints. The plaintext is 16 canonical nibbles with nibble 0 (the most
+No hints are required: zero incremental hint items per invocation and 16 total
+plaintext witness/data items. All 16 coexist at script entry. The plaintext is
+16 canonical nibbles with nibble 0 (the most
 significant nibble) on top and nibble 15 deepest. The key is public in the
 locking script. `key` is a `u128` whose upper 64 bits are PRINCEv2 `k0` and
 lower 64 bits are `k1`; the adapter handles the optimized engine's internal

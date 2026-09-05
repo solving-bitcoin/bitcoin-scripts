@@ -2164,12 +2164,13 @@
       "status": "experimental",
       "evidence": "differentially-validated",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-04",
       "knowledge_page": "knowledge/primitives/princev2-u4.md",
       "implementation": "src/ciphers/prince/mod.rs",
       "documentation": "src/ciphers/prince/README.md",
       "tests": [
-        "ciphers::prince::tests::test_prince_script_matches_reference"
+        "ciphers::prince::tests::test_prince_script_matches_reference",
+        "ciphers::prince::tests::test_prince_script_randomized_differential"
       ],
       "references": [
         "princev2-reference",
@@ -2190,24 +2191,25 @@
             "key": 0
           },
           "includes": "fragment-with-memory: full encryption fragment; witness serializes plaintext nibbles",
-          "script_bytes": 7685,
+          "script_bytes": 6277,
           "witness_bytes": 17,
           "witness_bytes_max": 33,
-          "max_stack_items": null,
+          "max_stack_items": 633,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": null,
-          "per_use_script_bytes": 7685,
+          "per_use_script_bytes": 6277,
           "metric_keys": [
             "prince_encrypt",
             "prince_witness_min",
-            "prince_witness_max"
+            "prince_witness_max",
+            "prince_stack"
           ]
         }
       ],
       "limitations": [
         "Not semantically interchangeable with AES",
-        "Combined stack peak not cataloged"
+        "Script size is mildly dependent on the embedded key"
       ],
       "open_problems": [
         "OP-003"

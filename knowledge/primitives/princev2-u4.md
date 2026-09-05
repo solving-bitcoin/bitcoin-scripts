@@ -7,7 +7,8 @@ nibble-oriented plaintext.
   with a different standardization and security context.
 - **Evidence:** differentially validated against a native reference and known
   vectors.
-- **Representative result:** 7,685 script bytes and 17–33 witness bytes.
+- **Representative result:** 6,277 script bytes, 17–33 witness bytes, and a
+  633-item combined main/alt-stack peak for the embedded zero key.
 - **Tradeoff:** use is justified only where PRINCEv2 is an acceptable protocol
   primitive; size alone does not make it interchangeable with AES.
 - **Deployment:** large research fragment with composition-dependent limits.

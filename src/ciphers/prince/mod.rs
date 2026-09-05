@@ -1,6 +1,7 @@
 // PRINCEv2 block cipher implementation
 // Reference: "PRINCEv2 – More Security for (Almost) No Overhead"
-// rub-hgi/princev2 reference implementation
+// Rust translation of rub-hgi/princev2 at
+// 0c6172dcd85f1fe6a269519093a79c7350fe6e55.
 //
 // 64-bit block, 128-bit key (k0 || k1, each 64 bits, big-endian nibble order)
 // Nibble 0 = MSB nibble (bits 63:60), nibble 15 = LSB nibble (bits 3:0)
@@ -526,14 +527,17 @@ fn script_m_layer() -> Script {
 // Native Rust translation of:
 // https://github.com/BitVM/bitvm-js/blob/b931a6711ab332fd5923e708c869bed02e39984e/scripts/opcodes/PRINCEv2/prince_v2_optimized10.js
 mod optimized {
-    use std::{collections::HashMap, sync::OnceLock};
+    use std::{
+        collections::HashMap,
+        sync::{Mutex, OnceLock},
+    };
 
     use bitcoin::{
         opcodes::{
             all::{
-                OP_1ADD, OP_1SUB, OP_2DROP, OP_2DUP, OP_2OVER, OP_2ROT, OP_2SWAP, OP_3DUP, OP_ADD,
-                OP_DROP, OP_DUP, OP_FROMALTSTACK, OP_OVER, OP_PICK, OP_ROLL, OP_ROT, OP_SUB,
-                OP_SWAP, OP_TOALTSTACK,
+                OP_1SUB, OP_2DROP, OP_2DUP, OP_2OVER, OP_2ROT, OP_2SWAP, OP_3DUP, OP_ADD, OP_DROP,
+                OP_DUP, OP_FROMALTSTACK, OP_OVER, OP_PICK, OP_ROLL, OP_ROT, OP_SUB, OP_SWAP,
+                OP_TOALTSTACK,
             },
             Opcode,
         },
@@ -546,18 +550,16 @@ mod optimized {
     use super::{BETA, M0, M1, M2, M3, RC, SBOX, SBOX_INV, SHIFT, SHIFT_INV};
 
     const SIZE_STATE: usize = 16;
-    const SIZE_KEY: usize = 32;
-    const SIZE_MEMORY: usize = 674;
+    const SIZE_MEMORY: usize = 626;
 
     const ADDR_SBOX_TABLE: i32 = 16;
     const ADDR_PAIR01_ROW_TABLE: i32 = 32;
     const ADDR_PAIR23_ROW_TABLE: i32 = 48;
     const ADDR_PAIR01_FINAL_ROW_TABLE: i32 = 64;
-    const ADDR_KEY: i32 = 80;
-    const ADDR_NIBBLE_TABLE: i32 = 128;
+    const ADDR_NIBBLE_TABLE: i32 = 80;
     const ADDR_XOR_TABLE: i32 = ADDR_NIBBLE_TABLE;
     const ADDR_PAIR23_TABLE: i32 = ADDR_NIBBLE_TABLE;
-    const ADDR_PAIR01_TABLE: i32 = 578;
+    const ADDR_PAIR01_TABLE: i32 = 530;
 
     const M: [i32; 4] = [M0 as i32, M1 as i32, M2 as i32, M3 as i32];
 
@@ -875,8 +877,6 @@ mod optimized {
 
             cold_values.extend(pair01.values.iter().rev().copied());
             cold_values.extend(packed.values.iter().rev().copied());
-            cold_values.extend((0..16).rev().map(|i| xor_offsets[i] + ADDR_XOR_TABLE - 1));
-
             let mut hot_values = Vec::new();
             hot_values.extend(
                 (0..16i32)
@@ -1059,6 +1059,10 @@ mod optimized {
     struct Generator {
         tables: LookupTables,
         env: Env,
+        // Internal k0 LSB-to-MSB followed by k1 LSB-to-MSB. Keeping these as
+        // generator data lets every key/constant XOR be compiled away instead
+        // of materializing a runtime key region in lookup memory.
+        key: [i32; 32],
         permutations: Vec<[usize; 4]>,
         prep_prefixes: Vec<Vec<PrepOp>>,
         round_constants: [[i32; 16]; 11],
@@ -1066,34 +1070,19 @@ mod optimized {
     }
 
     impl Generator {
-        fn new() -> Self {
+        fn new(key: u128) -> Self {
+            let upper = split_nibbles_lsb((key >> 64) as u64);
+            let lower = split_nibbles_lsb(key as u64);
+            let key = std::array::from_fn(|i| if i < 16 { upper[i] } else { lower[i - 16] });
             Self {
                 tables: LookupTables::new(),
                 env: std::array::from_fn(|i| i),
+                key,
                 permutations: permutations4(),
                 prep_prefixes: prep_prefixes(),
                 round_constants: RC.map(split_nibbles_lsb),
                 beta: split_nibbles_lsb(BETA),
             }
-        }
-
-        fn op_xor_shifted(&self, scratch: i32) -> Program {
-            let mut out = op(OP_ADD);
-            match scratch {
-                0 => {}
-                1 => out.op(OP_1ADD),
-                -1 => out.op(OP_1SUB),
-                positive if positive > 0 => {
-                    out.push(positive);
-                    out.op(OP_ADD);
-                }
-                negative => {
-                    out.push(-negative);
-                    out.op(OP_SUB);
-                }
-            }
-            out.op(OP_PICK);
-            out
         }
 
         fn op_xor_constant(&self, constant: i32, scratch: i32) -> Program {
@@ -1176,19 +1165,6 @@ mod optimized {
                 _ => {
                     let mut out = push(position);
                     out.op(OP_ROLL);
-                    out
-                }
-            }
-        }
-
-        fn copy_key_to_top(&self, index: usize, scratch: i32) -> Program {
-            let position = SIZE_KEY as i32 - 1 - index as i32 + ADDR_KEY + scratch;
-            match position {
-                0 => op(OP_DUP),
-                1 => op(OP_OVER),
-                _ => {
-                    let mut out = push(position);
-                    out.op(OP_PICK);
                     out
                 }
             }
@@ -1349,51 +1325,43 @@ mod optimized {
 
         fn emit_pre_action(&self, action: PreAction, state: usize) -> Program {
             match action {
-                PreAction::Initial => {
-                    let mut out = self.copy_key_to_top(state, 0);
-                    out.extend(self.op_xor_shifted(0));
-                    out.extend(self.op_sbox(0));
-                    out
-                }
+                PreAction::Initial => self.op_sbox_xor_constant(self.key[state], 0),
                 PreAction::Forward(round) => {
                     let key_index = if (round - 1) % 2 != 0 {
                         state + 16
                     } else {
                         state
                     };
-                    let mut out = self.copy_key_to_top(key_index, 0);
-                    out.extend(self.op_xor_shifted(0));
-                    out.extend(
-                        self.op_sbox_xor_constant(self.round_constants[round - 1][state], 0),
-                    );
-                    out
+                    self.op_sbox_xor_constant(
+                        self.key[key_index] ^ self.round_constants[round - 1][state],
+                        0,
+                    )
                 }
                 PreAction::MiddleForward => {
-                    let mut out = self.copy_key_to_top(state + 16, 0);
-                    out.extend(self.op_xor_shifted(0));
-                    out.extend(self.op_sbox_xor_constant(self.round_constants[5][state], 0));
-                    out.extend(self.copy_key_to_top(state, 0));
-                    out.extend(self.op_xor_shifted(0));
+                    let mut out = self.op_sbox_xor_constant(
+                        self.key[state + 16] ^ self.round_constants[5][state],
+                        0,
+                    );
+                    out.extend(self.op_xor_constant(self.key[state], 0));
                     out
                 }
                 PreAction::MiddleInverse => {
                     let before = 15 - SHIFT_INV[15 - state] as usize;
-                    let mut out = self.copy_key_to_top(before + 16, 0);
-                    out.extend(self.op_xor_shifted(0));
-                    out.extend(self.op_xor_constant(self.beta[before], 0));
-                    out.extend(self.op_sbox_inv_xor_constant(self.round_constants[6][before], 0));
-                    out.extend(self.copy_key_to_top(before, 0));
-                    out.extend(self.op_xor_shifted(0));
+                    let mut out =
+                        self.op_xor_constant(self.key[before + 16] ^ self.beta[before], 0);
+                    out.extend(self.op_sbox_inv_xor_constant(
+                        self.round_constants[6][before] ^ self.key[before],
+                        0,
+                    ));
                     out
                 }
                 PreAction::Inverse(round) => {
                     let before = 15 - SHIFT_INV[15 - state] as usize;
-                    let mut out =
-                        self.op_sbox_inv_xor_constant(self.round_constants[round][before], 0);
                     let key_index = if round % 2 != 0 { before + 16 } else { before };
-                    out.extend(self.copy_key_to_top(key_index, 0));
-                    out.extend(self.op_xor_shifted(0));
-                    out
+                    self.op_sbox_inv_xor_constant(
+                        self.round_constants[round][before] ^ self.key[key_index],
+                        0,
+                    )
                 }
             }
         }
@@ -1515,24 +1483,10 @@ mod optimized {
 
         fn init_memory(&mut self) -> Program {
             let mut out = Program::default();
-            for _ in 0..SIZE_KEY + SIZE_STATE {
+            for _ in 0..SIZE_STATE {
                 out.op(OP_TOALTSTACK);
             }
             out.extend(self.tables.cold_push.clone());
-
-            for i in 0..SIZE_KEY {
-                out.op(OP_FROMALTSTACK);
-                match i {
-                    0 => {}
-                    1 => out.op(OP_1ADD),
-                    _ => {
-                        out.push(i as i32);
-                        out.op(OP_ADD);
-                    }
-                }
-                out.op(OP_PICK);
-            }
-
             out.extend(self.tables.hot_push.clone());
             for _ in 0..SIZE_STATE {
                 out.op(OP_FROMALTSTACK);
@@ -1562,9 +1516,12 @@ mod optimized {
 
             for state in (0..SIZE_STATE).rev() {
                 out.extend(self.move_state_to_top(state, 0));
-                out.extend(self.op_sbox_inv_xor_constant(self.beta[state], 0));
-                out.extend(self.copy_key_to_top(state + SIZE_STATE, 0));
-                out.extend(self.op_xor_shifted(0));
+                out.extend(
+                    self.op_sbox_inv_xor_constant(
+                        self.beta[state] ^ self.key[state + SIZE_STATE],
+                        0,
+                    ),
+                );
             }
 
             for _ in 0..SIZE_STATE {
@@ -1583,11 +1540,14 @@ mod optimized {
         }
     }
 
-    static ENGINE: OnceLock<ScriptBuf> = OnceLock::new();
+    static ENGINES: OnceLock<Mutex<HashMap<u128, ScriptBuf>>> = OnceLock::new();
 
-    pub(super) fn engine() -> Script {
-        let script = ENGINE
-            .get_or_init(|| Generator::new().generate().into_script_buf())
+    pub(super) fn engine(key: u128) -> Script {
+        let engines = ENGINES.get_or_init(|| Mutex::new(HashMap::new()));
+        let mut engines = engines.lock().expect("PRINCEv2 engine cache poisoned");
+        let script = engines
+            .entry(key)
+            .or_insert_with(|| Generator::new(key).generate().into_script_buf())
             .clone();
         Script::new("optimized PRINCEv2 engine").push_script(script)
     }
@@ -1607,30 +1567,11 @@ fn reverse_top_block() -> Script {
 /// Full PRINCEv2 encryption with hardcoded key.
 /// Input: 16 state nibbles (nibble[0]=MSB on top, nibble[15]=LSB at depth 15).
 /// Output: 16 ciphertext nibbles in same layout.
-fn prince_encrypt_with_engine(key: u128, engine: Script) -> Script {
-    let upper_key = u64_to_nibbles_msb((key >> 64) as u64);
-    let lower_key = u64_to_nibbles_msb(key as u64);
-
-    let mut push_key = script! {};
-    // The source engine's key slots are the reverse of the public Rust key
-    // convention: k0 LSB-to-MSB, followed by k1 LSB-to-MSB.
-    for nibble in upper_key
-        .into_iter()
-        .rev()
-        .chain(lower_key.into_iter().rev())
-    {
-        push_key = script! { { push_key } { nibble as u32 } };
-    }
-
+fn prince_encrypt_with_engine(engine: Script) -> Script {
     script! {
         // The public Rust API keeps the established MSB-on-top state layout.
         // The optimized engine uses LSB-on-top, so adapt at both boundaries.
         { reverse_top_block() }
-
-        // Park the plaintext while placing the embedded key underneath it.
-        for _ in 0..16 { OP_TOALTSTACK }
-        { push_key }
-        for _ in 0..16 { OP_FROMALTSTACK }
 
         { engine }
         { reverse_top_block() }
@@ -1638,7 +1579,7 @@ fn prince_encrypt_with_engine(key: u128, engine: Script) -> Script {
 }
 
 pub fn prince_encrypt(key: u128) -> Script {
-    prince_encrypt_with_engine(key, optimized::engine())
+    prince_encrypt_with_engine(optimized::engine(key))
 }
 
 // ---------------------------------------------------------------------------
@@ -1663,6 +1604,8 @@ mod tests {
     use super::*;
     use crate::support::execution::execute_script;
     use crate::support::script::{script, ScriptCompilation};
+    use rand::{Rng, SeedableRng};
+    use rand_chacha::ChaCha20Rng;
     use sha2::{Digest, Sha256};
 
     fn execute_encryption(key: u128, plaintext: u64, expected: u64) -> usize {
@@ -1876,19 +1819,18 @@ mod tests {
         let expected: u64 = 0x603cd95fa72a8704;
         let key = (k1 as u128) << 64 | k0 as u128;
 
-        let encrypt_script = prince_encrypt(key);
-        let engine = optimized::engine().compile_with_policy();
-        assert_eq!(engine.len(), 7547);
+        let zero_key_engine = optimized::engine(0).compile_with_policy();
+        assert_eq!(zero_key_engine.len(), 6_171);
         assert_eq!(
-            Sha256::digest(engine.as_bytes()).as_slice(),
+            Sha256::digest(zero_key_engine.as_bytes()).as_slice(),
             &[
-                0x5d, 0x85, 0x99, 0x9b, 0x0b, 0xe6, 0xee, 0x66, 0x90, 0x4a, 0x6f, 0x6d, 0xa3, 0xb2,
-                0xf3, 0x1c, 0x1b, 0x00, 0x74, 0x52, 0x76, 0x65, 0xb2, 0x7e, 0xa4, 0x1c, 0x1f, 0xef,
-                0xe0, 0x33, 0x2b, 0x44,
+                0xa4, 0x5a, 0x6d, 0x89, 0x57, 0xda, 0x0c, 0xa9, 0x0b, 0xbf, 0xdc, 0x06, 0xc5, 0x26,
+                0x31, 0xb6, 0xa7, 0x4a, 0x5c, 0xf5, 0x30, 0xdf, 0xa5, 0x89, 0xbc, 0x27, 0x26, 0x74,
+                0x86, 0x5f, 0xa4, 0x35,
             ]
         );
-        assert_eq!(encrypt_script.compile_with_policy().len(), 7_685);
-        assert_eq!(execute_encryption(key, plaintext, expected), 681);
+        assert_eq!(prince_encrypt(0).compile_with_policy().len(), 6_277);
+        assert_eq!(execute_encryption(key, plaintext, expected), 633);
     }
 
     #[test]
@@ -1910,6 +1852,63 @@ mod tests {
 
         for (key, plaintext) in vectors {
             execute_encryption(key, plaintext, prince_encrypt_ref(key, plaintext));
+        }
+    }
+
+    /// Randomized differential coverage is ignored by default because each new
+    /// embedded key generates and executes a large, key-specialized script.
+    /// The seed and dimensions are explicit so every failure is reproducible.
+    ///
+    /// Example:
+    /// `PRINCE_FUZZ_KEYS=8 PRINCE_FUZZ_PLAINTEXTS_PER_KEY=4 cargo test --locked test_prince_script_randomized_differential -- --ignored --nocapture`
+    #[test]
+    #[ignore = "expensive randomized Bitcoin Script differential test"]
+    fn test_prince_script_randomized_differential() {
+        const DEFAULT_SEED: u64 = 0x5052_494e_4345_5632;
+
+        let seed = std::env::var("PRINCE_FUZZ_SEED")
+            .ok()
+            .map(|value| {
+                value
+                    .parse::<u64>()
+                    .expect("PRINCE_FUZZ_SEED must be a u64")
+            })
+            .unwrap_or(DEFAULT_SEED);
+        let key_cases = std::env::var("PRINCE_FUZZ_KEYS")
+            .ok()
+            .map(|value| {
+                value
+                    .parse::<usize>()
+                    .expect("PRINCE_FUZZ_KEYS must be a usize")
+            })
+            .unwrap_or(16);
+        let plaintext_cases = std::env::var("PRINCE_FUZZ_PLAINTEXTS_PER_KEY")
+            .ok()
+            .map(|value| {
+                value
+                    .parse::<usize>()
+                    .expect("PRINCE_FUZZ_PLAINTEXTS_PER_KEY must be a usize")
+            })
+            .unwrap_or(4);
+
+        assert!(key_cases > 0, "PRINCE_FUZZ_KEYS must be nonzero");
+        assert!(
+            plaintext_cases > 0,
+            "PRINCE_FUZZ_PLAINTEXTS_PER_KEY must be nonzero"
+        );
+
+        let mut rng = ChaCha20Rng::seed_from_u64(seed);
+        for key_case in 0..key_cases {
+            let key = rng.gen::<u128>();
+            for plaintext_case in 0..plaintext_cases {
+                let plaintext = rng.gen::<u64>();
+                let expected = prince_encrypt_ref(key, plaintext);
+                let peak = execute_encryption(key, plaintext, expected);
+                assert!(
+                    peak <= 1_000,
+                    "seed={seed}, key_case={key_case}, plaintext_case={plaintext_case}: combined stack peak {peak} exceeds consensus limit"
+                );
+            }
         }
     }
 }

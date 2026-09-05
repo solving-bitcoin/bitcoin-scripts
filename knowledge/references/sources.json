@@ -189,7 +189,7 @@
       "title": "PRINCEv2 reference implementation",
       "kind": "reference-implementation",
       "url": "https://github.com/rub-hgi/princev2",
-      "revision": "upstream reference named by local implementation"
+      "revision": "0c6172dcd85f1fe6a269519093a79c7350fe6e55"
     },
     {
       "id": "u31-bitvm-source",

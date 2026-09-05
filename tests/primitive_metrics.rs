@@ -32,7 +32,10 @@ use bitcoin_lab::{
         hors, lamport, pointlocks, schnorr,
         winternitz::{FastWots32, Wots, Wots32},
     },
-    support::{execution::execute_script_with_inputs, script::ScriptCompilation},
+    support::{
+        execution::{execute_script_with_inputs, execute_script_with_inputs_strict},
+        script::ScriptCompilation,
+    },
 };
 use bitcoin_script::script;
 use num_bigint::{BigInt, BigUint};
@@ -72,6 +75,12 @@ fn scriptnum(value: i64) -> Vec<u8> {
 fn max_stack_items(script: bitcoin_script::Script, witness: Vec<Vec<u8>>) -> usize {
     let result = execute_script_with_inputs(script, witness);
     assert!(result.success, "metric execution failed: {result}");
+    result.stats.max_nb_stack_items
+}
+
+fn max_stack_items_strict(script: bitcoin_script::Script, witness: Vec<Vec<u8>>) -> usize {
+    let result = execute_script_with_inputs_strict(script, witness);
+    assert!(result.success, "strict metric execution failed: {result}");
     result.stats.max_nb_stack_items
 }
 
@@ -707,6 +716,13 @@ fn metrics() -> Vec<Metric> {
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
         for _ in 0..16 {
+            OP_2DROP
+        }
+        OP_1
+    };
+    let prince_stack_script = script! {
+        { prince::prince_encrypt(0) }
+        for _ in 0..8 {
             OP_2DROP
         }
         OP_1
@@ -2825,6 +2841,11 @@ fn metrics() -> Vec<Metric> {
             readme: "src/ciphers/prince/README.md",
             key: "prince_witness_max",
             value: witness_size(&vec![vec![1]; 16]),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_stack",
+            value: max_stack_items_strict(prince_stack_script, vec![Vec::new(); 16]),
         },
         Metric {
             readme: "src/ciphers/aes/README.md",
