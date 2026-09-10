@@ -1,8 +1,74 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-10",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/signed-radix32-decoder",
+      "name": "Signed radix-32 window decoder",
+      "class": "arithmetic/word",
+      "summary": "Checked decoding of signed ScriptNum digits in [-31,31] into a native sign bit and five magnitude bits using a shared staggered table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-10",
+      "knowledge_page": "knowledge/primitives/signed-radix32-decoder.md",
+      "implementation": "src/arithmetic/signed_window/mod.rs",
+      "documentation": "src/arithmetic/signed_window/README.md",
+      "tests": [
+        "arithmetic::signed_window::tests",
+        "tests/primitive_metrics.rs",
+        "examples/signed_window_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "lookup-table",
+        "signed-window",
+        "tracked-stack"
+      ],
+      "security": "Checked mode rejects non-minimal ScriptNums and values outside [-31,31] before table indexing. The fragment does not bind digits to a scalar or signature and makes no cryptographic claim.",
+      "stack_contract": "preserved | digit | table -> preserved | table, with sign and five magnitude bits appended to the altstack; the caller drops the persistent table and restores outputs.",
+      "configurations": [
+        {
+          "id": "table-batch32",
+          "label": "Shared table, 32 checked signed radix-32 digits",
+          "parameters": {
+            "digit_count": 32,
+            "digit_domain": "[-31,31]",
+            "table_items": 156,
+            "complete_witness_items": 32,
+            "hint_items": 0,
+            "fixture": "all canonical digits equal 31"
+          },
+          "includes": "fragment-with-memory: shared table setup, canonical and range checks, 32 lookups, table cleanup, and restoration/drop of six outputs per digit; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 1866,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 348,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 156,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "signed_window_table_batch32",
+            "signed_window_table_batch32_witness",
+            "signed_window_table_batch32_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "The shared table loses the branch baseline through eight digits and raises stack usage substantially",
+        "The repository executor did not provide a useful dynamic opcode count for this standalone fragment; static non-push counts are documented separately",
+        "No complete scalar schedule, Bitcoin Core differential validation, consensus validation, or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-019"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",

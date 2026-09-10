@@ -1226,3 +1226,15 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-043: Signed-window lookup tables lose short batches
+
+The seed-directed signed radix-32 decoder uses ScriptNum's native sign and a
+156-item staggered magnitude table. It is not a universal replacement for
+conditional extraction: the deterministic checked sweep measured 286/75 bytes
+for one digit, 439/303 for four, 643/607 for eight, and 1,051/1,215 for
+sixteen (table/branch). The table therefore loses through eight digits and
+wins only after setup amortization. Its 32-digit row saves 564 bytes but peaks
+at 348 items versus 194 for branches, which can dominate in a composed scalar
+schedule. These are `locally-reproduced` tapscript measurements for the stated
+boundary, not a claim about all signed-digit layouts.

@@ -643,3 +643,14 @@ clean-stack semantics, stays below 1,000 combined items in a strict schedule,
 matches the standard BLAKE3 digest in a focused execution, and reports a
 policy-produced leaf smaller than the 3,828,057-byte projection with the same 792 entry items
 and exactly 88 hints.
+
+## OP-019: Integrate signed-window decoding into a complete scalar schedule
+
+The new signed radix-32 decoder is only a representation bridge. Its local
+32-digit row saves 564 script bytes over conditional extraction but spends 348
+combined stack items, and no complete scalar multiplication currently consumes
+its sign/magnitude output. **Accept when:** a deterministic complete scalar
+window schedule uses the decoder with an explicit output contract, measures
+all surrounding state and terminal checks under the strict 1,000-item limit,
+and either beats the branch schedule for the same scalar objective or records
+the composed layout as dominated.
