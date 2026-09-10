@@ -311,7 +311,7 @@ dependencies = [
 [[package]]
 name = "bitcoin-scriptexec"
 version = "0.0.0"
-source = "git+https://github.com/BitVM/rust-bitcoin-scriptexec#ba96bc2bd76774c9d1b011461cb79d983c2c43a1"
+source = "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=702544c9a045ac4fc14846da6da6559e2b7cd9d1#702544c9a045ac4fc14846da6da6559e2b7cd9d1"
 dependencies = [
  "bitcoin",
  "clap",

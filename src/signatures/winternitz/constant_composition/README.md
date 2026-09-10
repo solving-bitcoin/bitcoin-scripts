@@ -183,14 +183,20 @@ are measured from the compiled fragment; there are no runtime branches, so a
 successful invocation executes each of those non-push opcodes once. Total
 executed-opcode and validation-budget counters are not recorded.
 
-Pinned tools are `rust-bitcoin-script` commit
+The fragment measurements used `rust-bitcoin-script` commit
 `124b561ed75ac3ec4c6ad99207d8dcdd3bc67180` and `bitcoin-scriptexec` commit
-`ba96bc2bd76774c9d1b011461cb79d983c2c43a1`. The latter has an off-by-one
-`OP_ROLL` bounds bug: a positive index equal to the pool length can panic in
-the isolated mode. The focused test records this harness limitation.
+`ba96bc2bd76774c9d1b011461cb79d983c2c43a1`. That executor had an off-by-one
+`OP_ROLL` bounds bug: a positive index equal to the pool length could panic in
+the isolated mode. The original focused test recorded this harness limitation.
 [Bitcoin Core v29.0 rejects that boundary](https://github.com/bitcoin/bitcoin/blob/v29.0/src/script/interpreter.cpp#L757-L784).
 The composable modes prevent that index reaching `OP_ROLL`. Source inspection
-is not differential execution against Core.
+is distinct from the later [v30.3 differential run](../../../../knowledge/core-validation.md),
+which confirms that exact boundary is rejected by Core.
+The lab now pins repaired interpreter `4b7269a`, including the selector-bound,
+resource-limit and executed-push-minimality fixes; see
+[adoption and scope](../../../../knowledge/negative-results/index.md#nr-048-minimal-push-policy-must-follow-execution).
+The historical metrics and reports retain their original tool provenance and
+evidence classes.
 
 ## Script compatibility and standardness
 
@@ -199,8 +205,16 @@ and tapscript, but every measured fragment exceeds the legacy/Segwit-v0 limit
 of 201 counted non-push opcodes. Thus bare/P2SH/P2WSH deployment is
 `consensus-incompatible` for these fragments; P2SH also cannot push a redeem
 script of this size as one <=520-byte element. Tapscript removes that opcode
-limit. Its combined stack count and element lengths fit in these local fixtures,
-but no Bitcoin Core consensus run or relay-policy acceptance is established.
+limit. A separate deterministic isolated HASH160/Preimage16 complete leaf is
+now `differentially-validated` and `policy-validated` by Core v30.3: 1,599 script
+bytes including `OP_TRUE`, 796 data-witness bytes, 2,432 full Taproot witness
+bytes, and 2,810 WU / 703 vbytes for the one-input, one-output spend. Its 70
+signature data items coexist at entry, with zero hints and a stack-limited
+local combined peak of 119. The full witness includes script/control block.
+This is the varied-message fixture only; the existing fragment snapshots,
+other profiles and full protocol integrations retain their prior evidence.
+The [recorded report](../../../../tests/data/core-validation-v30.3.json) also
+separates consensus-valid nonminimal selectors from policy rejection.
 See [script types](../../../../docs/script-types.md) and
 [standardness](../../../../docs/standardness.md).
 
@@ -215,6 +229,7 @@ and does not import Rust. Search is a standalone Rust program with finite,
 documented bounds and floating-point screening followed by exact capacity checks.
 
 ```sh
+python3 tools/core_regtest.py --download-core
 cargo test --locked signatures::winternitz::constant_composition
 cargo test --locked --test primitive_metrics winternitz20_composition_metrics_are_current
 python3 src/signatures/winternitz/constant_composition/tests/vectors.py

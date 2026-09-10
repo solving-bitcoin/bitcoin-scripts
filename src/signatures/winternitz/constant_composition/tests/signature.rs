@@ -5,6 +5,7 @@ use crate::{
     support::{execution::execute_raw_script_with_inputs_strict, script::ScriptCompilation},
 };
 use bitcoin::hashes::{sha256, Hash};
+use bitcoin_scriptexec::ExecError;
 use std::collections::HashSet;
 
 type Wots<H = Hash160, P = Preimage16> = ConstantCompositionWinternitz20<H, P>;
@@ -301,30 +302,30 @@ fn selector_clamp_aliases_last_real_key_without_reaching_foreign_protocol_items(
 }
 
 #[test]
-fn pinned_executor_panics_at_the_isolated_roll_boundary_instead_of_returning_rejection() {
+fn isolated_roll_boundary_returns_invalid_stack_operation() {
     type DefaultWots = ConstantCompositionWinternitz20;
     let key = DefaultWots::signing_key_from_seed([0x42; 32]);
     let public_key = DefaultWots::public_key(&key);
     let signature = DefaultWots::sign(key, &[0x42; 20]);
     let leaf = script! { { DefaultWots::checksig_verify_isolated_and_clear(&public_key) } OP_TRUE }
         .compile_with_policy();
+    let valid =
+        execute_raw_script_with_inputs_strict(leaf.to_bytes(), signature.to_witness().to_vec());
+    assert!(valid.success, "{valid}");
+    assert_eq!(valid.final_stack.len(), 1);
+    assert_eq!(valid.final_stack.get(0), vec![1]);
     for slot in [0, DefaultWots::OPENINGS / 2, DefaultWots::OPENINGS - 1] {
         let mut malformed = signature.to_witness().to_vec();
         malformed[2 * slot] = integer(DefaultWots::CHAINS - slot);
-        let failure = std::panic::catch_unwind(|| {
-            execute_raw_script_with_inputs_strict(leaf.to_bytes(), malformed)
-        });
-        // bitcoin-scriptexec ba96bc2 checks ROLL's selector against the stack
-        // length before removing that selector. Equality with the true pool
-        // length slips the check and unwrap-panics. This test records that
-        // interpreter limitation; it is NOT a locally reproduced rejection or
-        // a claim that Bitcoin Core accepted or rejected this execution.
-        let payload = failure.expect_err("revisit the documented pinned-executor boundary bug");
-        let message = payload
-            .downcast_ref::<String>()
-            .map(String::as_str)
-            .or_else(|| payload.downcast_ref::<&str>().copied())
-            .unwrap_or("");
-        assert!(message.contains("InvalidStackOperation"), "{message}");
+        // Removing the selector leaves exactly CHAINS - slot endpoints.
+        // That index is one past the trusted pool and must return rejection,
+        // including at the boundary that the previous interpreter panicked on.
+        let failure = execute_raw_script_with_inputs_strict(leaf.to_bytes(), malformed);
+        assert!(!failure.success, "slot={slot}: {failure}");
+        assert_eq!(
+            failure.error,
+            Some(ExecError::InvalidStackOperation),
+            "slot={slot}: {failure}"
+        );
     }
 }

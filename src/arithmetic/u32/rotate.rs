@@ -221,9 +221,9 @@ pub fn u32_rrot(rot_num: usize) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::arithmetic::test_helpers::{run_with_witness, word_witness};
     use crate::arithmetic::u32::stack::*;
-    use crate::support::execution::run;
-    use rand::Rng;
+    use rand::{rngs::StdRng, Rng, SeedableRng};
 
     fn rrot(x: u32, n: usize) -> u32 {
         if n == 0 {
@@ -234,36 +234,42 @@ mod tests {
 
     #[test]
     fn test_rrot() {
-        for i in 0..32 {
-            println!("u32_rrot({}): {} bytes", i, u32_rrot(i).len());
-        }
-        let mut rng = rand::thread_rng();
+        let scripts: Vec<_> = (0..32)
+            .map(|i| {
+                println!("u32_rrot({}): {} bytes", i, u32_rrot(i).len());
+                script! {
+                    { u32_rrot(i) }
+                    { u32_equal() }
+                }
+                .compile_with_policy()
+                .to_bytes()
+            })
+            .collect();
+        let mut rng = StdRng::seed_from_u64(0x7533325f726f74);
         for _ in 0..1000 {
             let x: u32 = rng.gen();
-            for i in 0..32 {
-                let script = script! {
-                    {u32_push(x)}
-                    {u32_rrot(i)}
-                    {u32_push(rrot(x, i))}
-                    {u32_equal()}
-                };
-                run(script);
+            for (i, script) in scripts.iter().enumerate() {
+                run_with_witness(script, word_witness(rrot(x, i)).chain(word_witness(x)));
             }
         }
     }
     #[test]
     fn test_extract_hbit() {
-        for x in 0..256 {
-            for h in 1..8 {
-                let script = script! {
-                    { x }
+        let scripts: Vec<_> = (1..8)
+            .map(|h| {
+                script! {
                     { u8_extract_hbit(h) }
-                    { x >> (8 - h) }
-                    OP_EQUALVERIFY
-                    { (x << h) % 256 }
+                    OP_ROT OP_EQUALVERIFY
                     OP_EQUAL
-                };
-                run(script);
+                }
+                .compile_with_policy()
+                .to_bytes()
+            })
+            .collect();
+        for x in 0..256 {
+            for (i, script) in scripts.iter().enumerate() {
+                let h = i + 1;
+                run_with_witness(script, [(x << h) % 256, x >> (8 - h), x]);
             }
         }
     }

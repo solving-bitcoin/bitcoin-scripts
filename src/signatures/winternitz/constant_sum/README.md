@@ -154,11 +154,15 @@ Metrics are `locally-reproduced` and `research-unlimited`: the tapscript metric
 helper disables the stack check and appends `OP_TRUE` for execution. Separate
 strict-stack tests remain `unclassified` deployment evidence. No Bitcoin Core
 consensus, relay-policy, or complete-transaction validation is claimed.
-The pinned local executor can panic on an `OP_PICK` index outside the entire
-stack. Adversarial lookup-escape tests therefore place traps inside the
-complete stack; they do not establish correct local handling of every index.
-Bitcoin consensus rejects a genuinely out-of-stack index. This local executor
-limitation is recorded in the [negative result](../../../../knowledge/negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries).
+The historical `ba96bc2` executor could panic on an `OP_PICK` index outside the
+entire stack. The lab now pins repaired interpreter `4b7269a`; see
+[adoption and scope](../../../../knowledge/negative-results/index.md#nr-048-minimal-push-policy-must-follow-execution).
+Adversarial lookup-escape tests still place traps inside the complete stack:
+they test the construction's overflow relation, independently of executor
+bounds handling. The later Core fixtures confirm exact `OP_PICK`/`OP_ROLL`
+boundary rejection, not complete constant-sum protocol validity. Historical
+metrics retain their original evidence and execution classes. See the
+[negative result](../../../../knowledge/negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries).
 
 `python3 src/signatures/winternitz/constant_sum/tests/vectors.py` independently reproduces the encoder,
 host vectors, exact witness mean, and exact maximum. Rust tests compare its

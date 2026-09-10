@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 1.1,
   "as_of": "2026-09-01",
   "cost_model": "knowledge/cost-model.md",
   "records": [
@@ -2284,11 +2284,11 @@
       "id": "cipher/princev2-u4",
       "name": "PRINCEv2 u4 encryption",
       "class": "cipher/block",
-      "summary": "Lightweight PRINCEv2 encryption with embedded key and nibble witness.",
+      "summary": "PRINCEv2 encryption with embedded key and nibble witness, plus a checked complete computation leaf.",
       "status": "experimental",
       "evidence": "differentially-validated",
       "execution": "unclassified",
-      "as_of": "2026-09-04",
+      "as_of": "2026-09-10",
       "knowledge_page": "knowledge/primitives/princev2-u4.md",
       "implementation": "src/ciphers/prince/mod.rs",
       "documentation": "src/ciphers/prince/README.md",
@@ -2297,11 +2297,19 @@
         "ciphers::prince::tests::test_prince_script_randomized_differential",
         "prince_differential::prince_randomized_differential_compiled_once",
         "prince_differential::prince_script_matches_upstream_c_vectors",
-        "primitive_metrics::prince_metrics_are_current"
+        "primitive_metrics::prince_metrics_are_current",
+        "prince_checked",
+        "primitive_metrics::prince_checked_metrics_are_current",
+        "examples/prince_validation_fixtures.rs",
+        "tools/prince_regtest.py",
+        "tools/test_prince_regtest.py"
       ],
       "references": [
         "princev2-reference",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-scriptexec-signatures-20260910",
+        "bitcoin-script-locked"
       ],
       "techniques": [
         "digit-arithmetic",
@@ -2309,7 +2317,7 @@
         "constant-embedding"
       ],
       "security": "Use only when PRINCEv2's block/key semantics and security profile match the protocol requirement.",
-      "stack_contract": "Consumes 16 plaintext nibbles and returns 16 ciphertext nibbles.",
+      "stack_contract": "prince_encrypt consumes 16 caller-validated plaintext nibbles and returns 16 ciphertext nibbles; prince_verify requires exactly 16 canonical data items (zero hints), validates them, checks every ciphertext nibble and leaves one true item with an empty alt stack.",
       "configurations": [
         {
           "id": "zero-key",
@@ -2333,12 +2341,132 @@
             "prince_stack",
             "prince_non_push_ops"
           ]
+        },
+        {
+          "id": "checked-zero-key-zero-block",
+          "label": "Checked complete leaf: zero-key-zero-block",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "key_hex": "00000000000000000000000000000000",
+            "plaintext_hex": "0000000000000000",
+            "ciphertext_hex": "0125fc7359441690",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "taproot_witness_items": 18,
+            "all_data_coexist_at_entry": true,
+            "data_witness_bytes": 17,
+            "static_non_push_opcodes": 4182,
+            "transaction_weight": 6858,
+            "transaction_vbytes": 1715,
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "interpreter_commit": "702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "reference_vector_index": 0,
+            "report": "tests/data/prince-validation-v30.3.json"
+          },
+          "includes": "complete-leaf: input-count, canonical-encoding and range validation, PRINCEv2 table setup, encryption, cleanup, all ciphertext comparisons and one true result; excludes input pushes; serialized Taproot witness includes data, script, control block and all CompactSize overhead; transaction metrics recorded by runner; no unrelated entry state or batched composition; exact funded transaction accepted by pinned Core consensus and default policy",
+          "script_bytes": 6426,
+          "witness_bytes": 6480,
+          "witness_bytes_max": 6480,
+          "max_stack_items": 633,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "prince_checked_zero_script",
+            "prince_checked_zero_witness",
+            "prince_checked_zero_stack"
+          ]
+        },
+        {
+          "id": "checked-zero-key-max-block",
+          "label": "Checked complete leaf: zero-key-max-block",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "key_hex": "00000000000000000000000000000000",
+            "plaintext_hex": "ffffffffffffffff",
+            "ciphertext_hex": "832bd46f108e7857",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "taproot_witness_items": 18,
+            "all_data_coexist_at_entry": true,
+            "data_witness_bytes": 33,
+            "static_non_push_opcodes": 4182,
+            "transaction_weight": 6874,
+            "transaction_vbytes": 1719,
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "interpreter_commit": "702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "reference_vector_index": 3,
+            "report": "tests/data/prince-validation-v30.3.json"
+          },
+          "includes": "complete-leaf: input-count, canonical-encoding and range validation, PRINCEv2 table setup, encryption, cleanup, all ciphertext comparisons and one true result; excludes input pushes; serialized Taproot witness includes data, script, control block and all CompactSize overhead; transaction metrics recorded by runner; no unrelated entry state or batched composition; exact funded transaction accepted by pinned Core consensus and default policy",
+          "script_bytes": 6426,
+          "witness_bytes": 6496,
+          "witness_bytes_max": 6496,
+          "max_stack_items": 633,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "prince_checked_max_script",
+            "prince_checked_max_witness",
+            "prince_checked_max_stack"
+          ]
+        },
+        {
+          "id": "checked-published-key-varied-block",
+          "label": "Checked complete leaf: published-key-varied-block",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "key_hex": "0123456789abcdeffedcba9876543210",
+            "plaintext_hex": "0123456789abcdef",
+            "ciphertext_hex": "603cd95fa72a8704",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "taproot_witness_items": 18,
+            "all_data_coexist_at_entry": true,
+            "data_witness_bytes": 32,
+            "static_non_push_opcodes": 4237,
+            "transaction_weight": 7029,
+            "transaction_vbytes": 1758,
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "interpreter_commit": "702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "reference_vector_index": 4,
+            "report": "tests/data/prince-validation-v30.3.json"
+          },
+          "includes": "complete-leaf: input-count, canonical-encoding and range validation, PRINCEv2 table setup, encryption, cleanup, all ciphertext comparisons and one true result; excludes input pushes; serialized Taproot witness includes data, script, control block and all CompactSize overhead; transaction metrics recorded by runner; no unrelated entry state or batched composition; exact funded transaction accepted by pinned Core consensus and default policy",
+          "script_bytes": 6582,
+          "witness_bytes": 6651,
+          "witness_bytes_max": 6651,
+          "max_stack_items": 685,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "prince_checked_published_script",
+            "prince_checked_published_witness",
+            "prince_checked_published_stack"
+          ]
         }
       ],
       "limitations": [
         "Not semantically interchangeable with AES",
         "Script size and table/stack use depend on the embedded key",
-        "Caller must validate plaintext nibble ranges and canonical encoding"
+        "prince_encrypt requires caller-validated nibble ranges and canonical encoding; prince_verify enforces them but rejects unrelated entry data",
+        "Complete Core validation covers three exact fixtures under two embedded keys; no arbitrary-key or composed-protocol deployment claim",
+        "The checked encryption predicate has public keys and plaintext and provides no transaction authorization or secrecy",
+        "Checked-leaf executed non-push counts are not measured; static counts include both validation branches"
       ],
       "open_problems": [
         "OP-003",
@@ -4697,7 +4825,7 @@
         "Script does not reject the small unused encoder-rank suffix; unbounded mode also permits some tuples outside the radix box when the signer knows the secrets",
         "Native outputs remain 20/32 bytes; only zero digits reveal 16-byte initial secrets",
         "Metric execution disables the stack limit; strict local tests are separate, with no Bitcoin Core execution or policy validation",
-        "The pinned local executor can panic on OP_PICK indices beyond the entire stack; Bitcoin Core source rejects them. Tests with table escapes keep indices inside the full stack",
+        "Historical ba96bc2 executor measurements can panic on OP_PICK indices beyond the entire stack; the current 4b7269a4 integration repairs this bound. Table-escape tests still concern indices inside the full stack, and the complete constant-sum protocol is not Core-validated",
         "Smallest result among measured candidates, not a proof of a global Bitcoin Script optimum",
         "Offchain ranking/unranking uses exact multiprecision counts; no onchain decoder is included"
       ],
@@ -4714,7 +4842,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
-      "as_of": "2026-09-06",
+      "as_of": "2026-09-10",
       "knowledge_page": "knowledge/primitives/winternitz-constant-composition20.md",
       "implementation": "src/signatures/winternitz/constant_composition/mod.rs",
       "documentation": "src/signatures/winternitz/constant_composition/README.md",
@@ -4722,7 +4850,11 @@
         "signatures::winternitz::constant_composition",
         "src/signatures/winternitz/constant_composition/tests/vectors.py",
         "src/signatures/winternitz/constant_composition/tests/search.rs",
-        "tests/primitive_metrics.rs"
+        "tests/primitive_metrics.rs",
+        "examples/core_validation_fixtures.rs",
+        "tools/core_regtest.py",
+        "tests/data/core-validation-v30.3.json",
+        "tests/data/core-validation-v30.3.profiles.json"
       ],
       "references": [
         "nist-dlmf-multiset-permutations",
@@ -4733,7 +4865,9 @@
         "bitcoin-scriptexec-locked",
         "bitcoin-core-v29-hashes",
         "nist-hash-security-strengths",
-        "bitvm3s-2025"
+        "bitvm3s-2025",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-scriptexec-repaired-20260910"
       ],
       "techniques": [
         "hash-chain",
@@ -5127,17 +5261,58 @@
             "w20_composition_isolated_sha256_witness_max",
             "w20_composition_isolated_sha256_stack"
           ]
+        },
+        {
+          "id": "w20-composition-isolated-hash160-core-v30.3",
+          "label": "Core v30.3 complete isolated HASH160 Taproot leaf, varied message",
+          "parameters": {
+            "message_bytes": 20,
+            "hash": "HASH160",
+            "preimage_mode": "Preimage16",
+            "seed_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+            "message_hex": "00254a6f94b9de03284d7297bce1062b50759abf",
+            "witness_data_items": 70,
+            "complete_taproot_witness_items": 72,
+            "hint_stack_items": 0,
+            "hint_bytes": 0,
+            "all_data_items_coexist_at_entry": true,
+            "local_execution_class": "unclassified",
+            "local_stack_limit_enforced": true,
+            "core_version": "30.3",
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "data_witness_bytes": 796,
+            "static_non_push_opcodes": 567,
+            "spending_transaction_weight": 2810,
+            "spending_transaction_vsize": 703,
+            "transaction_inputs": 1,
+            "transaction_outputs": 1,
+            "report": "tests/data/core-validation-v30.3.json",
+            "fixture": "winternitz-valid"
+          },
+          "includes": "complete-leaf: isolated verifier with embedded commitments, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes all 70 data items, script, 33-byte control block and count/length prefixes. One invocation, zero hints; all data coexist at entry. Local combined peak uses stack-limited tapscript; Core independently validates consensus and default standard policy. Transaction metrics are separately scoped to one input and one P2WSH output. Other profiles and fragment snapshots retain their prior evidence.",
+          "script_bytes": 1599,
+          "witness_bytes": 2432,
+          "max_stack_items": 119,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1599,
+          "metric_keys": [],
+          "witness_bytes_max": null,
+          "evidence": "differentially-validated",
+          "execution": "policy-validated"
         }
       ],
       "limitations": [
         "Terminal-only; no onchain decoder or unused-rank rejection",
         "New encoding, key namespace and witness format; incompatible with other Winternitz signatures",
         "Isolated requires the signature to occupy the entire main stack",
-        "Pinned local executor has an OP_ROLL off-by-one panic at index equal to entire pool size; Core source rejects it, but no Core differential execution performed; composable variants avoid that malformed index",
+        "Historical ba96bc2 report records an OP_ROLL off-by-one panic at the full pool bound; the current 4b7269a4 integration returns InvalidStackOperation at all three tested slots. Core independently rejects the exact bound; this repair does not expand the complete-protocol validation scope",
         "Metric helper disables stack limit; strict local tests do not establish consensus or policy validity",
-        "Enabled opcodes exceed bare/P2SH/P2WSH 201-opcode limit; tapscript deployment remains unclassified",
+        "Enabled opcodes exceed bare/P2SH/P2WSH 201-opcode limit; fragment profiles remain unclassified for tapscript deployment except the separately recorded complete Core-validated leaf",
         "Finite parameter search with approximate screening; not a proof of global minimum",
-        "Custom cryptographic argument and concrete multi-target security need further analysis"
+        "Custom cryptographic argument and concrete multi-target security need further analysis",
+        "Only configuration w20-composition-isolated-hash160-core-v30.3 is differentially-validated/policy-validated against a pinned Core executable. Record-level evidence/execution describe the older fragment suite; complete-leaf and transaction costs are separate boundaries."
       ],
       "open_problems": [
         "OP-003",

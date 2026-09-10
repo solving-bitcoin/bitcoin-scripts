@@ -993,56 +993,110 @@ mod tests {
         test_official_test_vectors_with_limbs(&USEFUL_LIMB_LENGTHS)
     }
 
+    // Fragment-only tapscript resource probe with the stack limit enforced.
+    // All message and padding items coexist in the witness at entry, with zero
+    // auxiliary hints. Staging and hashing are
+    // compiled together; the 64 digest nibbles and padding remain observable.
+    // A complete-leaf cleanup would let the optimizer remove the empty hash's
+    // constant output and invalidate the stack-bound measurement.
     fn test_blake3_stack_space(
         blake3_script: Script,
         message_len: usize,
         limb_len: u8,
         extra_elements: i32,
-    ) -> bool {
+    ) -> crate::support::execution::ExecuteInfo {
+        assert!(extra_elements >= 0);
         let message = vec![0u8; message_len];
-        execute_script(script! {
-            for _ in 0..extra_elements {
-                { -1 } OP_TOALTSTACK
+        let mut witness = Vec::new();
+        for chunk in chunk_message(&message).into_iter().rev() {
+            for half in chunk.chunks_exact(32) {
+                for limb in pack_256_bits(half, limb_len) {
+                    let mut encoded = [0u8; 8];
+                    let len = bitcoin::script::write_scriptint(&mut encoded, i64::from(limb));
+                    witness.push(encoded[..len].to_vec());
+                }
             }
-            { blake3_push_message_script_with_limb(&message, limb_len) }
-            { blake3_script.clone() }
-            for _ in 0..extra_elements {
-                OP_FROMALTSTACK OP_DROP
-            }
-            for _ in 0..64 {
-                OP_DROP
-            }
-            OP_TRUE
-        })
-        .success
+        }
+        witness.extend((0..extra_elements).map(|_| vec![0x81]));
+        let data_items = witness.len();
+        let witness_bytes =
+            bitcoin::consensus::serialize(&bitcoin::Witness::from_slice(&witness)).len();
+        let compiled = script! {
+            for _ in 0..extra_elements { OP_TOALTSTACK }
+            { blake3_script }
+        }
+        .compile_with_policy();
+        let script_bytes = compiled.len();
+        let compilation = if script_bytes > crate::support::script::MAX_OPTIMIZER_INPUT_BYTES {
+            "unoptimized"
+        } else {
+            "optimized"
+        };
+        let result = crate::support::execution::execute_raw_script_with_inputs_strict(
+            compiled.to_bytes(),
+            witness,
+        );
+        println!(
+            "BLAKE3_RESOURCE message_bytes={message_len} limb_bits={limb_len} message_items={} padding_items={extra_elements} data_items={data_items} hint_items=0 witness_bytes={witness_bytes} script_bytes={script_bytes} compilation={compilation} combined_peak={} context=tapscript stack_limit_enforced={} deployment=unclassified error={:?}",
+            data_items - extra_elements as usize, result.stats.max_nb_stack_items,
+            result.stack_limit_enforced, result.error,
+        );
+        result
     }
 
     fn test_maximum_alstack_element_calculation_with_limbs(limb_lens: &[u8]) {
+        use bitcoin_scriptexec::ExecError;
         for limb_len in limb_lens.iter().copied() {
             for message_len in std::iter::once(0).chain((64..=1024).step_by(64)) {
                 let blake3_script = blake3_compute_script_with_limb(message_len, limb_len);
                 let maximum_extra_elements =
                     maximum_number_of_altstack_elements_using_blake3(message_len, limb_len);
                 if maximum_extra_elements < 0 {
-                    assert!(!test_blake3_stack_space(
-                        blake3_script.clone(),
-                        message_len,
-                        limb_len,
-                        0
-                    ));
+                    let result = test_blake3_stack_space(blake3_script, message_len, limb_len, 0);
+                    assert_eq!(
+                        result.error,
+                        Some(ExecError::StackSize),
+                        "limb {limb_len}, message {message_len}, no padding"
+                    );
                 } else {
-                    assert!(test_blake3_stack_space(
+                    let result = test_blake3_stack_space(
                         blake3_script.clone(),
                         message_len,
                         limb_len,
-                        maximum_extra_elements
-                    ));
-                    assert!(!test_blake3_stack_space(
-                        blake3_script.clone(),
+                        maximum_extra_elements,
+                    );
+                    assert!(result.stack_limit_enforced);
+                    assert_eq!(
+                        result.error, None,
+                        "limb {limb_len}, message {message_len}, padding {maximum_extra_elements}"
+                    );
+                    // Hashing is a fragment with 64 outputs, so complete-leaf
+                    // clean-stack success is deliberately false.
+                    assert!(!result.success);
+                    let expected = blake3::hash(&vec![0u8; message_len])
+                        .as_bytes()
+                        .iter()
+                        .flat_map(|byte| [byte >> 4, byte & 0x0f])
+                        .map(|nibble| if nibble == 0 { vec![] } else { vec![nibble] })
+                        .collect::<Vec<_>>();
+                    assert_eq!(
+                        result.final_stack.0.iter_str().collect::<Vec<_>>(),
+                        expected,
+                        "limb {limb_len}, message {message_len}: digest nibbles"
+                    );
+                    assert_eq!(
+                        result.stats.max_nb_stack_items, 1000,
+                        "limb {limb_len}, message {message_len}: capacity must be tight"
+                    );
+                    let overflow = test_blake3_stack_space(
+                        blake3_script,
                         message_len,
                         limb_len,
-                        maximum_extra_elements + 1
-                    ));
+                        maximum_extra_elements + 1,
+                    );
+                    assert_eq!(overflow.error, Some(ExecError::StackSize),
+                        "limb {limb_len}, message {message_len}, capacity {maximum_extra_elements}: valid peak {}, next peak {}",
+                        result.stats.max_nb_stack_items, overflow.stats.max_nb_stack_items);
                 }
             }
         }

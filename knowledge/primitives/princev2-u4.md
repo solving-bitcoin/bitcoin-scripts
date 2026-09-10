@@ -11,8 +11,9 @@ nibble-oriented plaintext.
   633-item combined main/alt-stack peak for the embedded zero key.
 - **Tradeoff:** use is justified only where PRINCEv2 is an acceptable protocol
   primitive; size alone does not make it interchangeable with AES.
-- **Deployment:** `unclassified`; focused tapscript tests enforce the stack
-  limit, but full transaction/Core and relay-policy validation remain open.
+- **Deployment:** the unchecked fragment remains `unclassified`. Three exact
+  checked computation leaves are `policy-validated` against pinned Bitcoin Core;
+  this does not establish arbitrary-key or composed-protocol deployment.
 
 The current generator eliminates boundary reversals through logical state
 mapping, prices final evacuation in quartet scheduling, places the final-row
@@ -24,6 +25,18 @@ and consumes no signature-validation budget. All measurements include lookup
 setup/cleanup and exclude input pushes/output comparison. There are zero
 hints and 16 data items at each invocation boundary. The focused metric and
 differential test targets avoid the expensive full-repository metric suite.
+
+`prince_verify(key, ciphertext)` supplies the missing complete-leaf boundary:
+exactly 16 canonical plaintext nibbles, encryption, all ciphertext comparisons,
+and one clean truthy result. The checked zero-key leaf is 6,426 bytes with a
+633-item peak; the published-key leaf is 6,582 bytes with a 685-item peak.
+Each has zero hints, 16 entry data items and 18 complete Taproot witness items.
+The [funded Core experiment](../prince-core-validation.md) records three valid
+spends, 17 invalid-input/ciphertext cases, full witness and transaction metrics,
+and 40 matching local/Core profile comparisons. These are
+`differentially-validated` measurements for the exact fixtures. A public-key
+encryption relation provides neither transaction authorization nor plaintext
+secrecy.
 
 See the [implementation README](../../src/ciphers/prince/README.md) and catalog
 record `cipher/princev2-u4`.

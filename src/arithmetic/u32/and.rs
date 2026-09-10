@@ -95,49 +95,60 @@ pub fn u32_and(a: u32, b: u32, stack_size: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::arithmetic::test_helpers::{run_with_witness, word_witness};
     use crate::arithmetic::u32::stack::*;
     use crate::arithmetic::u32::xor::{u8_drop_xor_table, u8_push_xor_table};
-    use crate::support::execution::run;
-    use rand::Rng;
+    use rand::{rngs::StdRng, Rng, SeedableRng};
 
     #[test]
     fn test_and() {
         println!("u32 and: {} bytes", u32_and(0, 1, 3).len());
+        let script = script! {
+            { u32_toaltstack() }
+            { u32_toaltstack() }
+            { u8_push_xor_table() }
+            { u32_fromaltstack() }
+            { u32_fromaltstack() }
+            { u32_and(0, 1, 3) }
+            { u32_toaltstack() }
+            { u32_drop() } // drop the preserved y
+            { u8_drop_xor_table() }
+            { u32_fromaltstack() }
+            { u32_equal() }
+        }
+        .compile_with_policy()
+        .to_bytes();
+        let mut rng = StdRng::seed_from_u64(0x7533325f616e64);
         for _ in 0..100 {
-            let mut rng = rand::thread_rng();
             let x: u32 = rng.gen();
             let y: u32 = rng.gen();
-            let exec_script = script! {
-                {u8_push_xor_table()}
-                {u32_push(x)}
-                {u32_push(y)}
-                {u32_and(0, 1, 3)}
-                {u32_push(x & y)}
-                {u32_equal()}
-                OP_TOALTSTACK
-                {u32_drop()} // drop y
-                {u8_drop_xor_table()}
-                OP_FROMALTSTACK
-            };
-            run(exec_script);
+            run_with_witness(
+                &script,
+                word_witness(x & y)
+                    .chain(word_witness(x))
+                    .chain(word_witness(y)),
+            );
         }
     }
     #[test]
     fn test_u8_and_exhaustive() {
+        // Keep the expected byte below the table and restore the two operands
+        // above it. Only witness values vary across the exhaustive domain.
+        let script = script! {
+            OP_TOALTSTACK OP_TOALTSTACK
+            { u8_push_xor_table() }
+            OP_FROMALTSTACK OP_FROMALTSTACK
+            { u8_and(2) }
+            OP_TOALTSTACK
+            { u8_drop_xor_table() }
+            OP_FROMALTSTACK
+            OP_EQUAL
+        }
+        .compile_with_policy()
+        .to_bytes();
         for a in 0..256 {
             for b in 0..256 {
-                let script = script! {
-                  { u8_push_xor_table() }
-                  { a }
-                  { b }
-                  { u8_and(2) }
-                  { a & b }
-                  OP_EQUAL
-                  OP_TOALTSTACK
-                  { u8_drop_xor_table() }
-                  OP_FROMALTSTACK
-                };
-                run(script);
+                run_with_witness(&script, [a & b, a, b]);
             }
         }
     }

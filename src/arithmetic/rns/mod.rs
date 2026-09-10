@@ -277,63 +277,68 @@ mod tests {
     use super::*;
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
-    fn run_binary(
-        lhs: Script,
-        rhs: u32,
-        expected: u32,
-        tables: Script,
-        operation: Script,
-        drop_tables: Script,
-    ) {
-        let script = script! {
+    use crate::arithmetic::test_helpers::run_with_witness;
+    use std::sync::OnceLock;
+
+    fn compile_binary(tables: Script, operation: Script, drop_tables: Script) -> Vec<u8> {
+        script! {
+            // Preserve the expected value below the tables, restoring only
+            // the two operands above them before the operation executes.
+            for _ in 0..2 * RNS_RESIDUE_COUNT {
+                OP_TOALTSTACK
+            }
             { tables }
-            { lhs }
-            { rns_push_value(rhs) }
+            for _ in 0..2 * RNS_RESIDUE_COUNT {
+                OP_FROMALTSTACK
+            }
             { operation }
             { drop_tables }
-            { rns_push_value(expected) }
             { rns_fromaltstack() }
             { rns_equalverify() }
             OP_TRUE
-        };
-        crate::support::execution::run(script);
+        }
+        .compile_with_policy()
+        .to_bytes()
+    }
+
+    fn run_binary(lhs: [u32; RNS_MODULI.len()], rhs: u32, expected: u32, script: &[u8]) {
+        run_with_witness(
+            script,
+            rns_encode(expected)
+                .into_iter()
+                .rev()
+                .chain(lhs.into_iter().rev())
+                .chain(rns_encode(rhs).into_iter().rev())
+                .map(i64::from),
+        );
     }
 
     fn run_add(lhs: u32, rhs: u32) {
+        static SCRIPT: OnceLock<Vec<u8>> = OnceLock::new();
+        let script = SCRIPT.get_or_init(|| {
+            compile_binary(rns_push_add_tables(), rns_add(), rns_drop_add_tables())
+        });
         let expected = ((lhs as u64 + rhs as u64) % RNS_MODULUS as u64) as u32;
-        run_binary(
-            rns_push_value(lhs),
-            rhs,
-            expected,
-            rns_push_add_tables(),
-            rns_add(),
-            rns_drop_add_tables(),
-        );
+        run_binary(rns_encode(lhs), rhs, expected, script);
     }
 
     fn run_sub(lhs: u32, rhs: u32) {
+        static SCRIPT: OnceLock<Vec<u8>> = OnceLock::new();
+        let script = SCRIPT.get_or_init(|| {
+            compile_binary(rns_push_sub_tables(), rns_sub(), rns_drop_sub_tables())
+        });
         let modulus = RNS_MODULUS as u64;
         let expected = ((lhs as u64 % modulus + modulus - rhs as u64 % modulus) % modulus) as u32;
-        run_binary(
-            rns_push_value(lhs),
-            rhs,
-            expected,
-            rns_push_sub_tables(),
-            rns_sub(),
-            rns_drop_sub_tables(),
-        );
+        run_binary(rns_encode(lhs), rhs, expected, script);
     }
 
     fn run_mul(lhs: u32, rhs: u32) {
+        static SCRIPT: OnceLock<Vec<u8>> = OnceLock::new();
+        let script = SCRIPT.get_or_init(|| {
+            compile_binary(rns_push_mul_tables(), rns_mul(), rns_drop_mul_tables())
+        });
         let expected = ((lhs as u64 * rhs as u64) % RNS_MODULUS as u64) as u32;
-        run_binary(
-            rns_push_indexed_value(lhs),
-            rhs,
-            expected,
-            rns_push_mul_tables(),
-            rns_mul(),
-            rns_drop_mul_tables(),
-        );
+        run_binary(rns_encode_indexed(lhs), rhs, expected, script);
     }
 
     #[test]

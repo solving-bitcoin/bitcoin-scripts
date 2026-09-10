@@ -151,6 +151,13 @@ eight-word backend, setup is split into 241 bytes before message staging and
 112 bytes afterward. Metrics exclude input pushes or witness serialization and
 digest comparison.
 
+Setup and cleanup costs are measured as independent fragments. Compiling
+unused setup immediately followed by cleanup allows optimizer cancellation;
+subtracting the standalone setup size from that result is not a cleanup cost.
+The lifecycle regression test declares the table input layout and compiles
+the actual cleanup method independently. No snapshot values changed in this
+measurement-boundary correction.
+
 | Configuration | Compute script |
 | --- | ---: |
 | Empty message, 29-bit API | <!-- metric:blake3_empty_limb29 -->64<!-- /metric:blake3_empty_limb29 --> bytes |
@@ -201,6 +208,43 @@ claims. The local strict-stack test executes every direct-input length from 0
 through 32 and enforces the 1,000-item limit. This is not a Bitcoin Core
 consensus or policy reproduction, so both profiles remain
 `research-unlimited`.
+
+The separate `test_maximum_alstack_element_calculation` is a resource-boundary
+probe for limb widths 4 and 29 and message lengths 0, 64, 128, ..., 1,024 bytes.
+It supplies canonical zero-message limbs and padding as witness data, moves
+padding to the altstack, then computes the hash. All data coexist at entry;
+there are exactly zero auxiliary hint items in every configuration. It leaves
+the padding and 64 digest nibbles observable, and checks the digest against
+host BLAKE3. It intentionally has no complete-leaf terminal predicate or
+cleanup: `error = None` denotes normal fragment completion, while `success`
+is false because the output stack contains 64 items.
+
+For `n` nonempty 64-byte blocks, the message has `n*L` items, where `L = 128`
+for 4-bit limbs and `L = 18` for 29-bit limbs. Predicted padding capacity is
+`p = 409 - (n-1)*L`. Whenever `p >= 0`, the test executes both `p` and `p+1`
+padding items: complete entry counts are `n*L+p` and `n*L+p+1`, and serialized
+data-witness sizes are `3+n*L+2*p` and two bytes more, respectively. For the
+empty message, capacities 936/937 use 936/937 entry items and 1,875/1,877
+witness bytes. These witness sizes exclude the script and control block.
+For negative capacity (4-bit limbs, 5 through 16 blocks), zero padding is
+tested, with `128*n` entry items and `3+128*n` witness bytes.
+
+Every supported capacity must peak at exactly 1,000 combined main/alt items;
+one more padding item must fail with `StackSize`. Unsupported message shapes
+must also fail with `StackSize`, including oversized entry witnesses. The
+test prints each final script size, data/hint count, witness size and combined
+peak with `--nocapture`; nonempty scripts exceed the cutoff and are explicitly
+unoptimized. This is `locally-reproduced` stack-limited tapscript evidence,
+deployment `unclassified`, not complete-leaf consensus/policy validation.
+The [old test's optimization failure](../../../knowledge/negative-results/compiler-validation-runtime.md#constant-cleanup-erases-the-resource-being-tested)
+explains why embedding constants and dropping every result did not measure
+this boundary reliably.
+
+The [56 recorded resource probes](../../../tests/data/blake3-resource-boundaries.json)
+pass under the pinned compiler and match the compiler candidate's measurements
+exactly. The report records per-probe bytes, witness and hint counts, combined
+peaks and source hashes; it does not upgrade the separate primitive profiles'
+deployment classes.
 
 ## Direct u4 witness layout
 

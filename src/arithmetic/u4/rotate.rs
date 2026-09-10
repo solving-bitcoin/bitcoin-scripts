@@ -65,9 +65,11 @@ pub fn u4_rrot(shift: u32, number_pos: u32, shift_tables: u32, is_shift: bool) -
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::arithmetic::u4::stack::{u4_drop, u4_number_to_nibble};
-    use crate::support::execution::run;
-    use rand::Rng;
+    use crate::arithmetic::test_helpers::{nibble_witness, run_with_witness};
+    use crate::arithmetic::u4::stack::{
+        u4_drop, u4_fromaltstack, u4_toaltstack, u4_u32_verify_from_altstack,
+    };
+    use rand::{rngs::StdRng, Rng, SeedableRng};
 
     fn rrot(x: u32, n: u32) -> u32 {
         if n == 0 {
@@ -83,69 +85,45 @@ mod tests {
         x >> n
     }
 
-    #[test]
-    fn test_rrot() {
-        let mut rng = rand::thread_rng();
-        for _ in 0..1000 {
-            let x: u32 = rng.gen();
-            for n in 1..31 {
-                let script = script! {
+    fn check_rotations(is_shift: bool, expected: fn(u32, u32) -> u32, seed: u64) {
+        // Witness: expected nibbles followed by input nibbles. Table setup,
+        // operand preservation/cleanup, and every output check still execute.
+        let scripts: Vec<_> = (1..31)
+            .map(|n| {
+                script! {
+                    { u4_toaltstack(8) }
                     { u4_push_rrot_tables() }
-                    { u4_number_to_nibble(x) }
-
-                    { u4_rrot(n, 0, 8, false) }
-
+                    { u4_fromaltstack(8) }
+                    { u4_rrot(n, 0, 8, is_shift) }
                     { u4_drop(8) }
                     { u4_drop_rrot_tables() }
-
-                    { u4_number_to_nibble(rrot(x, n)) } //OP_FROMALTSTACK
-
-                    for _ in 0..8 {
-                        OP_FROMALTSTACK
-                    }
-                    for i in 0..8 {
-                        { 8 - i}
-                        OP_ROLL
-                        OP_EQUALVERIFY
-                    }
-
+                    { u4_u32_verify_from_altstack() }
                     OP_TRUE
-                };
-                run(script);
+                }
+                .compile_with_policy()
+                .to_bytes()
+            })
+            .collect();
+        let mut rng = StdRng::seed_from_u64(seed);
+        for _ in 0..1000 {
+            let x: u32 = rng.gen();
+            for (i, script) in scripts.iter().enumerate() {
+                let n = i as u32 + 1;
+                run_with_witness(
+                    script,
+                    nibble_witness(expected(x, n)).chain(nibble_witness(x)),
+                );
             }
         }
     }
 
     #[test]
+    fn test_rrot() {
+        check_rotations(false, rrot, 0x75345f726f74);
+    }
+
+    #[test]
     fn test_rshift() {
-        let mut rng = rand::thread_rng();
-        for _ in 0..1000 {
-            let x: u32 = rng.gen();
-            for n in 1..31 {
-                let script = script! {
-                    { u4_push_rrot_tables() }
-                    { u4_number_to_nibble(x) }
-
-                    { u4_rrot(n, 0, 8, true ) }
-
-                    { u4_drop(8) }
-                    { u4_drop_rrot_tables() }
-
-                    { u4_number_to_nibble(rshift(x, n)) } //OP_FROMALTSTACK
-
-                    for _ in 0..8 {
-                        OP_FROMALTSTACK
-                    }
-                    for i in 0..8 {
-                        { 8 - i}
-                        OP_ROLL
-                        OP_EQUALVERIFY
-                    }
-
-                    OP_TRUE
-                };
-                run(script);
-            }
-        }
+        check_rotations(true, rshift, 0x75345f7368696674);
     }
 }

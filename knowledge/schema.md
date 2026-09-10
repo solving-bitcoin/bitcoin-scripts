@@ -8,7 +8,8 @@ catalog.
 
 The root object contains:
 
-- `schema_version`: schema revision used by the validator.
+- `schema_version`: schema revision used by the validator; the current revision
+  is `1.1`, with legacy revision `1` also accepted.
 - `as_of`: last catalog-wide review date in `YYYY-MM-DD` format.
 - `cost_model`: link to the definitions used by all measurements.
 - `records`: array of primitive-construction records.
@@ -56,6 +57,18 @@ different from zero:
 `parameters` is an object containing every value needed to reproduce the
 configuration. `metric_keys` links measurements back to the checked README
 markers in `tests/primitive_metrics.rs`.
+
+Revision `1.1` adds optional top-level `evidence` and `execution` fields to each
+configuration. Each uses the same enum as the corresponding record field.
+An omitted field inherits the record's value; an explicit field describes only
+that measured configuration and does not upgrade its siblings or the record.
+Both fields must contain a valid enum when present, including for rejected
+configurations. Qualifiers inside `parameters` do not override classification.
+
+`kb.py best` filters and displays these effective configuration qualifiers,
+including its `--evidence` and `--execution` filters and JSON output. `list`
+continues to filter whole records. `show` retains the record's classification
+and displays effective qualifiers separately for each configuration.
 
 ## Evolution rules
 

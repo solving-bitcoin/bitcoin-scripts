@@ -25,6 +25,12 @@ serde_json = "1.0"
 rand_chacha = "0.3.1"
 sha2 = "0.10"
 
+# Apply the same repaired interpreter to this crate and bitcoin-script-stack.
+# Temporary immutable integration of resource and signature repairs; see
+# src/support/README.md for provenance and the criterion to return upstream.
+[patch."https://github.com/BitVM/rust-bitcoin-scriptexec"]
+bitcoin-scriptexec = { git = "https://github.com/adrienlacombe/rust-bitcoin-scriptexec", rev = "702544c9a045ac4fc14846da6da6559e2b7cd9d1" }
+
 [[bench]]
 name = "winternitz"
 harness = false

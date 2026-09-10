@@ -139,6 +139,105 @@ fn prince_metrics() -> Vec<Metric> {
     ]
 }
 
+fn prince_checked_metrics() -> Vec<Metric> {
+    use bitcoin::{
+        secp256k1::{Keypair, Secp256k1, SecretKey},
+        taproot::{LeafVersion, TaprootBuilder},
+    };
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    let fixtures: serde_json::Value =
+        serde_json::from_str(include_str!("data/princev2_upstream_vectors.json")).unwrap();
+    assert_eq!(
+        fixtures["commit"],
+        "0c6172dcd85f1fe6a269519093a79c7350fe6e55"
+    );
+    let secp = Secp256k1::new();
+    let internal = Keypair::from_secret_key(&secp, &SecretKey::from_slice(&[1; 32]).unwrap())
+        .x_only_public_key()
+        .0;
+    let mut metrics = Vec::new();
+    for (index, keys) in [
+        (
+            0,
+            [
+                "prince_checked_zero_script",
+                "prince_checked_zero_data",
+                "prince_checked_zero_witness",
+                "prince_checked_zero_stack",
+                "prince_checked_zero_static",
+            ],
+        ),
+        (
+            3,
+            [
+                "prince_checked_max_script",
+                "prince_checked_max_data",
+                "prince_checked_max_witness",
+                "prince_checked_max_stack",
+                "prince_checked_max_static",
+            ],
+        ),
+        (
+            4,
+            [
+                "prince_checked_published_script",
+                "prince_checked_published_data",
+                "prince_checked_published_witness",
+                "prince_checked_published_stack",
+                "prince_checked_published_static",
+            ],
+        ),
+    ] {
+        let row = &fixtures["vectors"][index];
+        let key = u128::from_str_radix(row["key"].as_str().unwrap(), 16).unwrap();
+        let plaintext = u64::from_str_radix(row["plaintext"].as_str().unwrap(), 16).unwrap();
+        let ciphertext = u64::from_str_radix(row["ciphertext"].as_str().unwrap(), 16).unwrap();
+        let script = prince::prince_verify(key, ciphertext).compile_with_policy();
+        let data = prince::u64_to_nibbles_msb(plaintext)
+            .into_iter()
+            .rev()
+            .map(|n| scriptnum(i64::from(n)))
+            .collect::<Vec<_>>();
+        let spend = TaprootBuilder::new()
+            .add_leaf(0, script.clone())
+            .unwrap()
+            .finalize(&secp, internal)
+            .unwrap();
+        let control = spend
+            .control_block(&(script.clone(), LeafVersion::TapScript))
+            .unwrap()
+            .serialize();
+        let mut complete_witness = data.clone();
+        complete_witness.push(script.to_bytes());
+        complete_witness.push(control);
+        assert_eq!(data.len(), 16);
+        assert_eq!(complete_witness.len(), 18);
+        let result = execute_tapscript(script.clone(), data.clone(), TapscriptProfile::Consensus);
+        assert_eq!(result.accepted(), Some(true));
+        let static_ops = script
+            .instructions()
+            .map(Result::unwrap)
+            .filter(|instruction| matches!(instruction, Instruction::Op(op) if op.to_u8() > 0x60))
+            .count();
+        let values = [
+            script.len(),
+            witness_size(&data),
+            witness_size(&complete_witness),
+            result.execution().unwrap().stats.max_nb_stack_items,
+            static_ops,
+        ];
+        for (key, value) in keys.into_iter().zip(values) {
+            metrics.push(Metric {
+                readme: "src/ciphers/prince/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    metrics
+}
+
 // Summary columns stay in the overview; detailed snapshots live with their construction.
 fn winternitz_metric_readme(key: &str) -> &'static str {
     if key.starts_with("w20_") {
@@ -4035,6 +4134,11 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn prince_checked_metrics_are_current() {
+    check_readme_metrics(prince_checked_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

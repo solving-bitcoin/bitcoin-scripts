@@ -50,3 +50,22 @@ deployment claims.
 Document dominated or failed attempts and add remaining falsifiable questions
 to `open-problems.md`. Update `as_of`, run `python3 tools/kb.py validate`, and
 run the relevant Rust tests.
+
+## Automated checks
+
+The [research validation workflow](../.github/workflows/knowledge.yml) runs
+formatting, knowledge validation, all Python harness tests, the non-field Rust
+suite, and the resource, signature and checked-PRINCE Core experiments in
+separate jobs. Broad Rust runs retain `--skip fields::`; field arithmetic is
+opt-in. Host dev/test optimization is enabled without changing debug assertions
+or the repository's Script compilation policy. Actions use immutable commits,
+and downloaded Core archives are checked against the pinned release manifest.
+Fresh Core reports are uploaded as CI artifacts; committed historical reports
+are not overwritten. CI availability and a configured workflow are not evidence
+that a particular remote run passed.
+
+For new Rust reports, use `support::provenance::{interpreter, compiler, stack}`
+to record the Git packages resolved in the binary's embedded lockfile. Missing,
+ambiguous, malformed or non-Git identities fail explicitly. A Python harness
+that invokes Cargo should also compare the reported identities with
+`cargo metadata --locked` before running its oracle.

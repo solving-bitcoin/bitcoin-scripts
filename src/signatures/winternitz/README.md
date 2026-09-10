@@ -130,7 +130,11 @@ Surrounding state counts toward the same 1,000-item limit.
 
 Metrics are `locally-reproduced`, `research-unlimited`: the tapscript metric
 helper disables stack-limit enforcement. Separate strict local tests do not
-establish Bitcoin Core consensus or policy acceptance. An out-of-stack
-`OP_PICK`/`OP_ROLL` boundary panic in the pinned local executor is documented
-in the construction READMEs; the composition clamped and bounded modes avoid it. See the [cost model](../../../knowledge/cost-model.md) and
+establish Bitcoin Core consensus or policy acceptance. The historical
+`ba96bc2` executor could panic at an out-of-stack `OP_PICK`/`OP_ROLL` boundary.
+The lab now pins the repaired `4b7269a` interpreter; see
+[adoption and scope](../../../knowledge/negative-results/index.md#nr-048-minimal-push-policy-must-follow-execution).
+This does not change the evidence or execution classes of the recorded metrics.
+The composition clamped and bounded modes enforce their own selector bounds.
+See the [cost model](../../../knowledge/cost-model.md) and
 [signature comparison](../../../knowledge/comparisons/signatures.md).

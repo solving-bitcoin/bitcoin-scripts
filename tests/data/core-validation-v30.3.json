@@ -1,0 +1,1592 @@
+{
+  "active_consensus_deployments": [
+    "segwit",
+    "taproot"
+  ],
+  "all_expectations_met": true,
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "consensus_method": "generateblock with raw transactions; verifies connected block contains txid",
+  "fixture_count": 24,
+  "fixture_sha256": "c9b59372f57934e7bff761f4a35a000e0016779fc6ad263c6f23a3916303b50c",
+  "funding_txid": "bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a",
+  "initial_mocktime": 1800000000,
+  "local_interpreter": {
+    "commit": "ba96bc2bd76774c9d1b011461cb79d983c2c43a1",
+    "context": "tapscript",
+    "full_consensus_validation": false,
+    "helper": "execute_raw_script_with_inputs_strict",
+    "limitations": "Default minimal-number policy and experimental opcodes remain enabled; no transaction or Taproot commitment validation; execution opcode and complete-witness budget counters unavailable; boundary panics are recorded.",
+    "name": "bitcoin-scriptexec",
+    "stack_limit_enforced": true
+  },
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "policy_method": "testmempoolaccept; -acceptnonstdtxn=0; remaining v30.3 default policy",
+  "results": [
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "67a1842694049a879b873e2bff8a57a9c385718d85d5233b0361cf9f4d41b843",
+          "block_height": 103
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00020833,
+            "effective-includes": [
+              "faddecf430278e94648eb77611677ba24bf71053caeee791e8862b81706f220c"
+            ]
+          },
+          "txid": "ead744a782381b4fca6b951bcc1a06572a1f7e7b85f9c738f9d9bbfc68390916",
+          "vsize": 480,
+          "wtxid": "faddecf430278e94648eb77611677ba24bf71053caeee791e8862b81706f220c"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Initial data stack is checked before its cleanup executes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1000,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1000,
+        "data_witness_bytes": 1003,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 501,
+        "static_non_push_opcodes": 500,
+        "taproot_witness_bytes": 1541,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "entry-stack-1000",
+      "script_pubkey_hex": "51201f36158d2da1f7431a00f631a82533973fdc78248dff03910f543bb8db6760bb",
+      "script_sha256": "43f67b221dac8eaab114480f4e444b7ac2bd252e954088f4afe047bf3df5fce5",
+      "tapleaf_hash": "f9c30890e5e163341602bf579b958ea5023930e85b5b7ba9bb3dabcb133f7ac7",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1637,
+        "txid": "ead744a782381b4fca6b951bcc1a06572a1f7e7b85f9c738f9d9bbfc68390916",
+        "vsize": 480,
+        "weight": 1919,
+        "witness_bytes": 1541,
+        "wtxid": "faddecf430278e94648eb77611677ba24bf71053caeee791e8862b81706f220c"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size limit exceeded), input 0 of f9b9c5e1183a4cd22c608b73f8a0f664fa4398effd6dbb08aab0b18645e8da17 (wtxid 87c6c67e0fbf9eae58cf5f63ce7e149d5f7f8cba20dd6f6ab9f18732fa88525d), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:1",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Stack size limit exceeded), input 0 of f9b9c5e1183a4cd22c608b73f8a0f664fa4398effd6dbb08aab0b18645e8da17 (wtxid 87c6c67e0fbf9eae58cf5f63ce7e149d5f7f8cba20dd6f6ab9f18732fa88525d), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:1",
+          "reject-reason": "mempool-script-verify-flag-failed (Stack size limit exceeded)",
+          "txid": "f9b9c5e1183a4cd22c608b73f8a0f664fa4398effd6dbb08aab0b18645e8da17",
+          "wtxid": "87c6c67e0fbf9eae58cf5f63ce7e149d5f7f8cba20dd6f6ab9f18732fa88525d"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Initial data stack is checked before its cleanup executes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "stack-size",
+        "policy": false,
+        "policy_rejection": "stack-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "StackSize",
+        "final_main_stack_items": 1001,
+        "max_stack_items": 1001,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1001,
+        "data_witness_bytes": 1004,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 502,
+        "static_non_push_opcodes": 501,
+        "taproot_witness_bytes": 1543,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "entry-stack-1001",
+      "script_pubkey_hex": "51201d0d35a3e57a990c966c985a0bba6ee1b714604d02cdf3d091d88f618c3f36de",
+      "script_sha256": "72b318315aad5c40751981ad25c5b715fdb77c36e528766cca7695e76b753267",
+      "tapleaf_hash": "9b55d045bf1eefa56619897ed0efb9c46f89ec1951d3211e16e130545b733194",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1639,
+        "txid": "f9b9c5e1183a4cd22c608b73f8a0f664fa4398effd6dbb08aab0b18645e8da17",
+        "vsize": 481,
+        "weight": 1921,
+        "witness_bytes": 1543,
+        "wtxid": "87c6c67e0fbf9eae58cf5f63ce7e149d5f7f8cba20dd6f6ab9f18732fa88525d"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "222cd167c19958414487797d3244c5a61a05eb06b741aa791909dc77433735c0",
+          "block_height": 104
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.0008,
+            "effective-includes": [
+              "c3109c4e7ecfeb53080befa9eb8fa2fb0c276359ae543539848cbaef9371448d"
+            ]
+          },
+          "txid": "077887aef09ea1b3df0614bfc5971795ebf4df163ef68bcf2e2684cf89fceb4e",
+          "vsize": 125,
+          "wtxid": "c3109c4e7ecfeb53080befa9eb8fa2fb0c276359ae543539848cbaef9371448d"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Initial data-item size is checked before OP_DROP; tapscript policy limits items to 80 bytes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1,
+        "data_witness_bytes": 82,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 2,
+        "static_non_push_opcodes": 1,
+        "taproot_witness_bytes": 119,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "witness-element-80",
+      "script_pubkey_hex": "51203dedcd41d6be32edca31703b28223bffd6d8e3f8323a8fd311ee6f974143139b",
+      "script_sha256": "33198a9bfef674ebddb9ffaa52928017b8472791e54c609cb95f278ac6b1e349",
+      "tapleaf_hash": "9db8384ec30fb7602aa6f8e95e608e5fb6e14c2874173625682c6e10dd566528",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 215,
+        "txid": "077887aef09ea1b3df0614bfc5971795ebf4df163ef68bcf2e2684cf89fceb4e",
+        "vsize": 125,
+        "weight": 497,
+        "witness_bytes": 119,
+        "wtxid": "c3109c4e7ecfeb53080befa9eb8fa2fb0c276359ae543539848cbaef9371448d"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "53306ed12bc2147921277fa6b62b95b47e7ee96c32e3da9ab172f8db037241d3",
+          "block_height": 105
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "bad-witness-nonstandard",
+          "reject-reason": "bad-witness-nonstandard",
+          "txid": "370174c4e25c7d486575ad6cf83a0521a5dcd042fa75e63a308d8577932f8495",
+          "wtxid": "c6e919a6f0c23ca7981ca6777e53339e6244040ab0f6260da86115f4726b0828"
+        }
+      },
+      "deployment": "consensus-validated",
+      "description": "Initial data-item size is checked before OP_DROP; tapscript policy limits items to 80 bytes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "witness-stack-item-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1,
+        "data_witness_bytes": 83,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 2,
+        "static_non_push_opcodes": 1,
+        "taproot_witness_bytes": 120,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "witness-element-81",
+      "script_pubkey_hex": "51203dedcd41d6be32edca31703b28223bffd6d8e3f8323a8fd311ee6f974143139b",
+      "script_sha256": "33198a9bfef674ebddb9ffaa52928017b8472791e54c609cb95f278ac6b1e349",
+      "tapleaf_hash": "9db8384ec30fb7602aa6f8e95e608e5fb6e14c2874173625682c6e10dd566528",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 216,
+        "txid": "370174c4e25c7d486575ad6cf83a0521a5dcd042fa75e63a308d8577932f8495",
+        "vsize": 125,
+        "weight": 498,
+        "witness_bytes": 120,
+        "wtxid": "c6e919a6f0c23ca7981ca6777e53339e6244040ab0f6260da86115f4726b0828"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "5bc078c31bf15db4293af97c7e8dad5e65cf6effd70a7cf32740324c95f4a771",
+          "block_height": 106
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "bad-witness-nonstandard",
+          "reject-reason": "bad-witness-nonstandard",
+          "txid": "81d08e5532568016919f2ff2d56076917af3676e78deffedb81f6e2825faed7f",
+          "wtxid": "860540d5e45886759d40640f17fb7e28e3f84803612aa1ab1af0d9fac84e7a46"
+        }
+      },
+      "deployment": "consensus-validated",
+      "description": "Initial data-item size is checked before OP_DROP; tapscript policy limits items to 80 bytes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "witness-stack-item-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1,
+        "data_witness_bytes": 524,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 2,
+        "static_non_push_opcodes": 1,
+        "taproot_witness_bytes": 561,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "witness-element-520",
+      "script_pubkey_hex": "51203dedcd41d6be32edca31703b28223bffd6d8e3f8323a8fd311ee6f974143139b",
+      "script_sha256": "33198a9bfef674ebddb9ffaa52928017b8472791e54c609cb95f278ac6b1e349",
+      "tapleaf_hash": "9db8384ec30fb7602aa6f8e95e608e5fb6e14c2874173625682c6e10dd566528",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 657,
+        "txid": "81d08e5532568016919f2ff2d56076917af3676e78deffedb81f6e2825faed7f",
+        "vsize": 235,
+        "weight": 939,
+        "witness_bytes": 561,
+        "wtxid": "860540d5e45886759d40640f17fb7e28e3f84803612aa1ab1af0d9fac84e7a46"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Push value size limit exceeded), input 0 of 8dbd1dae673e45a9dd6a875ac733d22332c4f6242ed71497eade4bd0da531f40 (wtxid 4e7c06e2622e758cb9e89cf0e8ec3c42eb42b896dec83ba19ba5150fd51ca16f), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:5",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "bad-witness-nonstandard",
+          "reject-reason": "bad-witness-nonstandard",
+          "txid": "8dbd1dae673e45a9dd6a875ac733d22332c4f6242ed71497eade4bd0da531f40",
+          "wtxid": "4e7c06e2622e758cb9e89cf0e8ec3c42eb42b896dec83ba19ba5150fd51ca16f"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Initial data-item size is checked before OP_DROP; tapscript policy limits items to 80 bytes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "push-size",
+        "policy": false,
+        "policy_rejection": "witness-stack-item-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "PushSize",
+        "final_main_stack_items": 1,
+        "max_stack_items": 1,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1,
+        "data_witness_bytes": 525,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 2,
+        "static_non_push_opcodes": 1,
+        "taproot_witness_bytes": 562,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "witness-element-521",
+      "script_pubkey_hex": "51203dedcd41d6be32edca31703b28223bffd6d8e3f8323a8fd311ee6f974143139b",
+      "script_sha256": "33198a9bfef674ebddb9ffaa52928017b8472791e54c609cb95f278ac6b1e349",
+      "tapleaf_hash": "9db8384ec30fb7602aa6f8e95e608e5fb6e14c2874173625682c6e10dd566528",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 658,
+        "txid": "8dbd1dae673e45a9dd6a875ac733d22332c4f6242ed71497eade4bd0da531f40",
+        "vsize": 235,
+        "weight": 940,
+        "witness_bytes": 562,
+        "wtxid": "4e7c06e2622e758cb9e89cf0e8ec3c42eb42b896dec83ba19ba5150fd51ca16f"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "4cf046d0e8689706b0ef0607edb4aa29f8cf005f4786528baa7ea939e66032ee",
+          "block_height": 107
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.0002079,
+            "effective-includes": [
+              "23697211ae6b4e34e5539d0440d85975ba8b31a154aeec55e192ef4b8208ec75"
+            ]
+          },
+          "txid": "1a7a71448bc5872c170e160458af1adf4b22c99b8dd2452f94bcb51ad5b59a0c",
+          "vsize": 481,
+          "wtxid": "23697211ae6b4e34e5539d0440d85975ba8b31a154aeec55e192ef4b8208ec75"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "A temporary data push counts even when the following instruction drops it.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1000,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 999,
+        "data_witness_bytes": 1002,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 504,
+        "static_non_push_opcodes": 501,
+        "taproot_witness_bytes": 1543,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "transient-data-push-999",
+      "script_pubkey_hex": "5120506f30519fae260da791fca93e1951ddcb256ca3dfe1bc3a8bef3ee781670a4d",
+      "script_sha256": "fdf00817fb2c393f9fe7cafb31e87e07561cd139f86de8df04a27f38bb4d4f72",
+      "tapleaf_hash": "0ede320ac203f3d4f706074aec1eb0891a1c89482d0f3abd03087e7dd53c9905",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1639,
+        "txid": "1a7a71448bc5872c170e160458af1adf4b22c99b8dd2452f94bcb51ad5b59a0c",
+        "vsize": 481,
+        "weight": 1921,
+        "witness_bytes": 1543,
+        "wtxid": "23697211ae6b4e34e5539d0440d85975ba8b31a154aeec55e192ef4b8208ec75"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size limit exceeded), input 0 of 75473ad2348e3ff6d3bb04378778e79b9d021aa7f2a201e1293590b5f38febc6 (wtxid 582975eefc69a0f38b98f930f203f4ffefcf436665c1396083337c7331306a9b), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:7",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Stack size limit exceeded), input 0 of 75473ad2348e3ff6d3bb04378778e79b9d021aa7f2a201e1293590b5f38febc6 (wtxid 582975eefc69a0f38b98f930f203f4ffefcf436665c1396083337c7331306a9b), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:7",
+          "reject-reason": "mempool-script-verify-flag-failed (Stack size limit exceeded)",
+          "txid": "75473ad2348e3ff6d3bb04378778e79b9d021aa7f2a201e1293590b5f38febc6",
+          "wtxid": "582975eefc69a0f38b98f930f203f4ffefcf436665c1396083337c7331306a9b"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "A temporary data push counts even when the following instruction drops it.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "stack-size",
+        "policy": false,
+        "policy_rejection": "stack-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "StackSize",
+        "final_main_stack_items": 1001,
+        "max_stack_items": 1001,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 1000,
+        "data_witness_bytes": 1003,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 504,
+        "static_non_push_opcodes": 501,
+        "taproot_witness_bytes": 1544,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "transient-data-push-1000",
+      "script_pubkey_hex": "5120d2ab11facfdf3120cf2a255641c8e68131b1f9fa1c259be2fb67849c31fc41c1",
+      "script_sha256": "a2a26f216e532054c64195ea81834e05af476efdea73f3cc2538280ed5cf8822",
+      "tapleaf_hash": "e61931ac9d2e4a48c9ca800ce5f39016895ec2c3ed850194309a6fe29cc21019",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1640,
+        "txid": "75473ad2348e3ff6d3bb04378778e79b9d021aa7f2a201e1293590b5f38febc6",
+        "vsize": 481,
+        "weight": 1922,
+        "witness_bytes": 1544,
+        "wtxid": "582975eefc69a0f38b98f930f203f4ffefcf436665c1396083337c7331306a9b"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "236e154e958efd9bd251395279b8c06c25c78b6a3e04acb59c1658400c6f3257",
+          "block_height": 108
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.0002079,
+            "effective-includes": [
+              "fd746a886cb9e5988fd04f7eacaa4d835df73eb180473ea5580581e5f4bf1338"
+            ]
+          },
+          "txid": "67afe5df0d44c7bf783726fdbb55c8974f1c745330618c1d7875fd732956c86c",
+          "vsize": 481,
+          "wtxid": "fd746a886cb9e5988fd04f7eacaa4d835df73eb180473ea5580581e5f4bf1338"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Main and altstack items share the same 1,000-item limit during data pushes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1000,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 998,
+        "data_witness_bytes": 1001,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 507,
+        "static_non_push_opcodes": 502,
+        "taproot_witness_bytes": 1545,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "transient-combined-stack-998",
+      "script_pubkey_hex": "5120435221ec95488b584b8466bee0fbafbf89ab072f3cd134b1392dad157f5540c9",
+      "script_sha256": "fb8e8d3bd57d2c1c7958ef6b1dc6e30440b3ce7e4bd88d50c97fe30e6084df39",
+      "tapleaf_hash": "790aa0c285fc032c30242a5540b32936a81941f47304c5b7d2335a7ffde32146",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1641,
+        "txid": "67afe5df0d44c7bf783726fdbb55c8974f1c745330618c1d7875fd732956c86c",
+        "vsize": 481,
+        "weight": 1923,
+        "witness_bytes": 1545,
+        "wtxid": "fd746a886cb9e5988fd04f7eacaa4d835df73eb180473ea5580581e5f4bf1338"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size limit exceeded), input 0 of ea445a5dfa2656d6094e76998a60058fddfc52da30621731c89a99efe61af5e3 (wtxid 60472a332aa1c02d50199a9ce8cbc9c05d0c14d56f95fefabb7b655e8d7019d7), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:9",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Stack size limit exceeded), input 0 of ea445a5dfa2656d6094e76998a60058fddfc52da30621731c89a99efe61af5e3 (wtxid 60472a332aa1c02d50199a9ce8cbc9c05d0c14d56f95fefabb7b655e8d7019d7), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:9",
+          "reject-reason": "mempool-script-verify-flag-failed (Stack size limit exceeded)",
+          "txid": "ea445a5dfa2656d6094e76998a60058fddfc52da30621731c89a99efe61af5e3",
+          "wtxid": "60472a332aa1c02d50199a9ce8cbc9c05d0c14d56f95fefabb7b655e8d7019d7"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Main and altstack items share the same 1,000-item limit during data pushes.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "stack-size",
+        "policy": false,
+        "policy_rejection": "stack-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "StackSize",
+        "final_main_stack_items": 1000,
+        "max_stack_items": 1001,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 999,
+        "data_witness_bytes": 1002,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 508,
+        "static_non_push_opcodes": 503,
+        "taproot_witness_bytes": 1547,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "transient-combined-stack-999",
+      "script_pubkey_hex": "51205c397f895acbd4a867f10cc2b2692ca83ad7b5aebdf3bd69101b227035f45fec",
+      "script_sha256": "35443aaf469d1b20f4d47f1f5128d9fb64e163835a04852a58b5f740075d4191",
+      "tapleaf_hash": "c78d3e0c37e6ee02c89984f92989b685ec3e6f2afd85cf11235482bafcc91c51",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 1643,
+        "txid": "ea445a5dfa2656d6094e76998a60058fddfc52da30621731c89a99efe61af5e3",
+        "vsize": 482,
+        "weight": 1925,
+        "witness_bytes": 1547,
+        "wtxid": "60472a332aa1c02d50199a9ce8cbc9c05d0c14d56f95fefabb7b655e8d7019d7"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "15313be7f4749af8ebd7253cb593cede5cb6538d4696be26d083433921914c51",
+          "block_height": 109
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00095238,
+            "effective-includes": [
+              "186fc02cfb9b762c69b94267496754eefdb8beeb5069b29ab80bdf57635250dd"
+            ]
+          },
+          "txid": "f659dcaeb9b60a7d1cc8b2c0989b1464f800ed8baa28f9017f24659e92725e7e",
+          "vsize": 105,
+          "wtxid": "186fc02cfb9b762c69b94267496754eefdb8beeb5069b29ab80bdf57635250dd"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Selector is compared with pool length after popping the selector; equality is invalid.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 2,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 2,
+        "data_witness_bytes": 4,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 42,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pick-valid",
+      "script_pubkey_hex": "5120a554446c431ceb79725a80e3f54fc414b5d158842c67815eb0ab30c24bb6970f",
+      "script_sha256": "c82809b77e5b4cbc0bdf5ad5b536546b0947466fcec9cd4efc6231a64ba1ea3e",
+      "tapleaf_hash": "08aa561723d4339d2c30b423ea9d7d9b48ecb4c0dc08aa017049b3c83b6390b5",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 138,
+        "txid": "f659dcaeb9b60a7d1cc8b2c0989b1464f800ed8baa28f9017f24659e92725e7e",
+        "vsize": 105,
+        "weight": 420,
+        "witness_bytes": 42,
+        "wtxid": "186fc02cfb9b762c69b94267496754eefdb8beeb5069b29ab80bdf57635250dd"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of c9566a9ff3b48f529e6bd51f39f38b6f2ff777f2587a2a175b5137616cb011b5 (wtxid 0434432c367fec95c822f89044afe5c0dd673b25a296e94fdc8ba7535d5e70e4), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:11",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of c9566a9ff3b48f529e6bd51f39f38b6f2ff777f2587a2a175b5137616cb011b5 (wtxid 0434432c367fec95c822f89044afe5c0dd673b25a296e94fdc8ba7535d5e70e4), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:11",
+          "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+          "txid": "c9566a9ff3b48f529e6bd51f39f38b6f2ff777f2587a2a175b5137616cb011b5",
+          "wtxid": "0434432c367fec95c822f89044afe5c0dd673b25a296e94fdc8ba7535d5e70e4"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Selector is compared with pool length after popping the selector; equality is invalid.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "invalid-stack-operation",
+        "policy": false,
+        "policy_rejection": "invalid-stack-operation"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "called `Result::unwrap()` on an `Err` value: InvalidStackOperation",
+        "final_main_stack_items": null,
+        "max_stack_items": null,
+        "outcome": "panic",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 2,
+        "data_witness_bytes": 5,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 43,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pick-exact-boundary",
+      "script_pubkey_hex": "5120a554446c431ceb79725a80e3f54fc414b5d158842c67815eb0ab30c24bb6970f",
+      "script_sha256": "c82809b77e5b4cbc0bdf5ad5b536546b0947466fcec9cd4efc6231a64ba1ea3e",
+      "tapleaf_hash": "08aa561723d4339d2c30b423ea9d7d9b48ecb4c0dc08aa017049b3c83b6390b5",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 139,
+        "txid": "c9566a9ff3b48f529e6bd51f39f38b6f2ff777f2587a2a175b5137616cb011b5",
+        "vsize": 106,
+        "weight": 421,
+        "witness_bytes": 43,
+        "wtxid": "0434432c367fec95c822f89044afe5c0dd673b25a296e94fdc8ba7535d5e70e4"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "21abdf5bc11f7cc12ba0cf89bf0b5df46b6a661c42906ca239426c706ba89b7c",
+          "block_height": 110
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00095238,
+            "effective-includes": [
+              "5912b283146eaf14cb22b31e8fcaf6523afde3ca6146d294ef6c677fb1991882"
+            ]
+          },
+          "txid": "9b1fa690614564982e9812912521aad2235155e8d7ef3043f632f28365773168",
+          "vsize": 105,
+          "wtxid": "5912b283146eaf14cb22b31e8fcaf6523afde3ca6146d294ef6c677fb1991882"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Selector is compared with pool length after popping the selector; equality is invalid.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 2,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 2,
+        "data_witness_bytes": 4,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 42,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "roll-valid",
+      "script_pubkey_hex": "51209805aa855acd0e7e9f802d0a99075b855773cf2fddd2b05e1ca397ea683ceaab",
+      "script_sha256": "45a22648b86e279b6ad0f1a5b86d40f3ecf0cc045652bee394e1e82ebdc22fa8",
+      "tapleaf_hash": "a40d435f76b2bc6c65b458a7cf7d9003618f8e657a2141fd223780410847d79e",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 138,
+        "txid": "9b1fa690614564982e9812912521aad2235155e8d7ef3043f632f28365773168",
+        "vsize": 105,
+        "weight": 420,
+        "witness_bytes": 42,
+        "wtxid": "5912b283146eaf14cb22b31e8fcaf6523afde3ca6146d294ef6c677fb1991882"
+      }
+    },
+    {
+      "compilation": "raw-boundary-bytecode",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of 199d2e821b8bad7ee6decd7678e0fc89104d66be9e7396353c87c1936a31e7ed (wtxid cad634e635c065436e164baf0d1d778f5dc211133cbd43b71845902fdf7d4a63), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:13",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of 199d2e821b8bad7ee6decd7678e0fc89104d66be9e7396353c87c1936a31e7ed (wtxid cad634e635c065436e164baf0d1d778f5dc211133cbd43b71845902fdf7d4a63), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:13",
+          "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+          "txid": "199d2e821b8bad7ee6decd7678e0fc89104d66be9e7396353c87c1936a31e7ed",
+          "wtxid": "cad634e635c065436e164baf0d1d778f5dc211133cbd43b71845902fdf7d4a63"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Selector is compared with pool length after popping the selector; equality is invalid.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "invalid-stack-operation",
+        "policy": false,
+        "policy_rejection": "invalid-stack-operation"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "called `Result::unwrap()` on an `Err` value: InvalidStackOperation",
+        "final_main_stack_items": null,
+        "max_stack_items": null,
+        "outcome": "panic",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 2,
+        "data_witness_bytes": 5,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 43,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "roll-exact-boundary",
+      "script_pubkey_hex": "51209805aa855acd0e7e9f802d0a99075b855773cf2fddd2b05e1ca397ea683ceaab",
+      "script_sha256": "45a22648b86e279b6ad0f1a5b86d40f3ecf0cc045652bee394e1e82ebdc22fa8",
+      "tapleaf_hash": "a40d435f76b2bc6c65b458a7cf7d9003618f8e657a2141fd223780410847d79e",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 139,
+        "txid": "199d2e821b8bad7ee6decd7678e0fc89104d66be9e7396353c87c1936a31e7ed",
+        "vsize": 106,
+        "weight": 421,
+        "witness_bytes": 43,
+        "wtxid": "cad634e635c065436e164baf0d1d778f5dc211133cbd43b71845902fdf7d4a63"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "68e7f8b8faf8b89797b9f87f5c85234008a73145ebee6f58a2ca33fa9ace2afb",
+          "block_height": 111
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00014224,
+            "effective-includes": [
+              "d3e2315a7fd981b7d211d922dcaa257fba9d87792b8ff5a4d33a0fbf2908e7c1"
+            ]
+          },
+          "txid": "a2f520b257181d1255cbc2ee6b12e4e4869fe4c0c2a87c7195f24ddd87748004",
+          "vsize": 703,
+          "wtxid": "d3e2315a7fd981b7d211d922dcaa257fba9d87792b8ff5a4d33a0fbf2908e7c1"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Isolated HASH160/Preimage16 constant-composition verification plus OP_TRUE, with 70 signature data items and zero auxiliary hints.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 119,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 796,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2432,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-valid",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2528,
+        "txid": "a2f520b257181d1255cbc2ee6b12e4e4869fe4c0c2a87c7195f24ddd87748004",
+        "vsize": 703,
+        "weight": 2810,
+        "witness_bytes": 2432,
+        "wtxid": "d3e2315a7fd981b7d211d922dcaa257fba9d87792b8ff5a4d33a0fbf2908e7c1"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program hash mismatch), input 0 of 8527dca9b4ff662f5b61df53ba69e6823f6f8263d81bfcae1efd1d1b8b970e10 (wtxid d03a15afa2037d402c221382ad37eba96da53849e9b42014b7f5705f82ef0d2e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:15",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Witness program hash mismatch), input 0 of 8527dca9b4ff662f5b61df53ba69e6823f6f8263d81bfcae1efd1d1b8b970e10 (wtxid d03a15afa2037d402c221382ad37eba96da53849e9b42014b7f5705f82ef0d2e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:15",
+          "reject-reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)",
+          "txid": "8527dca9b4ff662f5b61df53ba69e6823f6f8263d81bfcae1efd1d1b8b970e10",
+          "wtxid": "d03a15afa2037d402c221382ad37eba96da53849e9b42014b7f5705f82ef0d2e"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The control-block output-key parity bit is flipped; local fragment success cannot validate the Taproot commitment.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "taproot-commitment",
+        "policy": false,
+        "policy_rejection": "taproot-commitment"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 119,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 796,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2432,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-invalid-control-block",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2528,
+        "txid": "8527dca9b4ff662f5b61df53ba69e6823f6f8263d81bfcae1efd1d1b8b970e10",
+        "vsize": 703,
+        "weight": 2810,
+        "witness_bytes": 2432,
+        "wtxid": "d03a15afa2037d402c221382ad37eba96da53849e9b42014b7f5705f82ef0d2e"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of f88e33008b286c8db552eb413325667cad0b1e4b384bb50a9baa2dca4fb719c5 (wtxid b1b6632c2ebd3d9795f1716bfd681ac3967bae5bae3faf75ed9cef5fe694bce8), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:16",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of f88e33008b286c8db552eb413325667cad0b1e4b384bb50a9baa2dca4fb719c5 (wtxid b1b6632c2ebd3d9795f1716bfd681ac3967bae5bae3faf75ed9cef5fe694bce8), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:16",
+          "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+          "txid": "f88e33008b286c8db552eb413325667cad0b1e4b384bb50a9baa2dca4fb719c5",
+          "wtxid": "b1b6632c2ebd3d9795f1716bfd681ac3967bae5bae3faf75ed9cef5fe694bce8"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The first opening selector is malformed; all other signature items are unchanged.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "invalid-stack-operation",
+        "policy": false,
+        "policy_rejection": "invalid-stack-operation"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "InvalidStackOperation",
+        "final_main_stack_items": 50,
+        "max_stack_items": 119,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 797,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2433,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-negative-selector",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2529,
+        "txid": "f88e33008b286c8db552eb413325667cad0b1e4b384bb50a9baa2dca4fb719c5",
+        "vsize": 703,
+        "weight": 2811,
+        "witness_bytes": 2433,
+        "wtxid": "b1b6632c2ebd3d9795f1716bfd681ac3967bae5bae3faf75ed9cef5fe694bce8"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of e2cc3fbce4fc6fceddef1ae3f5c570ad0e3553dae8e636786455d84de63200e2 (wtxid 4cfa702efc78145e3683b6aa747baaa27c68d968c361a05705895116b78a8fb2), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:17",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of e2cc3fbce4fc6fceddef1ae3f5c570ad0e3553dae8e636786455d84de63200e2 (wtxid 4cfa702efc78145e3683b6aa747baaa27c68d968c361a05705895116b78a8fb2), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:17",
+          "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+          "txid": "e2cc3fbce4fc6fceddef1ae3f5c570ad0e3553dae8e636786455d84de63200e2",
+          "wtxid": "4cfa702efc78145e3683b6aa747baaa27c68d968c361a05705895116b78a8fb2"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The first opening selector is malformed; all other signature items are unchanged.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "invalid-stack-operation",
+        "policy": false,
+        "policy_rejection": "invalid-stack-operation"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "called `Result::unwrap()` on an `Err` value: InvalidStackOperation",
+        "final_main_stack_items": null,
+        "max_stack_items": null,
+        "outcome": "panic",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 797,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2433,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-exact-pool-boundary",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2529,
+        "txid": "e2cc3fbce4fc6fceddef1ae3f5c570ad0e3553dae8e636786455d84de63200e2",
+        "vsize": 703,
+        "weight": 2811,
+        "witness_bytes": 2433,
+        "wtxid": "4cfa702efc78145e3683b6aa747baaa27c68d968c361a05705895116b78a8fb2"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of ace731ccd5e228e7fb83bb9cece1ecab3b1e263ce8b77a757faee9c7abcaa2a4 (wtxid e073c3bbdf82d5937a4e18420382ae9e5dfe44bcc03b7b18ad267b076f58559e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:18",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 0 of ace731ccd5e228e7fb83bb9cece1ecab3b1e263ce8b77a757faee9c7abcaa2a4 (wtxid e073c3bbdf82d5937a4e18420382ae9e5dfe44bcc03b7b18ad267b076f58559e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:18",
+          "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+          "txid": "ace731ccd5e228e7fb83bb9cece1ecab3b1e263ce8b77a757faee9c7abcaa2a4",
+          "wtxid": "e073c3bbdf82d5937a4e18420382ae9e5dfe44bcc03b7b18ad267b076f58559e"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The first opening selector is malformed; all other signature items are unchanged.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "invalid-stack-operation",
+        "policy": false,
+        "policy_rejection": "invalid-stack-operation"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "InvalidStackOperation",
+        "final_main_stack_items": 50,
+        "max_stack_items": 119,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 797,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2433,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-beyond-pool",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2529,
+        "txid": "ace731ccd5e228e7fb83bb9cece1ecab3b1e263ce8b77a757faee9c7abcaa2a4",
+        "vsize": 703,
+        "weight": 2811,
+        "witness_bytes": 2433,
+        "wtxid": "e073c3bbdf82d5937a4e18420382ae9e5dfe44bcc03b7b18ad267b076f58559e"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (unknown error), input 0 of 3f9aa8229a7a1f5700ba3ce29b698a12747c7fd43eff11993dff35b219a49254 (wtxid 83cb9d87a60c7f5e9bd8e37987f7b3a8e95fa22b3ff3a7e3aecca890066befea), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:19",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (unknown error), input 0 of 3f9aa8229a7a1f5700ba3ce29b698a12747c7fd43eff11993dff35b219a49254 (wtxid 83cb9d87a60c7f5e9bd8e37987f7b3a8e95fa22b3ff3a7e3aecca890066befea), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:19",
+          "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+          "txid": "3f9aa8229a7a1f5700ba3ce29b698a12747c7fd43eff11993dff35b219a49254",
+          "wtxid": "83cb9d87a60c7f5e9bd8e37987f7b3a8e95fa22b3ff3a7e3aecca890066befea"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The first opening selector is malformed; all other signature items are unchanged.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "scriptnum-overflow",
+        "policy": false,
+        "policy_rejection": "scriptnum-overflow"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "ScriptIntNumericOverflow",
+        "final_main_stack_items": 50,
+        "max_stack_items": 119,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 801,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2437,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-oversized-selector-number",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2533,
+        "txid": "3f9aa8229a7a1f5700ba3ce29b698a12747c7fd43eff11993dff35b219a49254",
+        "vsize": 704,
+        "weight": 2815,
+        "witness_bytes": 2437,
+        "wtxid": "83cb9d87a60c7f5e9bd8e37987f7b3a8e95fa22b3ff3a7e3aecca890066befea"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "0827f73ba28cc7ed5f14ccfe83d56bbe06ae0c5e6b51d8f272db7709f4c569c6",
+          "block_height": 112
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (unknown error), input 0 of a78ef34e0d8a55984130866204f90814f661079cf18e3131c615f3218cadb40c (wtxid c80c59f54e884fb15cdd6c8501f5d744903bb4b9a253ff8566e9bf2d1ae2a3f7), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:20",
+          "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+          "txid": "a78ef34e0d8a55984130866204f90814f661079cf18e3131c615f3218cadb40c",
+          "wtxid": "c80c59f54e884fb15cdd6c8501f5d744903bb4b9a253ff8566e9bf2d1ae2a3f7"
+        }
+      },
+      "deployment": "consensus-validated",
+      "description": "Redundant numeric zero byte preserves the selected key under consensus but violates MINIMALDATA policy; the local helper also requires minimal numbers.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "minimaldata"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "MinimalData",
+        "final_main_stack_items": 50,
+        "max_stack_items": 119,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 797,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2433,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-nonminimal-selector",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2529,
+        "txid": "a78ef34e0d8a55984130866204f90814f661079cf18e3131c615f3218cadb40c",
+        "vsize": 703,
+        "weight": 2811,
+        "witness_bytes": 2433,
+        "wtxid": "c80c59f54e884fb15cdd6c8501f5d744903bb4b9a253ff8566e9bf2d1ae2a3f7"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 089a12c6cb97c5dd0b7d583d6bd833d5e15d5de4c6c58cbd4c5449323437ea8e (wtxid c03df3b56a8e3539366c109e362c6d81bdfb0dc2303879cfb9b19e3d08b9ac89), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:21",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 089a12c6cb97c5dd0b7d583d6bd833d5e15d5de4c6c58cbd4c5449323437ea8e (wtxid c03df3b56a8e3539366c109e362c6d81bdfb0dc2303879cfb9b19e3d08b9ac89), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:21",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "089a12c6cb97c5dd0b7d583d6bd833d5e15d5de4c6c58cbd4c5449323437ea8e",
+          "wtxid": "c03df3b56a8e3539366c109e362c6d81bdfb0dc2303879cfb9b19e3d08b9ac89"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "A single bit in the first chain opening is flipped, breaking its commitment check.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 48,
+        "max_stack_items": 119,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 70,
+        "data_witness_bytes": 796,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2432,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-mutated-node",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2528,
+        "txid": "089a12c6cb97c5dd0b7d583d6bd833d5e15d5de4c6c58cbd4c5449323437ea8e",
+        "vsize": 703,
+        "weight": 2810,
+        "witness_bytes": 2432,
+        "wtxid": "c03df3b56a8e3539366c109e362c6d81bdfb0dc2303879cfb9b19e3d08b9ac89"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of ae18601c6718712e895be8fbade4c7ef2d037065f805e9852f53e2e3a29f2241 (wtxid d8caf02a51dafc94beea67b712d4553fa31f46359eed8dde1185cd0c7eb3bf1e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:22",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of ae18601c6718712e895be8fbade4c7ef2d037065f805e9852f53e2e3a29f2241 (wtxid d8caf02a51dafc94beea67b712d4553fa31f46359eed8dde1185cd0c7eb3bf1e), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:22",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "ae18601c6718712e895be8fbade4c7ef2d037065f805e9852f53e2e3a29f2241",
+          "wtxid": "d8caf02a51dafc94beea67b712d4553fa31f46359eed8dde1185cd0c7eb3bf1e"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The isolated verifier requires exactly 70 initial main-stack data items.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 69,
+        "max_stack_items": 71,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 69,
+        "data_witness_bytes": 775,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2411,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-missing-item",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2507,
+        "txid": "ae18601c6718712e895be8fbade4c7ef2d037065f805e9852f53e2e3a29f2241",
+        "vsize": 698,
+        "weight": 2789,
+        "witness_bytes": 2411,
+        "wtxid": "d8caf02a51dafc94beea67b712d4553fa31f46359eed8dde1185cd0c7eb3bf1e"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of ced7738a56d6778486d138f5ca077fbfc9b69427afd1d96fb6e90b2768666487 (wtxid 413c17392092480f5eb9fec17ee086c4330b39092e3b59348b155d59a1edb572), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:23",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of ced7738a56d6778486d138f5ca077fbfc9b69427afd1d96fb6e90b2768666487 (wtxid 413c17392092480f5eb9fec17ee086c4330b39092e3b59348b155d59a1edb572), spending bf70ea910b918deedac767b25e374f946aaf0326e9277814d4183d03b837bc2a:23",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "ced7738a56d6778486d138f5ca077fbfc9b69427afd1d96fb6e90b2768666487",
+          "wtxid": "413c17392092480f5eb9fec17ee086c4330b39092e3b59348b155d59a1edb572"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The isolated verifier requires exactly 70 initial main-stack data items.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 71,
+        "max_stack_items": 73,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 71,
+        "data_witness_bytes": 798,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf: input data supplied by witness, embedded constants, validation, cleanup and terminal OP_TRUE; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded",
+        "locking_script_bytes": 1599,
+        "static_non_push_opcodes": 567,
+        "taproot_witness_bytes": 2434,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "winternitz-extra-item",
+      "script_pubkey_hex": "512057e5386717de9b2f93cb6e256b6baf6a61a4d096156de0c76c7033a2cfb8413b",
+      "script_sha256": "9e74954957c0dfca6ad8796a7b6b75d78612025de2f92dfe7f4a1d4f55608116",
+      "tapleaf_hash": "6c9d8373845639698f94411d369b59b34c20013e3bb6cb507e80dcc837dffa6a",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 2530,
+        "txid": "ced7738a56d6778486d138f5ca077fbfc9b69427afd1d96fb6e90b2768666487",
+        "vsize": 703,
+        "weight": 2812,
+        "witness_bytes": 2434,
+        "wtxid": "413c17392092480f5eb9fec17ee086c4330b39092e3b59348b155d59a1edb572"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. No mainnet broadcast, adversarial completeness, or general primitive deployment claim.",
+  "winternitz": {
+    "chains": 49,
+    "hint_items_per_invocation": 0,
+    "message_hex": "00254a6f94b9de03284d7297bce1062b50759abf",
+    "openings": 35,
+    "profile": "ConstantCompositionWinternitz20<Hash160,Preimage16>",
+    "seed_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+    "signature_data_items": 70,
+    "stack_composition": "All 70 signature data items coexist at entry; the isolated verifier stages them on altstack and loads 49 trusted public keys, reaching 119 combined items. Extra main-stack items are rejected. No repeated configuration is measured; all surrounding main and altstack state shares the 1,000-item limit."
+  }
+}

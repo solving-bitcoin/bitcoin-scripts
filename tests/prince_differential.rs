@@ -14,7 +14,9 @@ use bitcoin::{
 };
 use bitcoin_lab::{
     ciphers::prince::{prince_encrypt, prince_encrypt_ref, u64_to_nibbles_msb},
-    support::{execution::execute_raw_script_with_inputs_strict, script::ScriptCompilation},
+    support::{
+        execution::execute_raw_script_with_inputs_strict, provenance, script::ScriptCompilation,
+    },
 };
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha20Rng;
@@ -137,7 +139,7 @@ fn non_push_opcodes(fragment: &ScriptBuf) -> usize {
                 );
                 // For this branch-free fragment the static non-push count is
                 // also the executed count on every successful input. The
-                // interpreter's legacy opcode counter is zero in tapscript.
+                // interpreter's opcode counter is not an executed non-push count.
                 assert!(
                     !matches!(byte, 0x63 | 0x64 | 0x67 | 0x68),
                     "update executed-opcode measurement for conditional {opcode}"
@@ -167,12 +169,17 @@ fn prince_randomized_differential_compiled_once() {
     let mut rng = ChaCha20Rng::seed_from_u64(seed);
     let mut keys = vec![0, u128::MAX, VECTOR_KEY];
     keys.extend((0..random_keys).map(|_| rng.gen::<u128>()));
+    let interpreter = provenance::interpreter().expect("embedded interpreter provenance");
+    let compiler = provenance::compiler().expect("embedded compiler provenance");
     println!(
-        "PRINCEv2 seed={seed} fixed_keys=3 random_keys={random_keys} random_plaintexts_per_key={random_plaintexts} target={}-{} profile={} interpreter=bitcoin-scriptexec@ba96bc2 context=tapscript stack_limit=1000 hints_per_invocation=0 witness_data_items=16",
+        "PRINCEv2 seed={seed} fixed_keys=3 random_keys={random_keys} random_plaintexts_per_key={random_plaintexts} target={}-{} profile={} interpreter={}@{} context=tapscript stack_limit=1000 hints_per_invocation=0 witness_data_items=16",
         std::env::consts::ARCH,
         std::env::consts::OS,
-        if cfg!(debug_assertions) { "debug" } else { "release" }
+        if cfg!(debug_assertions) { "debug" } else { "release" },
+        interpreter.name,
+        interpreter.commit
     );
+    println!("compiler={}@{}", compiler.name, compiler.commit);
     println!(
         "Boundary: fragment-with-memory includes table setup, encryption and cleanup; excludes input pushes and output checks. Test leaf appends a separate unoptimized 33-byte check. Witness bytes serialize only the 16 plaintext data items, excluding leaf and control block."
     );

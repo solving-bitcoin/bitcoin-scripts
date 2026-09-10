@@ -73,6 +73,13 @@
       "revision": "rolling master; pin before reproduction"
     },
     {
+      "id": "bitcoin-core-v30-resource-limits",
+      "title": "Bitcoin Core v30.0 witness-entry and per-instruction resource limits",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/d0f6d9953a15d7c7111d46dcb76ab2bb18e5dee3/src/script/interpreter.cpp",
+      "revision": "d0f6d9953a15d7c7111d46dcb76ab2bb18e5dee3 (v30.0); ExecuteWitnessScript and EvalScript inspected 2026-09-10, not executed"
+    },
+    {
       "id": "bitcoin-script-locked",
       "title": "BitVM rust-bitcoin-script",
       "kind": "upstream-source",
@@ -92,6 +99,20 @@
       "kind": "execution-tool",
       "url": "https://github.com/BitVM/rust-bitcoin-scriptexec/tree/ba96bc2bd76774c9d1b011461cb79d983c2c43a1",
       "revision": "ba96bc2bd76774c9d1b011461cb79d983c2c43a1"
+    },
+    {
+      "id": "bitcoin-scriptexec-repaired-20260910",
+      "title": "Immutable integration of Bitcoin Script interpreter resource, index and minimal-push repairs",
+      "kind": "execution-tool",
+      "url": "https://github.com/adrienlacombe/rust-bitcoin-scriptexec/tree/4b7269a415f21be3fccee9730547f1426eb80326",
+      "revision": "4b7269a415f21be3fccee9730547f1426eb80326; temporary integration of upstream PR18 (0fede45090b8ad1c560c7fc6abc35a8f09a30b13), PR19 (c91b3e6958703a801ab328bf97f5b9c557ef4bdb) and PR20 (7978c73c5e48c623a685785962de84d9fefc1165); adopted 2026-09-10. Historical bitcoin-scriptexec-locked evidence retains ba96bc2."
+    },
+    {
+      "id": "bitcoin-scriptexec-signatures-20260910",
+      "title": "Immutable integration of Taproot signature semantics and resource repairs",
+      "kind": "execution-tool",
+      "url": "https://github.com/adrienlacombe/rust-bitcoin-scriptexec/tree/702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+      "revision": "702544c9a045ac4fc14846da6da6559e2b7cd9d1; retains 4b7269a4 resource repairs and integrates Sander Bosma's PR16 (4c9bf94e1508df9c77a579dde1831c88ab24cabb), additional CODESEPARATOR tests (474a6b6f0a67338ea61287cabf06c92fb0b7a3e0), empty-signature repair (f4e05a47dbdb465e8dbe970531825a973f0836d1), signature errors (2efd48f793b972edda33cdcf39b47d99ab6e6547), and SIGHASH_SINGLE error ordering (47e080651a1df90e67cce7c05a846f8befd8c08b). Adopted 2026-09-10; historical measurements retain their original pins."
     },
     {
       "id": "coins-bitcoin-scripts-8f442e4b",
@@ -253,6 +274,20 @@
       "title": "NIST Digital Library of Mathematical Functions, 26.16 Multiset Permutations",
       "url": "https://dlmf.nist.gov/26.16",
       "revision": "DLMF version 1.2.7, released 2026-06-15; multinomial capacity formula only, not cryptographic security"
+    },
+    {
+      "id": "bitcoin-script-unchanged-run-candidate",
+      "title": "BitVM rust-bitcoin-script unchanged-run optimizer candidate",
+      "kind": "upstream-source",
+      "url": "https://github.com/BitVM/rust-bitcoin-script/tree/eb91d10de3e3adfbcc37c708924306dc9a7e58cd",
+      "revision": "eb91d10de3e3adfbcc37c708924306dc9a7e58cd; PR #15, locally compared with retained compiler pin 124b561ed75ac3ec4c6ad99207d8dcdd3bc67180 on 2026-09-10; diagnostic experiment only"
+    },
+    {
+      "id": "bitcoin-core-v30.3-regtest",
+      "title": "Bitcoin Core v30.3 pinned consensus and relay-policy oracle",
+      "kind": "reference-implementation",
+      "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
     }
   ]
 }

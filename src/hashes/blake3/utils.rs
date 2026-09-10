@@ -1400,15 +1400,38 @@ mod tests {
     use crate::support::execution::execute_script;
     use crate::support::script::ScriptCompilation;
 
+    fn isolated_table_cleanup(tables: TablesVars) -> Script {
+        // Declare the fragment's input layout without emitting setup pushes.
+        // Optimizing unused setup followed by cleanup can erase the setup;
+        // subtracting independently optimized lengths is not a cleanup cost.
+        let mut stack = StackTracker::new();
+        let mut input = |var: StackVariable, name: &str| {
+            if var.is_null() {
+                var
+            } else {
+                stack.define(var.size(), name)
+            }
+        };
+        let inputs = TablesVars {
+            depth_lookup: input(tables.depth_lookup, "depth_lookup"),
+            xor_table: input(tables.xor_table, "xor_table"),
+            shift_tables: input(tables.shift_tables, "shift_tables"),
+            modulo_last: input(tables.modulo_last, "modulo_last"),
+            add_interleaved: input(tables.add_interleaved, "add_interleaved"),
+            ..tables
+        };
+        inputs.drop(&mut stack);
+        stack.get_script()
+    }
+
     #[test]
     fn packed_table_lifecycle_metrics() {
         let mut stack = StackTracker::new();
         let tables = TablesVars::new(&mut stack, true);
         let setup_bytes = stack.get_script().compile_with_policy().len();
-        tables.drop(&mut stack);
         assert_eq!(setup_bytes, 353);
         assert_eq!(
-            stack.get_script().compile_with_policy().len() - setup_bytes,
+            isolated_table_cleanup(tables).compile_with_policy().len(),
             166
         );
 
@@ -1417,11 +1440,10 @@ mod tests {
         let initial_setup_bytes = stack.get_script().compile_with_policy().len();
         tables.push_late_tables(&mut stack);
         let complete_setup_bytes = stack.get_script().compile_with_policy().len();
-        tables.drop(&mut stack);
         assert_eq!(initial_setup_bytes, 241);
         assert_eq!(complete_setup_bytes - initial_setup_bytes, 112);
         assert_eq!(
-            stack.get_script().compile_with_policy().len() - complete_setup_bytes,
+            isolated_table_cleanup(tables).compile_with_policy().len(),
             166
         );
     }

@@ -194,10 +194,15 @@ For the four-way integer path, witness order is `least_significant_digit, ...,
 most_significant_digit, preimage`; the most-significant digit is processed
 first. Zero is encoded as the empty vector and `1..=3` as `[01]`, `[02]`, or
 `[03]`. Tapscript `MINIMALIF` rejects negative and out-of-range values. The
-helper produces minimal encodings, and the local executor's `MINIMALDATA`
-setting rejects non-minimal test witnesses. Numeric minimality is not itself a
+helper produces minimal encodings, and the research helper's default
+`MINIMALDATA` setting rejects non-minimal test witnesses when consumed as
+numbers. The explicit local `Consensus` profile permits such numeric aliases;
+the `Policy` profile requires minimal numbers and executed pushes. Neither
+profile is a complete transaction validator; see the
+[execution profiles](../support/README.md). Numeric minimality is not itself a
 tapscript consensus rule, so callers must treat the digit value, rather than a
-unique byte representation, as committed.
+unique byte representation, as committed. The repaired `4b7269a` interpreter
+does not change the evidence class of earlier commitment measurements.
 
 For the preimage-length construction, the witness contains the committed
 preimage as one item. The preimage is consumed and only the resulting integer

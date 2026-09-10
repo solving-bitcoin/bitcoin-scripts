@@ -1,0 +1,24 @@
+{
+  "version": "30.3",
+  "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "base_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/",
+  "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+  "archives": {
+    "Darwin-arm64": {
+      "filename": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+      "sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c"
+    },
+    "Darwin-x86_64": {
+      "filename": "bitcoin-30.3-x86_64-apple-darwin.tar.gz",
+      "sha256": "24897a2e40596df5e4206499935aac0fe045c58b3de3170ce92ebbb2ebc765a3"
+    },
+    "Linux-x86_64": {
+      "filename": "bitcoin-30.3-x86_64-linux-gnu.tar.gz",
+      "sha256": "4753cd70416c629a2090503e8545a3c05e94a0f5037f8fb97b4c35c6e1afee0e"
+    },
+    "Linux-aarch64": {
+      "filename": "bitcoin-30.3-aarch64-linux-gnu.tar.gz",
+      "sha256": "a4687d825d8afa62b7b04dd6f3e53ac6bb1d12d8377979c27423c6746eca52f2"
+    }
+  }
+}

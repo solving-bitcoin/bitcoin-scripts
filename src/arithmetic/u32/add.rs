@@ -106,6 +106,7 @@ pub fn u32_add_drop(a: u32, b: u32) -> Script {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::arithmetic::test_helpers::run_with_witness;
     use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify, u32_push};
     use crate::support::execution::run;
     use rand::Rng;
@@ -139,29 +140,29 @@ mod test {
     }
     #[test]
     fn test_u8_adds_exhaustive() {
-        for a in 0..256 {
-            for b in 0..256 {
-                let script_without_carry = script! {
-                  { a }
-                  { b }
-                  { u8_add() }
-                  { (a + b) % 256 }
-                  OP_EQUAL
-                };
-                let script_with_carry = script! {
-                    { a }
-                    { b }
-                    { u8_add_carry() }
-                    { ((a + b) >= 256) as u32 }
-                    OP_EQUAL
-                    OP_TOALTSTACK
-                    { (a + b) % 256 }
-                    OP_EQUAL
-                    OP_FROMALTSTACK
-                    OP_BOOLAND
-                };
-                run(script_without_carry);
-                run(script_with_carry);
+        let script_without_carry = script! {
+            { u8_add() }
+            OP_EQUAL
+        }
+        .compile_with_policy()
+        .to_bytes();
+        // Witness: expected byte, expected carry, a, b. Compare both
+        // outputs and leave the same single truth value as the scalar test.
+        let script_with_carry = script! {
+            { u8_add_carry() }
+            OP_ROT OP_EQUALVERIFY
+            OP_EQUAL
+        }
+        .compile_with_policy()
+        .to_bytes();
+        for a in 0i64..256 {
+            for b in 0i64..256 {
+                let expected = (a + b) % 256;
+                run_with_witness(&script_without_carry, [expected, a, b]);
+                run_with_witness(
+                    &script_with_carry,
+                    [expected, ((a + b) >= 256) as i64, a, b],
+                );
             }
         }
     }

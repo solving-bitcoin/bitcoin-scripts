@@ -158,8 +158,8 @@ unrelated stack state and leaves no result, requiring the caller's predicate.
 
 All reported metrics remain `locally-reproduced` and `research-unlimited`,
 using the stack-limit-disabled tapscript helper with an appended `OP_TRUE`.
-The pinned compiler is `rust-bitcoin-script` revision
-`124b561ed75ac3ec4c6ad99207d8dcdd3bc67180`; the executor is
+These measurements used `rust-bitcoin-script` revision
+`124b561ed75ac3ec4c6ad99207d8dcdd3bc67180` and executor
 `bitcoin-scriptexec` revision `ba96bc2bd76774c9d1b011461cb79d983c2c43a1`.
 Separate strict-stack tests are `unclassified` for deployment and do not
 establish Bitcoin Core consensus or policy acceptance.
@@ -173,11 +173,14 @@ the Rust implementation. Rust tests compare fixed vectors and exercise
 roundtrips, malformed encodings, unused ranks, sum changes, forwarded chains,
 overflow traps, and preserved stack state.
 
-The pinned executor can panic when `OP_PICK` addresses outside the entire
-stack. Tests of table escape place their matching trap inside the complete
-stack. They establish the intended overflow relation, not correct local
-handling of every malformed index. Bitcoin consensus rejects an out-of-stack
-index; no Core comparison has been performed here. See
+The historical executor could panic when `OP_PICK` addressed outside the
+entire stack. The lab now pins repaired interpreter `4b7269a`; see
+[adoption and scope](../negative-results/index.md#nr-048-minimal-push-policy-must-follow-execution).
+Tests of table escape place their matching trap inside the complete stack.
+They establish the intended overflow relation, independently of executor
+bounds handling. The later [Core fixtures](../core-validation.md) confirm exact
+`OP_PICK`/`OP_ROLL` boundary rejection, not this construction's complete protocol.
+The historical metrics retain the tool revisions and evidence classes above. See
 [NR-041](../negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries).
 
 The key is strictly one-time. Consuming the Rust key does not prevent restored

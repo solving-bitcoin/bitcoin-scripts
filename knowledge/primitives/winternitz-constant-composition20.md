@@ -78,12 +78,25 @@ All bounds concern signer-produced witnesses rather than arbitrary raw aliases.
 
 Measurements are `locally-reproduced`, `research-unlimited`: the metric helper
 uses tapscript and disables the stack limit. Separate strict local tests are
-`unclassified` for deployment. The pinned local executor panics for an isolated
-`OP_ROLL` index exactly equal to the pool length; the boundary regression test
-records this tooling bug. Bitcoin Core v29.0 source rejects the boundary, but
-no Core differential execution or policy acceptance is claimed. Composable
-bounds prevent that malformed index reaching `OP_ROLL`. Compilation uses
-`bitcoin-script-locked`; execution uses `bitcoin-scriptexec-locked`.
+`unclassified` for deployment. The historical `ba96bc2` executor panicked for
+an isolated `OP_ROLL` index exactly equal to the pool length. Current integration
+`4b7269a4` repairs that bug, and the boundary regression requires
+`InvalidStackOperation` at all three tested slots while preserving the valid
+control. The v30.3 [Core differential experiment](../core-validation.md)
+confirms exact-bound rejection independently. Composable bounds prevent that malformed index reaching
+`OP_ROLL`. Compilation uses
+`bitcoin-script-locked`; the recorded fragment measurements retain
+`bitcoin-scriptexec-locked` provenance. Current commands use the separately
+documented repaired interpreter; historical evidence is not relabeled.
+
+A separate complete-leaf configuration is `differentially-validated` and
+`policy-validated` by Core v30.3 for the varied message: 1,599 locking bytes
+including terminal `OP_TRUE`, 2,432 full Taproot witness bytes, and a one-input,
+one-output spend of 2,810 WU / 703 vbytes. All 70 data items coexist at entry,
+with zero hints and a local stack-limited combined peak of 119. The full witness
+already includes the script and control block. This validates that exact
+transaction, not the other hash profiles, composable variants or a full BitVM
+protocol. Older fragment metrics retain their original evidence classes.
 
 These enabled opcodes nevertheless exceed the 201-opcode limit for bare
 Script, P2SH and P2WSH, making those script classes `consensus-incompatible`.

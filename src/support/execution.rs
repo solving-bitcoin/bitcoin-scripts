@@ -1,3 +1,9 @@
+//! Local tapscript execution, with explicit resource-limit enforcement.
+//!
+//! "Strict" helpers enforce entry and per-step stack limits; they are not
+//! full consensus or policy validators. See the colocated README for the
+//! pinned interpreter's remaining limitations.
+
 use core::fmt;
 
 use crate::support::script::{self, ScriptCompilation};
@@ -53,6 +59,11 @@ impl fmt::Debug for FmtStack {
 
 #[derive(Debug)]
 pub struct ExecuteInfo {
+    /// Whether the combined main/alt-stack item limit was enforced, both at
+    /// entry and after every instruction. All helpers use a tapscript context.
+    /// False means `research-unlimited`; true alone does not establish
+    /// consensus or policy validity.
+    pub stack_limit_enforced: bool,
     pub success: bool,
     pub error: Option<ExecError>,
     pub final_stack: FmtStack,
@@ -63,6 +74,17 @@ pub struct ExecuteInfo {
 
 impl fmt::Display for ExecuteInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.stack_limit_enforced {
+            writeln!(
+                f,
+                "Execution: tapscript, stack limit enforced; deployment unclassified."
+            )?;
+        } else {
+            writeln!(
+                f,
+                "Execution: tapscript, research-unlimited (stack limit disabled)."
+            )?;
+        }
         if self.success {
             writeln!(f, "Script execution successful.")?;
         } else {
@@ -116,11 +138,59 @@ fn execute_script_buf_optional_stack_limit(
     script: bitcoin::ScriptBuf,
     stack_limit: bool,
 ) -> ExecuteInfo {
+    execute_script_buf_with_inputs_optional_stack_limit(script, vec![], stack_limit)
+}
+
+/// Execute in the research-unlimited tapscript context: the stack item count
+/// is unlimited, but witness elements must still fit in 520 bytes.
+pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) -> ExecuteInfo {
+    execute_raw_script_with_inputs_optional_stack_limit(script, witness, false)
+}
+
+/// Execute a tapscript with an explicit witness while enforcing Bitcoin's
+/// combined 1,000-item main/alt-stack limit at entry and after each instruction,
+/// including data pushes. Witness items must fit in 520 bytes. This is not a
+/// complete consensus validator.
+pub fn execute_raw_script_with_inputs_strict(
+    script: Vec<u8>,
+    witness: Vec<Vec<u8>>,
+) -> ExecuteInfo {
+    execute_raw_script_with_inputs_optional_stack_limit(script, witness, true)
+}
+
+fn execute_raw_script_with_inputs_optional_stack_limit(
+    script: Vec<u8>,
+    witness: Vec<Vec<u8>>,
+    stack_limit: bool,
+) -> ExecuteInfo {
+    execute_script_buf_with_inputs_optional_stack_limit(
+        ScriptBuf::from_bytes(script),
+        witness,
+        stack_limit,
+    )
+}
+
+fn execute_script_buf_with_inputs_optional_stack_limit(
+    script: ScriptBuf,
+    witness: Vec<Vec<u8>>,
+    stack_limit: bool,
+) -> ExecuteInfo {
     let opts = Options {
         enforce_stack_limit: stack_limit,
         ..Default::default()
     };
-    let mut exec = Exec::new(
+
+    execute_script_buf_with_options(script, witness, opts).expect("error creating exec")
+}
+
+pub(crate) fn execute_script_buf_with_options(
+    script: ScriptBuf,
+    witness: Vec<Vec<u8>>,
+    opts: Options,
+) -> Result<ExecuteInfo, bitcoin_scriptexec::Error> {
+    let stack_limit = opts.enforce_stack_limit;
+
+    let exec = Exec::new(
         ExecCtx::Tapscript,
         opts,
         TxTemplate {
@@ -135,84 +205,37 @@ fn execute_script_buf_optional_stack_limit(
             taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
         },
         script,
-        vec![],
-    )
-    .expect("error creating exec");
-
-    loop {
-        if exec.exec_next().is_err() {
-            break;
-        }
-    }
-
-    let res = exec.result().unwrap();
-    ExecuteInfo {
-        success: res.success,
-        error: res.error.clone(),
-        last_opcode: res.opcode,
-        final_stack: FmtStack(exec.stack().clone()),
-        remaining_script: exec.remaining_script().to_asm_string(),
-        stats: exec.stats().clone(),
-    }
-}
-
-pub fn execute_raw_script_with_inputs(script: Vec<u8>, witness: Vec<Vec<u8>>) -> ExecuteInfo {
-    execute_raw_script_with_inputs_optional_stack_limit(script, witness, false)
-}
-
-/// Execute a tapscript with an explicit witness while enforcing Bitcoin's
-/// combined 1,000-item main/alt-stack limit.
-pub fn execute_raw_script_with_inputs_strict(
-    script: Vec<u8>,
-    witness: Vec<Vec<u8>>,
-) -> ExecuteInfo {
-    execute_raw_script_with_inputs_optional_stack_limit(script, witness, true)
-}
-
-fn execute_raw_script_with_inputs_optional_stack_limit(
-    script: Vec<u8>,
-    witness: Vec<Vec<u8>>,
-    stack_limit: bool,
-) -> ExecuteInfo {
-    let opts = Options {
-        enforce_stack_limit: stack_limit,
-        ..Default::default()
-    };
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        opts,
-        TxTemplate {
-            tx: Transaction {
-                version: bitcoin::transaction::Version::TWO,
-                lock_time: bitcoin::locktime::absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        ScriptBuf::from_bytes(script),
         witness,
-    )
-    .expect("error creating exec");
+    )?;
 
-    loop {
-        match exec.exec_next() {
-            Ok(()) => (),
-            Err(_) => break,
-        }
-    }
+    Ok(run_exec(exec, stack_limit))
+}
 
-    let res = exec.result().unwrap();
+/// The repaired pinned interpreter checks entry resources and every executed
+/// instruction, including data pushes. Keep one driver for all research and
+/// explicit-profile entry points so the same upstream checks are exercised.
+fn run_exec(mut exec: Exec, stack_limit: bool) -> ExecuteInfo {
+    while exec.exec_next().is_ok() {}
+    execution_snapshot(&exec, stack_limit)
+}
+
+fn execution_snapshot(exec: &Exec, stack_limit: bool) -> ExecuteInfo {
+    let res = exec.result();
+    let mut stats = exec.stats().clone();
+    // Upstream can fail before updating statistics. Include the failing
+    // instruction's live stack as well as all successfully executed steps.
+    stats.max_nb_stack_items = stats
+        .max_nb_stack_items
+        .max(exec.stack().len() + exec.altstack().len());
+
     ExecuteInfo {
-        success: res.success,
-        error: res.error.clone(),
-        last_opcode: res.opcode,
+        stack_limit_enforced: stack_limit,
+        success: res.is_some_and(|result| result.success),
+        error: res.and_then(|result| result.error.clone()),
+        last_opcode: res.and_then(|result| result.opcode),
         final_stack: FmtStack(exec.stack().clone()),
         remaining_script: exec.remaining_script().to_owned().to_asm_string(),
-        stats: exec.stats().clone(),
+        stats,
     }
 }
 
@@ -252,7 +275,7 @@ pub fn dry_run_taproot_input(
         LeafVersion::TapScript,
     );
 
-    let mut exec = Exec::new(
+    let exec = Exec::new(
         ExecCtx::Tapscript,
         Options::default(),
         TxTemplate {
@@ -266,20 +289,7 @@ pub fn dry_run_taproot_input(
     )
     .expect("error creating exec");
 
-    loop {
-        if exec.exec_next().is_err() {
-            break;
-        }
-    }
-    let res = exec.result().unwrap();
-    ExecuteInfo {
-        success: res.success,
-        error: res.error.clone(),
-        last_opcode: res.opcode,
-        final_stack: FmtStack(exec.stack().clone()),
-        remaining_script: exec.remaining_script().to_asm_string(),
-        stats: exec.stats().clone(),
-    }
+    run_exec(exec, true)
 }
 
 pub fn run(script: script::Script) {

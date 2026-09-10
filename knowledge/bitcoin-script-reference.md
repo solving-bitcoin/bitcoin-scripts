@@ -471,8 +471,10 @@ witness:       <…args…> <witnessScript>
 - **Single SHA-256**, not HASH160 — 256-bit, no collision concern.
 - The witnessScript *is* the scriptCode. No `FindAndDelete`.
 - Limits: witnessScript ≤ 10,000 bytes `[C]` but **3,600 bytes `[P]`**
-  (`MAX_STANDARD_P2WSH_SCRIPT_SIZE`); witness stack ≤ 100 items `[C]` of ≤ 520 bytes each `[C]`,
+  (`MAX_STANDARD_P2WSH_SCRIPT_SIZE`); witness data stack ≤ **100 items `[P]`** of ≤ 520 bytes each `[C]`,
   tightened to **≤ 80 bytes per item `[P]`** (`MAX_STANDARD_P2WSH_STACK_ITEM_SIZE`).
+  The 100-item count excludes the witnessScript and is a relay-policy restriction,
+  separate from the 1,000-item combined main/alt-stack consensus limit during execution.
 - The 80-byte standard stack-item limit is a frequent surprise — it blocks pushing, say, a 100-byte
   proof element in a relayable transaction.
 - Address: bech32, 32-byte program.
@@ -738,8 +740,12 @@ those are differs per context, and this is a persistent source of implementation
   (`0x06`/`0x07`) are `[C]` valid but `[P]` rejected by `STRICTENC`.
 - SegWit v0: uncompressed keys `[P]` non-standard.
 - Taproot: **x-only, 32 bytes**, implicit even-Y. In tapscript, a pubkey of any length **other than 0
-  or 32** is treated as an unknown key type and `OP_CHECKSIG` **succeeds** on it `[C]` — an upgrade
-  hook, and a serious footgun for hand-written tapscript. An **empty** pubkey is a hard failure.
+  or 32** is an unknown key type. Its signature check succeeds only when the signature is
+  **nonempty** `[C]`; an empty signature yields false, fails `CHECKSIGVERIFY`, and leaves the
+  `CHECKSIGADD` accumulator unchanged. Policy discourages unknown key types regardless of
+  signature emptiness. An **empty** pubkey is a hard failure. For a 32-byte key and nonempty
+  signature, an invalid curve point fails signature verification.
+  [Pinned Core rules](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp#L322-L357).
 - **ECDSA key recovery**: given `(R, s)` and a message, the public key that would verify can be
   computed. Practical consequence — an arbitrary well-formed byte string can be declared a signature
   and a matching pubkey derived afterwards. Legitimate uses include compact `signmessage` formats;
@@ -772,12 +778,24 @@ those are differs per context, and this is a persistent source of implementation
 
 - **P2SH**: redeemScript ≤ **520 bytes `[C]`** (it is a stack element). The binding constraint on
   legacy contracts.
-- **P2WSH**: witnessScript ≤ 10,000 `[C]` / **3,600 `[P]`**; witness stack ≤ 100 items `[C]`, each
+- **P2WSH**: witnessScript ≤ 10,000 `[C]` / **3,600 `[P]`**; witness data stack ≤ 100 items `[P]`, each
   ≤ 520 `[C]` / **80 `[P]`**.
 - **Bare script**: up to 10,000 bytes `[C]`, `[P]` non-standard. The only legacy route past 520 bytes.
 - **Tapscript**: the 10,000-byte script limit and the 201-opcode limit are **removed `[C]`**. The
   520-byte element cap and 1,000-element stack cap remain. Resource control moves to a
   validation-weight budget (§6.5).
+
+For ordinary tapscripts, the initial data stack is checked before execution,
+and combined main-plus-alt depth is checked after every instruction, including
+data pushes. Dropping an item in the next instruction cannot repair an earlier
+overflow. `OP_SUCCESSx` processing precedes those checks and can bypass them.
+These rules were inspected against Bitcoin Core v30.0 commit
+`d0f6d9953a15d7c7111d46dcb76ab2bb18e5dee3`
+([interpreter](https://github.com/bitcoin/bitcoin/blob/d0f6d9953a15d7c7111d46dcb76ab2bb18e5dee3/src/script/interpreter.cpp#L1684));
+the P2WSH 100-item restriction is enforced separately by
+[`IsWitnessStandard`](https://github.com/bitcoin/bitcoin/blob/d0f6d9953a15d7c7111d46dcb76ab2bb18e5dee3/src/policy/policy.cpp#L268).
+The local [execution helpers](../src/support/README.md) repair known resource
+check gaps but remain distinct from a full consensus validator.
 
 ## 5.3 Sigops
 
@@ -933,6 +951,9 @@ Details that matter:
 - Only **executed** separators update the position — one inside a dead branch has no effect.
 - **BIP-143** keeps "last executed" semantics; **tapscript** replaces the mechanism with an explicit
   `codesep_pos` field in the sighash, removing the scriptCode mutation.
+  It is a zero-based **opcode position**, counting each push once and counting parsed
+  instructions in skipped branches. With no executed separator it is `0xffffffff`.
+  [BIP342](https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0342.mediawiki#common-signature-message-extension).
 - `[P]` non-standard in legacy via `CONST_SCRIPTCODE`.
 
 ## 6.5 `OP_SUCCESSx` (tapscript)
@@ -958,7 +979,9 @@ Third parties could historically alter a transaction's txid without invalidating
 | Non-strict DER encodings | BIP-66 `[C]`, 2015 |
 | High-S signatures | `LOW_S` `[P]`, structurally moot with segwit |
 | CHECKMULTISIG dummy element | BIP-147 `[C]` |
-| Non-minimal pushes, extra scriptSig data | `MINIMALDATA`/`CLEANSTACK` `[P]`; `[C]` for segwit |
+| Non-minimal executed pushes or consumed numbers | `MINIMALDATA` `[P]`, including segwit/tapscript |
+| Extra final stack items | `CLEANSTACK` `[P]`; `[C]` for segwit/tapscript |
+| Extra scriptSig data in a witness spend | Native witness requires an empty scriptSig; P2SH-wrapped witness requires exactly the redeem-program push `[C]` |
 | Non-minimal `OP_IF` operand | `MINIMALIF` `[P]`, `[C]` in tapscript |
 
 SegWit's structural fix: the **txid excludes witness data entirely**, so signature malleability
@@ -978,7 +1001,7 @@ witness Merkle root in the coinbase. This is what makes chains of pre-signed tra
   encoding is *not* P2SH and executes as a bare script.
 - **The witness must be empty for non-witness inputs `[C]`.** Attaching a witness to a legacy input
   invalidates the transaction.
-- **`OP_CHECKSIG` on an unknown-length pubkey succeeds in tapscript** (§4.8).
+- **`OP_CHECKSIG` on an unknown-length pubkey succeeds in tapscript only for a nonempty signature** (§4.8).
 - **Sigop counting is static**, so a script pays for signature checks it never executes (§5.3).
 - **The `nSequence` field has three overlapping meanings**: RBF signalling (BIP-125, values below
   `0xfffffffe`), relative timelock (BIP-68), and locktime enabling (`0xffffffff` disables
@@ -1009,14 +1032,15 @@ witness Merkle root in the coinbase. This is what makes chains of pre-signed tra
 | `OP_SUCCESSx` | No | No | **Yes** |
 | `CLEANSTACK` | `[P]` | `[C]` | `[C]` |
 | `MINIMALIF` | `[P]` | `[P]` | `[C]` |
-| Unknown pubkey type | Fails (`STRICTENC` `[P]`) | Fails | **Succeeds** `[C]` |
+| Unknown pubkey type | Fails (`STRICTENC` `[P]`) | Fails | **Succeeds with nonempty signature** `[C]` |
 | txid malleable | Yes | No | No |
 | Practical max script | 520 B via P2SH; 10 kB bare (`[P]` nonstd) | 3,600 B `[P]` | block-limited |
 | Address encoding | Base58Check | bech32 | bech32m |
 
 **Tapscript's validation-weight budget** replaces sigop counting: each script-path input starts with
-`50 + witness_size_in_bytes` of budget, and every **successful** signature check costs 50. Failed
-checks with empty signatures cost nothing. Effectively this allows roughly one signature check per
+`50 + witness_size_in_bytes` of budget, using the complete serialized witness including script,
+control block and any annex. Every signature opcode with a **nonempty signature** costs 50,
+before public-key validation; empty signatures cost nothing. Effectively this allows roughly one signature check per
 50 bytes of witness — self-limiting, since a script with many checks needs many signatures, which
 are themselves witness bytes.
 
@@ -1152,7 +1176,7 @@ than emitting raw opcodes — the failure modes in §9 are largely designed away
 | `CScriptNum` is two's complement | It is little-endian sign-magnitude |
 | CHECKMULTISIG signature order is free | It must match pubkey order |
 | A 4-byte result can feed the next arithmetic op | Values above 2³¹−1 cannot |
-| Taproot `OP_CHECKSIG` fails on a weird pubkey | Non-32-byte, non-empty pubkeys **succeed** |
+| Taproot `OP_CHECKSIG` fails on a weird pubkey | Non-32-byte, non-empty pubkeys **succeed only with a nonempty signature** |
 | A valid ECDSA signature is 71–72 bytes | 9–73, and the variation is observable via `OP_SIZE` |
 | There are 6 sighash bytes | 256 are consensus-valid outside taproot |
 | Disabled opcodes are safe in dead branches | They fail the script regardless |

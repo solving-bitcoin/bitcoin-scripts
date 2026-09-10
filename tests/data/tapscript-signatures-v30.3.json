@@ -1,0 +1,1949 @@
+{
+  "active_consensus_deployments": [
+    "segwit",
+    "taproot"
+  ],
+  "all_core_expectations_met": true,
+  "all_local_consensus_comparisons_matched": true,
+  "allow_local_mismatches": false,
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "consensus_method": "generateblock with raw transactions and connected-block txid check",
+  "destination_script_pubkey_hex": "00204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+  "expected_bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "expected_bitcoin_core_version": "30.3",
+  "experiment": "funded-tapscript-signature-semantics",
+  "fee_sat": 10000,
+  "fixture_count": 20,
+  "funded_fixture_sha256": "0d021b2e064fc1ec523e3e78e8a2acec46a1124525d2b3092b1b502b2e8b03b1",
+  "funding_transaction": {
+    "base_bytes": 954,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff1540420f00000000002251201d70668ce702421642cf304560240dccc19148698fc02041505c7d02766628a340420f00000000002251206ca1221b75c108dfe99970e4d0e9204279fc260d2869fb1aa279b2e177a7fed640420f00000000002251206ca1221b75c108dfe99970e4d0e9204279fc260d2869fb1aa279b2e177a7fed640420f0000000000225120b03c576decea315b196bc774b5e48aab317b05f4eac2c535b532ec43b9b1d95840420f0000000000225120b03c576decea315b196bc774b5e48aab317b05f4eac2c535b532ec43b9b1d95840420f0000000000225120f8a6622bf910cd8239bc763b544c1aebfb540ffe1d5b81b3d9e65d9ccf032f0540420f00000000002251201e2780f4fdea8e6392b56ee928e6a038ff8041e40b1584c64832d0c3dfd581a840420f0000000000225120dfdda6b838d48f6977dc41ebfc9a4328760b6f6a96130f86a02b1825448c129840420f0000000000225120dfdda6b838d48f6977dc41ebfc9a4328760b6f6a96130f86a02b1825448c129840420f0000000000225120a1886343eaa8b4808d837e6e0280ce168621ff1ab8f4e4e93cae1f70dea2412940420f0000000000225120514e2ed22a4cc9d4476f2a82d24d801505200667ca559113ec25533b478da75b40420f00000000002251204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef640420f00000000002251204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef640420f00000000002251204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef640420f00000000002251204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef640420f0000000000225120c1845459a3b8c82085680ca6c1dea8258b7963c37928458ab56a672252fb2c2740420f000000000022512038f51da902c3fd36884e62b892f42db1f284a394549f3a6c54be67d0ee7ece4740420f0000000000225120bef3441e997a04648f3b813e9a13b624beaf1c61e7000e25501fdcf5d10e8a4040420f0000000000225120f7dd581e184b6e148db84d8c0260f9bc586f3fe0f5c98b01d49fd01a0b68c18e40420f0000000000225120eeb630ae0912438a027dc52f46f4c969c7d469c35bfb1ba16ff5d6e95d55472bf09dd428010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "total_bytes": 959,
+    "txid": "878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331",
+    "vsize": 956,
+    "weight": 3821,
+    "witness_bytes": 3,
+    "wtxid": "0e48c5f5660126cddd580ad3de3aa357f021cae2ee1a9581606b6133963ad712"
+  },
+  "funding_value_sat": 1000000,
+  "initial_mocktime": 1800000000,
+  "internal_seed_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+  "local_interpreter": {
+    "commit": "702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+    "comparison": "consensus only; policy independently measured by Core",
+    "context": "tapscript",
+    "experimental_op_cat": false,
+    "limitations": "Full real transaction/prevouts/leaf context supplied, but local initial signature budget counts serialized data witness only rather than complete Taproot witness. Each fixture has at most one nonempty signature opcode, with a conservative lower bound of at least 67 budget units after one charge; empty signatures incur no charge. Two ordinary 32-byte witness padding items are removed by initial OP_2DROP; these are not signature hints and are included in data/witness/stack metrics. Remaining budget is unavailable on instruction errors because upstream statistics may precede the failed instruction's charge. Upstream opcode_count is not an executed non-push count; that measurement is unavailable. No annex or budget-boundary claim.",
+    "name": "bitcoin-scriptexec",
+    "require_minimal": false,
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=702544c9a045ac4fc14846da6da6559e2b7cd9d1#702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+    "stack_limit_enforced": true
+  },
+  "local_mismatch_count": 0,
+  "manifest_sha256": "1d1b86d143df73b30bc28a04ebfcae37b428c46ca659698e3a67dbedb4bea165",
+  "mining_address": "bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85",
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "policy_method": "testmempoolaccept with -acceptnonstdtxn=0; Core v30.3 defaults",
+  "resolved_interpreter": {
+    "name": "bitcoin-scriptexec",
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=702544c9a045ac4fc14846da6da6559e2b7cd9d1#702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+    "version": "0.0.0"
+  },
+  "results": [
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "638a70b3acf9a6a630ee7c756fffda40884ba108649bf78a41cbdbac24477736",
+          "block_height": 103
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00068965,
+            "effective-includes": [
+              "ead0edfa42d63c07339f0fcf65bf9b811c7004c1853c22a194749e89e0b16899"
+            ]
+          },
+          "txid": "6e62e70ee0fedea6b3e472ab908cc03e632128f5f1498b5a49fa40d152393501",
+          "vsize": 145,
+          "wtxid": "ead0edfa42d63c07339f0fcf65bf9b811c7004c1853c22a194749e89e0b16899"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "9fb9d64326beb627b660994badd81552d8a5d5295cd9b6b090326247ccdaac11da40270c56257b6115667c532fa3fb709fef2aaac7cdc729c61a4655137f0338",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 0,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 182,
+          "remaining_data_only_validation_weight": 132
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 132,
+        "data_witness_bytes": 132,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 35,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 202,
+        "taproot_witness_items": 5
+      },
+      "name": "valid-signature-no-separator",
+      "script_hex": "6d20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac",
+      "script_pubkey_hex": "51201d70668ce702421642cf304560240dccc19148698fc02041505c7d02766628a3",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 4294967295,
+        "sighash_hex": "9022fc1aba3e9774c8250d284e43c3aa791b7182e41e63b82a3b52c1d9ee57e1",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "f44b9af78187ba01352fbe61af911d28d6bc7487ccd9ff5a42ed965aba4d6ba0",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870000000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326005409fb9d64326beb627b660994badd81552d8a5d5295cd9b6b090326247ccdaac11da40270c56257b6115667c532fa3fb709fef2aaac7cdc729c61a4655137f0338205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666236d20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 298,
+        "txid": "6e62e70ee0fedea6b3e472ab908cc03e632128f5f1498b5a49fa40d152393501",
+        "vsize": 145,
+        "weight": 580,
+        "witness_bytes": 202,
+        "wtxid": "ead0edfa42d63c07339f0fcf65bf9b811c7004c1853c22a194749e89e0b16899"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": {
+        "last_executed_byte_offset": 5,
+        "last_executed_opcode_position": 3
+      },
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "3ee90bb76045d0e3a59c00748f3628b7a5af9cbee73ffc90bfa1c7f25fac0116",
+          "block_height": 104
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00068027,
+            "effective-includes": [
+              "3df09c2d37e0e965c9708ac716b3e928ffb0092e99678f309b3df47e772db759"
+            ]
+          },
+          "txid": "962f4e5570c87fbaf15cccbcbc178bbb1377e47ed74225b9f8977cd8fa14cb61",
+          "vsize": 147,
+          "wtxid": "3df09c2d37e0e965c9708ac716b3e928ffb0092e99678f309b3df47e772db759"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "797bb7348372a8c648570a90850bed65d31d540f4dc7eec54aff7389943ef81caa0c3f75f626d15d2a7a2b474e79e37ab2e96e376f8d59463be93da32d02b883",
+        "1112",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 1,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 4,
+          "initial_data_only_validation_weight": 185,
+          "remaining_data_only_validation_weight": 135
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 4,
+        "data_only_validation_weight_lower_bound_after_one_check": 135,
+        "data_witness_bytes": 135,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 40,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 4,
+        "static_non_push_opcodes": 4,
+        "taproot_witness_bytes": 210,
+        "taproot_witness_items": 6
+      },
+      "name": "codesep-opcode-position",
+      "script_hex": "6d02111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac",
+      "script_pubkey_hex": "51206ca1221b75c108dfe99970e4d0e9204279fc260d2869fb1aa279b2e177a7fed6",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 3,
+        "sighash_hex": "2cf586df921b31a99c67f6111957b76b512187de5affc5cea72b6494699487d5",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "13df0d5cbdc0c361fdc51451b80de573d48548d952c3d91085eb6d5f96e7a7bd",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870100000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600640797bb7348372a8c648570a90850bed65d31d540f4dc7eec54aff7389943ef81caa0c3f75f626d15d2a7a2b474e79e37ab2e96e376f8d59463be93da32d02b883021112205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666286d02111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac21c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 306,
+        "txid": "962f4e5570c87fbaf15cccbcbc178bbb1377e47ed74225b9f8977cd8fa14cb61",
+        "vsize": 147,
+        "weight": 588,
+        "witness_bytes": 210,
+        "wtxid": "3df09c2d37e0e965c9708ac716b3e928ffb0092e99678f309b3df47e772db759"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": {
+        "last_executed_byte_offset": 5,
+        "last_executed_opcode_position": 3
+      },
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 8588f59ae13f9547246b9e3151256cef7410a3c86ceb934f5d3bd6ba146c085a (wtxid 22f9422100a7f45d6749ab981a3043b22e09e5f009bfd60844bd270614ab0e4b), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:2",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 8588f59ae13f9547246b9e3151256cef7410a3c86ceb934f5d3bd6ba146c085a (wtxid 22f9422100a7f45d6749ab981a3043b22e09e5f009bfd60844bd270614ab0e4b), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:2",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)",
+          "txid": "8588f59ae13f9547246b9e3151256cef7410a3c86ceb934f5d3bd6ba146c085a",
+          "wtxid": "22f9422100a7f45d6749ab981a3043b22e09e5f009bfd60844bd270614ab0e4b"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "930c82d07e4271b55b074244340ed729129f367fe421cf09f07596e071a4ec7353f161b8a39aa023b49fcf4c364e11849c738f6848b635bc52e37a41fe64d8a9",
+        "1112",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-signature",
+        "policy": false,
+        "policy_rejection": "schnorr-signature"
+      },
+      "funding_vout": 2,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSig",
+        "final_stack_hex": [
+          "930c82d07e4271b55b074244340ed729129f367fe421cf09f07596e071a4ec7353f161b8a39aa023b49fcf4c364e11849c738f6848b635bc52e37a41fe64d8a9",
+          "e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 4,
+          "initial_data_only_validation_weight": 185,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 4,
+        "data_only_validation_weight_lower_bound_after_one_check": 135,
+        "data_witness_bytes": 135,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 40,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 4,
+        "static_non_push_opcodes": 4,
+        "taproot_witness_bytes": 210,
+        "taproot_witness_items": 6
+      },
+      "name": "codesep-wrong-byte-offset",
+      "script_hex": "6d02111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac",
+      "script_pubkey_hex": "51206ca1221b75c108dfe99970e4d0e9204279fc260d2869fb1aa279b2e177a7fed6",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 5,
+        "sighash_hex": "201a2adf1227874f40cbac4ca87ba71c576403a8f8eabdba499bdc5de7692331",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "13df0d5cbdc0c361fdc51451b80de573d48548d952c3d91085eb6d5f96e7a7bd",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870200000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600640930c82d07e4271b55b074244340ed729129f367fe421cf09f07596e071a4ec7353f161b8a39aa023b49fcf4c364e11849c738f6848b635bc52e37a41fe64d8a9021112205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666286d02111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac21c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 306,
+        "txid": "8588f59ae13f9547246b9e3151256cef7410a3c86ceb934f5d3bd6ba146c085a",
+        "vsize": 147,
+        "weight": 588,
+        "witness_bytes": 210,
+        "wtxid": "22f9422100a7f45d6749ab981a3043b22e09e5f009bfd60844bd270614ab0e4b"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": {
+        "last_executed_byte_offset": 8,
+        "last_executed_opcode_position": 6
+      },
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "6ab5ab632abaad638f8be41f69fcc22517688419c3395184e339e19c42d5c783",
+          "block_height": 105
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00067567,
+            "effective-includes": [
+              "0f1f5f44a74d9407d30e2c097ddb61ba918aac43c86a013f870c106e5efd2035"
+            ]
+          },
+          "txid": "32c586df20c59c89886e21938a75c217e6ee750f1f4dd8e82c676d7a0c526996",
+          "vsize": 148,
+          "wtxid": "0f1f5f44a74d9407d30e2c097ddb61ba918aac43c86a013f870c106e5efd2035"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "a30cd6302a7a0ad7a77a43d495a3c685b2eb98a0629d8fcf1728c778396594e45947fbcf7dfba6894dbf03a19398063133001d138458d4634385947f705601ef",
+        "1112",
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 3,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 5,
+          "initial_data_only_validation_weight": 186,
+          "remaining_data_only_validation_weight": 136
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 5,
+        "data_only_validation_weight_lower_bound_after_one_check": 136,
+        "data_witness_bytes": 136,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 43,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 5,
+        "static_non_push_opcodes": 7,
+        "taproot_witness_bytes": 214,
+        "taproot_witness_items": 7
+      },
+      "name": "codesep-skipped-prefix-opcode-position",
+      "script_hex": "6d63ab6802111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac",
+      "script_pubkey_hex": "5120b03c576decea315b196bc774b5e48aab317b05f4eac2c535b532ec43b9b1d958",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 6,
+        "sighash_hex": "753d089a81e57f76ae0fefb23339b4ce7e4a05d1a265e0fb699b91fcae9d83e7",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "b72d096312ebe19f08faf502060cff8e237029445c3b65bea156046751f61082",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870300000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600740a30cd6302a7a0ad7a77a43d495a3c685b2eb98a0629d8fcf1728c778396594e45947fbcf7dfba6894dbf03a19398063133001d138458d4634385947f705601ef021112002055555555555555555555555555555555555555555555555555555555555555552066666666666666666666666666666666666666666666666666666666666666662b6d63ab6802111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 310,
+        "txid": "32c586df20c59c89886e21938a75c217e6ee750f1f4dd8e82c676d7a0c526996",
+        "vsize": 148,
+        "weight": 592,
+        "witness_bytes": 214,
+        "wtxid": "0f1f5f44a74d9407d30e2c097ddb61ba918aac43c86a013f870c106e5efd2035"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": {
+        "last_executed_byte_offset": 8,
+        "last_executed_opcode_position": 6
+      },
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 08a0c2917057250854dcbe841f6a14f3d1808044ef5b453f00bb937566d54b7f (wtxid 4078df11bec44f5057bca2c5b1ecbbecf2217fb0e0214b779505a263a6966340), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:4",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 08a0c2917057250854dcbe841f6a14f3d1808044ef5b453f00bb937566d54b7f (wtxid 4078df11bec44f5057bca2c5b1ecbbecf2217fb0e0214b779505a263a6966340), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:4",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)",
+          "txid": "08a0c2917057250854dcbe841f6a14f3d1808044ef5b453f00bb937566d54b7f",
+          "wtxid": "4078df11bec44f5057bca2c5b1ecbbecf2217fb0e0214b779505a263a6966340"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "32c89774288ee2bacc6875ebb312ee82291538f48b9f3b149c701d80a8aa3912636be7e0796fd00300a30fba12580df3bfc74263c4f193088f64dc0ce0b11dfa",
+        "1112",
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-signature",
+        "policy": false,
+        "policy_rejection": "schnorr-signature"
+      },
+      "funding_vout": 4,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSig",
+        "final_stack_hex": [
+          "32c89774288ee2bacc6875ebb312ee82291538f48b9f3b149c701d80a8aa3912636be7e0796fd00300a30fba12580df3bfc74263c4f193088f64dc0ce0b11dfa",
+          "e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 5,
+          "initial_data_only_validation_weight": 186,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 5,
+        "data_only_validation_weight_lower_bound_after_one_check": 136,
+        "data_witness_bytes": 136,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 43,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 5,
+        "static_non_push_opcodes": 7,
+        "taproot_witness_bytes": 214,
+        "taproot_witness_items": 7
+      },
+      "name": "codesep-skipped-prefix-wrong-byte-offset",
+      "script_hex": "6d63ab6802111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac",
+      "script_pubkey_hex": "5120b03c576decea315b196bc774b5e48aab317b05f4eac2c535b532ec43b9b1d958",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 8,
+        "sighash_hex": "d3a43fe137026e2d8dadc70cd2c99f19fcc8c77d3fa53f06f05a660fbd459745",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "b72d096312ebe19f08faf502060cff8e237029445c3b65bea156046751f61082",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870400000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260074032c89774288ee2bacc6875ebb312ee82291538f48b9f3b149c701d80a8aa3912636be7e0796fd00300a30fba12580df3bfc74263c4f193088f64dc0ce0b11dfa021112002055555555555555555555555555555555555555555555555555555555555555552066666666666666666666666666666666666666666666666666666666666666662b6d63ab6802111288ab20e11f40af6b41f494bfbc27c47a178ce572e8b8ca687cc67e1298514861ac5e48ac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 310,
+        "txid": "08a0c2917057250854dcbe841f6a14f3d1808044ef5b453f00bb937566d54b7f",
+        "vsize": 148,
+        "weight": 592,
+        "witness_bytes": 214,
+        "wtxid": "4078df11bec44f5057bca2c5b1ecbbecf2217fb0e0214b779505a263a6966340"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "410f63673e47594c180fc74ce100ab1369185522c883895c8e9e1edf195c478e",
+          "block_height": 106
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 0fda7d4bbe8b41b35e250762da10bc9a4a3bace03614bc3b63fec1bdc29df899 (wtxid 08645731e07417e86a3774535c4f5e6c5d8f2e5da2aa926f18c8472ce579c3a0), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:5",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "0fda7d4bbe8b41b35e250762da10bc9a4a3bace03614bc3b63fec1bdc29df899",
+          "wtxid": "08645731e07417e86a3774535c4f5e6c5d8f2e5da2aa926f18c8472ce579c3a0"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 5,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": 118
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 4,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 3,
+        "taproot_witness_bytes": 107,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-empty-checksig",
+      "script_hex": "6d52ac91",
+      "script_pubkey_hex": "5120f8a6622bf910cd8239bc763b544c1aebfb540ffe1d5b81b3d9e65d9ccf032f05",
+      "tapleaf_hash": "bde2bd08140d8787259a3d993394d6dfe31f0cf9d5c339c806760ab9f4990db3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870500000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666046d52ac9121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 203,
+        "txid": "0fda7d4bbe8b41b35e250762da10bc9a4a3bace03614bc3b63fec1bdc29df899",
+        "vsize": 122,
+        "weight": 485,
+        "witness_bytes": 107,
+        "wtxid": "08645731e07417e86a3774535c4f5e6c5d8f2e5da2aa926f18c8472ce579c3a0"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "336237fe1d687257ec444d547e8a9f6eb51ce3dce2e9231e99070c54cc0d8691",
+          "block_height": 107
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 8be8c752f1ea084a9656abf2f57f6410b1c6e45d6f0d12a8f814bd6732d11056 (wtxid cdfb35d23d8b9a772a067e6d7c2e06f62faecf1ddc276ed670018cd6e0e12a39), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:6",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "8be8c752f1ea084a9656abf2f57f6410b1c6e45d6f0d12a8f814bd6732d11056",
+          "wtxid": "cdfb35d23d8b9a772a067e6d7c2e06f62faecf1ddc276ed670018cd6e0e12a39"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "42",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 6,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 119,
+          "remaining_data_only_validation_weight": 69
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 69,
+        "data_witness_bytes": 69,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 107,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-nonempty-checksig",
+      "script_hex": "6d52ac",
+      "script_pubkey_hex": "51201e2780f4fdea8e6392b56ee928e6a038ff8041e40b1584c64832d0c3dfd581a8",
+      "tapleaf_hash": "f02390a818ff26e732547a355f8dc6f555d7c22e5cfba29f78862cb2aa2de9a8",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870600000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260050142205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666036d52ac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 203,
+        "txid": "8be8c752f1ea084a9656abf2f57f6410b1c6e45d6f0d12a8f814bd6732d11056",
+        "vsize": 122,
+        "weight": 485,
+        "witness_bytes": 107,
+        "wtxid": "cdfb35d23d8b9a772a067e6d7c2e06f62faecf1ddc276ed670018cd6e0e12a39"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 0 of 828f26a5bb2438103a7382b8702461fde954d43606560b91dea1518bff0508b4 (wtxid cec69b58094c669600557d2edbf7cf261c41d3d1b7f3ef360b50b4678af6e20f), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:7",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 828f26a5bb2438103a7382b8702461fde954d43606560b91dea1518bff0508b4 (wtxid cec69b58094c669600557d2edbf7cf261c41d3d1b7f3ef360b50b4678af6e20f), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:7",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "828f26a5bb2438103a7382b8702461fde954d43606560b91dea1518bff0508b4",
+          "wtxid": "cec69b58094c669600557d2edbf7cf261c41d3d1b7f3ef360b50b4678af6e20f"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "checksigverify",
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 7,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "CheckSigVerify",
+        "final_stack_hex": [],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "CheckSigVerify",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 4,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 107,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-empty-checksigverify",
+      "script_hex": "6d52ad51",
+      "script_pubkey_hex": "5120dfdda6b838d48f6977dc41ebfc9a4328760b6f6a96130f86a02b1825448c1298",
+      "tapleaf_hash": "f06c68fcb14e502c08e007bc76938e5771ddf63e0eae238c1a0becff67880a8b",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870700000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666046d52ad5121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 203,
+        "txid": "828f26a5bb2438103a7382b8702461fde954d43606560b91dea1518bff0508b4",
+        "vsize": 122,
+        "weight": 485,
+        "witness_bytes": 107,
+        "wtxid": "cec69b58094c669600557d2edbf7cf261c41d3d1b7f3ef360b50b4678af6e20f"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "41e664b3caac9ef660871b7a47c16f577403f44b045cc9c28be60c4e84c0b1cd",
+          "block_height": 108
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 557434865f93403b47b471edf8b0cfcfc731e92bebed69ca21c047727e11389d (wtxid 9a41a8fa77262bb035a7ba2132c8d02cc94fdd5887532c556031854a1c5f5937), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:8",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "557434865f93403b47b471edf8b0cfcfc731e92bebed69ca21c047727e11389d",
+          "wtxid": "9a41a8fa77262bb035a7ba2132c8d02cc94fdd5887532c556031854a1c5f5937"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "42",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 8,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 119,
+          "remaining_data_only_validation_weight": 69
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 69,
+        "data_witness_bytes": 69,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 4,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 108,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-nonempty-checksigverify",
+      "script_hex": "6d52ad51",
+      "script_pubkey_hex": "5120dfdda6b838d48f6977dc41ebfc9a4328760b6f6a96130f86a02b1825448c1298",
+      "tapleaf_hash": "f06c68fcb14e502c08e007bc76938e5771ddf63e0eae238c1a0becff67880a8b",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870800000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260050142205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666046d52ad5121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 204,
+        "txid": "557434865f93403b47b471edf8b0cfcfc731e92bebed69ca21c047727e11389d",
+        "vsize": 122,
+        "weight": 486,
+        "witness_bytes": 108,
+        "wtxid": "9a41a8fa77262bb035a7ba2132c8d02cc94fdd5887532c556031854a1c5f5937"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "3553bf0b08d3a61860d32e4e14179d25bb47b11f0241bc531985a496b3858d6a",
+          "block_height": 109
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 72b74ea603659886c55d44931690736cb005ff67aca4140e36c90cbcb59f5577 (wtxid d0fb340fd813508b19004b1e47b4e993ce2bfc9500f8ec7070c49c0d94051d91), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:9",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "72b74ea603659886c55d44931690736cb005ff67aca4140e36c90cbcb59f5577",
+          "wtxid": "d0fb340fd813508b19004b1e47b4e993ce2bfc9500f8ec7070c49c0d94051d91"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 9,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": 118
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 6,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 3,
+        "taproot_witness_bytes": 109,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-empty-checksigadd",
+      "script_hex": "6d5252ba529c",
+      "script_pubkey_hex": "5120a1886343eaa8b4808d837e6e0280ce168621ff1ab8f4e4e93cae1f70dea24129",
+      "tapleaf_hash": "e646a32e5a363b4384de5bff2f9a3a8f5384998c7df84c6a6652f1c255805d71",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870900000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666066d5252ba529c21c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 205,
+        "txid": "72b74ea603659886c55d44931690736cb005ff67aca4140e36c90cbcb59f5577",
+        "vsize": 122,
+        "weight": 487,
+        "witness_bytes": 109,
+        "wtxid": "d0fb340fd813508b19004b1e47b4e993ce2bfc9500f8ec7070c49c0d94051d91"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "65aa07fd6784470417ef3655f1ccf80439856a12af98c66bf7fa4531cb5bc29a",
+          "block_height": 110
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades), input 0 of 000be97e6185b467a75cd8d35c09142082e5f4343b30245c6eb9bf4e126e0cd9 (wtxid a5eff6054ed4f3fefea12733403b9901f104b454810564ef69794a520a4e1975), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:10",
+          "reject-reason": "mempool-script-verify-flag-failed (Public key version reserved for soft-fork upgrades)",
+          "txid": "000be97e6185b467a75cd8d35c09142082e5f4343b30245c6eb9bf4e126e0cd9",
+          "wtxid": "a5eff6054ed4f3fefea12733403b9901f104b454810564ef69794a520a4e1975"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "42",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "discourage-upgradeable-pubkey"
+      },
+      "funding_vout": 10,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 119,
+          "remaining_data_only_validation_weight": 69
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 69,
+        "data_witness_bytes": 69,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 6,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 3,
+        "taproot_witness_bytes": 110,
+        "taproot_witness_items": 5
+      },
+      "name": "unknown-key-nonempty-checksigadd",
+      "script_hex": "6d5252ba539c",
+      "script_pubkey_hex": "5120514e2ed22a4cc9d4476f2a82d24d801505200667ca559113ec25533b478da75b",
+      "tapleaf_hash": "639be50c9d3a5c2b4a2e917e697d1b1df0b455f97d04bc925f683f5a206ee6b7",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870a00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260050142205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666066d5252ba539c21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 206,
+        "txid": "000be97e6185b467a75cd8d35c09142082e5f4343b30245c6eb9bf4e126e0cd9",
+        "vsize": 122,
+        "weight": 488,
+        "witness_bytes": 110,
+        "wtxid": "a5eff6054ed4f3fefea12733403b9901f104b454810564ef69794a520a4e1975"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of fb99dc9da9a9aa0056039fddcd6e931ace6407e7c76eba59c35f694bfa9216a1 (wtxid 0f04a75becc225aa58531c34965f9cb889479570d21227d9e5dfb1cfed65c14a), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:11",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature), input 0 of fb99dc9da9a9aa0056039fddcd6e931ace6407e7c76eba59c35f694bfa9216a1 (wtxid 0f04a75becc225aa58531c34965f9cb889479570d21227d9e5dfb1cfed65c14a), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:11",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)",
+          "txid": "fb99dc9da9a9aa0056039fddcd6e931ace6407e7c76eba59c35f694bfa9216a1",
+          "wtxid": "0f04a75becc225aa58531c34965f9cb889479570d21227d9e5dfb1cfed65c14a"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "ff10967b8e05b642b3fe6e820d11356255a7dc18aa6b5680395461a2212a276e6ee92733c2b15fd1aff6e17b6d4a4ffff771209fac1201548b56b6a30a0db5c0",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-signature",
+        "policy": false,
+        "policy_rejection": "schnorr-signature"
+      },
+      "funding_vout": 11,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSig",
+        "final_stack_hex": [
+          "ff10967b8e05b642b3fe6e820d11356255a7dc18aa6b5680395461a2212a276e6ee92733c2b15fd1aff6e17b6d4a4ffff771209fac1201548b56b6a30a0db5c0",
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 182,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 132,
+        "data_witness_bytes": 132,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 35,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 202,
+        "taproot_witness_items": 5
+      },
+      "name": "invalid-xonly-key-64-default",
+      "script_hex": "6d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac",
+      "script_pubkey_hex": "51204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef6",
+      "signing": {
+        "appended_hashtype": null,
+        "codesep_position": 4294967295,
+        "sighash_hex": "a8f970e324a2269d37e47c5836b83c55b8f5422e05123edb1ba44a14c2a8d0ff",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "4b401b06f7241cf0370ba9fd6dbc32f1a6e36b66261d5f80d073d8fb170b2029",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870b00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600540ff10967b8e05b642b3fe6e820d11356255a7dc18aa6b5680395461a2212a276e6ee92733c2b15fd1aff6e17b6d4a4ffff771209fac1201548b56b6a30a0db5c0205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666236d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 298,
+        "txid": "fb99dc9da9a9aa0056039fddcd6e931ace6407e7c76eba59c35f694bfa9216a1",
+        "vsize": 145,
+        "weight": 580,
+        "witness_bytes": 202,
+        "wtxid": "0f04a75becc225aa58531c34965f9cb889479570d21227d9e5dfb1cfed65c14a"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 928aca4e2112495c5ec28c12b7b0659388276773166524f2dfc5e5006cc20b74 (wtxid 6ecbf7a406dda197ff488824db1bb7d596d875a9cfd4192d7daabd50ca26a1b2), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:12",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 928aca4e2112495c5ec28c12b7b0659388276773166524f2dfc5e5006cc20b74 (wtxid 6ecbf7a406dda197ff488824db1bb7d596d875a9cfd4192d7daabd50ca26a1b2), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:12",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)",
+          "txid": "928aca4e2112495c5ec28c12b7b0659388276773166524f2dfc5e5006cc20b74",
+          "wtxid": "6ecbf7a406dda197ff488824db1bb7d596d875a9cfd4192d7daabd50ca26a1b2"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "c9e854f023331731dd08e4246871db0f236bb9c9490aac16183704bd0e7e1b6b8bbf0d42d6113c1addabfeb240ca6c7f7d89312a08ed8f7ad8d65caf9893564e01",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-signature",
+        "policy": false,
+        "policy_rejection": "schnorr-signature"
+      },
+      "funding_vout": 12,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSig",
+        "final_stack_hex": [
+          "c9e854f023331731dd08e4246871db0f236bb9c9490aac16183704bd0e7e1b6b8bbf0d42d6113c1addabfeb240ca6c7f7d89312a08ed8f7ad8d65caf9893564e01",
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 183,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 133,
+        "data_witness_bytes": 133,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 35,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 203,
+        "taproot_witness_items": 5
+      },
+      "name": "invalid-xonly-key-65-all",
+      "script_hex": "6d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac",
+      "script_pubkey_hex": "51204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef6",
+      "signing": {
+        "appended_hashtype": 1,
+        "codesep_position": 4294967295,
+        "sighash_hex": "2da0fa9fd0f3b43b64b8409a520b98094bb7f53d1f92b19739164a24b481efd7",
+        "sighash_type": 1
+      },
+      "tapleaf_hash": "4b401b06f7241cf0370ba9fd6dbc32f1a6e36b66261d5f80d073d8fb170b2029",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870c00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600541c9e854f023331731dd08e4246871db0f236bb9c9490aac16183704bd0e7e1b6b8bbf0d42d6113c1addabfeb240ca6c7f7d89312a08ed8f7ad8d65caf9893564e01205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666236d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 299,
+        "txid": "928aca4e2112495c5ec28c12b7b0659388276773166524f2dfc5e5006cc20b74",
+        "vsize": 146,
+        "weight": 581,
+        "witness_bytes": 203,
+        "wtxid": "6ecbf7a406dda197ff488824db1bb7d596d875a9cfd4192d7daabd50ca26a1b2"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 5bb398832e63fd0e363452c2cecf4b7105d71ff07835a58e5ac6a47d40053e45 (wtxid e06560f1406ef875d97d2774f9050c19314b1f7fae4dced5e53ecdaeaa974763), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:13",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 5bb398832e63fd0e363452c2cecf4b7105d71ff07835a58e5ac6a47d40053e45 (wtxid e06560f1406ef875d97d2774f9050c19314b1f7fae4dced5e53ecdaeaa974763), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:13",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type)",
+          "txid": "5bb398832e63fd0e363452c2cecf4b7105d71ff07835a58e5ac6a47d40053e45",
+          "wtxid": "e06560f1406ef875d97d2774f9050c19314b1f7fae4dced5e53ecdaeaa974763"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "75d8311ac1bfb1378e0f6f0cc3d81f8200a9ebc1a8d2e575eca5b144d9cd534f82e3652b01179652ca4f93d61ac5779886c5dc68f4fa7768b09eeb1e70b5797500",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-hashtype",
+        "policy": false,
+        "policy_rejection": "schnorr-hashtype"
+      },
+      "funding_vout": 13,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSigHashtype",
+        "final_stack_hex": [
+          "75d8311ac1bfb1378e0f6f0cc3d81f8200a9ebc1a8d2e575eca5b144d9cd534f82e3652b01179652ca4f93d61ac5779886c5dc68f4fa7768b09eeb1e70b5797500",
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 183,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSigHashtype",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 133,
+        "data_witness_bytes": 133,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 35,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 203,
+        "taproot_witness_items": 5
+      },
+      "name": "invalid-xonly-key-65-explicit-default",
+      "script_hex": "6d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac",
+      "script_pubkey_hex": "51204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef6",
+      "signing": {
+        "appended_hashtype": 0,
+        "codesep_position": 4294967295,
+        "sighash_hex": "0c4924292236b0b31d4926dab1319c47070192efb60a878939cc4c8ef7beacaa",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "4b401b06f7241cf0370ba9fd6dbc32f1a6e36b66261d5f80d073d8fb170b2029",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870d00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260054175d8311ac1bfb1378e0f6f0cc3d81f8200a9ebc1a8d2e575eca5b144d9cd534f82e3652b01179652ca4f93d61ac5779886c5dc68f4fa7768b09eeb1e70b5797500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666236d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 299,
+        "txid": "5bb398832e63fd0e363452c2cecf4b7105d71ff07835a58e5ac6a47d40053e45",
+        "vsize": 146,
+        "weight": 581,
+        "witness_bytes": 203,
+        "wtxid": "e06560f1406ef875d97d2774f9050c19314b1f7fae4dced5e53ecdaeaa974763"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 1f8158161c48c7d4e2ee7a961992c1a9846064303ccdee69febff3f39bebb349 (wtxid 20b1240d237c5254c032d27354e349e2a2a69a8d5d6370ceda7a9dab824a3a2a), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:14",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 1f8158161c48c7d4e2ee7a961992c1a9846064303ccdee69febff3f39bebb349 (wtxid 20b1240d237c5254c032d27354e349e2a2a69a8d5d6370ceda7a9dab824a3a2a), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:14",
+          "reject-reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type)",
+          "txid": "1f8158161c48c7d4e2ee7a961992c1a9846064303ccdee69febff3f39bebb349",
+          "wtxid": "20b1240d237c5254c032d27354e349e2a2a69a8d5d6370ceda7a9dab824a3a2a"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "aaded6f99077938c4b0d494bda7c4952f00d081b102c64e5a86e465018ca01ba112bfe5548c0ce98c51b05113ac1587459d424183b1207b612b060e714a64e3104",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "schnorr-hashtype",
+        "policy": false,
+        "policy_rejection": "schnorr-hashtype"
+      },
+      "funding_vout": 14,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "SchnorrSigHashtype",
+        "final_stack_hex": [
+          "aaded6f99077938c4b0d494bda7c4952f00d081b102c64e5a86e465018ca01ba112bfe5548c0ce98c51b05113ac1587459d424183b1207b612b060e714a64e3104",
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 183,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "SchnorrSigHashtype",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 133,
+        "data_witness_bytes": 133,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 35,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 203,
+        "taproot_witness_items": 5
+      },
+      "name": "invalid-xonly-key-65-invalid-hashtype",
+      "script_hex": "6d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac",
+      "script_pubkey_hex": "51204252660db14f8c313fc6cb166af0325995be612b7895598cd52fdb48a43a5ef6",
+      "signing": {
+        "appended_hashtype": 4,
+        "codesep_position": 4294967295,
+        "sighash_hex": "3956d4339c25710306c52d437d1843bfad923f3ae08b846c2974ba64bf26ef75",
+        "sighash_type": 0
+      },
+      "tapleaf_hash": "4b401b06f7241cf0370ba9fd6dbc32f1a6e36b66261d5f80d073d8fb170b2029",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870e00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600541aaded6f99077938c4b0d494bda7c4952f00d081b102c64e5a86e465018ca01ba112bfe5548c0ce98c51b05113ac1587459d424183b1207b612b060e714a64e3104205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666236d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac21c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 299,
+        "txid": "1f8158161c48c7d4e2ee7a961992c1a9846064303ccdee69febff3f39bebb349",
+        "vsize": 146,
+        "weight": 581,
+        "witness_bytes": 203,
+        "wtxid": "20b1240d237c5254c032d27354e349e2a2a69a8d5d6370ceda7a9dab824a3a2a"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "4975be48a8b8d8196261f3d40a45d39982aef948e92000be1d4474e4f72ff9ef",
+          "block_height": 111
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00076923,
+            "effective-includes": [
+              "672dbefd2d07d6b1cc891996bd3509aa2117843fec65ea96102758425dbb0334"
+            ]
+          },
+          "txid": "b7b872f8f904e870e8d205b920d9df73ac40930d75dbf63465ce527ce5265010",
+          "vsize": 130,
+          "wtxid": "672dbefd2d07d6b1cc891996bd3509aa2117843fec65ea96102758425dbb0334"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 15,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": 118
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 36,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 3,
+        "taproot_witness_bytes": 139,
+        "taproot_witness_items": 5
+      },
+      "name": "invalid-xonly-key-empty-signature",
+      "script_hex": "6d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac91",
+      "script_pubkey_hex": "5120c1845459a3b8c82085680ca6c1dea8258b7963c37928458ab56a672252fb2c27",
+      "tapleaf_hash": "4c5b795c21a2e622016f3761dfcf699c908eed9299973affb595d942a6393c0d",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f870f00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666246d20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffac9121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 235,
+        "txid": "b7b872f8f904e870e8d205b920d9df73ac40930d75dbf63465ce527ce5265010",
+        "vsize": 130,
+        "weight": 517,
+        "witness_bytes": 139,
+        "wtxid": "672dbefd2d07d6b1cc891996bd3509aa2117843fec65ea96102758425dbb0334"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript), input 0 of d43dc99c21881a85fd3daa3db2cd64070f69fa1fde96abc625181d5153ecb2e7 (wtxid 0dbcfd18a75c8015b2ba514287f7a54a0f59486de7acfcf24c7b309ecf2909f7), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:16",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript), input 0 of d43dc99c21881a85fd3daa3db2cd64070f69fa1fde96abc625181d5153ecb2e7 (wtxid 0dbcfd18a75c8015b2ba514287f7a54a0f59486de7acfcf24c7b309ecf2909f7), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:16",
+          "reject-reason": "mempool-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript)",
+          "txid": "d43dc99c21881a85fd3daa3db2cd64070f69fa1fde96abc625181d5153ecb2e7",
+          "wtxid": "0dbcfd18a75c8015b2ba514287f7a54a0f59486de7acfcf24c7b309ecf2909f7"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "tapscript-checkmultisig",
+        "policy": false,
+        "policy_rejection": "tapscript-checkmultisig"
+      },
+      "funding_vout": 16,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "TapscriptCheckMultiSig",
+        "final_stack_hex": [],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 2,
+          "initial_data_only_validation_weight": 117,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "TapscriptCheckMultiSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 2,
+        "data_only_validation_weight_lower_bound_after_one_check": 67,
+        "data_witness_bytes": 67,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 2,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 105,
+        "taproot_witness_items": 4
+      },
+      "name": "checkmultisig-executed",
+      "script_hex": "6dae51",
+      "script_pubkey_hex": "512038f51da902c3fd36884e62b892f42db1f284a394549f3a6c54be67d0ee7ece47",
+      "tapleaf_hash": "91abef9aecf8058174f34ed205bfc845cf9c4ccd67a5a216120970047c25b151",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f871000000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326004205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666036dae5121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 201,
+        "txid": "d43dc99c21881a85fd3daa3db2cd64070f69fa1fde96abc625181d5153ecb2e7",
+        "vsize": 121,
+        "weight": 483,
+        "witness_bytes": 105,
+        "wtxid": "0dbcfd18a75c8015b2ba514287f7a54a0f59486de7acfcf24c7b309ecf2909f7"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "77a9a89fa6fabb13cec40fd16d229b275e7e711a5b7d9ce1aa40065935f5a6a5",
+          "block_height": 112
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00081967,
+            "effective-includes": [
+              "921278a2f6cd94c9f95ced85fa6d280947b30337fd0ccfc4e8f9ce312e6684fa"
+            ]
+          },
+          "txid": "ecc1a3c937038573c3f07104c2f14adeb21f61816c9df67faa3c9736007a824b",
+          "vsize": 122,
+          "wtxid": "921278a2f6cd94c9f95ced85fa6d280947b30337fd0ccfc4e8f9ce312e6684fa"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 17,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": 118
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 5,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 4,
+        "taproot_witness_bytes": 108,
+        "taproot_witness_items": 5
+      },
+      "name": "checkmultisig-skipped",
+      "script_hex": "6d63ae6851",
+      "script_pubkey_hex": "5120bef3441e997a04648f3b813e9a13b624beaf1c61e7000e25501fdcf5d10e8a40",
+      "tapleaf_hash": "da833a9af5f8778da86d79b64770091fbb8954d8a3614cfa233c399dd114909c",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f871100000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666056d63ae685121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 204,
+        "txid": "ecc1a3c937038573c3f07104c2f14adeb21f61816c9df67faa3c9736007a824b",
+        "vsize": 122,
+        "weight": 486,
+        "witness_bytes": 108,
+        "wtxid": "921278a2f6cd94c9f95ced85fa6d280947b30337fd0ccfc4e8f9ce312e6684fa"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript), input 0 of 2c5ac4a7285313ea71344ae2a18281b4fc6ddbf92d634536946977ad30e054b6 (wtxid 3fd2720c933dcd74c30a3ebc83a4762e748764854b605ce1cfd529ccb67c5ddf), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:18",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript), input 0 of 2c5ac4a7285313ea71344ae2a18281b4fc6ddbf92d634536946977ad30e054b6 (wtxid 3fd2720c933dcd74c30a3ebc83a4762e748764854b605ce1cfd529ccb67c5ddf), spending 878f0d2bcaf6d7c5500f2a4788fe327812bdd83b76777b8adbce0318ca6af331:18",
+          "reject-reason": "mempool-script-verify-flag-failed (OP_CHECKMULTISIG(VERIFY) is not available in tapscript)",
+          "txid": "2c5ac4a7285313ea71344ae2a18281b4fc6ddbf92d634536946977ad30e054b6",
+          "wtxid": "3fd2720c933dcd74c30a3ebc83a4762e748764854b605ce1cfd529ccb67c5ddf"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "tapscript-checkmultisig",
+        "policy": false,
+        "policy_rejection": "tapscript-checkmultisig"
+      },
+      "funding_vout": 18,
+      "hint_items": 0,
+      "local": {
+        "accepted": false,
+        "error": "TapscriptCheckMultiSig",
+        "final_stack_hex": [],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 2,
+          "initial_data_only_validation_weight": 117,
+          "remaining_data_only_validation_weight": null
+        }
+      },
+      "local_comparison": {
+        "expected_error": "TapscriptCheckMultiSig",
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 2,
+        "data_only_validation_weight_lower_bound_after_one_check": 67,
+        "data_witness_bytes": 67,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 2,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 105,
+        "taproot_witness_items": 4
+      },
+      "name": "checkmultisigverify-executed",
+      "script_hex": "6daf51",
+      "script_pubkey_hex": "5120f7dd581e184b6e148db84d8c0260f9bc586f3fe0f5c98b01d49fd01a0b68c18e",
+      "tapleaf_hash": "887e3ad6d6d2dd9433312732f5cb0b3271d8347345c124b97108cd398ef96ba4",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f871200000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326004205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666036daf5121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 201,
+        "txid": "2c5ac4a7285313ea71344ae2a18281b4fc6ddbf92d634536946977ad30e054b6",
+        "vsize": 121,
+        "weight": 483,
+        "witness_bytes": 105,
+        "wtxid": "3fd2720c933dcd74c30a3ebc83a4762e748764854b605ce1cfd529ccb67c5ddf"
+      },
+      "witness_items_coexist_at_entry": true
+    },
+    {
+      "budget_padding_bytes": 64,
+      "budget_padding_items": 2,
+      "codesep": null,
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "00b49bfe0ac781b4f60201ebfd044e284cc3de7dcda3dc300de50da8161dc23f",
+          "block_height": 113
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00081967,
+            "effective-includes": [
+              "d8cfe4ab5d004159b7b32ee0a3b70c5a013772f29d7242bea7839794abf304ed"
+            ]
+          },
+          "txid": "5f90b7d65661ad609389df674664831acaa57bdc7fa76a10eb2ab24131d583fe",
+          "vsize": 122,
+          "wtxid": "d8cfe4ab5d004159b7b32ee0a3b70c5a013772f29d7242bea7839794abf304ed"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "6666666666666666666666666666666666666666666666666666666666666666"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 19,
+      "hint_items": 0,
+      "local": {
+        "accepted": true,
+        "error": null,
+        "final_stack_hex": [
+          "01"
+        ],
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 3,
+          "initial_data_only_validation_weight": 118,
+          "remaining_data_only_validation_weight": 118
+        }
+      },
+      "local_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_consensus": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "data_items": 3,
+        "data_only_validation_weight_lower_bound_after_one_check": 68,
+        "data_witness_bytes": 68,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 5,
+        "nonempty_signature_checks_upper_bound": 1,
+        "stack_limit_enforced": true,
+        "stack_peak": 3,
+        "static_non_push_opcodes": 4,
+        "taproot_witness_bytes": 108,
+        "taproot_witness_items": 5
+      },
+      "name": "checkmultisigverify-skipped",
+      "script_hex": "6d63af6851",
+      "script_pubkey_hex": "5120eeb630ae0912438a027dc52f46f4c969c7d469c35bfb1ba16ff5d6e95d55472b",
+      "tapleaf_hash": "e1eb175ddd7fb3f5d271810035c22654d548b709a2dd952e7c9ac24768a9dbca",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "0200000000010131f36aca1803cedb8a7b77763bd8bd127832fe88472a0f50c5d7f6ca2b0d8f871300000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600500205555555555555555555555555555555555555555555555555555555555555555206666666666666666666666666666666666666666666666666666666666666666056d63af685121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 204,
+        "txid": "5f90b7d65661ad609389df674664831acaa57bdc7fa76a10eb2ab24131d583fe",
+        "vsize": 122,
+        "weight": 486,
+        "witness_bytes": 108,
+        "wtxid": "d8cfe4ab5d004159b7b32ee0a3b70c5a013772f29d7242bea7839794abf304ed"
+      },
+      "witness_items_coexist_at_entry": true
+    }
+  ],
+  "run_passed": true,
+  "schema_version": 1,
+  "scope": "Exact funded Taproot spends; local consensus-oriented direct Exec with complete transaction and prevouts. No full local policy or signature-budget-boundary claim.",
+  "signing_seed_hex": "2323232323232323232323232323232323232323232323232323232323232323",
+  "test_key_warning": "Public deterministic test keys; never use for real funds"
+}

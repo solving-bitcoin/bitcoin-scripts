@@ -74,6 +74,11 @@ def load_catalog() -> dict[str, Any]:
     return load_json(CATALOG_PATH)
 
 
+def configuration_qualifiers(record: dict[str, Any], config: dict[str, Any]) -> tuple[str, str]:
+    """Use explicit measurement qualifiers, otherwise the record's defaults."""
+    return config.get("evidence", record["evidence"]), config.get("execution", record["execution"])
+
+
 def selector_matches(record: dict[str, Any], selector: str) -> bool:
     return (
         record["id"] == selector
@@ -130,12 +135,14 @@ def command_show(args: argparse.Namespace) -> int:
     if not record["configurations"]:
         print("  (none; instance-specific or unmeasured)")
     for config in record["configurations"]:
+        evidence, execution = configuration_qualifiers(record, config)
         metrics = ", ".join(
             f"{field}={config[field]}"
             for field in sorted(NUMERIC_CONFIGURATION_FIELDS)
             if config.get(field) is not None
         )
         print(f"  {config['id']}: {metrics or 'unmeasured'}")
+        print(f"    evidence/execution: {evidence} / {execution}")
         print(f"    {config['includes']}")
     return 0
 
@@ -164,12 +171,15 @@ def command_best(args: argparse.Namespace) -> int:
     for record in load_catalog()["records"]:
         if not selector_matches(record, args.selector):
             continue
-        if args.execution and record["execution"] != args.execution:
-            continue
         for config in record["configurations"]:
+            evidence, execution = configuration_qualifiers(record, config)
+            if args.execution and execution != args.execution:
+                continue
+            if args.evidence and evidence != args.evidence:
+                continue
             value = config.get(args.metric)
             if isinstance(value, (int, float)):
-                candidates.append((value, record, config))
+                candidates.append((value, record, config, evidence, execution))
     candidates.sort(key=lambda item: item[0])
     if args.json:
         payload = [
@@ -178,16 +188,17 @@ def command_best(args: argparse.Namespace) -> int:
                 "record": record["id"],
                 "configuration": config["id"],
                 "includes": config["includes"],
-                "execution": record["execution"],
+                "evidence": evidence,
+                "execution": execution,
             }
-            for value, record, config in candidates
+            for value, record, config, evidence, execution in candidates
         ]
         print(json.dumps(payload, indent=2, sort_keys=True))
         return 0
     print("Candidates are sorted numerically, not declared universally comparable.")
     print("Inspect every inclusion boundary and execution class before citing a best result.\n")
-    for value, record, config in candidates:
-        print(f"{value:>10}  {record['id']}#{config['id']}  [{record['execution']}]")
+    for value, record, config, evidence, execution in candidates:
+        print(f"{value:>10}  {record['id']}#{config['id']}  [{evidence} / {execution}]")
         print(f"            {config['includes']}")
     return 0 if candidates else 1
 
@@ -206,7 +217,7 @@ def validate() -> list[str]:
     sources_document = load_json(SOURCES_PATH)
     records = catalog.get("records")
     sources = sources_document.get("sources")
-    if catalog.get("schema_version") != 1:
+    if catalog.get("schema_version") not in (1, 1.1):
         errors.append("catalog: unsupported schema_version")
     if not isinstance(records, list):
         return errors + ["catalog: records must be an array"]
@@ -276,6 +287,9 @@ def validate() -> list[str]:
             if missing_config:
                 errors.append(f"{config_location}: missing fields {sorted(missing_config)}")
                 continue
+            for field, allowed in (("evidence", EVIDENCE), ("execution", EXECUTION)):
+                if field in config and (not isinstance(config[field], str) or config[field] not in allowed):
+                    errors.append(f"{config_location}: invalid {field} {config[field]!r}")
             if config["id"] in local_config_ids:
                 errors.append(f"{record_id}: duplicate configuration id {config['id']}")
             local_config_ids.add(config["id"])
@@ -386,6 +400,7 @@ def build_parser() -> argparse.ArgumentParser:
     best_parser.add_argument("selector", help="record id prefix or exact class")
     best_parser.add_argument("metric", choices=sorted(NUMERIC_CONFIGURATION_FIELDS))
     best_parser.add_argument("--execution", choices=sorted(EXECUTION))
+    best_parser.add_argument("--evidence", choices=sorted(EVIDENCE))
     best_parser.add_argument("--json", action="store_true")
     best_parser.set_defaults(handler=command_best)
 

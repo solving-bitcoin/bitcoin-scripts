@@ -200,64 +200,55 @@ pub fn u4_add(
 
 #[cfg(test)]
 mod tests {
-    use crate::arithmetic::u4::{add::*, stack::u4_number_to_nibble};
-    use rand::Rng;
+    use crate::arithmetic::test_helpers::{nibble_witness, run_with_witness};
+    use crate::arithmetic::u4::{
+        add::*,
+        stack::{u4_fromaltstack, u4_toaltstack, u4_u32_verify_from_altstack},
+    };
+    use rand::{rngs::StdRng, Rng, SeedableRng};
 
-    #[test]
-    fn test_add_no_table() {
-        let mut rng = rand::thread_rng();
-        for _ in 0..1000 {
-            for len in 2..5 {
-                let vars: Vec<u32> = (0..len).map(|_| rng.gen()).collect();
-                let result = vars.iter().fold(0_u64, |sum, &x| sum + x as u64) % (1_u64 << 32);
-                let script = script! {
-                    for x in vars {
-                        { u4_number_to_nibble(x) }
+    fn check_additions(use_table: bool, seed: u64) {
+        let scripts: Vec<_> = (2..5)
+            .map(|len| {
+                script! {
+                    if use_table {
+                        { u4_toaltstack(len * 8) }
+                        { u4_push_add_tables() }
+                        { u4_fromaltstack(len * 8) }
                     }
-                    { u4_add_no_table(8,  (0..).step_by(8).take(len.try_into().unwrap()).collect()) }
-                    { u4_number_to_nibble(result.try_into().unwrap()) }
-                    for _ in 0..8 {
-                        OP_FROMALTSTACK
+                    { u4_add(8, (0..).step_by(8).take(len as usize).collect(), len * 8, use_table) }
+                    if use_table {
+                        { u4_drop_add_tables() }
                     }
-                    for i in 0..8 {
-                        { 8 - i }
-                        OP_ROLL
-                        OP_EQUALVERIFY
-                    }
+                    { u4_u32_verify_from_altstack() }
                     OP_TRUE
-                };
-                crate::support::execution::run(script);
+                }
+                .compile_with_policy()
+                .to_bytes()
+            })
+            .collect();
+        let mut rng = StdRng::seed_from_u64(seed);
+        for _ in 0..1000 {
+            for (i, script) in scripts.iter().enumerate() {
+                let len = i + 2;
+                let vars: Vec<u32> = (0..len).map(|_| rng.gen()).collect();
+                let expected = vars.iter().fold(0_u64, |sum, &x| sum + x as u64) % (1_u64 << 32);
+                run_with_witness(
+                    script,
+                    nibble_witness(expected as u32)
+                        .chain(vars.into_iter().flat_map(nibble_witness)),
+                );
             }
         }
     }
 
     #[test]
+    fn test_add_no_table() {
+        check_additions(false, 0x75345f616464);
+    }
+
+    #[test]
     fn test_add_with_table() {
-        let mut rng = rand::thread_rng();
-        for _ in 0..1000 {
-            for len in 2..5 {
-                let vars: Vec<u32> = (0..len).map(|_| rng.gen()).collect();
-                let result = vars.iter().fold(0_u64, |sum, &x| sum + x as u64) % (1_u64 << 32);
-                let script = script! {
-                    { u4_push_add_tables() }
-                    for x in vars {
-                        { u4_number_to_nibble(x) }
-                    }
-                    { u4_add_with_table(8,  (0..).step_by(8).take(len.try_into().unwrap()).collect(), len * 8) }
-                    { u4_drop_add_tables() }
-                    { u4_number_to_nibble(result.try_into().unwrap()) }
-                    for _ in 0..8 {
-                        OP_FROMALTSTACK
-                    }
-                    for i in 0..8 {
-                        { 8 - i }
-                        OP_ROLL
-                        OP_EQUALVERIFY
-                    }
-                    OP_TRUE
-                };
-                crate::support::execution::run(script);
-            }
-        }
+        check_additions(true, 0x75345f7461626c65);
     }
 }

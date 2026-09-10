@@ -1697,6 +1697,41 @@ pub fn prince_encrypt(key: u128) -> Script {
     optimized::engine(key)
 }
 
+/// Complete PRINCEv2 computation predicate for an embedded key and ciphertext.
+///
+/// Consumes exactly 16 canonical plaintext nibbles, with the most significant
+/// nibble on top, and leaves one true item only when encryption matches
+/// `ciphertext`. Zero must be the empty byte vector; 1 through 15 must each be
+/// a single byte. Range and encoding checks are part of the script even when
+/// the interpreter does not require minimal numeric encodings.
+///
+/// This is a complete leaf: it rejects extra main-stack items and expects the
+/// initially empty alt stack supplied by Taproot execution. Use `prince_encrypt`
+/// for a fragment that preserves unrelated stack state. Both key and ciphertext
+/// are public constants; this predicate does not authorize a transaction or
+/// conceal its plaintext witness. Compile the entire result with the repository
+/// compilation policy before deriving metrics, a Tapleaf hash or a signature.
+pub fn prince_verify(key: u128, ciphertext: u64) -> Script {
+    script! {
+        OP_DEPTH OP_16 OP_NUMEQUALVERIFY
+        for depth in 0..16 {
+            { depth } OP_PICK
+            OP_DUP OP_0 OP_EQUAL
+            OP_IF
+                OP_DROP
+            OP_ELSE
+                OP_SIZE OP_1 OP_EQUALVERIFY
+                OP_1 OP_16 OP_WITHIN OP_VERIFY
+            OP_ENDIF
+        }
+        { prince_encrypt(key) }
+        for nibble in u64_to_nibbles_msb(ciphertext) {
+            { nibble } OP_EQUALVERIFY
+        }
+        OP_TRUE
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Helper: u64 with MSB nibble first ↔ nibble array
 // nibble[i] = get_nibble(v, i) = (v >> (4*(15-i))) & 0xf

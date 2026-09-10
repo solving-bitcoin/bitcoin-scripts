@@ -91,36 +91,33 @@ pub fn u32_sub_drop(a: u32, b: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::arithmetic::test_helpers::run_with_witness;
     use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify, u32_push};
     use crate::support::execution::run;
     use rand::Rng;
 
     #[test]
     fn test_u8_sub_exhaustive() {
-        for a in 0i32..256 {
-            for b in 0i32..256 {
+        let script_without_borrow = script! {
+            { u8_sub() }
+            OP_EQUAL
+        }
+        .compile_with_policy()
+        .to_bytes();
+        // Witness: expected byte, expected borrow, a, b. Compare both
+        // outputs and leave the same single truth value as the scalar test.
+        let script_with_borrow = script! {
+            { u8_sub_borrow() }
+            OP_ROT OP_EQUALVERIFY
+            OP_EQUAL
+        }
+        .compile_with_policy()
+        .to_bytes();
+        for a in 0i64..256 {
+            for b in 0i64..256 {
                 let expected = (a - b).rem_euclid(256);
-                let script_without_borrow = script! {
-                    { a }
-                    { b }
-                    { u8_sub() }
-                    { expected }
-                    OP_EQUAL
-                };
-                let script_with_borrow = script! {
-                    { a }
-                    { b }
-                    { u8_sub_borrow() }
-                    { (a < b) as u32 }
-                    OP_EQUAL
-                    OP_TOALTSTACK
-                    { expected }
-                    OP_EQUAL
-                    OP_FROMALTSTACK
-                    OP_BOOLAND
-                };
-                run(script_without_borrow);
-                run(script_with_borrow);
+                run_with_witness(&script_without_borrow, [expected, a, b]);
+                run_with_witness(&script_with_borrow, [expected, (a < b) as i64, a, b]);
             }
         }
     }

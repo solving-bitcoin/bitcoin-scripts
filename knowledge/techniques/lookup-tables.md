@@ -112,6 +112,12 @@ per-selector bounds is not a safe composable fragment. All 70 data items
 coexist at entry, there are zero auxiliary hints, and measured combined peaks
 are 119 isolated and 120 composable. HASH160/Preimage16 costs 2,400 and 2,498
 maximum script-plus-signer-witness bytes respectively. These measurements
-are `locally-reproduced`, `research-unlimited`. The pinned executor's exact
-`OP_ROLL` upper boundary panics and is recorded separately from successful
-strict tests; no Core validation is claimed.
+are `locally-reproduced`, `research-unlimited`. The historical `ba96bc2`
+executor panicked at the exact `OP_ROLL` upper boundary; that outcome is
+recorded separately from successful strict tests. The lab now pins repaired
+interpreter `4b7269a`; see
+[adoption and scope](../negative-results/index.md#nr-048-minimal-push-policy-must-follow-execution).
+The [v30.3 differential fixtures](../core-validation.md) now
+confirm Core rejection of that boundary and validate one complete isolated
+HASH160 leaf under consensus and policy; other table/fragment measurements
+retain their original scope.
