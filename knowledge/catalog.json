@@ -185,6 +185,28 @@
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
           ]
+        },
+        {
+          "id": "canonical-nibble-boundary",
+          "label": "Canonical checked ScriptNum nibble",
+          "parameters": {
+            "range": "0..=15",
+            "encoding": "minimal at-most-four-byte ScriptNum"
+          },
+          "includes": "fragment-only: numeric nibble range and raw ScriptNum canonicality checks; preserves the value and excludes input push and output check",
+          "script_bytes": 10,
+          "witness_bytes": 3,
+          "witness_bytes_max": 3,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 10,
+          "metric_keys": [
+            "u4_canonical_nibble",
+            "u4_canonical_nibble_witness",
+            "u4_canonical_nibble_stack"
+          ]
         }
       ],
       "limitations": [

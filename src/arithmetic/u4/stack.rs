@@ -91,6 +91,14 @@ pub fn u4_hex_to_nibbles(hex_str: &str) -> Script {
     }
 }
 
+/// Preserve the top value after proving it is a canonical ScriptNum nibble.
+pub fn verify_canonical_nibble() -> Script {
+    script! {
+        OP_DUP 0 16 OP_WITHIN OP_VERIFY
+        OP_DUP OP_DUP 0 OP_ADD OP_EQUALVERIFY
+    }
+}
+
 pub fn u4_repeat_number(n: u32, count: u32) -> Script {
     match count {
         0 => script! {},
@@ -200,5 +208,41 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+    #[test]
+    fn canonical_nibble_boundary_rejects_aliases_and_out_of_range_values() {
+        for value in 0..=15 {
+            let mut bytes = [0u8; 8];
+            let length = bitcoin::script::write_scriptint(&mut bytes, i64::from(value));
+            let encoded = bytes[..length].to_vec();
+            let result = crate::support::execution::execute_script_with_inputs(
+                script! {
+                    5 OP_TOALTSTACK
+                    { verify_canonical_nibble() }
+                    { value } OP_EQUALVERIFY
+                    OP_FROMALTSTACK 5 OP_EQUALVERIFY
+                    99 OP_EQUAL
+                },
+                vec![vec![99], encoded],
+            );
+            assert!(
+                result.success,
+                "rejected canonical nibble {value}: {result}"
+            );
+        }
+
+        for encoded in [
+            vec![1, 0],          // redundant positive sign byte
+            vec![0x80],          // negative zero
+            vec![16],            // canonical but outside the nibble range
+            vec![0xff],          // negative value
+            vec![0, 0, 0, 0, 0], // oversized zero
+        ] {
+            let result = crate::support::execution::execute_script_with_inputs(
+                script! { { verify_canonical_nibble() } },
+                vec![encoded],
+            );
+            assert!(!result.success, "accepted malformed nibble: {result}");
+        }
     }
 }
