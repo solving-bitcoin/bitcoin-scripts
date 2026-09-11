@@ -1226,3 +1226,12 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-045: Binohash legacy core does not establish the full protocol
+
+The local helper reproduces opcode-boundary `FindAndDelete`, subset-dependent
+legacy sighashes, and the historical `SIGHASH_SINGLE` constant. That boundary
+does not prove Binohash's two-round collision resistance, grinding work,
+signature validity, complete legacy transaction execution, or Script
+authentication. Those require a pinned Bitcoin Core regtest and remain under
+OP-011.
