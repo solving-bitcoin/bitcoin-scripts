@@ -58,6 +58,39 @@ pub fn sha1(num_bytes: usize) -> Script {
     }
 }
 
+/// Continues SHA-1 from the state after one 64-byte block over a 16-byte
+/// suffix, producing the digest of the resulting 80-byte message.
+pub fn sha1_80bytes_from_midstate(midstate: [u32; 5]) -> Script {
+    let mut state = midstate;
+    state.reverse();
+    script! {
+        { push_reverse_bytes_to_alt(16) }
+        { u8_push_xor_table() }
+        for _ in 0..16 {
+            OP_FROMALTSTACK
+        }
+        0x80
+        { push_to_stack(0, 39) }
+        { u32_push(0) }
+        { u32_push(640) }
+        for i in 1..16 {
+            { u32_roll(i as u32) }
+        }
+        for word in state {
+            { u32_push(word) }
+        }
+        { sha1_transform(16) }
+        { sha1_final() }
+        for _ in 0..5 {
+            { u32_toaltstack() }
+        }
+        { u8_drop_xor_table() }
+        for _ in 0..5 {
+            { u32_fromaltstack() }
+        }
+    }
+}
+
 fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
         for i in 1..=num_bytes {
@@ -307,6 +340,7 @@ fn majority(words_above_table: usize) -> Script {
 mod tests {
     use super::*;
     use crate::arithmetic::u32::stack::{u32_equal, u32_push};
+    use crate::support::execution::execute_script_with_inputs;
     use bitcoin::hashes::{sha1 as reference_sha1, Hash};
 
     fn push_message(message: &[u8]) -> Script {
@@ -330,6 +364,40 @@ mod tests {
         });
 
         assert!(result.success, "{result}");
+    }
+
+    fn compress(state: &mut [u32; 5], block: &[u8; 64]) {
+        let mut words = [0u32; 80];
+        for (word, bytes) in words.iter_mut().zip(block.chunks_exact(4).take(16)) {
+            *word = u32::from_be_bytes(bytes.try_into().unwrap());
+        }
+        for t in 16..80 {
+            words[t] = (words[t - 3] ^ words[t - 8] ^ words[t - 14] ^ words[t - 16]).rotate_left(1);
+        }
+
+        let [mut a, mut b, mut c, mut d, mut e] = *state;
+        for (t, word) in words.iter().enumerate() {
+            let function = if t < 20 {
+                d ^ (b & (c ^ d))
+            } else if t < 40 || t >= 60 {
+                b ^ c ^ d
+            } else {
+                (b & c) | (d & (b | c))
+            };
+            let constant = round_constant(t);
+            let next = a
+                .rotate_left(5)
+                .wrapping_add(function)
+                .wrapping_add(e)
+                .wrapping_add(constant)
+                .wrapping_add(*word);
+            (a, b, c, d, e) = (next, a, b.rotate_left(30), c, d);
+        }
+        state[0] = state[0].wrapping_add(a);
+        state[1] = state[1].wrapping_add(b);
+        state[2] = state[2].wrapping_add(c);
+        state[3] = state[3].wrapping_add(d);
+        state[4] = state[4].wrapping_add(e);
     }
 
     #[test]
@@ -446,6 +514,46 @@ mod tests {
         verify_digest(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
         verify_digest(&[0x42; 80]);
         verify_digest(&[0x24; 130]);
+    }
+
+    #[test]
+    fn continues_from_midstate() {
+        let prefix = [0x42u8; 64];
+        let suffix: Vec<u8> = (0..16).collect();
+        let mut midstate = INITIAL_STATE;
+        compress(&mut midstate, &prefix);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = reference_sha1::Hash::hash(&message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(&suffix) }
+            { sha1_80bytes_from_midstate(midstate) }
+            for byte in expected {
+                { byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn rejects_extra_suffix_bytes() {
+        let result = execute_script_with_inputs(
+            script! {
+                { sha1_80bytes_from_midstate(INITIAL_STATE) }
+                for _ in 0..20 {
+                    OP_DROP
+                }
+                OP_DEPTH
+                OP_0
+                OP_EQUAL
+            },
+            vec![vec![0x42]; 17],
+        );
+
+        assert!(!result.success);
     }
 
     #[test]

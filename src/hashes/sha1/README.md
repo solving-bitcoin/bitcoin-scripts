@@ -19,6 +19,7 @@ digest comparison.
 | Configuration | Hashing script |
 | --- | ---: |
 | 32-byte input | <!-- metric:sha1_u32_32 -->209726<!-- /metric:sha1_u32_32 --> bytes |
+| 64-byte prefix + 16-byte suffix from midstate | <!-- metric:sha1_u32_80_midstate -->209619<!-- /metric:sha1_u32_80_midstate --> bytes |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
@@ -57,6 +58,12 @@ value in `0..=255`.
 20 digest bytes on the main stack with the first digest byte on top. The
 temporary lookup table and message schedule are removed, and the altstack is
 restored to its starting depth.
+
+`sha1_80bytes_from_midstate(midstate)` consumes exactly 16 suffix bytes and
+continues from the state after a 64-byte prefix. The generated fragment
+includes the final 80-bit length encoding for the resulting 80-byte message;
+the caller is responsible for authenticating the supplied midstate and its
+prefix binding.
 
 ## Operational notes
 
