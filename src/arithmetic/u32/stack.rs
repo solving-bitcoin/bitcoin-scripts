@@ -178,4 +178,21 @@ mod tests {
             run(script);
         }
     }
+
+    #[test]
+    fn test_u32_pick_preserves_words() {
+        let words = [0x0102_0304, 0xa0b0_c0d0, 0x1122_3344];
+        let script = script! {
+            { u32_push(words[0]) }
+            { u32_push(words[1]) }
+            { u32_push(words[2]) }
+            { u32_pick(2) }
+            { u32_push(words[0]) } { u32_equal() } OP_VERIFY
+            { u32_push(words[2]) } { u32_equal() } OP_VERIFY
+            { u32_push(words[1]) } { u32_equal() } OP_VERIFY
+            { u32_push(words[0]) } { u32_equal() } OP_VERIFY
+            OP_1
+        };
+        run(script);
+    }
 }
