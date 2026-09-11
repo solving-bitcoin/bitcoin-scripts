@@ -117,6 +117,75 @@
       ]
     },
     {
+      "id": "arithmetic/u4-pack",
+      "name": "u4 pair-to-byte packing",
+      "class": "arithmetic/word",
+      "summary": "Range-checks big-endian u4 pairs and packs them into numeric ScriptNum byte values.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u4-pack.md",
+      "implementation": "src/arithmetic/u4/pack.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::pack::tests::packs_all_single_bytes",
+        "arithmetic::u4::pack::tests::packs_multiple_bytes_in_input_order",
+        "arithmetic::u4::pack::tests::rejects_an_out_of_range_nibble",
+        "arithmetic::u4::pack::tests::rejects_zero_width",
+        "primitive_metrics::u4_pack_metrics_are_current"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked",
+        "bitcoin-script-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "representation-conversion"
+      ],
+      "security": "No independent cryptographic claim. Hostile nibbles are numerically range-checked; output values are ScriptNum integers and do not provide raw-byte concatenation or unique byte encodings.",
+      "stack_contract": "high[0] low[0] ... high[n-1] low[n-1] -> byte[0] ... byte[n-1], with byte[n-1] on top and every output numeric in 0..=255",
+      "configurations": [
+        {
+          "id": "pack-32",
+          "label": "32 packed numeric bytes",
+          "parameters": {
+            "byte_count": 32,
+            "input_items": 64,
+            "output_items": 32,
+            "output_encoding": "minimal ScriptNum integer"
+          },
+          "includes": "fragment-only: 64 numeric range checks, repeated four-doubling packing, output routing, and complete 64-item witness boundary; excludes raw-byte serialization, consumer logic, and transaction context",
+          "script_bytes": 1003,
+          "witness_bytes": 65,
+          "witness_bytes_max": 131,
+          "max_stack_items": 67,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1003,
+          "metric_keys": [
+            "u4_pack_bytes_32",
+            "u4_pack_bytes_32_witness",
+            "u4_pack_bytes_32_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Outputs are numeric ScriptNum values, not raw byte stack elements",
+        "Values 128..255 have multi-byte minimally encoded ScriptNum representations",
+        "766 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH policy boundary",
+        "Bitcoin Core consensus and relay-policy validation have not been performed"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4",
       "name": "u4 digit arithmetic",
       "class": "arithmetic/word",
