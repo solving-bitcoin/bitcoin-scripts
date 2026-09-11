@@ -1,5 +1,6 @@
 use crate::arithmetic::u4::{
     add::{u4_add_carry_nested, u4_add_nested},
+    stack::u4_number_to_nibble,
     stack_add::*,
     stack_logic::*,
     stack_shift::*,
@@ -45,15 +46,6 @@ fn scheduling_64_padding() -> [u32; 64] {
             .wrapping_add(s1);
     }
     result
-}
-
-pub fn u4_number_to_nibble(n: u32) -> Script {
-    //constant number used during "compile" time
-    script! {
-       for i in (0..8).rev() {
-            { (n >> (i * 4)) & 0xF }
-        }
-    }
 }
 
 pub fn double_padding(num_bytes: u32) -> (Vec<Script>, u32) {
