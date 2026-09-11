@@ -1856,6 +1856,7 @@ fn metrics() -> Vec<Metric> {
     let division_witness = vec![scriptnum(14), scriptnum(119)];
     const U4_BITS_BATCH: u32 = 32;
     let u4_bits_checked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, true);
+    let u4_bits_le_checked_batch = u4::bits::u4_nibbles_to_le_bits(U4_BITS_BATCH, true);
     let u4_bits_unchecked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, false);
     let u4_bits_branch_batch = script! {
         for _ in 0..U4_BITS_BATCH {
@@ -2095,6 +2096,37 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_bits_checked_batch32_opcodes",
             value: static_non_push_opcodes(u4_bits_checked_batch.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_le_table_push",
+            value: script_len(u4::bits::u4_push_to_le_bits_table()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_le_checked_batch32",
+            value: script_len(u4_bits_le_checked_batch.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_le_checked_batch32_witness",
+            value: witness_size(&u4_bits_inputs),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_le_checked_batch32_stack",
+            value: max_stack_items(
+                script! {
+                    { u4_bits_le_checked_batch.clone() }
+                    { u4::stack::u4_drop(4 * U4_BITS_BATCH - 1) }
+                },
+                u4_bits_inputs.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_le_checked_batch32_opcodes",
+            value: static_non_push_opcodes(u4_bits_le_checked_batch),
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
