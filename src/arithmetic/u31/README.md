@@ -24,6 +24,18 @@ the upstream MIT notice is preserved in [`LICENSE`](LICENSE).
   query; callers must also count unrelated state below the table.
 - Generators reject layouts that intrinsically exceed 1,000 combined stack
   items. This does not replace composition-level accounting.
+- `u31_to_bits_with_width_checked(bit_width)` enforces a nonnegative value
+  below `2^bit_width` before decomposition. The unchecked form remains useful
+  when a surrounding field invariant already supplies that proof.
+
+## Bit decomposition metrics
+
+The checked width-9 row includes one representative two-byte ScriptNum witness,
+the nine output bits, and no auxiliary hints.
+
+| Fragment | Locking script | Serialized witness | Maximum combined stack |
+| --- | ---: | ---: | ---: |
+| `u31_to_bits_with_width_checked(9)` | <!-- metric:u31_bits_checked_width9 -->85<!-- /metric:u31_bits_checked_width9 --> bytes | <!-- metric:u31_bits_checked_width9_witness -->4<!-- /metric:u31_bits_checked_width9_witness --> bytes, 1 data item | <!-- metric:u31_bits_checked_width9_stack -->10<!-- /metric:u31_bits_checked_width9_stack --> items |
 
 ## Validity and deployment
 

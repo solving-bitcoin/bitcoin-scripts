@@ -4111,6 +4111,38 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u31_checked_bits_metrics_are_current() {
+    let fragment = u31::u31_to_bits_with_width_checked(9);
+    let witness = vec![scriptnum(511)];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..9 { OP_DROP }
+            OP_1
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_bits_checked_width9",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_bits_checked_width9_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u31/README.md",
+            key: "u31_bits_checked_width9_stack",
+            value: stack,
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));

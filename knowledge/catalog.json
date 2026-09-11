@@ -337,6 +337,29 @@
           "metric_keys": [
             "qm31_mul"
           ]
+        },
+        {
+          "id": "checked-bits-width9",
+          "label": "Checked u31 9-bit decomposition",
+          "parameters": {
+            "bit_width": 9,
+            "maximum_value": 511,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: nonnegative and upper-bound checks followed by nine-bit decomposition; representative witness is one two-byte ScriptNum; excludes terminal predicate and input/output checks",
+          "script_bytes": 85,
+          "witness_bytes": 4,
+          "witness_bytes_max": 4,
+          "max_stack_items": 10,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 85,
+          "metric_keys": [
+            "u31_bits_checked_width9",
+            "u31_bits_checked_width9_witness",
+            "u31_bits_checked_width9_stack"
+          ]
         }
       ],
       "limitations": [

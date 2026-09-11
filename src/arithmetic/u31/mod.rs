@@ -190,6 +190,35 @@ pub fn u31_to_bits_with_width(bit_width: u32) -> Script {
     }
 }
 
+/// Decompose a numerically range-checked value into exactly `bit_width` bits.
+///
+/// This checks the positive ScriptNum domain before calling
+/// [`u31_to_bits_with_width`]. It does not enforce byte-minimal witness
+/// encoding; use a raw-encoding boundary when that distinction matters.
+pub fn u31_to_bits_with_width_checked(bit_width: u32) -> Script {
+    assert!(
+        (1..=31).contains(&bit_width),
+        "u31 bit width must be in 1..=31"
+    );
+
+    let upper_bound = if bit_width == 31 {
+        script! {
+            OP_DUP 0 OP_GREATERTHANOREQUAL OP_VERIFY
+            OP_DUP { 0x7fff_ffffu32 } OP_LESSTHANOREQUAL OP_VERIFY
+        }
+    } else {
+        script! {
+            OP_DUP 0 OP_GREATERTHANOREQUAL OP_VERIFY
+            OP_DUP { 1u32 << bit_width } OP_LESSTHAN OP_VERIFY
+        }
+    };
+
+    script! {
+        { upper_bound }
+        { u31_to_bits_with_width(bit_width) }
+    }
+}
+
 fn u31_mul_common_with_window_pairs<C: U31Config>(window_pairs: u32) -> Script {
     script! {
         0
@@ -599,6 +628,43 @@ mod tests {
                 OP_TRUE
             });
             assert!(result.success, "9-bit decomposition failed: {result}");
+        }
+    }
+
+    #[test]
+    fn checked_bit_decomposition_enforces_width() {
+        for (value, width) in [
+            (0, 9),
+            (1, 9),
+            (255, 9),
+            (256, 9),
+            (511, 9),
+            (i32::MAX as u32, 31),
+        ] {
+            let bits = (0..width).map(|i| (value >> i) & 1).collect::<Vec<_>>();
+            let result = execute_script(script! {
+                { value }
+                { u31_to_bits_with_width_checked(width) }
+                for bit in bits {
+                    { bit }
+                    OP_EQUALVERIFY
+                }
+                OP_TRUE
+            });
+            assert!(
+                result.success,
+                "checked decomposition failed for {value}: {result}"
+            );
+        }
+
+        for (value, width) in [(-1, 9), (512, 9), (i32::MIN, 31)] {
+            let result = execute_script(script! {
+                { value }
+                { u31_to_bits_with_width_checked(width) }
+                for _ in 0..width { OP_DROP }
+                OP_TRUE
+            });
+            assert!(!result.success, "accepted out-of-range value {value}");
         }
     }
 
