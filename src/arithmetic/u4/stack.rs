@@ -17,6 +17,7 @@ pub fn u4_fromaltstack(n: u32) -> Script {
     }
 }
 
+/// Copies eight contiguous nibble items starting at the given stack address.
 pub fn u4_copy_u32_from(address: u32) -> Script {
     script! {
         for _ in 0..8 {
@@ -26,6 +27,7 @@ pub fn u4_copy_u32_from(address: u32) -> Script {
     }
 }
 
+/// Moves eight contiguous nibble items starting at the given stack address.
 pub fn u4_move_u32_from(address: u32) -> Script {
     script! {
         for _ in 0..8 {
@@ -175,6 +177,26 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+
+    #[test]
+    fn copy_and_move_u32_preserve_nibble_order() {
+        for (transfer, copied) in [(u4_copy_u32_from(0), true), (u4_move_u32_from(0), false)] {
+            crate::support::execution::run(script! {
+                { u4_number_to_nibble(0x1234_5678) }
+                { transfer }
+                8 OP_EQUALVERIFY
+                7 OP_EQUALVERIFY
+                6 OP_EQUALVERIFY
+                5 OP_EQUALVERIFY
+                4 OP_EQUALVERIFY
+                3 OP_EQUALVERIFY
+                2 OP_EQUALVERIFY
+                1 OP_EQUALVERIFY
+                if copied { { u4_drop(8) } }
+                OP_TRUE
+            });
+        }
     }
 
     #[test]
