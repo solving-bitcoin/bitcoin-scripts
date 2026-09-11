@@ -1226,3 +1226,15 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-045: Standard Merkle branches need concatenation
+
+A conventional Merkle step hashes `HASH256(left || right)`, but current Script
+hashes one stack item and `OP_CAT` is disabled. The existing unary mixed-hash
+path is not semantically equivalent. A compile-only local probe priced the
+closest 64-byte SHA-256 workaround at 1,060,200 script bytes and 770,481 static
+non-push opcodes, before double hashing, branch routing, or output conversion;
+its maximum 64-item witness serializes to 129 bytes. This is a
+`locally-reproduced` workaround boundary and `inspected` semantic negative
+result, not an impossibility claim for a future opcode set or specialized
+compression circuit.

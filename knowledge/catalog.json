@@ -1564,7 +1564,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/hash-path-integer.md",
       "implementation": "src/commitments/hash_path.rs",
       "documentation": "src/commitments/README.md",
@@ -1607,12 +1607,14 @@
         "Mixed-hash security assumption",
         "Integer reconstruction limited to 31 bits",
         "Nested paths are append-like hash-state composition, not byte concatenation; protocols must pin checkpoints, ordering, widths, and round boundaries",
+        "Not a conventional binary Merkle branch; current Script has no enabled OP_CAT",
         "Joint-randomness protocols still require an unbiased combiner plus grinding, replay, and selective-abort defenses",
         "Witness-input tests disable the stack limit; Bitcoin Core consensus and policy validation not performed"
       ],
       "open_problems": [
         "OP-002",
-        "OP-003"
+        "OP-003",
+        "OP-021"
       ]
     },
     {

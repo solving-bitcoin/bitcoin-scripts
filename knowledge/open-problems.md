@@ -643,3 +643,13 @@ clean-stack semantics, stays below 1,000 combined items in a strict schedule,
 matches the standard BLAKE3 digest in a focused execution, and reports a
 policy-produced leaf smaller than the 3,828,057-byte projection with the same 792 entry items
 and exactly 88 hints.
+
+## OP-021 — Standard Merkle branch under current Script opcodes
+
+Implement or rule out a useful conventional Merkle branch primitive that
+computes `HASH256(left || right)` from hostile sibling and direction witnesses.
+**Complete when:** the construction either provides a purpose-built bounded
+compression/routing circuit with malformed-input and extra-witness rejection,
+strict combined-stack metrics, and double-SHA-256 reference vectors, or records
+a machine-checkable lower bound showing why the current opcode set cannot meet
+the stated cost target without `OP_CAT` or an equivalent consensus change.
