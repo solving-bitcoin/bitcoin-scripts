@@ -293,6 +293,21 @@ setup, script bytes, executed opcodes, and strict stack peaks are compared on
 the same boundary; malformed encodings are rejected; and a complete tapscript
 leaf is differentially validated against a pinned Bitcoin Core revision.
 
+## OP-020 — Total-domain compressed-u32 shift pair
+
+Determine whether a canonical one-item compressed u32 representation can
+provide both logical shifts as a composable alternative to byte expansion.
+**Complete when:** left and right shifts `1..=31` have like-for-like input and
+output conversion costs, executed-opcode and strict combined-stack metrics,
+malformed-wire rejection, complete tapscript leaves, and pinned Bitcoin Core
+differential validation; any shift width dominated by byte expansion is
+recorded rather than omitted.
+
+Progress: deterministic local left-shift tests cover all widths and the direct
+shift-8 fragment measures 492 bytes and five stack items versus a 490-byte,
+seven-item local decode/shift/re-encode baseline. The result is a stack-shape
+tradeoff, not a byte win, and the deployment criterion remains open.
+
 ## OP-015 — Native secp256k1 field circuit frontier
 
 Turn the native 20,503-byte ordinary multiplication, 20,450-byte factor-16

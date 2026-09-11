@@ -3,6 +3,7 @@ pub mod and;
 pub mod cmp;
 pub mod or;
 pub mod rotate;
+pub mod shift;
 pub mod stack;
 pub mod sub;
 pub mod xor;
