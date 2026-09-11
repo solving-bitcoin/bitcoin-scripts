@@ -9,6 +9,8 @@ the concrete algorithm to SHA-256.
 - Message length is supplied at script-generation time.
 - `sha2_u32`: one byte per stack item internally; optimized paths exist for 32
   and 80 bytes. The documented default is 32 bytes.
+- `sha2_u32::sha256_prefix`: retains the first 1..=32 digest bytes after the
+  complete compression schedule.
 - `sha2_u4`: two nibbles per input byte and optional addition-table use chosen
   from the block count. The documented default is 32 bytes.
 - `sha2_u4_stack`: the tracked-stack generator additionally selects addition
@@ -22,6 +24,7 @@ output comparison.
 | Implementation | 32-byte input script |
 | --- | ---: |
 | `sha2_u32` | <!-- metric:sha2_u32_32 -->512428<!-- /metric:sha2_u32_32 --> bytes |
+| `sha2_u32`, first 8 digest bytes | <!-- metric:sha2_u32_prefix_32_8 -->512456<!-- /metric:sha2_u32_prefix_32_8 --> bytes |
 | `sha2_u4` | <!-- metric:sha2_u4_32 -->332942<!-- /metric:sha2_u4_32 --> bytes |
 
 Both fragments exceed the repository optimizer's 32 KiB input cutoff and are
@@ -43,6 +46,11 @@ The opcode vocabulary is shared by legacy script and tapscript, but the
 generated scripts are large and operation-heavy. Practical use is tapscript or
 research execution; many configurations exceed P2SH/P2WSH/bare policy or
 legacy limits. The caller must append output verification and cleanstack logic.
+
+The `sha256_prefix(num_bytes, output_bytes)` adapter keeps the first
+`1..=32` digest bytes and drops the rest. It does not reduce the compression
+cost; use it only when the surrounding protocol deliberately chooses a
+truncated digest binding.
 
 ## Witness and hints
 

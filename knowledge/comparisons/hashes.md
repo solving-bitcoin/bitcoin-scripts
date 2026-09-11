@@ -10,6 +10,7 @@ Measured fragments exclude input pushes and output comparison.
 | RIPEMD-160 u32 | 32-byte input | 244,063 | differentially-validated | 160-bit output |
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
 | SHA-256 u32 | 32-byte input | 512,428 | differentially-validated | Larger than local u4 variant |
+| SHA-256 u32 prefix | 32-byte input, 8-byte prefix | 512,456 | differentially-validated | Adapter does not reduce compression cost |
 | SHAKE256 byte | 32-byte input, 1,024-byte output | 15,927,814 | locally-reproduced | Raw output exceeds 1,000 items |
 
 BLAKE3's 64-byte row is not directly comparable with the 32-byte hash rows

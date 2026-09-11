@@ -68,6 +68,31 @@ pub fn sha256(num_bytes: usize) -> Script {
     }
 }
 
+/// Hashes `num_bytes` message bytes and leaves the first `output_bytes` digest
+/// bytes on the main stack.
+pub fn sha256_prefix(num_bytes: usize, output_bytes: usize) -> Script {
+    assert!(
+        (1..=32).contains(&output_bytes),
+        "SHA-256 output prefix must contain between 1 and 32 bytes"
+    );
+    if output_bytes == 32 {
+        return sha256(num_bytes);
+    }
+
+    script! {
+        { sha256(num_bytes) }
+        for _ in 0..output_bytes {
+            OP_TOALTSTACK
+        }
+        for _ in 0..32 - output_bytes {
+            OP_DROP
+        }
+        for _ in 0..output_bytes {
+            OP_FROMALTSTACK
+        }
+    }
+}
+
 pub fn sha256_32bytes() -> Script {
     script! {
         {push_reverse_bytes_to_alt(32)}
@@ -983,6 +1008,45 @@ mod tests {
         };
         let res = execute_script(script);
         assert!(res.success);
+    }
+
+    fn verify_prefix(message: &[u8], output_bytes: usize) {
+        let expected = Sha256::digest(message);
+        let mut message_script = script! {};
+        for byte in message.iter().rev() {
+            message_script = script! {
+                { message_script }
+                { *byte }
+            };
+        }
+        let result = execute_script(script! {
+            { message_script }
+            { sha256_prefix(message.len(), output_bytes) }
+            for byte in expected[..output_bytes].iter() {
+                { *byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn hashes_output_prefixes() {
+        for output_bytes in [1, 8, 31, 32] {
+            verify_prefix(b"abc", output_bytes);
+        }
+        for message_len in [55, 56, 63, 64] {
+            verify_prefix(&vec![0xa5; message_len], 8);
+        }
+    }
+
+    #[test]
+    fn rejects_prefix_boundaries() {
+        for output_bytes in [0, 33] {
+            let panic = std::panic::catch_unwind(|| sha256_prefix(1, output_bytes));
+            assert!(panic.is_err());
+        }
     }
 
     #[test]
