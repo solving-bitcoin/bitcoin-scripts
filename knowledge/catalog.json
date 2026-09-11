@@ -163,6 +163,21 @@
           ]
         },
         {
+          "id": "verify-u32-from-altstack",
+          "label": "u4_u32_verify_from_altstack()",
+          "parameters": { "items": 8 },
+          "includes": "fragment-only: staged eight-nibble equality verification; excludes both word pushes and terminal check",
+          "script_bytes": 32,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 17,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 32,
+          "metric_keys": ["u4_u32_verify_from_altstack", "u4_u32_verify_from_altstack_stack"]
+        },
+        {
           "id": "nibble-to-bits-batch32-checked",
           "label": "Checked 32-nibble staggered-table decomposition",
           "parameters": {

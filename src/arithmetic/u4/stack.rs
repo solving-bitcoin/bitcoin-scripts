@@ -45,6 +45,8 @@ pub fn verify_n(n: u32) -> Script {
     }
 }
 
+/// Verifies the top eight main-stack nibbles against eight staged altstack
+/// nibbles and consumes both words on success.
 pub fn u4_u32_verify_from_altstack() -> Script {
     script! {
         for _ in 0..8 {
@@ -175,6 +177,36 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+
+    #[test]
+    fn altstack_word_verifier_accepts_match_and_rejects_mismatch() {
+        let matching = crate::support::execution::execute_script(script! {
+            { u4_number_to_nibble(0x1234_5678) }
+            { u4_number_to_nibble(0x1234_5678) }
+            { u4_toaltstack(8) }
+            { u4_u32_verify_from_altstack() }
+            OP_TRUE
+        });
+        assert!(matching.success);
+
+        let mismatching = crate::support::execution::execute_script(script! {
+            { u4_number_to_nibble(0x1234_5678) }
+            { u4_number_to_nibble(0x1234_5679) }
+            { u4_toaltstack(8) }
+            { u4_u32_verify_from_altstack() }
+            OP_TRUE
+        });
+        assert!(!mismatching.success);
+    }
+
+    #[test]
+    fn altstack_word_verifier_rejects_missing_staged_word() {
+        let result = crate::support::execution::execute_script(script! {
+            { u4_number_to_nibble(0x1234_5678) }
+            { u4_u32_verify_from_altstack() }
+        });
+        assert!(!result.success);
     }
 
     #[test]
