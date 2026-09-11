@@ -3566,6 +3566,30 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate",
+            value: script_len(sha256::sha2_u32::sha256_80bytes_from_midstate([0; 8])),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_witness",
+            value: witness_size(&vec![vec![0x42]; 16]),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_stack",
+            value: max_stack_items(
+                script! {
+                    { sha256::sha2_u32::sha256_80bytes_from_midstate([0; 8]) }
+                    for _ in 0..32 {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                vec![vec![0x42]; 16],
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
         },
