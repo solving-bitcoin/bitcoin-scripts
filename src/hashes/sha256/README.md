@@ -8,7 +8,8 @@ the concrete algorithm to SHA-256.
 
 - Message length is supplied at script-generation time.
 - `sha2_u32`: one byte per stack item internally; optimized paths exist for 32
-  and 80 bytes. The documented default is 32 bytes.
+  and 80 bytes. `sha256_tagged_hash_32bytes` provides the BIP340 tagged-hash
+  construction for a 32-byte message. The documented default is 32 bytes.
 - `sha2_u4`: two nibbles per input byte and optional addition-table use chosen
   from the block count. The documented default is 32 bytes.
 - `sha2_u4_stack`: the tracked-stack generator additionally selects addition
@@ -23,6 +24,13 @@ output comparison.
 | --- | ---: |
 | `sha2_u32` | <!-- metric:sha2_u32_32 -->512428<!-- /metric:sha2_u32_32 --> bytes |
 | `sha2_u4` | <!-- metric:sha2_u4_32 -->332942<!-- /metric:sha2_u4_32 --> bytes |
+
+The tagged-hash fragment is measured with its message as witness data and a
+32-item digest cleanup wrapper:
+
+| Configuration | Locking script | Unlocking witness | Maximum stack items |
+| --- | ---: | ---: | ---: |
+| BIP340 challenge tag + 32-byte message | <!-- metric:sha2_u32_tagged_32 -->1060563<!-- /metric:sha2_u32_tagged_32 --> bytes | <!-- metric:sha2_u32_tagged_32_witness -->65<!-- /metric:sha2_u32_tagged_32_witness --> bytes | <!-- metric:sha2_u32_tagged_32_stack -->888<!-- /metric:sha2_u32_tagged_32_stack --> |
 
 Both fragments exceed the repository optimizer's 32 KiB input cutoff and are
 reported unoptimized.
@@ -48,4 +56,5 @@ legacy limits. The caller must append output verification and cleanstack logic.
 
 No hints are required. `sha2_u32` consumes one stack item per byte;
 `sha2_u4` consumes two canonical nibbles per byte in the order documented by
-the push helpers.
+the push helpers. The tagged-hash fragment consumes exactly 32 byte-valued
+message items; the tag hash is generation-time script data.

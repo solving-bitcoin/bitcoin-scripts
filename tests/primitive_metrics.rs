@@ -7,6 +7,7 @@
 use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
+use bitcoin::hashes::{sha256 as bitcoin_sha256, Hash};
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
@@ -3563,6 +3564,34 @@ fn metrics() -> Vec<Metric> {
             readme: "src/hashes/sha256/README.md",
             key: "sha2_u32_32",
             value: script_len(sha256::sha2_u32::sha256(32)),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32",
+            value: script_len(sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                bitcoin_sha256::Hash::hash(b"BIP0340/challenge").to_byte_array(),
+            )),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_witness",
+            value: witness_size(&vec![vec![0x42]; 32]),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_stack",
+            value: max_stack_items(
+                script! {
+                    { sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                        bitcoin_sha256::Hash::hash(b"BIP0340/challenge").to_byte_array(),
+                    ) }
+                    for _ in 0..32 {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                vec![vec![0x42]; 32],
+            ),
         },
         Metric {
             readme: "src/hashes/sha256/README.md",
