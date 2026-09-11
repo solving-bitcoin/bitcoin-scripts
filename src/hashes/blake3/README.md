@@ -14,7 +14,9 @@ Two input profiles are public:
   compatibility wrapper uses 29-bit limbs.
 
 Both profiles implement unkeyed 32-byte hashing only. Keyed mode, derive-key
-mode, XOF output, and the multi-chunk tree API are not implemented.
+mode, XOF output, and the multi-chunk tree API are not implemented. The
+independent [XOF boundary result](../../knowledge/negative-results/blake3-xof-output.md)
+records the 64-byte reference boundary and the missing output-block schedule.
 
 The experimental `ed25519_challenge` module also exposes custom-signature
 transcript shapes. These are not stable hash APIs and do not implement RFC
