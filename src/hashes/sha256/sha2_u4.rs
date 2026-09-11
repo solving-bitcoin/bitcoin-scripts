@@ -463,6 +463,18 @@ pub fn sha256(num_bytes: u32) -> Script {
     }
 }
 
+/// Hash `num_bytes` and retain only the leading `output_nibbles` digest items.
+///
+/// The returned fragment leaves the selected nibbles in the same order as the
+/// full digest and preserves the caller's altstack depth.
+pub fn sha256_prefix(num_bytes: u32, output_nibbles: u32) -> Script {
+    assert!(output_nibbles <= 64, "SHA-256 has 64 digest nibbles");
+    script! {
+        { sha256(num_bytes) }
+        { u4_drop(64 - output_nibbles) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -555,6 +567,45 @@ mod tests {
         test_sha256(hex);
         let hex = "7788ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffaaaaaaaaaaaaaaaa001122334455667788";
         test_sha256(hex);
+    }
+
+    #[test]
+    fn test_sha256_prefix() {
+        let hex_in = "48656c6c6f2e";
+        let mut hasher = Sha256::new();
+        hasher.update(Vec::<u8>::from_hex(hex_in).unwrap());
+        let digest = hasher.finalize().to_lower_hex_string();
+
+        for output_nibbles in [0, 1, 8, 63, 64] {
+            let prefix = &digest[..output_nibbles as usize];
+            let script = script! {
+                { u4_hex_to_nibbles(hex_in) }
+                { sha256_prefix(hex_in.len() as u32 / 2, output_nibbles) }
+                { u4_hex_to_nibbles(prefix) }
+                for _ in 0..output_nibbles {
+                    OP_TOALTSTACK
+                }
+                for i in 1..output_nibbles {
+                    { i }
+                    OP_ROLL
+                }
+                for _ in 0..output_nibbles {
+                    OP_FROMALTSTACK
+                    OP_EQUALVERIFY
+                }
+                OP_TRUE
+            };
+            assert!(
+                execute_script(script).success,
+                "prefix length {output_nibbles}"
+            );
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "SHA-256 has 64 digest nibbles")]
+    fn test_sha256_prefix_rejects_oversized_output() {
+        sha256_prefix(32, 65);
     }
 
     #[test]
