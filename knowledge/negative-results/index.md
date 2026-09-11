@@ -1226,3 +1226,12 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-049: Ordinary Core P2SH validation is not Binohash reproduction
+
+The disposable Core-regtest fixture accepts a complete 1-of-1 legacy P2SH
+`OP_CHECKMULTISIG` spend and exercises the ordinary legacy transaction
+boundary. It does not place candidate signatures inside a Binohash mutation
+template, extract a Script-readable digest, or measure grinding work. Treating
+this smoke result as Binohash evidence would conflate a prerequisite execution
+check with the protocol; the full reproduction remains under OP-011.

@@ -13,8 +13,11 @@ Transaction mutations and legacy sighash
 └── Lamport authentication into a later verification protocol
 ```
 
-The current atlas has no local implementation. Do not model Binohash with the
-default tapscript executor: its legacy signature context and transaction
-template are essential semantics. Reproduction requires a pinned Bitcoin Core
-regtest, exact grinding parameters, mutation constraints, and full transaction
-costs. See `introspection/binohash` and `OP-011`.
+The repository now has a disposable [Core-regtest smoke fixture](../../research/binohash-core-regtest/README.md)
+for an ordinary legacy P2SH `OP_CHECKMULTISIG` spend. It is only an execution
+precondition: it does not implement Binohash, extract its digest, or reproduce
+grinding. Do not model Binohash with the default tapscript executor: its legacy
+signature context and transaction template are essential semantics. Full
+reproduction still requires a pinned Core regtest, exact grinding parameters,
+mutation constraints, and complete transaction costs. See `introspection/binohash`
+and `OP-011`.
