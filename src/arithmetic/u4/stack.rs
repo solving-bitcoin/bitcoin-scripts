@@ -1,6 +1,7 @@
 use crate::support::script::*;
 use bitcoin::{opcodes::all::*, Opcode};
 
+/// Moves the top `n` stack items to the altstack, preserving their order.
 pub fn u4_toaltstack(n: u32) -> Script {
     script! {
         for _ in 0..n {
@@ -9,6 +10,7 @@ pub fn u4_toaltstack(n: u32) -> Script {
     }
 }
 
+/// Moves `n` items from the altstack to the main stack, preserving their order.
 pub fn u4_fromaltstack(n: u32) -> Script {
     script! {
         for _ in 0..n {
@@ -175,6 +177,37 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+
+    #[test]
+    fn altstack_transport_preserves_order_and_existing_state() {
+        crate::support::execution::run(script! {
+            42 OP_TOALTSTACK
+            1 2 3 4
+            { u4_toaltstack(4) }
+            { u4_fromaltstack(4) }
+            4 OP_EQUALVERIFY
+            3 OP_EQUALVERIFY
+            2 OP_EQUALVERIFY
+            1 OP_EQUALVERIFY
+            OP_FROMALTSTACK 42 OP_EQUAL
+        });
+    }
+
+    #[test]
+    fn altstack_transport_zero_is_a_noop() {
+        crate::support::execution::run(script! {
+            42 OP_TOALTSTACK
+            { u4_toaltstack(0) }
+            { u4_fromaltstack(0) }
+            OP_FROMALTSTACK 42 OP_EQUAL
+        });
+    }
+
+    #[test]
+    fn fromaltstack_rejects_missing_items() {
+        let result = crate::support::execution::execute_script(script! { { u4_fromaltstack(1) } });
+        assert!(!result.success);
     }
 
     #[test]

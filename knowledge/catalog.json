@@ -185,6 +185,36 @@
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
           ]
+        },
+        {
+          "id": "altstack-transport-4",
+          "label": "u4_toaltstack(4)",
+          "parameters": { "items": 4 },
+          "includes": "fragment-only: four-item main-to-altstack transport; excludes item pushes and terminal check",
+          "script_bytes": 4,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4,
+          "metric_keys": ["u4_toaltstack4", "u4_toaltstack4_stack"]
+        },
+        {
+          "id": "altstack-transport-4-return",
+          "label": "u4_fromaltstack(4)",
+          "parameters": { "items": 4 },
+          "includes": "fragment-only: four-item altstack-to-main transport; excludes setup, cleanup, and terminal check",
+          "script_bytes": 4,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4,
+          "metric_keys": ["u4_fromaltstack4", "u4_fromaltstack4_stack"]
         }
       ],
       "limitations": [
