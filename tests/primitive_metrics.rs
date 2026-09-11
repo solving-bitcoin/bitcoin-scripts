@@ -2119,6 +2119,35 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
+            key: "u32_le_bits",
+            value: script_len(u32::bits::u32_to_le_bits()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_le_bits_witness",
+            value: witness_size(&vec![vec![0x42]; 4]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_le_bits_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::bits::u32_to_le_bits() }
+                    for _ in 0..32 {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                vec![vec![0x42]; 4],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_le_bits_opcodes",
+            value: static_non_push_opcodes(u32::bits::u32_to_le_bits()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
             key: "u32_add_drop",
             value: script_len(u32::add::u32_add_drop(0, 1)),
         },

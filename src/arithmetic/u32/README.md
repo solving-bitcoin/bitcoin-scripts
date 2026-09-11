@@ -39,6 +39,7 @@ as less-than-or-equal.
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+| `u32_to_le_bits()` | <!-- metric:u32_le_bits -->520<!-- /metric:u32_le_bits --> bytes | <!-- metric:u32_le_bits_witness -->9<!-- /metric:u32_le_bits_witness --> bytes | <!-- metric:u32_le_bits_stack -->35<!-- /metric:u32_le_bits_stack --> items |
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
@@ -68,3 +69,14 @@ caller.
 No hints are required. A witness-supplied word occupies four stack items, most
 significant byte first in the module's normal representation. Binary operation
 inputs and any shared logic table must already be at the documented depths.
+
+## Bit conversion
+
+`u32_to_le_bits()` consumes one u32 word and returns 32 numeric bit items. The
+least-significant byte is on top of the input word; its bit zero is on top of
+the output, followed by bits one through seven and then the next byte. Each
+byte is range-checked numerically against `0..=255`. The 520-byte fragment has
+<!-- metric:u32_le_bits_opcodes -->370<!-- /metric:u32_le_bits_opcodes --> static non-push opcodes and a 35-item local peak with four one-byte witness
+items; it does not establish byte-unique ScriptNum encodings.
+This is a byte-input adapter rather than a replacement for the smaller
+nibble-input table when a caller already owns canonical u4 values.
