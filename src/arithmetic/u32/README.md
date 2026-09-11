@@ -37,6 +37,8 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_compress()` | <!-- metric:u32_compress -->76<!-- /metric:u32_compress --> bytes | <!-- metric:u32_compress_witness -->9<!-- /metric:u32_compress_witness --> bytes, 4 data items | <!-- metric:u32_compress_stack -->7<!-- /metric:u32_compress_stack --> items |
+| `u32_uncompress()` | <!-- metric:u32_uncompress -->413<!-- /metric:u32_uncompress --> bytes | <!-- metric:u32_uncompress_witness -->7<!-- /metric:u32_uncompress_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_stack -->7<!-- /metric:u32_uncompress_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 

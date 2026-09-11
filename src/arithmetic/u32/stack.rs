@@ -105,6 +105,10 @@ pub fn u32_pick(n: u32) -> Script {
 }
 
 /// Compresses the top u32 element into a single element
+/// Compress four most-significant-byte-first byte items into one ScriptNum.
+///
+/// The unsigned value is encoded in the minimal ScriptNum width, so values
+/// whose high bit is set may use a fifth sign byte.
 pub fn u32_compress() -> Script {
     script! {
         OP_SWAP OP_2SWAP OP_SWAP
@@ -120,6 +124,10 @@ pub fn u32_compress() -> Script {
     }
 }
 
+/// Expand a ScriptNum of at most five bytes into four byte items.
+///
+/// The caller must enforce the intended unsigned range and canonical encoding
+/// when those properties are part of the protocol boundary.
 pub fn u32_uncompress() -> Script {
     script! {
         OP_SIZE OP_5 OP_EQUAL
@@ -158,6 +166,47 @@ pub fn u32_uncompress() -> Script {
 mod tests {
     use super::*;
     use crate::support::execution::run;
+
+    #[test]
+    fn compressed_u32_round_trips_scriptnum_boundaries() {
+        for value in [
+            0,
+            1,
+            0x7f,
+            0x80,
+            0xff,
+            0x100,
+            0x7fff_ffff,
+            0x8000_0000,
+            u32::MAX,
+        ] {
+            let result = crate::support::execution::execute_script(script! {
+                { u32_push(value) }
+                { u32_compress() }
+                { u32_uncompress() }
+                { u32_push(value) }
+                { u32_equalverify() }
+                OP_TRUE
+            });
+            assert!(
+                result.success,
+                "round trip failed for {value:#x}: {result:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn uncompress_rejects_scriptnums_wider_than_five_bytes() {
+        let result = crate::support::execution::execute_script_with_inputs(
+            script! {
+                { u32_uncompress() }
+                { u32_drop() }
+                OP_TRUE
+            },
+            vec![vec![0, 0, 0, 0, 0, 0]],
+        );
+        assert!(!result.success, "accepted an oversized ScriptNum: {result}");
+    }
 
     #[test]
     fn test_u32_notequal() {
