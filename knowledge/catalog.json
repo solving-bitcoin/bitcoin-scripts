@@ -117,6 +117,74 @@
       ]
     },
     {
+      "id": "arithmetic/u4-lexicographic",
+      "name": "Fixed-width u4 lexicographic comparison",
+      "class": "arithmetic/word",
+      "summary": "Range-checks and compares two equal-width big-endian u4 vectors, consuming both and returning left-less-than-or-equal-to-right.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u4-lexicographic.md",
+      "implementation": "src/arithmetic/u4/compare.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::compare::tests::compares_all_two_nibble_values",
+        "arithmetic::u4::compare::tests::rejects_an_out_of_range_nibble",
+        "arithmetic::u4::compare::tests::rejects_zero_width",
+        "primitive_metrics::u4_lexicographic_metrics_are_current"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked",
+        "bitcoin-script-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lexicographic-comparison",
+        "range-check"
+      ],
+      "security": "No independent cryptographic claim. Hostile inputs are numerically range-checked before comparison; raw byte-unique ScriptNum canonicality remains a separate protocol obligation.",
+      "stack_contract": "left[0] ... left[n-1] right[0] ... right[n-1] -> result, with each vector big-endian and each item in 0..=15",
+      "configurations": [
+        {
+          "id": "two-128-nibble-vectors",
+          "label": "Two 128-nibble vectors",
+          "parameters": {
+            "nibble_count_per_operand": 128,
+            "input_items": 256,
+            "ordering": "most-significant nibble first",
+            "hints": 0
+          },
+          "includes": "fragment-only: 256 numeric range checks, first-difference state machine, operand cleanup, and complete 256-item witness boundary; excludes hash composition, terminal predicate, and transaction context",
+          "script_bytes": 7500,
+          "witness_bytes": 259,
+          "witness_bytes_max": 515,
+          "max_stack_items": 259,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 7500,
+          "metric_keys": [
+            "u4_lexicographic_le_128",
+            "u4_lexicographic_le_128_witness",
+            "u4_lexicographic_le_128_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Fixed-width u4 vectors only",
+        "Numeric nibble checks do not prove unique raw ScriptNum byte encodings",
+        "4,354 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH policy boundary",
+        "Bitcoin Core consensus and relay-policy validation have not been performed"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4",
       "name": "u4 digit arithmetic",
       "class": "arithmetic/word",
