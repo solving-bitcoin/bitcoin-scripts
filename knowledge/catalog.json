@@ -1,8 +1,97 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-11",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/u32-compressed-rshift",
+      "name": "Compressed total-domain u32 logical right shift",
+      "class": "arithmetic/word",
+      "summary": "Canonical one-item ScriptNum adapter for logical u32 right shifts.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u32-compressed-rshift.md",
+      "implementation": "src/arithmetic/u32/shift.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::shift::tests::test_u32_compressed_rshift_boundaries_and_random_values",
+        "arithmetic::u32::shift::tests::test_u32_compressed_rshift_rejects_noncanonical_inputs",
+        "primitive_metrics::u32_compressed_rshift_metrics_are_current",
+        "examples/u32_compressed_rshift_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "metadata-carrier"
+      ],
+      "security": "No independent cryptographic claim. The compressed input is hostile and must pass exact canonical-wire checks before sign/magnitude normalization; complete protocol binding and deployment validation remain open.",
+      "stack_contract": "... word -> ... (word >> shift); shift is 1..=31, the input is consumed, and unrelated lower stack state is preserved.",
+      "configurations": [
+        {
+          "id": "shift-8-direct",
+          "label": "Direct compressed logical right shift by 8",
+          "parameters": {
+            "shift": 8,
+            "value": "0x89abcdef",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 1
+          },
+          "includes": "fragment-with-memory: canonical-wire check, sign/magnitude normalization, threshold division, and logical high-bit restoration; excludes input push, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 500,
+          "witness_bytes": 6,
+          "witness_bytes_max": 7,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 500,
+          "metric_keys": [
+            "u32_compressed_rshift_8",
+            "u32_compressed_rshift_8_witness",
+            "u32_compressed_rshift_8_stack"
+          ]
+        },
+        {
+          "id": "shift-8-decode-baseline",
+          "label": "Decode, byte-shift, and re-encode baseline",
+          "parameters": {
+            "shift": 8,
+            "value": "0x89abcdef",
+            "complete_input_items": 1
+          },
+          "includes": "fragment-only: existing compressed decoder, four-item byte shift, and existing encoder; excludes input push, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 499,
+          "witness_bytes": 6,
+          "witness_bytes_max": 7,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 499,
+          "metric_keys": [
+            "u32_compressed_rshift_8_baseline",
+            "u32_compressed_rshift_8_witness",
+            "u32_compressed_rshift_8_baseline_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Shift-ladder size varies with the compile-time shift",
+        "Dominated by the local baseline for shift-8 locking-script bytes",
+        "Bitcoin Core, complete-transaction, relay-policy, and canonical witness-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-014"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",

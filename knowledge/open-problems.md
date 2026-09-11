@@ -293,6 +293,13 @@ setup, script bytes, executed opcodes, and strict stack peaks are compared on
 the same boundary; malformed encodings are rejected; and a complete tapscript
 leaf is differentially validated against a pinned Bitcoin Core revision.
 
+Progress: `u32_compressed_rshift(shift)` now passes deterministic boundary and
+malformed-input tests for every shift in `1..=31`. At shift 8 it costs 500
+fragment bytes and peaks at five items, versus 499 bytes and seven items for a
+local decode-byte-shift-reencode baseline. The full OP-014 criterion remains
+open because the comparison is local and the complete Core differential is
+not yet present.
+
 ## OP-015 — Native secp256k1 field circuit frontier
 
 Turn the native 20,503-byte ordinary multiplication, 20,450-byte factor-16
