@@ -7,8 +7,11 @@ universal impossibility proofs.
 
 The [PRINCEv2 layout search](princev2-layout.md) records the discarded shared
 final-selector variant, invalid fixed-address row-removal experiment, and
-bounded global scheduling/CNOT searches. The retained result is a 6,136-byte
-zero-key fragment with zero hints and a strict 633-item combined peak.
+bounded global scheduling/CNOT searches. The retained full encryption result is
+a 6,136-byte zero-key fragment with zero hints and a strict 633-item combined
+peak. A standalone packed M-hat fragment now measures 1,565 bytes, but it does
+not replace the complete encryption circuit or prove that the rejected layout
+variants improve the full keyed construction.
 
 ## NR-001: Raw 1,024-byte SHAKE256 output exceeds the stack limit
 

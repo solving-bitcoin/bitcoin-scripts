@@ -1,8 +1,77 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-10",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "cipher/princev2-mhat",
+      "name": "PRINCEv2 standalone M-hat layer",
+      "class": "cipher/linear-layer",
+      "summary": "Reusable four-block PRINCEv2 M-hat transformation over a checked 16-nibble state.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-10",
+      "knowledge_page": "knowledge/primitives/princev2-mhat.md",
+      "implementation": "src/ciphers/prince/mod.rs",
+      "documentation": "src/ciphers/prince/README.md",
+      "tests": [
+        "ciphers::prince::tests::test_optimized_m_layer_boundaries_and_random_state",
+        "ciphers::prince::tests::test_optimized_m_layer_rejects_invalid_nibbles_and_short_input",
+        "primitive_metrics::prince_metrics_are_current",
+        "examples/prince_m_layer_benchmark.rs"
+      ],
+      "references": [
+        "princev2-reference",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "lookup-table",
+        "stack-scheduling",
+        "range-check"
+      ],
+      "security": "No independent cryptographic claim. Numeric nibble range checks protect lookup-derived stack depths; minimally encoded witness bytes and complete protocol binding remain caller obligations.",
+      "stack_contract": "... nibble[15] ... nibble[0] -> ... output[15] ... output[0]; the top 16 items are checked numeric nibbles and unrelated items below them are preserved.",
+      "configurations": [
+        {
+          "id": "standalone-zero-key-layout",
+          "label": "Standalone four-block M-hat layer",
+          "parameters": {
+            "state_nibbles": 16,
+            "table_layout": "zero-key packed scheduler",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 16
+          },
+          "includes": "fragment-with-memory: numeric nibble checks, packed lookup setup, four M-hat blocks, output ordering, and table cleanup; excludes input pushes, output consumption, tapleaf/control-block bytes, transaction framing, and unrelated live state",
+          "script_bytes": 1565,
+          "witness_bytes": 32,
+          "witness_bytes_max": 33,
+          "max_stack_items": 633,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 1565,
+          "metric_keys": [
+            "prince_m_layer",
+            "prince_m_layer_witness",
+            "prince_m_layer_stack",
+            "prince_m_layer_hints"
+          ]
+        }
+      ],
+      "limitations": [
+        "Reusable linear layer, not a complete PRINCEv2 encryption leaf",
+        "Dynamic opcode count is unavailable from the local executor",
+        "Canonical witness-byte encoding, complete transaction, Bitcoin Core, and relay-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-019"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",

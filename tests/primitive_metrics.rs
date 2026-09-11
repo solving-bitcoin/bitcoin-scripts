@@ -139,6 +139,62 @@ fn prince_metrics() -> Vec<Metric> {
     ]
 }
 
+fn prince_m_layer_metrics() -> Vec<Metric> {
+    let fragment = prince::prince_m_layer();
+    let compiled = fragment.clone().compile_with_policy();
+    let witness: Vec<Vec<u8>> = [
+        0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf,
+    ]
+    .into_iter()
+    .rev()
+    .map(|nibble| if nibble == 0 { vec![] } else { vec![nibble] })
+    .collect();
+    let execution_leaf = script! {
+        { fragment.clone() }
+        for _ in 0..8 { OP_2DROP }
+        OP_TRUE
+    };
+    let execution = execute_script_with_inputs_strict(execution_leaf, witness.clone());
+    assert!(
+        execution.success,
+        "PRINCEv2 M-layer metric execution failed: {execution}"
+    );
+    let static_non_push = compiled
+        .instructions()
+        .map(|instruction| instruction.expect("generated PRINCEv2 M-layer must parse"))
+        .filter(
+            |instruction| matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60),
+        )
+        .count();
+    vec![
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_m_layer",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_m_layer_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_m_layer_stack",
+            value: execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_m_layer_static_opcodes",
+            value: static_non_push,
+        },
+        Metric {
+            readme: "src/ciphers/prince/README.md",
+            key: "prince_m_layer_hints",
+            value: 0,
+        },
+    ]
+}
+
 // Summary columns stay in the overview; detailed snapshots live with their construction.
 fn winternitz_metric_readme(key: &str) -> &'static str {
     if key.starts_with("w20_") {
@@ -3988,6 +4044,7 @@ fn metrics() -> Vec<Metric> {
     ]
     .into_iter()
     .chain(prince_metrics())
+    .chain(prince_m_layer_metrics())
     .chain(winternitz_metrics())
     .chain(winternitz_sha256_metrics())
     .chain(winternitz_preimage16_metrics())
@@ -4034,7 +4091,12 @@ fn winternitz20_metrics_are_current() {
 /// generating scripts for the full-repository metric suite.
 #[test]
 fn prince_metrics_are_current() {
-    check_readme_metrics(prince_metrics());
+    check_readme_metrics(
+        prince_metrics()
+            .into_iter()
+            .chain(prince_m_layer_metrics())
+            .collect(),
+    );
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

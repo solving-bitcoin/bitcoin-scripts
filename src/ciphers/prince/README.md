@@ -22,10 +22,35 @@ including item count/lengths; it excludes the tapleaf and control block.
 | Fragment | Script size |
 | --- | ---: |
 | `prince_encrypt(0)` | <!-- metric:prince_encrypt -->6136<!-- /metric:prince_encrypt --> bytes |
+| Standalone `prince_m_layer()` | <!-- metric:prince_m_layer -->1565<!-- /metric:prince_m_layer --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:prince_witness_min -->17<!-- /metric:prince_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:prince_witness_max -->33<!-- /metric:prince_witness_max --> bytes |
 | Maximum combined main/alt-stack depth | <!-- metric:prince_stack -->633<!-- /metric:prince_stack --> items |
 | Fragment non-push operations | <!-- metric:prince_non_push_ops -->3988<!-- /metric:prince_non_push_ops --> |
+
+The standalone M-layer has a **fragment-with-memory** boundary that includes
+numeric nibble-range checks, packed lookup setup, all four M-hat blocks, output
+ordering, and cleanup. It excludes input pushes, output consumption, and
+transaction framing. Its representative witness has 16 nibble data items,
+32 serialized bytes, and zero auxiliary hints; the strict combined peak is
+<!-- metric:prince_m_layer_stack -->633<!-- /metric:prince_m_layer_stack --> items
+and the fragment has
+<!-- metric:prince_m_layer_static_opcodes -->827<!-- /metric:prince_m_layer_static_opcodes --> static non-push operations.
+The local executor does not expose a useful dynamic opcode count for this
+fragment, so the static count is reported separately. The fragment is below
+the OP-019 5,000-byte target, but it is a reusable linear layer rather than a
+complete encryption leaf.
+
+The standalone M-layer uses the zero-key generator's packed table layout and
+stack scheduler without embedding key or S-box actions. `prince_m_layer()`
+certifies numeric inputs in `0..=15` before using them as lookup-derived stack
+depths, but does not enforce minimally encoded witness bytes. The transformation
+is an involution under the PRINCEv2 reference matrix; callers must still consume
+all 16 output nibbles and leave a clean terminal result.
+
+The M-layer's representative witness contains
+<!-- metric:prince_m_layer_witness -->32<!-- /metric:prince_m_layer_witness --> serialized bytes and
+<!-- metric:prince_m_layer_hints -->0<!-- /metric:prince_m_layer_hints --> auxiliary hint items.
 
 The zero-key fragment is 6,136 bytes, down from the previous 6,277 bytes
 (141 bytes / 2.25%). The published-vector key now costs 6,292 instead of
