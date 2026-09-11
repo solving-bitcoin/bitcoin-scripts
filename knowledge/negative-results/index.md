@@ -1226,3 +1226,11 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-043: Direct compressed u32 right shift is a stack-shape tradeoff
+
+`u32_compressed_rshift(8)` avoids four-byte expansion but measures 500 locking
+bytes versus 499 for a local decode-byte-shift-reencode baseline. It does save
+two live stack items, peaking at 5 instead of 7, with the same one-item witness.
+It is therefore not a general byte win. Evidence is `locally-reproduced` and
+deployment is `unclassified`; the result does not close OP-014.

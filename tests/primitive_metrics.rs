@@ -93,6 +93,59 @@ fn max_stack_items_strict(script: bitcoin_script::Script, witness: Vec<Vec<u8>>)
     result.stats.max_nb_stack_items
 }
 
+fn byte_shift8() -> bitcoin_script::Script {
+    script! {
+        OP_TOALTSTACK
+        OP_TOALTSTACK
+        OP_TOALTSTACK
+        OP_TOALTSTACK
+        0
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        OP_DROP
+    }
+}
+
+fn u32_compressed_rshift_metrics() -> Vec<Metric> {
+    const VALUE: u32 = 0x89ab_cdef;
+    let witness = vec![scriptnum(i64::from(VALUE as i32))];
+    let compressed = u32::shift::u32_compressed_rshift(8);
+    let baseline = script! {
+        { u32::stack::u32_uncompress() }
+        { byte_shift8() }
+        { u32::stack::u32_compress() }
+    };
+    vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_rshift_8",
+            value: script_len(compressed.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_rshift_8_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_rshift_8_stack",
+            value: max_stack_items_strict(compressed, witness.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_rshift_8_baseline",
+            value: script_len(baseline.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_rshift_8_baseline_stack",
+            value: max_stack_items_strict(baseline, witness),
+        },
+    ]
+}
+
 fn prince_metrics() -> Vec<Metric> {
     let fragment = prince::prince_encrypt(0);
     let compiled = fragment.clone().compile_with_policy();
@@ -3987,6 +4040,7 @@ fn metrics() -> Vec<Metric> {
         },
     ]
     .into_iter()
+    .chain(u32_compressed_rshift_metrics())
     .chain(prince_metrics())
     .chain(winternitz_metrics())
     .chain(winternitz_sha256_metrics())
@@ -4035,6 +4089,11 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn u32_compressed_rshift_metrics_are_current() {
+    check_readme_metrics(u32_compressed_rshift_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It
