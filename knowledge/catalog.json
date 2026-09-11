@@ -275,6 +275,72 @@
       ]
     },
     {
+      "id": "arithmetic/u32-popcount",
+      "name": "Checked u32 population count",
+      "class": "arithmetic/word",
+      "summary": "Range-checked four-byte population count using a reusable 256-entry byte table.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u32-popcount.md",
+      "implementation": "src/arithmetic/u32/popcount.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "src/arithmetic/u32/popcount.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "batch-lookup",
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "Every hostile byte is range-checked before OP_PICK; the check proves numeric byte range but not byte-unique ScriptNum encoding or a terminal predicate.",
+      "stack_contract": "Consumes four byte-valued limbs in most-significant-byte-first order and replaces them with one numeric ScriptNum in 0..=32. A 256-item lookup table is resident during the four queries.",
+      "configurations": [
+        {
+          "id": "checked-word",
+          "label": "u32_popcount()",
+          "parameters": {
+            "byte_count": 4,
+            "table_items": 256,
+            "input_check": true,
+            "data_items": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: generated 256-item byte-popcount table, four range-checked byte queries, table cleanup, and accumulation; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 455,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 262,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u32_popcount",
+            "u32_popcount_witness",
+            "u32_popcount_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "The byte table consumes 256 persistent stack items",
+        "Numeric result is a ScriptNum count, not a packed byte vector",
+        "Static non-push opcode count is not an executed-opcode measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u31",
       "name": "u31 prime-field arithmetic",
       "class": "arithmetic/field",

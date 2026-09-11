@@ -9,6 +9,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
+| u32 population count | `u32_popcount()` | 455 | 262-item peak; 256-item byte table |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
 | Ed25519 ordinary-domain multiply | 51 biased centered radix-32 digits, 13 signed tables | <!-- metric:ed25519_field_mul -->9893<!-- /metric:ed25519_field_mul --> | 245-byte/51-item incremental hint; certified operands; 523-item strict peak |

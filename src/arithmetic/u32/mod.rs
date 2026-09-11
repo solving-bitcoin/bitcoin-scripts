@@ -2,6 +2,7 @@ pub mod add;
 pub mod and;
 pub mod cmp;
 pub mod or;
+pub mod popcount;
 pub mod rotate;
 pub mod stack;
 pub mod sub;
