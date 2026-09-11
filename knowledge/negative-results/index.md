@@ -1226,3 +1226,12 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+## NR-044: Full SHAKE256 output remains non-composable; prefixing only fixes the stack boundary
+
+The fixed 1,024-byte SHAKE256 output materializes 1,024 stack items and has a
+1,709-item local peak, so it remains consensus-incompatible. A parameterized
+32-byte prefix reduces the peak to 813 and preserves the FIPS 202 output, but
+still generates a 2,000,127-byte fragment. The prefix is therefore a useful
+stack-boundary experiment, not a deployable replacement or a complete
+incremental squeeze protocol. Larger prefixes require their own strict
+measurement because the live state, lookup table, and output all coexist.

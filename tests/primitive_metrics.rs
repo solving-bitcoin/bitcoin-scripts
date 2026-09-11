@@ -4030,6 +4030,36 @@ fn winternitz20_metrics_are_current() {
     check_readme_metrics(winternitz20_metrics());
 }
 
+#[test]
+fn shake256_prefix_metrics_are_current() {
+    let prefix = shake256::shake256_prefix(32, 32);
+    let witness = vec![vec![0x42]; 32];
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_prefix_32_32",
+            value: script_len(prefix.clone()),
+        },
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_prefix_witness_32",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/hashes/shake256/README.md",
+            key: "shake256_prefix_stack_32_32",
+            value: max_stack_items_strict(
+                script! {
+                    { prefix }
+                    for _ in 0..16 { OP_2DROP }
+                    OP_TRUE
+                },
+                witness,
+            ),
+        },
+    ]);
+}
+
 /// Check or intentionally refresh only the PRINCEv2 metric markers, without
 /// generating scripts for the full-repository metric suite.
 #[test]
