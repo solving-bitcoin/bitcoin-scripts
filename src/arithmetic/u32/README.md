@@ -15,6 +15,8 @@ they do not use BN254 or any other field modulus.
   two distinct offsets. The non-`drop` form preserves the minuend.
 - `u32_{less,greater}than[orequal]()` compares the top two words as unsigned
   integers and consumes both.
+- `u32_signed_lessthan()` interprets the top two words as signed two's-complement
+  `i32` values, using the same four-byte representation and consuming both.
 - `u32_or(a, b, stack_size)`, like XOR and AND, takes distinct word offsets.
   `stack_size` is one plus the number of u32 words above the shared byte-logic
   table. With exactly two working words, the usual value is `3`.
@@ -34,6 +36,7 @@ as less-than-or-equal.
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
+| `u32_signed_lessthan()` | <!-- metric:u32_signed_lessthan -->63<!-- /metric:u32_signed_lessthan --> bytes | <!-- metric:u32_signed_lessthan_witness -->17<!-- /metric:u32_signed_lessthan_witness --> bytes | <!-- metric:u32_signed_lessthan_stack -->11<!-- /metric:u32_signed_lessthan_stack --> items |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
@@ -68,3 +71,7 @@ caller.
 No hints are required. A witness-supplied word occupies four stack items, most
 significant byte first in the module's normal representation. Binary operation
 inputs and any shared logic table must already be at the documented depths.
+The signed comparison additionally requires each limb to be a canonical byte;
+it does not validate hostile limb values or Script-number encoding.
+
+The signed comparison contains <!-- metric:u32_signed_lessthan_opcodes -->49<!-- /metric:u32_signed_lessthan_opcodes --> static non-push opcodes.
