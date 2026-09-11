@@ -185,6 +185,31 @@
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
           ]
+        },
+        {
+          "id": "bits-to-nibble-checked",
+          "label": "Checked four-bit big-endian packer",
+          "parameters": {
+            "bit_count": 4,
+            "check_inputs": true,
+            "bit_order": "big-endian, most-significant bit on top"
+          },
+          "includes": "fragment-only: four numeric bit-range checks and weighted reconstruction of one nibble; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 41,
+          "witness_bytes": 5,
+          "witness_bytes_max": 9,
+          "max_stack_items": 7,
+          "executed_opcodes": 33,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 41,
+          "metric_keys": [
+            "u4_bits_to_nibble",
+            "u4_bits_to_nibble_witness_min",
+            "u4_bits_to_nibble_witness_max",
+            "u4_bits_to_nibble_stack",
+            "u4_bits_to_nibble_opcodes"
+          ]
         }
       ],
       "limitations": [

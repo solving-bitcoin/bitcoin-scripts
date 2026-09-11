@@ -120,6 +120,33 @@ pub fn u4_nibbles_to_be_bits(nibble_count: u32, check_inputs: bool) -> Script {
     }
 }
 
+/// Pack four big-endian bits into one nibble.
+///
+/// Before: `preserved | bit3 | bit2 | bit1 | bit0`, with `bit3` on top.
+/// After: `preserved | nibble`. When `check_inputs` is true, every input is
+/// constrained to the numeric range `0..=1`.
+pub fn u4_be_bits_to_nibble(check_inputs: bool) -> Script {
+    script! {
+        for _ in 0..3 {
+            if check_inputs {
+                OP_DUP OP_0 OP_2 OP_WITHIN OP_VERIFY
+            }
+            OP_TOALTSTACK
+        }
+        if check_inputs {
+            OP_DUP OP_0 OP_2 OP_WITHIN OP_VERIFY
+        }
+
+        // Restore from bit0 upward and accumulate bit0 + 2*bit1 + 4*bit2 + 8*bit3.
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_ADD
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -164,6 +191,34 @@ mod tests {
                 OP_TRUE
             });
             assert!(!result.success, "accepted invalid nibble {invalid}");
+        }
+    }
+
+    #[test]
+    fn inverse_packs_checked_big_endian_bits() {
+        for nibble in 0..16 {
+            let result = execute_script(script! {
+                { nibble & 1 }
+                { (nibble >> 1) & 1 }
+                { (nibble >> 2) & 1 }
+                { (nibble >> 3) & 1 }
+                { u4_be_bits_to_nibble(true) }
+                { nibble }
+                OP_EQUAL
+            });
+            assert!(result.success, "nibble {nibble}: {result}");
+        }
+    }
+
+    #[test]
+    fn inverse_rejects_non_bit_inputs() {
+        for invalid in [-1, 2] {
+            let result = execute_script(script! {
+                0 0 0 { invalid }
+                { u4_be_bits_to_nibble(true) }
+                OP_TRUE
+            });
+            assert!(!result.success, "accepted invalid bit {invalid}");
         }
     }
 

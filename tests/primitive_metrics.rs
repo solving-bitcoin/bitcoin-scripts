@@ -1857,6 +1857,7 @@ fn metrics() -> Vec<Metric> {
     const U4_BITS_BATCH: u32 = 32;
     let u4_bits_checked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, true);
     let u4_bits_unchecked_batch = u4::bits::u4_nibbles_to_be_bits(U4_BITS_BATCH, false);
+    let u4_bits_to_nibble = u4::bits::u4_be_bits_to_nibble(true);
     let u4_bits_branch_batch = script! {
         for _ in 0..U4_BITS_BATCH {
             { bitcoin_lab::arithmetic::bigint::bits::limb_to_be_bits_toaltstack(4) }
@@ -2074,6 +2075,37 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_bits_checked_query",
             value: script_len(u4::bits::u4_nibble_below_bits_table_toaltstack(true)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_to_nibble",
+            value: script_len(u4_bits_to_nibble.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_to_nibble_witness_min",
+            value: witness_size(&vec![Vec::new(); 4]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_to_nibble_witness_max",
+            value: witness_size(&vec![vec![1]; 4]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_to_nibble_stack",
+            value: max_stack_items(
+                script! {
+                    { u4_bits_to_nibble.clone() }
+                    OP_DROP OP_TRUE
+                },
+                vec![vec![1]; 4],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_bits_to_nibble_opcodes",
+            value: static_non_push_opcodes(u4_bits_to_nibble),
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
