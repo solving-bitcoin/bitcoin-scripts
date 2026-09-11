@@ -3566,6 +3566,11 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_prefix_32_8",
+            value: script_len(sha256::sha2_u32::sha256_prefix(32, 8)),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
         },

@@ -1880,6 +1880,26 @@
           "metric_keys": [
             "sha2_u32_32"
           ]
+        },
+        {
+          "id": "message-32-prefix-8",
+          "label": "32-byte input, first 8 digest bytes",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: hashing fragment plus output-prefix cleanup; excludes message pushes and digest comparison",
+          "script_bytes": 512456,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 512456,
+          "metric_keys": [
+            "sha2_u32_prefix_32_8"
+          ]
         }
       ],
       "limitations": [
