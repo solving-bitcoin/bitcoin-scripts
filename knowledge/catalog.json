@@ -2228,7 +2228,7 @@
       "status": "active",
       "evidence": "differentially-validated",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/aes128-u4.md",
       "implementation": "src/ciphers/aes/mod.rs",
       "documentation": "src/ciphers/aes/README.md",
@@ -2269,10 +2269,49 @@
             "aes128_witness_max",
             "aes128_stack"
           ]
+        },
+        {
+          "id": "fips-key",
+          "label": "Embedded FIPS-197 key 00..0f",
+          "parameters": {
+            "key_hex": "000102030405060708090a0b0c0d0e0f"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25449,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25449,
+          "metric_keys": [
+            "aes128_fips_encrypt"
+          ]
+        },
+        {
+          "id": "all-ones-key",
+          "label": "Embedded all-ones key",
+          "parameters": {
+            "key_hex": "ffffffffffffffffffffffffffffffff"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25520,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25520,
+          "metric_keys": [
+            "aes128_all_ones_encrypt"
+          ]
         }
       ],
       "limitations": [
         "908-item measured peak",
+        "Key-dependent serialization; profiles are not an exhaustive maximum",
         "Embedded-key construction only"
       ],
       "open_problems": [
