@@ -1226,3 +1226,14 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-044: Compressed u32 equality trades locking bytes for witness shape
+
+`u32_compressed_equal()` compares two canonical compressed u32 ScriptNums
+directly. Against the existing four-byte `u32_equal()` fragment it costs 37
+instead of 18 locking bytes, but reduces the representative witness from
+eight data items and 17 serialized bytes to two items and 11 bytes. The
+maximum `0x80000000` sentinel witness is 13 bytes. This is useful when live
+stack items or witness width dominate, but it is dominated for locking-script
+bytes and is not a general byte win. Evidence is `locally-reproduced`;
+deployment is `unclassified`.
