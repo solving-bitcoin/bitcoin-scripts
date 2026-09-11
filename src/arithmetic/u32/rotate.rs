@@ -133,6 +133,14 @@ pub fn u8_extract_hbit(hbit: usize) -> Script {
         OP_FROMALTSTACK
     }
 }
+
+/// Checked form of [`u8_extract_hbit`].
+pub fn u8_extract_hbit_checked(hbit: usize) -> Script {
+    script! {
+        OP_DUP 0 256 OP_WITHIN OP_VERIFY
+        { u8_extract_hbit(hbit) }
+    }
+}
 /// Reorders (reverse and rotate) the bytes of an u32 number, assuming the starting order is 1 2 3 4 (4 being at the top):
 /// if offset is 0, then reorder is 4 3 2 1
 /// if offset is 1, then reorder is 1 4 3 2
@@ -264,6 +272,28 @@ mod tests {
                     OP_EQUAL
                 };
                 run(script);
+            }
+        }
+    }
+
+    #[test]
+    fn test_checked_extract_hbit_rejects_non_bytes() {
+        for h in [1, 4, 7] {
+            for x in 0..=255 {
+                let result = crate::support::execution::execute_script(script! {
+                    { x }
+                    { u8_extract_hbit_checked(h) }
+                    { x >> (8 - h) } OP_EQUALVERIFY
+                    { (x << h) % 256 } OP_EQUAL
+                });
+                assert!(result.success, "failed for x={x}, h={h}: {result}");
+            }
+            for x in [-1, 256, 512] {
+                let result = crate::support::execution::execute_script(script! {
+                    { x }
+                    { u8_extract_hbit_checked(h) }
+                });
+                assert!(!result.success, "accepted non-byte x={x}, h={h}");
             }
         }
     }
