@@ -1226,3 +1226,22 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-043: RIPEMD-160 output truncation does not reduce compression cost
+
+The fixed `ripemd160_prefix` adapter was tested as a possible compact
+commitment boundary. For a 32-byte message and an 8-byte output prefix, it
+produces a 244,091-byte policy-produced fragment, compared with 244,063 bytes
+for the full 20-byte output. The adapter adds 28 bytes of terminal routing,
+leaves eight output items instead of twenty, and does not lower the measured
+406-item combined peak because the active RIPEMD-160 compressor dominates.
+The witness remains 65 serialized bytes for 32 one-byte data items; no hints
+are used. The pinned tapscript executor's runtime opcode counter is unavailable
+in this context, so the comparison records 173,811 static non-push opcodes.
+
+This is a dominated construction whenever the caller needs the full digest.
+It remains a useful composition primitive only when the protocol deliberately
+accepts the prefix's 64-bit generic collision bound. This is locally reproduced
+and differentially checked against rust-bitcoin's RIPEMD-160 reference, under
+the repository's `research-unlimited` execution boundary rather than a
+consensus or policy deployment claim.
