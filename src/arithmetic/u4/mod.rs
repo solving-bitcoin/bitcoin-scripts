@@ -1,4 +1,5 @@
 pub mod add;
+pub mod bit_reverse;
 pub mod bits;
 pub mod logic;
 pub mod rotate;

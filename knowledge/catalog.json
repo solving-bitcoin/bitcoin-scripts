@@ -142,8 +142,8 @@
         "lookup-table",
         "tracked-stack"
       ],
-      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API.",
+      "security": "No independent cryptographic claim. Checked bit conversion and bit reversal enforce numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -184,6 +184,31 @@
             "u4_bits_checked_batch32",
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
+          ]
+        },
+        {
+          "id": "nibble-bit-reverse-batch32-checked",
+          "label": "Checked 32-nibble bit reversal",
+          "parameters": {
+            "nibble_count": 32,
+            "check_inputs": true,
+            "table_items": 16,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 16-item bit-reversal table setup, 32 checked lookups, table cleanup, and output restoration; representative witness size records 32 hostile nibble data items; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 344,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 51,
+          "executed_opcodes": 232,
+          "validation_weight": null,
+          "setup_script_bytes": 16,
+          "per_use_script_bytes": 8,
+          "metric_keys": [
+            "u4_bit_reverse_batch32",
+            "u4_bit_reverse_batch32_stack",
+            "u4_bit_reverse_batch32_opcodes"
           ]
         }
       ],
