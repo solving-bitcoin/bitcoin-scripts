@@ -246,6 +246,11 @@ linked, and the catalog-wide `as_of` date is advanced.
 
 ## OP-011 — Reproduce Binohash
 
+Progress: a disposable Bitcoin Core regtest now accepts a complete ordinary
+legacy 1-of-1 P2SH `OP_CHECKMULTISIG` spend with a 37-byte redeem script. This
+does not reproduce Binohash's signature grinding, mutation-dependent digest,
+or collision/work parameters; those remain the completion target.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and
