@@ -4111,6 +4111,45 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures only the checked u32 population count.
+#[test]
+fn u32_popcount_metrics_are_current() {
+    let fragment = u32::popcount::u32_popcount();
+    let witness = vec![scriptnum(255); 4];
+    let peak = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            OP_DROP
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    assert_eq!(witness.len(), 4);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_popcount",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_popcount_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_popcount_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_popcount_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
