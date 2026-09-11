@@ -1904,7 +1904,8 @@
       "implementation": "src/hashes/sha256/sha2_u4.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u4::tests::test_sha256_strs"
+        "hashes::sha256::sha2_u4::tests::test_sha256_strs",
+        "hashes::sha256::sha2_u4::tests::test_sha256_prefix"
       ],
       "references": [
         "fips-180-4",
@@ -1935,6 +1936,26 @@
           "per_use_script_bytes": 332942,
           "metric_keys": [
             "sha2_u4_32"
+          ]
+        },
+        {
+          "id": "message-32-prefix-8-nibbles",
+          "label": "32-byte input, 8-nibble output prefix",
+          "parameters": {
+            "message_bytes": 32,
+            "output_nibbles": 8
+          },
+          "includes": "fragment-only: full hash plus output-suffix drop; excludes message pushes and digest comparison",
+          "script_bytes": 332970,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 332970,
+          "metric_keys": [
+            "sha2_u4_prefix_32_8"
           ]
         }
       ],
