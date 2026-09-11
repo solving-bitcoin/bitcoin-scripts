@@ -6,5 +6,6 @@ pub mod commitments;
 pub mod curves;
 pub mod fields;
 pub mod hashes;
+pub mod introspection;
 pub mod signatures;
 pub mod support;

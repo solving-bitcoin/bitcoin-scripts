@@ -1674,6 +1674,67 @@
       ]
     },
     {
+      "id": "introspection/binohash-legacy-core",
+      "name": "Binohash legacy core",
+      "class": "introspection/transaction",
+      "summary": "Reproduces opcode-boundary FindAndDelete and subset-dependent legacy sighash mutation for Binohash-style transaction digests.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/binohash-legacy-core.md",
+      "implementation": "src/introspection/binohash.rs",
+      "documentation": "src/introspection/README.md",
+      "tests": [
+        "introspection::binohash::tests::deletes_only_opcode_aligned_signature_pushes",
+        "introspection::binohash::tests::subset_selection_changes_legacy_digest",
+        "introspection::binohash::tests::reproduces_legacy_single_bug_digest",
+        "introspection::binohash::tests::rejects_invalid_selection_and_input"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "hash-chain"
+      ],
+      "security": "This record covers deterministic legacy mechanics only; Binohash collision resistance, grinding work, ECDSA validity, and downstream Script authentication remain unproven.",
+      "stack_contract": "Host API: transaction, legacy scriptCode, candidate signature vectors, and selected indices -> 32-byte legacy sighash.",
+      "configurations": [
+        {
+          "id": "deterministic-core",
+          "label": "FindAndDelete plus legacy sighash core",
+          "parameters": {
+            "candidate_signatures": 3,
+            "selected_signatures": 1,
+            "hash_type": 1
+          },
+          "includes": "complete-transaction: host-side deterministic digest only: opcode-boundary signature deletion and rust-bitcoin legacy sighash; excludes ECDSA grinding, complete transaction execution, Script consumer, and transaction weight",
+          "script_bytes": null,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "Host-side legacy model, not a locking-script fragment",
+        "Full two-round Binohash grinding and ECDSA signature validity are not implemented",
+        "No complete transaction has been compared against a pinned Bitcoin Core regtest",
+        "No script, witness, stack, or validation-weight metric applies to this host-only boundary"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash",
       "name": "Binohash transaction digest",
       "class": "introspection/transaction",
@@ -1681,7 +1742,7 @@
       "status": "literature-only",
       "evidence": "reported",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/binohash.md",
       "implementation": null,
       "documentation": null,
@@ -1718,7 +1779,7 @@
         }
       ],
       "limitations": [
-        "No local implementation",
+        "The deterministic legacy core is reproduced separately; the full protocol remains unimplemented",
         "Relies on legacy signature semantics",
         "Grinding economics are reported, not reproduced"
       ],

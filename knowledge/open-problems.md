@@ -246,6 +246,13 @@ linked, and the catalog-wide `as_of` date is advanced.
 
 ## OP-011 — Reproduce Binohash
 
+The deterministic core is now locally reproduced: selected serialized
+signature pushes are removed at opcode boundaries before rust-bitcoin's legacy
+sighash, including the out-of-range `SIGHASH_SINGLE` constant. The full
+protocol remains open because grinding, valid ECDSA signatures, transaction
+mutation boundaries, Script extraction, and pinned Core regtest behavior are
+not yet reproduced.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and
