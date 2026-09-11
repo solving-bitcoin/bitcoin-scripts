@@ -381,3 +381,8 @@ See the [constant-sum primitive](../primitives/winternitz-constant-sum20.md)
 for exact code capacity, public API, proof scope, hash alternatives,
 independent Python reproduction, and [NR-041](../negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries)
 for the restricted radix search and rejected zero-fixture-only improvements.
+
+The constant-composition verifier intentionally has no Script byte-recovery
+row. Its host-side rank decoder is not included in the authentication costs;
+the missing consumer boundary is tracked by [NR-048](../negative-results/index.md#nr-048-constant-composition-byte-recovery-is-not-yet-a-composable-script-primitive)
+and [OP-021](../open-problems.md#op-021--constant-composition-script-decoder).
