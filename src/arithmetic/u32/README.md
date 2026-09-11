@@ -35,6 +35,7 @@ as less-than-or-equal.
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
+| `u32_compressed_lshift(8)` | <!-- metric:u32_compressed_lshift_8 -->492<!-- /metric:u32_compressed_lshift_8 --> bytes | <!-- metric:u32_compressed_lshift_8_witness -->6<!-- /metric:u32_compressed_lshift_8_witness --> bytes | <!-- metric:u32_compressed_lshift_8_stack -->5<!-- /metric:u32_compressed_lshift_8_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
@@ -44,6 +45,12 @@ Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
 operation-specific hint is needed. The logic table can be shared by any number
 of XOR, AND, and OR operations in one script.
+
+`u32_compressed_lshift(shift)` accepts one canonical compressed u32 ScriptNum
+and performs a modulo-`2^32` logical left shift for `shift` in `1..=31`. It
+validates the wire encoding, discards the shifted-out sign-carried bit, and
+re-encodes each doubled magnitude without leaving the four-byte expansion live.
+For shift 8, the direct fragment is <!-- metric:u32_compressed_lshift_8 -->492<!-- /metric:u32_compressed_lshift_8 --> bytes with a <!-- metric:u32_compressed_lshift_8_witness -->6<!-- /metric:u32_compressed_lshift_8_witness -->-byte one-item witness and a <!-- metric:u32_compressed_lshift_8_stack -->5<!-- /metric:u32_compressed_lshift_8_stack -->-item peak. A decode-byte-shift-reencode baseline costs <!-- metric:u32_compressed_lshift_8_baseline -->490<!-- /metric:u32_compressed_lshift_8_baseline --> bytes and peaks at <!-- metric:u32_compressed_lshift_8_baseline_stack -->7<!-- /metric:u32_compressed_lshift_8_baseline_stack --> items; both measurements exclude input pushes and the terminal predicate.
 
 ## Security
 

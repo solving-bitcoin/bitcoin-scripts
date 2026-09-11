@@ -1226,3 +1226,13 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-044: Direct compressed u32 left shift is not a byte win
+
+`u32_compressed_lshift(8)` performs a total-domain modulo-`2^32` left shift
+directly over one canonical ScriptNum, but costs 492 locking bytes versus 490
+for a local decode-byte-shift-reencode baseline. It saves two live stack items,
+peaking at 5 instead of 7, with the same one-item witness. The construction is
+retained as a stack-shape primitive and a complete-width correctness result,
+not as a general script-byte optimization. Evidence is `locally-reproduced`;
+deployment is `unclassified`; OP-020 remains open.
