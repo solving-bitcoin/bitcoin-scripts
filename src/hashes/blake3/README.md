@@ -15,6 +15,8 @@ Two input profiles are public:
 
 Both profiles implement unkeyed 32-byte hashing only. Keyed mode, derive-key
 mode, XOF output, and the multi-chunk tree API are not implemented.
+The [keyed-mode boundary result](../../knowledge/negative-results/blake3-keyed-mode.md)
+records the missing key/flag interface and its pricing boundary.
 
 The experimental `ed25519_challenge` module also exposes custom-signature
 transcript shapes. These are not stable hash APIs and do not implement RFC
