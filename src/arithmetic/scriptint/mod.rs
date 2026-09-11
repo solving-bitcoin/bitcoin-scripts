@@ -5,6 +5,14 @@ use crate::support::script::{script, Script};
 /// Largest positive integer accepted by four-byte Script-number arithmetic.
 pub const MAX_SCRIPTNUM: u32 = 0x7fff_ffff;
 
+/// Verify that the top stack item is a minimally encoded at-most-four-byte
+/// ScriptNum and leave it unchanged.
+pub fn verify_canonical() -> Script {
+    script! {
+        OP_DUP OP_DUP 0 OP_ADD OP_EQUALVERIFY
+    }
+}
+
 /// Multiply the top Script integer by the compile-time constant `multiplier`.
 ///
 /// Stack before: `... value`.
@@ -85,7 +93,16 @@ pub fn hinted_rem(divisor: u32) -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::{execution::execute_script, script::script};
+    use crate::support::{
+        execution::{execute_raw_script_with_inputs_strict, execute_script},
+        script::{script, ScriptCompilation},
+    };
+
+    fn scriptnum(value: i64) -> Vec<u8> {
+        let mut bytes = [0u8; 8];
+        let length = bitcoin::script::write_scriptint(&mut bytes, value);
+        bytes[..length].to_vec()
+    }
 
     fn assert_division(dividend: i64, divisor: u32) {
         let divisor_i64 = i64::from(divisor);
@@ -177,5 +194,49 @@ mod tests {
     #[should_panic(expected = "divisor must be in 1..=2147483647")]
     fn rejects_divisor_outside_scriptnum_domain() {
         let _ = hinted_div_rem(0x8000_0000);
+    }
+
+    #[test]
+    fn verifies_canonical_scriptnum_encoding() {
+        for value in [-1i64, 0, 1, 127, 128, 2_147_483_647] {
+            let result = execute_raw_script_with_inputs_strict(
+                script! {
+                    { verify_canonical() }
+                    OP_DROP
+                    OP_TRUE
+                }
+                .compile_with_policy()
+                .to_bytes(),
+                vec![scriptnum(value)],
+            );
+            assert!(
+                result.success,
+                "rejected canonical ScriptNum {value}: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_scriptnum_aliases_and_oversized_items() {
+        use crate::support::execution::execute_raw_script_with_inputs_strict;
+
+        for raw in [
+            vec![0x01, 0x00],
+            vec![0x80],
+            vec![0x01, 0x80],
+            vec![0x00, 0x00, 0x00, 0x00, 0x00],
+        ] {
+            let result = execute_raw_script_with_inputs_strict(
+                script! {
+                    { verify_canonical() }
+                    OP_DROP
+                    OP_TRUE
+                }
+                .compile_with_policy()
+                .to_bytes(),
+                vec![raw],
+            );
+            assert!(!result.success, "accepted noncanonical ScriptNum");
+        }
     }
 }
