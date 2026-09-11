@@ -2059,13 +2059,15 @@
       "limitations": [
         "Messages limited to one 1,024-byte chunk",
         "Only unkeyed 32-byte output is implemented",
+        "BLAKE3 XOF output-block counter is not implemented",
         "Local witness-input and peak-metric execution disables the stack-limit check; Bitcoin Core consensus and policy validation were not performed",
         "A wholly padded final second input group is ignored and not bound"
       ],
       "open_problems": [
         "OP-001",
         "OP-003",
-        "OP-013"
+        "OP-013",
+        "OP-022"
       ]
     },
     {
@@ -2156,13 +2158,15 @@
       "limitations": [
         "Messages are limited to 32 bytes and the length is fixed when the script is generated",
         "Only unkeyed 32-byte output is implemented",
+        "BLAKE3 XOF output-block counter is not implemented",
         "The direct u4 layout uses up to 64 witness items and differs from the selected-limb API",
         "Bitcoin Core consensus and policy validation were not performed"
       ],
       "open_problems": [
         "OP-001",
         "OP-003",
-        "OP-013"
+        "OP-013",
+        "OP-022"
       ]
     },
     {

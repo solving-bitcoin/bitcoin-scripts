@@ -1226,3 +1226,15 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-046: BLAKE3 XOF output is outside the current generator contract
+
+The local BLAKE3 generators stop at the unkeyed 32-byte digest and do not
+implement the root-output block counter needed for XOF continuation. A
+deterministic probe over the 32-byte message `00 01 ... 1f` obtains 64 bytes
+from the independent `blake3` crate while the local generator exposes only the
+32-byte output contract. The existing 32-byte compute profile remains the
+priced baseline; this is a missing-composition boundary, not an impossibility
+proof. Reproducing a longer output requires pricing the extra compression,
+routing, cleanup, and combined stack peak. Evidence is `locally-reproduced`;
+see [the probe](../../examples/blake3_xof_boundary.rs) and [OP-022](../open-problems.md#op-022--blake3-xof-output-frontier).

@@ -643,3 +643,11 @@ clean-stack semantics, stays below 1,000 combined items in a strict schedule,
 matches the standard BLAKE3 digest in a focused execution, and reports a
 policy-produced leaf smaller than the 3,828,057-byte projection with the same 792 entry items
 and exactly 88 hints.
+
+## OP-022 — BLAKE3 XOF output frontier
+
+Price a reusable BLAKE3 root-output continuation beyond the first 32-byte
+digest. **Complete when:** a generation-time output length supports at least a
+64-byte XOF vector, matches the independent BLAKE3 implementation, records the
+additional output-block compression/routing/cleanup and witness shape, and
+passes the combined 1,000-item stack check for the documented composition.
