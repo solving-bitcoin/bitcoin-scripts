@@ -11,7 +11,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/scriptnum-constant-mul.md",
       "implementation": "src/arithmetic/scriptint/mod.rs",
       "documentation": "src/arithmetic/scriptint/README.md",
@@ -1662,6 +1662,52 @@
             "preimage_length_witness_min",
             "preimage_length_witness_max",
             "preimage_length_stack"
+          ]
+        },
+        {
+          "id": "offset-0",
+          "label": "Empty-preimage boundary",
+          "parameters": {
+            "offset": 0,
+            "preimage_bytes_min": 0,
+            "preimage_bytes_max": 520
+          },
+          "includes": "fragment-only: verifier at the zero offset boundary; witness includes the serialized empty preimage item",
+          "script_bytes": 42,
+          "witness_bytes": 2,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 42,
+          "metric_keys": [
+            "preimage_length_offset0",
+            "preimage_length_offset0_witness",
+            "preimage_length_offset0_stack"
+          ]
+        },
+        {
+          "id": "offset-520",
+          "label": "Maximum-stack-element boundary",
+          "parameters": {
+            "offset": 520,
+            "preimage_bytes_min": 520,
+            "preimage_bytes_max": 520
+          },
+          "includes": "fragment-only: verifier at the 520-byte stack-element boundary; witness includes the serialized maximum-size preimage item",
+          "script_bytes": 46,
+          "witness_bytes": 524,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 46,
+          "metric_keys": [
+            "preimage_length_offset520",
+            "preimage_length_offset520_witness",
+            "preimage_length_offset520_stack"
           ]
         }
       ],
