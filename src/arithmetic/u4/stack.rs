@@ -91,6 +91,28 @@ pub fn u4_hex_to_nibbles(hex_str: &str) -> Script {
     }
 }
 
+/// Split one byte-valued ScriptNum into `high | low` nibbles.
+///
+/// With `check_inputs`, the byte is constrained to `0..=255`. Without it,
+/// the caller must already have established that invariant.
+pub fn u8_to_u4_pair(check_inputs: bool) -> Script {
+    script! {
+        if check_inputs {
+            OP_DUP 0 256 OP_WITHIN OP_VERIFY
+        }
+        0 OP_TOALTSTACK
+        for (threshold, nibble) in [(128, 8), (64, 4), (32, 2), (16, 1)] {
+            OP_DUP { threshold } OP_GREATERTHANOREQUAL
+            OP_IF
+                { threshold } OP_SUB
+                OP_FROMALTSTACK { nibble } OP_ADD OP_TOALTSTACK
+            OP_ENDIF
+        }
+        OP_FROMALTSTACK
+        OP_SWAP
+    }
+}
+
 pub fn u4_repeat_number(n: u32, count: u32) -> Script {
     match count {
         0 => script! {},
@@ -200,5 +222,57 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+
+    #[test]
+    fn splits_all_checked_bytes() {
+        for byte in 0..=u8::MAX {
+            let result = crate::support::execution::execute_script(script! {
+                { byte as u32 }
+                { u8_to_u4_pair(true) }
+                { (byte & 0x0f) as u32 } OP_EQUALVERIFY
+                { (byte >> 4) as u32 } OP_EQUAL
+            });
+            assert!(result.success, "failed to split byte {byte:#x}: {result}");
+        }
+    }
+
+    #[test]
+    fn checked_split_rejects_malformed_bytes_and_preserves_altstack() {
+        for invalid in [-1, 256] {
+            let result = crate::support::execution::execute_script(script! {
+                { invalid }
+                { u8_to_u4_pair(true) }
+                OP_TRUE
+            });
+            assert!(!result.success, "accepted malformed byte {invalid}");
+        }
+
+        let result = crate::support::execution::execute_script(script! {
+            OP_7 OP_TOALTSTACK
+            171
+            { u8_to_u4_pair(true) }
+            11 OP_EQUALVERIFY
+            10 OP_EQUALVERIFY
+            OP_FROMALTSTACK 7 OP_EQUAL
+        });
+        assert!(
+            result.success,
+            "split changed unrelated altstack state: {result}"
+        );
+    }
+
+    #[test]
+    fn unchecked_split_requires_the_caller_invariant() {
+        let result = crate::support::execution::execute_script(script! {
+            -1
+            { u8_to_u4_pair(false) }
+            -1 OP_EQUALVERIFY
+            0 OP_EQUAL
+        });
+        assert!(
+            result.success,
+            "unchecked split changed hostile byte: {result}"
+        );
     }
 }

@@ -4111,6 +4111,37 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u8_to_u4_pair_metrics_are_current() {
+    let fragment = u4::stack::u8_to_u4_pair(true);
+    let witness = vec![scriptnum(255)];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            OP_2DROP
+            OP_1
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u8_to_u4_pair_checked",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u8_to_u4_pair_checked_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u8_to_u4_pair_checked_stack",
+            value: stack,
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
