@@ -102,7 +102,7 @@ and nodes. Optional `Preimage16` comparisons follow the hash comparison.
 | Construction | Authenticated object | Script bytes | Witness bytes (zero / upper bound) | Stack peak | Verification work / missing protocol work |
 | --- | --- | ---: | ---: | ---: | --- |
 | Lamport 2-bit | One value in 0..3 | 96 | 11 | not recorded | Reject rather than clamp invalid values |
-| HORS-like n32/t8 | Explicit subset | 809 | 280 | not recorded | Message-to-index derivation |
+| HORS-like n32/t8 | Explicit subset | 809 | 280 / 16 items, 0 hints | 50 strict | Message-to-index derivation; current verifier clamps oversized indices |
 | Legacy Wots32 list-pick | 32-byte message | 4,908 | 1,477 / 1,542 | 143 | 15 hashes for digits below 8, seven otherwise; clamps above-range digits |
 | Legacy Wots32 list-pick + clear | 32-byte message | 4,844 | 1,477 / 1,542 | 143 | Direct checksum reduction; consumes message; terminal predicate excluded |
 | FastWots32 clamped lookup | 32-byte message | 4,465 | 1,476 / 1,542 | 143 | Legacy-style upper saturation; recovers authenticated clamped digits |
