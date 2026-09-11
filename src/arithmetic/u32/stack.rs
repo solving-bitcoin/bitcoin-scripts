@@ -17,6 +17,14 @@ pub fn u32_push(value: u32) -> Script {
     }
 }
 
+/// Preserve the top value after proving it is a canonical ScriptNum byte.
+pub fn verify_canonical_byte() -> Script {
+    script! {
+        OP_DUP 0 256 OP_WITHIN OP_VERIFY
+        OP_DUP OP_DUP 0 OP_ADD OP_EQUALVERIFY
+    }
+}
+
 pub fn u32_equalverify() -> Script {
     script! {
         4
@@ -176,6 +184,40 @@ mod tests {
                 OP_EQUAL
             };
             run(script);
+        }
+    }
+
+    #[test]
+    fn canonical_byte_boundary_rejects_aliases_and_out_of_range_values() {
+        for value in 0..=255 {
+            let mut bytes = [0u8; 8];
+            let length = bitcoin::script::write_scriptint(&mut bytes, i64::from(value));
+            let encoded = bytes[..length].to_vec();
+            let result = crate::support::execution::execute_script_with_inputs(
+                script! {
+                    5 OP_TOALTSTACK
+                    { verify_canonical_byte() }
+                    { value } OP_EQUALVERIFY
+                    OP_FROMALTSTACK 5 OP_EQUALVERIFY
+                    99 OP_EQUAL
+                },
+                vec![vec![99], encoded],
+            );
+            assert!(result.success, "rejected canonical byte {value}: {result}");
+        }
+
+        for encoded in [
+            vec![1, 0],          // redundant positive sign byte
+            vec![0x80],          // negative zero
+            vec![0, 1],          // canonical 256, outside the byte range
+            vec![0xff],          // negative value
+            vec![0, 0, 0, 0, 0], // oversized zero
+        ] {
+            let result = crate::support::execution::execute_script_with_inputs(
+                script! { { verify_canonical_byte() } },
+                vec![encoded],
+            );
+            assert!(!result.success, "accepted malformed byte: {result}");
         }
     }
 }
