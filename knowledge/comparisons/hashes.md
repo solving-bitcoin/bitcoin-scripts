@@ -7,6 +7,7 @@ Measured fragments exclude input pushes and output comparison.
 | BLAKE3 sparse direct u4 | 32-byte input | 59,529 | differentially-validated | Fixed length at generation time; at most 32 bytes |
 | BLAKE3 limb29 | 64-byte input | 72,293 | differentially-validated | Single 1,024-byte chunk only; includes table memory |
 | SHA-1 u32 | 32-byte input | 209,726 | differentially-validated | Collision-broken compatibility hash |
+| SHA-1 u32 midstate | 64-byte prefix + 16-byte suffix | 209,619 | differentially-validated | Requires an authenticated one-block midstate; collision-broken |
 | RIPEMD-160 u32 | 32-byte input | 244,063 | differentially-validated | 160-bit output |
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
 | SHA-256 u32 | 32-byte input | 512,428 | differentially-validated | Larger than local u4 variant |

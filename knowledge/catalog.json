@@ -1740,7 +1740,9 @@
       "implementation": "src/hashes/sha1/mod.rs",
       "documentation": "src/hashes/sha1/README.md",
       "tests": [
-        "hashes::sha1::tests::hashes_standard_vectors"
+        "hashes::sha1::tests::hashes_standard_vectors",
+        "hashes::sha1::tests::continues_from_midstate",
+        "hashes::sha1::tests::rejects_extra_suffix_bytes"
       ],
       "references": [
         "fips-180-4",
@@ -1770,6 +1772,26 @@
           "per_use_script_bytes": 209726,
           "metric_keys": [
             "sha1_u32_32"
+          ]
+        },
+        {
+          "id": "message-80-midstate",
+          "label": "64-byte prefix plus 16-byte suffix from midstate",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16
+          },
+          "includes": "fragment-only: one-block midstate continuation, final padding, and digest restoration; excludes prefix authentication, suffix pushes, digest comparison, and terminal predicate",
+          "script_bytes": 209619,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 209619,
+          "metric_keys": [
+            "sha1_u32_80_midstate"
           ]
         }
       ],
