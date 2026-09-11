@@ -34,6 +34,7 @@ as less-than-or-equal.
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
+| `u32_compressed_lessthan()` | <!-- metric:u32_compressed_lessthan -->124<!-- /metric:u32_compressed_lessthan --> bytes | <!-- metric:u32_compressed_lessthan_witness -->11<!-- /metric:u32_compressed_lessthan_witness --> bytes | <!-- metric:u32_compressed_lessthan_stack -->6<!-- /metric:u32_compressed_lessthan_stack --> items |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
@@ -68,3 +69,9 @@ caller.
 No hints are required. A witness-supplied word occupies four stack items, most
 significant byte first in the module's normal representation. Binary operation
 inputs and any shared logic table must already be at the documented depths.
+
+`u32_compressed_lessthan()` accepts two canonical compressed u32 ScriptNums
+with the same `... a b -> ... (a < b)` contract as `u32_lessthan()`. It
+validates hostile encodings, maps the signed compressed domain to a sign bit
+and a legal 31-bit magnitude, and compares those values without expanding
+four byte limbs. The representative witness is two items and <!-- metric:u32_compressed_lessthan_witness -->11<!-- /metric:u32_compressed_lessthan_witness --> serialized bytes versus <!-- metric:u32_lessthan_witness -->17<!-- /metric:u32_lessthan_witness --> bytes for the byte baseline. The sentinel-boundary maximum is <!-- metric:u32_compressed_lessthan_witness_max -->8<!-- /metric:u32_compressed_lessthan_witness_max --> bytes. The fragment costs 124 locking bytes and peaks at <!-- metric:u32_compressed_lessthan_stack -->6<!-- /metric:u32_compressed_lessthan_stack --> items, so it is a witness-shape tradeoff rather than a general byte win.
