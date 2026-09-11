@@ -9,6 +9,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
+| Total-domain compressed u32 right shift, shift 7 | one-item compressed wire | 1,143 | 6-byte witness and 1 entry item; four-byte baseline is 637 bytes and 12-byte witness |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
 | Ed25519 ordinary-domain multiply | 51 biased centered radix-32 digits, 13 signed tables | <!-- metric:ed25519_field_mul -->9893<!-- /metric:ed25519_field_mul --> | 245-byte/51-item incremental hint; certified operands; 523-item strict peak |
@@ -33,6 +34,14 @@ but longer expressions remain modular unless their bound is proved below its
 513-bit composite modulus. Range checks and conversion remain outside a row
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
+
+The compressed u32 right-shift wire closes the local `0x80000000` negative-zero
+edge and reduces the witness from four byte items to one compressed ScriptNum.
+At shift 7 it costs 1,143 locking bytes versus 637 for the four-byte
+rotate/mask baseline, while reducing serialized witness bytes from 12 to 6 and
+entry items from four to one. It is a witness-width tradeoff, not a byte-size
+winner; OP-014 still requires Bitcoin Core differential and complete-transaction
+validation.
 
 The 9,893-byte Ed25519 row is the current locking-script-size winner for this
 field. It keeps host values in the ordinary field domain but uses a unique

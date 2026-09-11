@@ -45,6 +45,35 @@ words inside the locking script or supply four witness items per word. No
 operation-specific hint is needed. The logic table can be shared by any number
 of XOR, AND, and OR operations in one script.
 
+## Total-domain compressed logical right shift
+
+`u32_compressed_rshift(shift)` accepts one exact compressed u32 ScriptNum,
+including the canonical five-byte encoding of `0x80000000`, and returns the
+compressed ScriptNum for the logical result. It rejects non-minimal encodings,
+negative zero, wrong-width items, and five-byte values other than `-2^31`.
+Internally it expands to four bytes, uses the existing rotation and shared
+byte-AND table, then recompresses. The four-byte operation is retained as the
+like-for-like witness-width baseline.
+
+The representative rows use shift 7, the deterministic value `0xa5c319e7`,
+strict local tapscript execution, and include table setup/cleanup, canonical
+input validation, output compression, and a terminal `OP_TRUE`; witness input
+pushes are excluded from locking-script bytes. Both rows require zero
+auxiliary hint items.
+
+| Configuration | Locking script | Witness | Complete items | Peak stack | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Compressed one-item wire | <!-- metric:u32_rshift_compressed_7 -->1143<!-- /metric:u32_rshift_compressed_7 --> bytes | <!-- metric:u32_rshift_compressed_7_witness -->6<!-- /metric:u32_rshift_compressed_7_witness --> bytes | 1 | <!-- metric:u32_rshift_compressed_7_stack -->272<!-- /metric:u32_rshift_compressed_7_stack --> | <!-- metric:u32_rshift_compressed_7_static_opcodes -->863<!-- /metric:u32_rshift_compressed_7_static_opcodes --> |
+| Four-byte u32 baseline | <!-- metric:u32_rshift_bytes_7 -->637<!-- /metric:u32_rshift_bytes_7 --> bytes | <!-- metric:u32_rshift_bytes_7_witness -->12<!-- /metric:u32_rshift_bytes_7_witness --> bytes | 4 | <!-- metric:u32_rshift_bytes_7_stack -->272<!-- /metric:u32_rshift_bytes_7_stack --> | <!-- metric:u32_rshift_bytes_7_static_opcodes -->473<!-- /metric:u32_rshift_bytes_7_static_opcodes --> |
+
+The compressed wire trades locking-script bytes and execution work for three
+fewer entry witness items. This is a representation primitive, not a complete
+leaf or a consensus/deployability claim.
+
+The local executor did not expose a useful dynamic opcode count for this
+standalone fragment, so static non-push counts are reported instead; no
+validation-weight result is claimed.
+
 ## Security
 
 There is no independent cryptographic security parameter. Arithmetic is exact

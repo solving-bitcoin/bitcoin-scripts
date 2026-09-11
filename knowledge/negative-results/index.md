@@ -1226,3 +1226,18 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-043: Compressed total-domain u32 shifts lose locking bytes
+
+The second seed-directed primitive implements logical right shift over the
+one-item compressed u32 wire, including the canonical five-byte `0x80000000`
+sentinel. It is locally correct for every shift `1..=31` on the documented
+boundary classes and rejects non-minimal, negative-zero, wrong-width, and
+invalid five-byte inputs. At shift 7 the compressed boundary is 1,143 locking
+bytes, 6 witness bytes, and one entry item; the direct four-byte rotate/mask
+baseline is 637 locking bytes, 12 witness bytes, and four entry items. The
+strict peak is 272 items for both, because the shared 256-item byte table
+dominates. The compressed form is therefore dominated for locking bytes and
+combined local stack peak, but remains a possible witness-width optimization.
+These measurements are `locally-reproduced` and do not establish a universal
+lower bound or Bitcoin Core deployability.
