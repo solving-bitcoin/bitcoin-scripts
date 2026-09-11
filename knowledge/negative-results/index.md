@@ -1226,3 +1226,13 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-047: BLAKE3 keyed mode is outside the current generator contract
+
+The local BLAKE3 generators accept no key and set no `KEYED_HASH` mode flag.
+A deterministic probe over `00 01 ... 1f` with a 32-byte `0x42` key produces a
+keyed digest different from the current unkeyed digest, while the existing
+32-byte compute profile remains the only priced script. This is a
+`locally-reproduced` interface boundary and not an impossibility proof; the
+missing key-word layout, flags, witness shape, and stack/routing cost remain
+to be priced under OP-023. See [the probe](../../examples/blake3_keyed_boundary.rs).

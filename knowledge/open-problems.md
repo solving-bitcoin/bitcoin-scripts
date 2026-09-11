@@ -643,3 +643,11 @@ clean-stack semantics, stays below 1,000 combined items in a strict schedule,
 matches the standard BLAKE3 digest in a focused execution, and reports a
 policy-produced leaf smaller than the 3,828,057-byte projection with the same 792 entry items
 and exactly 88 hints.
+
+## OP-023 — BLAKE3 keyed-mode frontier
+
+Price a keyed BLAKE3 construction for the existing 32-byte input profile.
+**Complete when:** a deterministic key-and-message vector matches the
+independent BLAKE3 implementation, records the eight key words and
+`KEYED_HASH` flag handling, reports witness and combined-stack costs, and
+compares the result with the unkeyed profile under the same compilation policy.
