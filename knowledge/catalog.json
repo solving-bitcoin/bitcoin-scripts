@@ -1904,7 +1904,9 @@
       "implementation": "src/hashes/sha256/sha2_u4.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u4::tests::test_sha256_strs"
+        "hashes::sha256::sha2_u4::tests::test_sha256_strs",
+        "hashes::sha256::sha2_u4::tests::test_sha256_80bytes_from_midstate",
+        "hashes::sha256::sha2_u4::tests::test_sha256_80bytes_from_midstate_has_strict_stack_profile"
       ],
       "references": [
         "fips-180-4",
@@ -1936,10 +1938,41 @@
           "metric_keys": [
             "sha2_u4_32"
           ]
+        },
+        {
+          "id": "midstate-16-suffix",
+          "label": "64-byte prefix midstate plus 16-byte suffix",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16,
+            "total_message_bytes": 80,
+            "suffix_witness_items": 32,
+            "midstate_fixture": "SHA-256 compress of 64 bytes of 0x42"
+          },
+          "includes": "fragment-only: one-block continuation from a caller-supplied midstate; excludes midstate generation, prefix binding, suffix pushes, and digest comparison",
+          "script_bytes": 332830,
+          "witness_bytes": 48,
+          "witness_bytes_max": 48,
+          "max_stack_items": 969,
+          "executed_opcodes": 195219,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 332830,
+          "opcode_measurement": "static non-push opcode count",
+          "execution_class": "research-unlimited",
+          "strict_stack_limit_test": true,
+          "hint_stack_items": 0,
+          "metric_keys": [
+            "sha2_u4_80_midstate",
+            "sha2_u4_80_midstate_witness",
+            "sha2_u4_80_midstate_stack",
+            "sha2_u4_80_midstate_opcodes"
+          ]
         }
       ],
       "limitations": [
         "Table configuration affects stack peak",
+        "Caller must bind the supplied midstate to the fixed 64-byte prefix",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [

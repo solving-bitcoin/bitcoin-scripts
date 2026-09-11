@@ -18,6 +18,10 @@ const INITSTATE: [u32; 8] = [
 ];
 
 pub fn double_padding(num_bytes: u32) -> (Vec<Script>, u32) {
+    double_padding_with_length(num_bytes, num_bytes)
+}
+
+fn double_padding_with_length(num_bytes: u32, total_num_bytes: u32) -> (Vec<Script>, u32) {
     //55 bytes fits in one block
     //56 to 64 requires two block padding
 
@@ -42,7 +46,7 @@ pub fn double_padding(num_bytes: u32) -> (Vec<Script>, u32) {
             for _ in 0..59 {
                 OP_2DUP
             }
-            { u4_number_to_nibble( num_bytes * 8 ) }
+            { u4_number_to_nibble(total_num_bytes * 8) }
         };
 
         chunks += 1;
@@ -56,7 +60,7 @@ pub fn double_padding(num_bytes: u32) -> (Vec<Script>, u32) {
 
         (results, chunks)
     } else {
-        let (script1, _) = padding(num_bytes);
+        let (script1, _) = padding_with_length(num_bytes, total_num_bytes);
         let mut results = Vec::new();
         for _ in 0..(chunks - 1) {
             results.push(script! {});
@@ -67,10 +71,14 @@ pub fn double_padding(num_bytes: u32) -> (Vec<Script>, u32) {
 }
 
 pub fn padding(num_bytes: u32) -> (Script, u32) {
-    let l = (num_bytes * 8) as i32;
-    let mut k = 512 - l - 8 - 32; // heres is usually minus 8, but as
-                                  // there will be never that many bytes to process
-                                  // one u32 will be enough
+    padding_with_length(num_bytes, num_bytes)
+}
+
+fn padding_with_length(num_bytes: u32, total_num_bytes: u32) -> (Script, u32) {
+    let l = (total_num_bytes * 8) as i32;
+    let mut k = 512 - (num_bytes * 8) as i32 - 8 - 32; // heres is usually minus 8, but as
+                                                       // there will be never that many bytes to process
+                                                       // one u32 will be enough
     let mut chunks = 1;
     while k < 0 {
         k += 512;
@@ -258,10 +266,14 @@ fn get_full_w_pos(top_table: u32, i: u32) -> u32 {
 }
 
 pub fn sha256(num_bytes: u32) -> Script {
+    sha256_with_state(num_bytes, num_bytes, INITSTATE)
+}
+
+fn sha256_with_state(num_bytes: u32, total_num_bytes: u32, initial_state: [u32; 8]) -> Script {
     // up to 55 is one block and always supports add table
     // probably up to 68 bytes I can afford to load the add tables for the first chunk (but have I would have to unload it)
 
-    let (mut padding_scripts, chunks) = double_padding(num_bytes);
+    let (mut padding_scripts, chunks) = double_padding_with_length(num_bytes, total_num_bytes);
     let mut bytes_per_chunk: Vec<u32> = Vec::new();
     let mut bytes_remaining = num_bytes;
     while bytes_remaining > 0 {
@@ -343,7 +355,7 @@ pub fn sha256(num_bytes: u32) -> Script {
 
             if c == 0 {
                 //set initial variables a,b,c,d,e,f,g,h
-                for value in INITSTATE.iter() {
+                for value in initial_state.iter() {
                     { u4_number_to_nibble(*value) }
                 }
             } else {
@@ -424,7 +436,7 @@ pub fn sha256(num_bytes: u32) -> Script {
                 // and leave the result on the altstack
                 // first chunk is added with the init state
                 for i in (0..8).rev() {
-                    { u4_number_to_nibble( INITSTATE[i] ) }
+                    { u4_number_to_nibble(initial_state[i]) }
                     { u4_add(8, vec![0, 8], main_loop_offset_add + 8 - ((7-i) as u32 * 8), use_add_table ) }
                 }
             } else {
@@ -463,12 +475,30 @@ pub fn sha256(num_bytes: u32) -> Script {
     }
 }
 
+/// Continue SHA-256 from a caller-supplied midstate over a 16-byte suffix.
+///
+/// The midstate must be the chaining value after the fixed 64-byte prefix.
+/// This fragment does not authenticate that relationship.
+pub fn sha256_80bytes_from_midstate(midstate: [u32; 8]) -> Script {
+    sha256_with_state(16, 80, midstate)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::{execution::execute_script, script::script};
+    use crate::support::{
+        execution::{
+            execute_script, execute_script_with_inputs, execute_script_with_inputs_strict,
+        },
+        script::script,
+    };
     use bitcoin::hex::{DisplayHex, FromHex};
-    use sha2::{Digest, Sha256};
+    use sha2::{compress256, Digest, Sha256};
+
+    const MIDSTATE_42X64: [u32; 8] = [
+        0x8aab60bc, 0xcc769b35, 0x02b9786a, 0x434e707f, 0x943ce9ea, 0xd219ae8e, 0xdd54f002,
+        0xdc7dbb82,
+    ];
 
     #[test]
     fn test_sizes() {
@@ -555,6 +585,64 @@ mod tests {
         test_sha256(hex);
         let hex = "7788ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffaaaaaaaaaaaaaaaa001122334455667788";
         test_sha256(hex);
+    }
+
+    #[test]
+    fn test_sha256_80bytes_from_midstate() {
+        let prefix = [0x42u8; 64];
+        let suffix: Vec<u8> = (0..16).collect();
+        let mut midstate = INITSTATE;
+        compress256(&mut midstate, &[prefix.into()]);
+        assert_eq!(midstate, MIDSTATE_42X64);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = Sha256::digest(message).to_lower_hex_string();
+        let suffix_hex = suffix.to_lower_hex_string();
+        let script = script! {
+            { u4_hex_to_nibbles(&suffix_hex) }
+            { sha256_80bytes_from_midstate(MIDSTATE_42X64) }
+            { u4_hex_to_nibbles(&expected) }
+            for _ in 0..64 {
+                OP_TOALTSTACK
+            }
+            for i in 1..64 {
+                { i }
+                OP_ROLL
+            }
+            for _ in 0..64 {
+                OP_FROMALTSTACK
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        };
+        assert!(execute_script(script).success);
+    }
+
+    #[test]
+    fn test_sha256_80bytes_from_midstate_has_strict_stack_profile() {
+        let script = script! {
+            { sha256_80bytes_from_midstate(MIDSTATE_42X64) }
+            { u4_drop(64) }
+            OP_TRUE
+        };
+        let relaxed = execute_script_with_inputs(script.clone(), vec![Vec::new(); 32]);
+        assert!(relaxed.success);
+        assert_eq!(relaxed.stats.max_nb_stack_items, 969);
+        let strict = execute_script_with_inputs_strict(script, vec![Vec::new(); 32]);
+        assert!(strict.success);
+    }
+
+    #[test]
+    fn test_sha256_80bytes_from_midstate_rejects_extra_suffix() {
+        let script = script! {
+            { sha256_80bytes_from_midstate([0; 8]) }
+            { u4_drop(64) }
+            OP_DEPTH
+            OP_0
+            OP_EQUAL
+        };
+        let result = execute_script_with_inputs(script, vec![vec![1]; 34]);
+        assert!(!result.success);
     }
 
     #[test]
