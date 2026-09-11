@@ -11,7 +11,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/scriptnum-constant-mul.md",
       "implementation": "src/arithmetic/scriptint/mod.rs",
       "documentation": "src/arithmetic/scriptint/README.md",
@@ -160,6 +160,86 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u4_add_tables"
+          ]
+        },
+        {
+          "id": "half-lookup-setup",
+          "label": "Triangular half lookup table setup",
+          "parameters": {
+            "table_items": 16,
+            "addressing": "sorted triangular offsets"
+          },
+          "includes": "fragment-only: 16-item lookup-table setup; excludes pairwise queries, cleanup, and unrelated live state",
+          "script_bytes": 35,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 16,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 35,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_half_lookup_push"
+          ]
+        },
+        {
+          "id": "half-lookup-cleanup",
+          "label": "Triangular half lookup table cleanup",
+          "parameters": {
+            "table_items": 16,
+            "addressing": "matching destructive drop"
+          },
+          "includes": "fragment-only: cleanup of an existing 16-item triangular lookup table; excludes pairwise queries and unrelated live state",
+          "script_bytes": 8,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 16,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_half_lookup_drop"
+          ]
+        },
+        {
+          "id": "full-lookup-setup",
+          "label": "Linear full lookup table setup",
+          "parameters": {
+            "table_items": 17,
+            "addressing": "linear offsets"
+          },
+          "includes": "fragment-only: 17-item lookup-table setup; excludes pairwise queries, cleanup, and unrelated live state",
+          "script_bytes": 41,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 17,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 41,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_full_lookup_push"
+          ]
+        },
+        {
+          "id": "full-lookup-cleanup",
+          "label": "Linear full lookup table cleanup",
+          "parameters": {
+            "table_items": 17,
+            "addressing": "matching destructive drop"
+          },
+          "includes": "fragment-only: cleanup of an existing 17-item linear lookup table; excludes pairwise queries and unrelated live state",
+          "script_bytes": 9,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 17,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_full_lookup_drop"
           ]
         },
         {

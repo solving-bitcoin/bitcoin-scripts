@@ -246,3 +246,57 @@ pub fn u4_logic_nibs(
 pub fn u4_xor_u32(bases: Vec<u32>, offset: u32, do_xor_with_and: bool) -> Script {
     u4_logic_nibs(8, bases, offset, do_xor_with_and)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::support::execution::execute_script;
+
+    fn assert_table(values: &[u32], push: Script) {
+        let result = execute_script(script! {
+            { push }
+            for value in values {
+                { *value }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(result.success, "lookup table mismatch: {result}");
+    }
+
+    #[test]
+    fn lookup_tables_preserve_their_index_schedule() {
+        assert_table(
+            &[
+                16, 31, 45, 58, 70, 81, 91, 100, 108, 115, 121, 126, 130, 133, 135, 136,
+            ],
+            u4_push_half_lookup(),
+        );
+        assert_table(
+            &[
+                0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240, 256,
+            ],
+            u4_push_full_lookup(),
+        );
+    }
+
+    #[test]
+    fn lookup_cleanup_requires_the_matching_table_width() {
+        let result = execute_script(script! {
+            { u4_push_half_lookup() }
+            { u4_drop_full_lookup() }
+            OP_TRUE
+        });
+        assert!(!result.success, "full cleanup accepted a half table");
+
+        let result = execute_script(script! {
+            { u4_push_half_lookup() }
+            { u4_drop_half_lookup() }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "matching half-table cleanup failed: {result}"
+        );
+    }
+}
