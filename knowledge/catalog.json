@@ -1,8 +1,76 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-10",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/u32-compressed-add",
+      "name": "Compressed total-domain u32 addition",
+      "class": "arithmetic/word",
+      "summary": "Canonical two-item ScriptNum wire adapter for modulo-2^32 addition.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-10",
+      "knowledge_page": "knowledge/primitives/u32-compressed-add.md",
+      "implementation": "src/arithmetic/u32/add.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::add::test::test_compressed_add_boundaries_and_random_values",
+        "arithmetic::u32::add::test::test_compressed_add_rejects_noncanonical_inputs",
+        "primitive_metrics::u32_compressed_add_metrics_are_current",
+        "examples/u32_compressed_add_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "compact-wire",
+        "carry-arithmetic",
+        "canonical-encoding"
+      ],
+      "security": "No independent cryptographic claim. Both compressed words are hostile and must pass exact canonical-wire checks before expansion; complete protocol binding and deployment validation remain open.",
+      "stack_contract": "... word_b word_a -> ... compressed(word_a + word_b mod 2^32); both inputs are consumed and unrelated lower stack state is preserved.",
+      "configurations": [
+        {
+          "id": "representative-a5c319e7-plus-12345678",
+          "label": "Compressed addition versus four-byte baseline",
+          "parameters": {
+            "a": "0xa5c319e7",
+            "b": "0x12345678",
+            "modulus": "2^32",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 2
+          },
+          "includes": "fragment-with-memory: two canonical-wire checks, two u32 expansions, byte carry addition, and canonical recompression; excludes input pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 1016,
+          "witness_bytes": 11,
+          "witness_bytes_max": 13,
+          "max_stack_items": 11,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1016,
+          "metric_keys": [
+            "u32_compressed_add",
+            "u32_compressed_add_witness",
+            "u32_compressed_add_witness_max",
+            "u32_compressed_add_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Dominated by the four-byte baseline for locking-script bytes and combined local cost",
+        "Dynamic opcode count is unavailable from the local executor",
+        "Bitcoin Core, complete-transaction, relay-policy, and canonical witness-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",

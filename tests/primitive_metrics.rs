@@ -93,6 +93,86 @@ fn max_stack_items_strict(script: bitcoin_script::Script, witness: Vec<Vec<u8>>)
     result.stats.max_nb_stack_items
 }
 
+fn compressed_u32_witness(value: u32) -> Vec<u8> {
+    scriptnum(i64::from(value as i32))
+}
+
+fn byte_u32_witness(value: u32) -> [Vec<u8>; 4] {
+    [
+        scriptnum(i64::from(value >> 24)),
+        scriptnum(i64::from((value >> 16) & 0xff)),
+        scriptnum(i64::from((value >> 8) & 0xff)),
+        scriptnum(i64::from(value & 0xff)),
+    ]
+}
+
+fn u32_compressed_add_metrics() -> Vec<Metric> {
+    const A: u32 = 0xa5c3_19e7;
+    const B: u32 = 0x1234_5678;
+    let compressed = u32::add::u32_compressed_add();
+    let byte_baseline = u32::add::u32_add_drop(0, 1);
+    let compressed_witness = vec![compressed_u32_witness(B), compressed_u32_witness(A)];
+    let byte_witness = byte_u32_witness(B)
+        .into_iter()
+        .chain(byte_u32_witness(A))
+        .collect::<Vec<_>>();
+    let compressed_stack = max_stack_items_strict(
+        script! {
+            { compressed.clone() }
+            OP_DROP OP_TRUE
+        },
+        compressed_witness.clone(),
+    );
+    let byte_stack = max_stack_items_strict(
+        script! {
+            { byte_baseline.clone() }
+            { u32::stack::u32_drop() }
+            OP_TRUE
+        },
+        byte_witness.clone(),
+    );
+    vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_add",
+            value: script_len(compressed.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_add_witness",
+            value: witness_size(&compressed_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_add_witness_max",
+            value: witness_size(&[
+                compressed_u32_witness(u32::from(0x80u8) << 24),
+                compressed_u32_witness(u32::from(0x80u8) << 24),
+            ]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_add_stack",
+            value: compressed_stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_add_static_opcodes",
+            value: static_non_push_opcodes(compressed),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_add_drop_witness",
+            value: witness_size(&byte_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_add_drop_byte_stack",
+            value: byte_stack,
+        },
+    ]
+}
+
 fn prince_metrics() -> Vec<Metric> {
     let fragment = prince::prince_encrypt(0);
     let compiled = fragment.clone().compile_with_policy();
@@ -3987,6 +4067,7 @@ fn metrics() -> Vec<Metric> {
         },
     ]
     .into_iter()
+    .chain(u32_compressed_add_metrics())
     .chain(prince_metrics())
     .chain(winternitz_metrics())
     .chain(winternitz_sha256_metrics())
@@ -4035,6 +4116,11 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn u32_compressed_add_metrics_are_current() {
+    check_readme_metrics(u32_compressed_add_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

@@ -9,6 +9,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
+| Compressed total-domain u32 addition | two-item compressed wire | 1,016 | 11-byte representative witness; byte baseline is 78 bytes and 20-byte witness |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
 | Ed25519 ordinary-domain multiply | 51 biased centered radix-32 digits, 13 signed tables | <!-- metric:ed25519_field_mul -->9893<!-- /metric:ed25519_field_mul --> | 245-byte/51-item incremental hint; certified operands; 523-item strict peak |
@@ -33,6 +34,12 @@ but longer expressions remain modular unless their bound is proved below its
 513-bit composite modulus. Range checks and conversion remain outside a row
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
+
+The compressed u32 addition row is a deliberate witness-width tradeoff: it
+saves nine representative witness bytes and six entry items, but expands to
+the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
+adder. It is retained for witness-constrained composition, not as a general
+locking-byte winner.
 
 The 9,893-byte Ed25519 row is the current locking-script-size winner for this
 field. It keeps host values in the ordinary field domain but uses a unique
