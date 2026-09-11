@@ -355,13 +355,14 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-04",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/ed25519-field.md",
       "implementation": "src/fields/ed25519/u5_balanced_table.rs",
       "documentation": "src/fields/ed25519/README.md",
       "tests": [
         "fields::ed25519::u5_balanced_table::tests",
         "fields::ed25519::bigint9::tests",
+        "fields::ed25519::u5_packed_grouped::tests",
         "examples/ed25519_packed_grouped_decode_probe.rs",
         "tests/primitive_metrics.rs"
       ],
