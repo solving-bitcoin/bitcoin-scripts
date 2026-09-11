@@ -9,6 +9,7 @@ Measured fragments exclude input pushes and output comparison.
 | SHA-1 u32 | 32-byte input | 209,726 | differentially-validated | Collision-broken compatibility hash |
 | RIPEMD-160 u32 | 32-byte input | 244,063 | differentially-validated | 160-bit output |
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
+| SHA-256 u4 midstate | 64-byte prefix + 16-byte suffix | 332,830 | locally-reproduced | 32 nibble witness items; 969-item peak; caller binds the state |
 | SHA-256 u32 | 32-byte input | 512,428 | differentially-validated | Larger than local u4 variant |
 | SHAKE256 byte | 32-byte input, 1,024-byte output | 15,927,814 | locally-reproduced | Raw output exceeds 1,000 items |
 
@@ -17,6 +18,10 @@ without fixing message length and full semantics. The short direct-u4 row does
 use a 32-byte input, but its 64-item input representation differs from each
 other backend. For protocol selection, include
 representation conversion, digest comparison, and any state-compression role.
+The u4 midstate continuation is smaller than the corresponding u32 boundary
+but carries twice as many suffix witness items and a higher measured stack peak
+(969 versus 856); both require the caller to bind the supplied state to the
+fixed prefix.
 Its checked generator applies the pinned peephole optimizer to a fixed point;
 the row is `fragment-with-memory` because it owns full lookup-table setup and
 cleanup. The short-profile executor enforces the 1,000-item local limit, but it

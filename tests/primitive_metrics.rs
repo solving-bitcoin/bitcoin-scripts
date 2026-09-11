@@ -1332,6 +1332,26 @@ fn winternitz20_metrics() -> Vec<Metric> {
 }
 
 fn metrics() -> Vec<Metric> {
+    let sha2_u4_midstate = [
+        0x8aab60bc, 0xcc769b35, 0x02b9786a, 0x434e707f, 0x943ce9ea, 0xd219ae8e, 0xdd54f002,
+        0xdc7dbb82,
+    ];
+    let sha2_u4_midstate_script = sha256::sha2_u4::sha256_80bytes_from_midstate(sha2_u4_midstate);
+    let sha2_u4_midstate_witness = (0u8..16)
+        .flat_map(|byte| [byte >> 4, byte & 0x0f])
+        .map(|nibble| {
+            if nibble == 0 {
+                Vec::new()
+            } else {
+                vec![nibble]
+            }
+        })
+        .collect::<Vec<_>>();
+    let sha2_u4_midstate_boundary = script! {
+        { sha2_u4_midstate_script.clone() }
+        { u4::stack::u4_drop(64) }
+        OP_TRUE
+    };
     let blake3_message: [u8; 64] = std::array::from_fn(|index| index as u8);
     let blake3_expected = *::blake3::hash(&blake3_message).as_bytes();
     let blake3_push = blake3::blake3_push_message_script_with_limb(&blake3_message, 29);
@@ -3568,6 +3588,29 @@ fn metrics() -> Vec<Metric> {
             readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate",
+            value: script_len(sha2_u4_midstate_script),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_witness",
+            value: witness_size(&sha2_u4_midstate_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_stack",
+            value: max_stack_items(
+                sha2_u4_midstate_boundary.clone(),
+                sha2_u4_midstate_witness.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_opcodes",
+            value: static_non_push_opcodes(sha2_u4_midstate_boundary),
         },
         Metric {
             readme: "src/hashes/shake256/README.md",
