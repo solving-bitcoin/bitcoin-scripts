@@ -91,6 +91,25 @@ pub fn u4_hex_to_nibbles(hex_str: &str) -> Script {
     }
 }
 
+/// Pack `high | low` nibbles into one byte-valued ScriptNum.
+///
+/// With `check_inputs`, both inputs are constrained to `0..=15`. Without it,
+/// the caller must already have established that invariant.
+pub fn u4_pair_to_u8(check_inputs: bool) -> Script {
+    script! {
+        if check_inputs {
+            OP_DUP 0 16 OP_WITHIN OP_VERIFY
+            1 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+        }
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+    }
+}
+
 pub fn u4_repeat_number(n: u32, count: u32) -> Script {
     match count {
         0 => script! {},
@@ -200,5 +219,57 @@ mod tests {
             OP_TRUE
         };
         crate::support::execution::run(script);
+    }
+
+    #[test]
+    fn packs_all_checked_nibble_pairs() {
+        for byte in 0..=u8::MAX {
+            let result = crate::support::execution::execute_script(script! {
+                { (byte >> 4) as u32 }
+                { (byte & 0x0f) as u32 }
+                { u4_pair_to_u8(true) }
+                { byte as u32 } OP_EQUAL
+            });
+            assert!(result.success, "failed to pack byte {byte:#x}: {result}");
+        }
+    }
+
+    #[test]
+    fn checked_pair_rejects_malformed_nibbles_and_preserves_state() {
+        for (high, low) in [(-1, 0), (0, 16), (16, 0), (0, -1)] {
+            let result = crate::support::execution::execute_script(script! {
+                { high }
+                { low }
+                { u4_pair_to_u8(true) }
+                OP_TRUE
+            });
+            assert!(!result.success, "accepted malformed pair {high}, {low}");
+        }
+
+        let result = crate::support::execution::execute_script(script! {
+            OP_9
+            0xa
+            0xb
+            { u4_pair_to_u8(true) }
+            171 OP_EQUALVERIFY
+            9 OP_EQUAL
+        });
+        assert!(
+            result.success,
+            "pair packing changed preserved state: {result}"
+        );
+    }
+
+    #[test]
+    fn unchecked_pair_requires_the_caller_invariant() {
+        let result = crate::support::execution::execute_script(script! {
+            0 -1
+            { u4_pair_to_u8(false) }
+            -1 OP_EQUAL
+        });
+        assert!(
+            result.success,
+            "unchecked pair did not preserve hostile item: {result}"
+        );
     }
 }
