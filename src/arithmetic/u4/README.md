@@ -12,6 +12,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=3` bit counts unless their function documents otherwise.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` takes
   an explicit batch size in `1..=234` and has no default for input checking.
+- `bits::u4_nibbles_to_byte(check_inputs)` packs one high/low nibble pair into
+  a byte and can enforce both `0..=15` ranges.
 
 ## Script metrics
 
@@ -30,6 +32,8 @@ each input with the same output-restoration boundary.
 | Checked table batch, 32 nibbles | <!-- metric:u4_bits_checked_batch32 -->924<!-- /metric:u4_bits_checked_batch32 --> bytes | <!-- metric:u4_bits_checked_batch32_stack -->189<!-- /metric:u4_bits_checked_batch32_stack --> items | <!-- metric:u4_bits_checked_batch32_opcodes -->735<!-- /metric:u4_bits_checked_batch32_opcodes --> |
 | Unchecked table batch, 32 nibbles | <!-- metric:u4_bits_unchecked_batch32 -->764<!-- /metric:u4_bits_unchecked_batch32 --> bytes | 189 items | not recorded |
 | Existing branch splitter, 32 four-bit limbs | <!-- metric:u4_bits_branch_batch32 -->1374<!-- /metric:u4_bits_branch_batch32 --> bytes | <!-- metric:u4_bits_branch_batch32_stack -->130<!-- /metric:u4_bits_branch_batch32_stack --> items | not recorded |
+| Checked high/low nibble pair to byte | <!-- metric:u4_nibbles_to_byte_checked -->20<!-- /metric:u4_nibbles_to_byte_checked --> bytes | <!-- metric:u4_nibbles_to_byte_checked_stack -->5<!-- /metric:u4_nibbles_to_byte_checked_stack --> items | <!-- metric:u4_nibbles_to_byte_checked_opcodes -->16<!-- /metric:u4_nibbles_to_byte_checked_opcodes --> |
+| Unchecked high/low nibble pair to byte | <!-- metric:u4_nibbles_to_byte_unchecked -->10<!-- /metric:u4_nibbles_to_byte_unchecked --> bytes | <!-- metric:u4_nibbles_to_byte_unchecked_stack -->2<!-- /metric:u4_nibbles_to_byte_unchecked_stack --> items | <!-- metric:u4_nibbles_to_byte_unchecked_opcodes -->10<!-- /metric:u4_nibbles_to_byte_unchecked_opcodes --> |
 
 The staggered table has 61 setup items and costs 31 bytes to remove. A checked
 query costs 22 bytes and restoring its four bits costs another four, so the
@@ -81,6 +85,12 @@ main stack and all new bits above any pre-existing altstack state.
 The standalone batch peak is `4*n + 61` combined main/alt-stack items. The
 generator rejects `n > 234`, but callers must reduce the batch further for any
 unrelated live state.
+
+For `u4_nibbles_to_byte(check_inputs)`, input is
+`preserved | high | low`, with the low nibble on top; it returns
+`high * 16 + low`. Checked mode rejects negative and 16-valued inputs before
+packing. The representative checked and unchecked forms peak at five and two
+items respectively and use 16 and 10 static non-push opcodes.
 
 ## Operational notes
 

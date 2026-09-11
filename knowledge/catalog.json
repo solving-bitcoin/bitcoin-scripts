@@ -163,6 +163,52 @@
           ]
         },
         {
+          "id": "nibble-pair-to-byte-checked",
+          "label": "Checked high/low nibble pair to byte",
+          "parameters": {
+            "check_inputs": true,
+            "input_items": 2,
+            "output_items": 1
+          },
+          "includes": "fragment-only: range checks for both nibbles and high-nibble multiplication by 16; excludes input pushes and output check",
+          "script_bytes": 20,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 5,
+          "executed_opcodes": 16,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 20,
+          "metric_keys": [
+            "u4_nibbles_to_byte_checked",
+            "u4_nibbles_to_byte_checked_stack",
+            "u4_nibbles_to_byte_checked_opcodes"
+          ]
+        },
+        {
+          "id": "nibble-pair-to-byte-unchecked",
+          "label": "Unchecked high/low nibble pair to byte",
+          "parameters": {
+            "check_inputs": false,
+            "input_items": 2,
+            "output_items": 1
+          },
+          "includes": "fragment-only: nibble multiplication and addition; excludes input pushes, range validation, and output check",
+          "script_bytes": 10,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 2,
+          "executed_opcodes": 10,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 10,
+          "metric_keys": [
+            "u4_nibbles_to_byte_unchecked",
+            "u4_nibbles_to_byte_unchecked_stack",
+            "u4_nibbles_to_byte_unchecked_opcodes"
+          ]
+        },
+        {
           "id": "nibble-to-bits-batch32-checked",
           "label": "Checked 32-nibble staggered-table decomposition",
           "parameters": {

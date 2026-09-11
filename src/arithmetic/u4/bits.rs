@@ -7,6 +7,7 @@
 
 use super::stack::u4_drop;
 use crate::support::script::*;
+use crate::support::script_ops::OP_16MUL;
 
 /// Persistent items used by the staggered nibble-to-bits table.
 pub const U4_BITS_TABLE_ITEMS: u32 = 61;
@@ -120,6 +121,25 @@ pub fn u4_nibbles_to_be_bits(nibble_count: u32, check_inputs: bool) -> Script {
     }
 }
 
+/// Pack two nibbles into one byte, with the high nibble below the low nibble.
+///
+/// Before: `preserved | high | low`.
+/// After: `preserved | (high * 16 + low)`.
+/// When `check_inputs` is true, both nibbles must be in `0..=15`.
+pub fn u4_nibbles_to_byte(check_inputs: bool) -> Script {
+    script! {
+        if check_inputs {
+            OP_DUP OP_0 OP_16 OP_WITHIN OP_VERIFY
+            OP_SWAP
+            OP_DUP OP_0 OP_16 OP_WITHIN OP_VERIFY
+            OP_SWAP
+        }
+        OP_SWAP
+        { OP_16MUL() }
+        OP_ADD
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -164,6 +184,37 @@ mod tests {
                 OP_TRUE
             });
             assert!(!result.success, "accepted invalid nibble {invalid}");
+        }
+    }
+
+    #[test]
+    fn exhaustive_nibble_pairs_pack_to_bytes() {
+        for high in 0..16 {
+            for low in 0..16 {
+                for check_inputs in [true, false] {
+                    let result = execute_script(script! {
+                        { high }
+                        { low }
+                        { u4_nibbles_to_byte(check_inputs) }
+                        { high * 16 + low }
+                        OP_EQUAL
+                    });
+                    assert!(result.success, "pair {high:x}{low:x} failed: {result}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn checked_nibble_pair_rejects_malformed_inputs() {
+        for (high, low) in [(-1, 0), (16, 0), (0, -1), (0, 16)] {
+            let result = execute_script(script! {
+                { high }
+                { low }
+                { u4_nibbles_to_byte(true) }
+                OP_TRUE
+            });
+            assert!(!result.success, "accepted malformed pair {high}, {low}");
         }
     }
 
