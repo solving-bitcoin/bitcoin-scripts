@@ -1801,6 +1801,10 @@ fn metrics() -> Vec<Metric> {
     let hors_preimages = (0u8..32).map(|i| vec![i; 32]).collect::<Vec<_>>();
     let hors_public_keys = hors::hors_public_keys(&hors_preimages);
     let hors_witness = hors::hors_unlocking_witness(&hors_preimages, &(0..8).collect::<Vec<_>>());
+    let hors_boundary_preimages = (0u8..=128).map(|i| vec![i; 32]).collect::<Vec<_>>();
+    let hors_boundary_public_keys = hors::hors_public_keys(&hors_boundary_preimages);
+    let hors_boundary_witness_127 = hors::hors_unlocking_witness(&hors_boundary_preimages, &[127]);
+    let hors_boundary_witness_128 = hors::hors_unlocking_witness(&hors_boundary_preimages, &[128]);
     let schnorr_context = bitcoin::secp256k1::Secp256k1::new();
     let schnorr_secret = bitcoin::secp256k1::SecretKey::from_slice(&[3u8; 32]).unwrap();
     let schnorr_keypair =
@@ -3764,6 +3768,21 @@ fn metrics() -> Vec<Metric> {
             readme: "src/signatures/hors/README.md",
             key: "hors_witness_n32_t8",
             value: witness_size(&hors_witness),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_lock_n129_t1_boundary",
+            value: script_len(hors::hors_locking_script(&hors_boundary_public_keys, 1)),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index127",
+            value: witness_size(&hors_boundary_witness_127),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index128",
+            value: witness_size(&hors_boundary_witness_128),
         },
         Metric {
             readme: "src/signatures/pointlocks/README.md",

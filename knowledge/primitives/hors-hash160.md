@@ -8,7 +8,9 @@ explicit witness indices.
 - **Evidence:** locally reproduced with boundary, ordering, and malformed
   witnesses.
 - **Representative result:** `n=32,t=8` uses 809 script bytes and a 280-byte
-  witness with 32-byte preimages.
+  witness with 32-byte preimages. At the canonical ScriptNum boundary, an
+  `n=129,t=1` witness grows from 36 bytes at index 127 to 37 bytes at index
+  128 because the latter needs the positive sign-padding byte.
 - **Security:** strictly one-time; concrete forgery probability depends on
   parameters, index derivation, disclosures, and HASH160.
 - **Research need:** specify and test a complete message-to-subset transform
