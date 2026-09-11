@@ -37,6 +37,10 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `byte_reorder(0)` | <!-- metric:u32_byte_reorder_0 -->3<!-- /metric:u32_byte_reorder_0 --> bytes | <!-- metric:u32_byte_reorder_witness_0 -->9<!-- /metric:u32_byte_reorder_witness_0 --> bytes, 4 data items | <!-- metric:u32_byte_reorder_stack_0 -->4<!-- /metric:u32_byte_reorder_stack_0 --> items |
+| `byte_reorder(1)` | <!-- metric:u32_byte_reorder_1 -->2<!-- /metric:u32_byte_reorder_1 --> bytes | <!-- metric:u32_byte_reorder_witness_1 -->9<!-- /metric:u32_byte_reorder_witness_1 --> bytes, 4 data items | <!-- metric:u32_byte_reorder_stack_1 -->4<!-- /metric:u32_byte_reorder_stack_1 --> items |
+| `byte_reorder(2)` | <!-- metric:u32_byte_reorder_2 -->4<!-- /metric:u32_byte_reorder_2 --> bytes | <!-- metric:u32_byte_reorder_witness_2 -->9<!-- /metric:u32_byte_reorder_witness_2 --> bytes, 4 data items | <!-- metric:u32_byte_reorder_stack_2 -->4<!-- /metric:u32_byte_reorder_stack_2 --> items |
+| `byte_reorder(3)` | <!-- metric:u32_byte_reorder_3 -->3<!-- /metric:u32_byte_reorder_3 --> bytes | <!-- metric:u32_byte_reorder_witness_3 -->9<!-- /metric:u32_byte_reorder_witness_3 --> bytes, 4 data items | <!-- metric:u32_byte_reorder_stack_3 -->4<!-- /metric:u32_byte_reorder_stack_3 --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 

@@ -263,6 +263,82 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "byte-reorder-0",
+          "label": "byte_reorder(0)",
+          "parameters": { "offset": 0, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: byte permutation; excludes input pushes and output checks",
+          "script_bytes": 3,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3,
+          "metric_keys": [
+            "u32_byte_reorder_0",
+            "u32_byte_reorder_witness_0",
+            "u32_byte_reorder_stack_0"
+          ]
+        },
+        {
+          "id": "byte-reorder-1",
+          "label": "byte_reorder(1)",
+          "parameters": { "offset": 1, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: byte permutation; excludes input pushes and output checks",
+          "script_bytes": 2,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2,
+          "metric_keys": [
+            "u32_byte_reorder_1",
+            "u32_byte_reorder_witness_1",
+            "u32_byte_reorder_stack_1"
+          ]
+        },
+        {
+          "id": "byte-reorder-2",
+          "label": "byte_reorder(2)",
+          "parameters": { "offset": 2, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: byte permutation; excludes input pushes and output checks",
+          "script_bytes": 4,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4,
+          "metric_keys": [
+            "u32_byte_reorder_2",
+            "u32_byte_reorder_witness_2",
+            "u32_byte_reorder_stack_2"
+          ]
+        },
+        {
+          "id": "byte-reorder-3",
+          "label": "byte_reorder(3)",
+          "parameters": { "offset": 3, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: byte permutation; excludes input pushes and output checks",
+          "script_bytes": 3,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3,
+          "metric_keys": [
+            "u32_byte_reorder_3",
+            "u32_byte_reorder_witness_3",
+            "u32_byte_reorder_stack_3"
+          ]
         }
       ],
       "limitations": [
