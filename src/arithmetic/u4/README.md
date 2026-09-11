@@ -30,6 +30,7 @@ each input with the same output-restoration boundary.
 | Checked table batch, 32 nibbles | <!-- metric:u4_bits_checked_batch32 -->924<!-- /metric:u4_bits_checked_batch32 --> bytes | <!-- metric:u4_bits_checked_batch32_stack -->189<!-- /metric:u4_bits_checked_batch32_stack --> items | <!-- metric:u4_bits_checked_batch32_opcodes -->735<!-- /metric:u4_bits_checked_batch32_opcodes --> |
 | Unchecked table batch, 32 nibbles | <!-- metric:u4_bits_unchecked_batch32 -->764<!-- /metric:u4_bits_unchecked_batch32 --> bytes | 189 items | not recorded |
 | Existing branch splitter, 32 four-bit limbs | <!-- metric:u4_bits_branch_batch32 -->1374<!-- /metric:u4_bits_branch_batch32 --> bytes | <!-- metric:u4_bits_branch_batch32_stack -->130<!-- /metric:u4_bits_branch_batch32_stack --> items | not recorded |
+| `pack_bytes(32)` | <!-- metric:u4_pack_bytes_32 -->1003<!-- /metric:u4_pack_bytes_32 --> bytes | <!-- metric:u4_pack_bytes_32_stack -->67<!-- /metric:u4_pack_bytes_32_stack --> items | <!-- metric:u4_pack_bytes_32_opcodes -->766<!-- /metric:u4_pack_bytes_32_opcodes --> |
 
 The staggered table has 61 setup items and costs 31 bytes to remove. A checked
 query costs 22 bytes and restoring its four bits costs another four, so the
@@ -48,6 +49,9 @@ before using a value as an `OP_PICK` index. `check_inputs=false` must be used
 only when a surrounding fragment already established that range: an invalid
 index can otherwise address below the table. The numeric range check does not
 by itself prove a byte-unique ScriptNum encoding.
+
+`pack::pack_bytes(n)` range-checks and packs `2*n` nibbles into `n` numeric
+ScriptNum values. Its 32-byte representative witness is <!-- metric:u4_pack_bytes_32_witness -->65<!-- /metric:u4_pack_bytes_32_witness --> bytes across 64 data items and uses no hints. Outputs at or above 128 are numeric ScriptNum values, not raw one-byte stack elements.
 
 ## Script compatibility and standardness
 

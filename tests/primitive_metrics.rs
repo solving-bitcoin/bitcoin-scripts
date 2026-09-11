@@ -4037,6 +4037,41 @@ fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
 }
 
+#[test]
+fn u4_pack_metrics_are_current() {
+    let fragment = u4::pack::pack_bytes(32);
+    let witness = vec![Vec::new(); 64];
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_pack_bytes_32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_pack_bytes_32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_pack_bytes_32_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { fragment.clone() }
+                    for _ in 0..32 { OP_DROP }
+                    OP_1
+                },
+                witness,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_pack_bytes_32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture exercises only the two small packed decoders. It
 /// stays runnable without enabling the ignored repository-wide metric suite.
 #[test]
