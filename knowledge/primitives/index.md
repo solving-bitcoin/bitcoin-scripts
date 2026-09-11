@@ -36,6 +36,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [BLAKE3 sparse direct-u4 short inputs](blake3-short-u4.md)
 - [BLAKE3 Ed25519-style challenge transcripts](blake3-ed25519-challenge.md)
 - [SHAKE256 over byte lanes](shake256-byte.md)
+- [SHAKE256 byte-lane output prefixes](shake256-prefix.md)
 - [AES-128 over u4 digits](aes128-u4.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)
 

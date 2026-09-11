@@ -1,15 +1,15 @@
 # SHAKE256
 
 This module implements the FIPS 202 SHAKE256 extendable-output function in
-Bitcoin Script. `shake256(num_bytes)` consumes a fixed-length byte-oriented
-message and produces exactly 1024 byte-valued stack items, with the first
-output byte on top.
+Bitcoin Script. `shake256(num_bytes)` preserves the original 1,024-byte output;
+`shake256_prefix(num_bytes, output_len)` produces a fixed-length prefix without
+materializing the unused suffix.
 
 ## Parameters
 
 - Message length: 0 through 511 bytes, fixed when the script is generated; no
   default.
-- Output length: 1024 bytes, fixed; there is no output-length parameter.
+- Output length: `1..=1024` bytes, fixed at script generation time.
 - Input: one stack item per byte, first message byte on top.
 - Output: 1024 byte-valued stack items, first SHAKE byte on top.
 - Sponge rate: 136 bytes; capacity: 512 bits.
@@ -32,12 +32,14 @@ predicate after the measured peak so execution can finish successfully.
 | Configuration | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | 32-byte input, 1024-byte output | <!-- metric:shake256_32_1024 -->15927814<!-- /metric:shake256_32_1024 --> bytes | <!-- metric:shake256_witness_32 -->65<!-- /metric:shake256_witness_32 --> bytes | <!-- metric:shake256_stack_32_1024 -->1709<!-- /metric:shake256_stack_32_1024 --> |
+| 32-byte input, 32-byte prefix | <!-- metric:shake256_prefix_32_32 -->2000127<!-- /metric:shake256_prefix_32_32 --> bytes | <!-- metric:shake256_prefix_witness_32 -->65<!-- /metric:shake256_prefix_witness_32 --> bytes | <!-- metric:shake256_prefix_stack_32_32 -->813<!-- /metric:shake256_prefix_stack_32_32 --> |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
-The large script reflects eight Keccak-f[1600] permutations for the fixed
-output length, in addition to message absorption.
+The full-output script reflects eight Keccak-f[1600] permutations for the
+fixed output length, in addition to message absorption. A prefix uses only the
+permutations needed to cover its requested output blocks.
 
 ## Security
 
@@ -49,13 +51,11 @@ terminal output predicate required by their protocol.
 
 ## Script compatibility and standardness
 
-The raw output contains 1024 stack items, exceeding Bitcoin's consensus limit
-of 1,000 combined main- and alt-stack items. Consequently the standalone
-primitive must be evaluated with
-`support::execution::execute_script_without_stack_limit`. A
-different, specialized construction would have to consume squeeze blocks
-incrementally. This function is not directly usable as a consensus-valid
-tapscript in its raw-output form.
+The raw 1,024-byte output contains 1,024 stack items and exceeds Bitcoin's
+consensus limit of 1,000 combined main- and alt-stack items. The prefix form
+avoids this failure for small outputs; the representative 32-byte prefix is
+strictly executed below the limit. Larger prefixes still require a measured
+stack check after accounting for the live state and lookup table.
 
 The implementation does not rely on disabled opcodes or transaction context,
 but the output shape makes the standalone primitive non-standard and
@@ -76,20 +76,19 @@ non-byte witness values before using them in lookup-table operations.
 ## Stack contract
 
 `shake256(num_bytes)` consumes exactly `num_bytes` main-stack items and leaves
-exactly 1024 output items with byte zero on top. Its lookup table and 200-byte
-Keccak state are removed. The primitive uses the altstack while reversing the
-message and accumulating squeeze blocks, and restores it to its starting depth
-before returning the result.
+1,024 output items with byte zero on top. `shake256_prefix(num_bytes,
+output_len)` leaves exactly `output_len` items. Both variants remove their
+lookup table and 200-byte Keccak state and restore the altstack to its starting
+depth.
 
 The fragment does not append an output comparison, clean-stack check, or final
 truthy predicate.
 
 ## Operational notes
 
-Tests differentially validate all 1024 output bytes for empty input, `abc`, and
-an exact 136-byte rate block against an independent u64 sponge implementation.
-Unit tests also cover every Keccak rotation offset, lane logic, and the
-unsupported-length boundary. These executions use `bitcoin-scriptexec` in a
-tapscript context with stack-limit enforcement disabled, so the execution
-class is `research-unlimited`; the raw construction's deployment class is
-`consensus-incompatible`.
+Tests differentially validate all 1,024 output bytes for empty input, `abc`,
+and an exact 136-byte rate block, plus prefix lengths crossing the 136-byte
+rate boundary. A 32-byte prefix also passes the strict combined-stack check.
+These executions use `bitcoin-scriptexec` in a tapscript context; the full
+output remains `research-unlimited` and `consensus-incompatible`, while the
+small prefix has `unclassified` deployment evidence pending Core validation.

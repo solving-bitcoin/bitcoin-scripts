@@ -64,10 +64,21 @@ const ROUND_CONSTANTS: [u64; 24] = [
 /// consensus-compatible construction would need a specialized variant that
 /// consumes squeeze blocks incrementally.
 pub fn shake256(num_bytes: usize) -> Script {
+    shake256_prefix(num_bytes, OUTPUT_LEN)
+}
+
+/// Hashes `num_bytes` byte-valued stack items with SHAKE256 and returns a
+/// fixed-length prefix of the XOF output.
+///
+/// `output_len` must be in `1..=OUTPUT_LEN`. Short prefixes avoid materializing
+/// the full 1,024-byte output and can fit the combined stack limit for small
+/// output lengths. The first output byte is left on top of the stack.
+pub fn shake256_prefix(num_bytes: usize, output_len: usize) -> Script {
     assert!(
         num_bytes < 512,
         "This SHAKE256 implementation supports messages shorter than 512 bytes"
     );
+    assert!((1..=OUTPUT_LEN).contains(&output_len));
 
     let block_count = num_bytes / RATE_BYTES + 1;
 
@@ -86,7 +97,7 @@ pub fn shake256(num_bytes: usize) -> Script {
             { keccak_f1600() }
         }
 
-        { squeeze_1024() }
+        { squeeze(output_len) }
     }
 }
 
@@ -411,21 +422,21 @@ fn chi() -> Script {
     }
 }
 
-fn squeeze_1024() -> Script {
+fn squeeze(output_len: usize) -> Script {
     script! {
-        for block in 0..OUTPUT_LEN.div_ceil(RATE_BYTES) {
+        for block in 0..output_len.div_ceil(RATE_BYTES) {
             // Copy in reverse so the first byte of this chunk is on top.
-            for _ in 0..(OUTPUT_LEN - block * RATE_BYTES).min(RATE_BYTES) {
-                { (OUTPUT_LEN - block * RATE_BYTES).min(RATE_BYTES) - 1 }
+            for _ in 0..(output_len - block * RATE_BYTES).min(RATE_BYTES) {
+                { (output_len - block * RATE_BYTES).min(RATE_BYTES) - 1 }
                 OP_PICK
             }
-            for _ in 0..(OUTPUT_LEN - block * RATE_BYTES).min(RATE_BYTES) {
+            for _ in 0..(output_len - block * RATE_BYTES).min(RATE_BYTES) {
                 OP_TOALTSTACK
             }
 
             if block * RATE_BYTES
-                + (OUTPUT_LEN - block * RATE_BYTES).min(RATE_BYTES)
-                < OUTPUT_LEN
+                + (output_len - block * RATE_BYTES).min(RATE_BYTES)
+                < output_len
             {
                 { keccak_f1600() }
             }
@@ -436,7 +447,7 @@ fn squeeze_1024() -> Script {
         }
         { u8_drop_xor_table() }
 
-        for _ in 0..OUTPUT_LEN {
+        for _ in 0..output_len {
             OP_FROMALTSTACK
         }
     }
@@ -447,7 +458,9 @@ mod tests {
     use super::*;
     use crate::{
         arithmetic::u32::xor::u8_push_xor_table,
-        support::execution::execute_script_without_stack_limit,
+        support::execution::{
+            execute_script_with_inputs_strict, execute_script_without_stack_limit,
+        },
     };
 
     fn push_message(message: &[u8]) -> Script {
@@ -602,5 +615,51 @@ mod tests {
     #[test]
     fn rejects_unsupported_message_length() {
         assert!(std::panic::catch_unwind(|| shake256(512)).is_err());
+    }
+
+    #[test]
+    fn hashes_prefixes_to_the_standard_output() {
+        let message = b"prefix fixture";
+        let expected = reference_shake256(message);
+        for output_len in [1, 32, 135, 136, 137, 256] {
+            let result = execute_script_without_stack_limit(script! {
+                { push_message(message) }
+                { shake256_prefix(message.len(), output_len) }
+            });
+            assert!(
+                result.error.is_none(),
+                "output length {output_len}: {result}"
+            );
+            assert_eq!(result.final_stack.len(), output_len);
+            for (index, expected_byte) in expected[..output_len].iter().enumerate() {
+                assert_eq!(
+                    result.final_stack.get(output_len - 1 - index),
+                    scriptnum_byte(*expected_byte),
+                    "output byte {index} at length {output_len}",
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn small_prefix_stays_below_the_stack_limit() {
+        let message = b"strict prefix";
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { push_message(message) }
+                { shake256_prefix(message.len(), 32) }
+                for _ in 0..32 { OP_DROP }
+                OP_TRUE
+            },
+            vec![],
+        );
+        assert!(result.success, "{result}");
+        assert!(result.stats.max_nb_stack_items <= 1_000);
+    }
+
+    #[test]
+    fn rejects_invalid_prefix_lengths() {
+        assert!(std::panic::catch_unwind(|| shake256_prefix(0, 0)).is_err());
+        assert!(std::panic::catch_unwind(|| shake256_prefix(0, OUTPUT_LEN + 1)).is_err());
     }
 }
