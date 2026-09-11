@@ -20,6 +20,9 @@ they do not use BN254 or any other field modulus.
   table. With exactly two working words, the usual value is `3`.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
+- `byte_planes::u32_words_to_byte_planes(word_count, check_inputs)` transposes
+  contiguous MSB-first words into byte-major planes. Checked batches are
+  limited to 249 words by the combined stack bound.
 
 ## Script metrics
 
@@ -40,16 +43,31 @@ as less-than-or-equal.
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 
+The checked byte-plane adapter has a separate combined-stack metric boundary:
+
+| Fragment | Locking script | Serialized witness | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: |
+| 8-word checked byte-plane transpose | <!-- metric:u32_byte_planes_words8 -->413<!-- /metric:u32_byte_planes_words8 --> bytes | <!-- metric:u32_byte_planes_words8_witness -->97<!-- /metric:u32_byte_planes_words8_witness --> bytes, 32 data items, 0 hints | <!-- metric:u32_byte_planes_words8_stack -->36<!-- /metric:u32_byte_planes_words8_stack --> items | <!-- metric:u32_byte_planes_words8_opcodes -->254<!-- /metric:u32_byte_planes_words8_opcodes --> |
+
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
 operation-specific hint is needed. The logic table can be shared by any number
 of XOR, AND, and OR operations in one script.
+
+The byte-plane row includes four byte data items per word, a 32-item witness,
+and zero incremental hint items. The transpose is a stack permutation, not a
+cryptographic operation; its checked form enforces each byte's `0..=255` range.
+The 249-word ceiling is a static standalone bound (`4*n + 4` combined items);
+large permutations are quadratic in generated `OP_ROLL` count and should be
+measured at the consumer's actual batch size.
 
 ## Security
 
 There is no independent cryptographic security parameter. Arithmetic is exact
 only for byte limbs in `0..=255`; callers accepting adversarial witness values
 must enforce limb range and canonical Script-number encoding where required.
+The unchecked byte-plane form deliberately preserves hostile Script items and
+is safe only after the caller has established the byte invariant.
 
 ## Script compatibility and standardness
 

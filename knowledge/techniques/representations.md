@@ -15,6 +15,13 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
+The checked u32 byte-plane adapter is a fixed-width stack-scheduling boundary:
+it transposes word-major MSB-first bytes into byte-major planes, preserves
+unrelated state, and costs 413 bytes for eight words with a 36-item combined
+peak and zero incremental hints. Its generated permutation is quadratic in
+batch width, so consumers should price the actual batch rather than the 249-
+word static ceiling.
+
 For terminal one-time authentication, the host may instead encode an unchanged
 message as a fixed-sum vector. The
 [20-byte Winternitz construction](../primitives/winternitz-constant-sum20.md)
