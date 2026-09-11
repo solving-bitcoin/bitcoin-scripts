@@ -16,6 +16,8 @@ or `OP_MUL` opcodes.
 - `hinted_div_rem` returns quotient and remainder.
 - `hinted_div` returns only the quotient.
 - `hinted_rem` returns only the remainder.
+- `verify_canonical` preserves one minimally encoded at-most-four-byte
+  ScriptNum and rejects aliases, negative zero, and oversized items.
 - `dividend` and `quotient_hint` are minimally encoded, at-most-four-byte
   Script integers supplied on the stack. Their product and every intermediate
   arithmetic value must also fit the four-byte Script-number domain.
@@ -31,6 +33,7 @@ witness encoding. Maximum stack items count the combined main and alt stacks.
 | `hinted_div_rem(8)` | <!-- metric:scriptint_div_rem_8 -->13<!-- /metric:scriptint_div_rem_8 --> bytes | <!-- metric:scriptint_div_witness_min -->3<!-- /metric:scriptint_div_witness_min -->–<!-- metric:scriptint_div_witness_max -->11<!-- /metric:scriptint_div_witness_max --> bytes | <!-- metric:scriptint_div_rem_stack -->5<!-- /metric:scriptint_div_rem_stack --> |
 | `hinted_div(8)` | <!-- metric:scriptint_div_8 -->14<!-- /metric:scriptint_div_8 --> bytes | same | same or lower |
 | `hinted_rem(8)` | <!-- metric:scriptint_rem_8 -->14<!-- /metric:scriptint_rem_8 --> bytes | same | same or lower |
+| `verify_canonical()` | <!-- metric:scriptint_verify_canonical -->5<!-- /metric:scriptint_verify_canonical --> bytes | <!-- metric:scriptint_verify_canonical_witness -->6<!-- /metric:scriptint_verify_canonical_witness --> bytes (one 4-byte item) | <!-- metric:scriptint_verify_canonical_stack -->4<!-- /metric:scriptint_verify_canonical_stack --> |
 
 ## Security
 

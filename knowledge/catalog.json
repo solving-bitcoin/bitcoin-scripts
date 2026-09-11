@@ -60,6 +60,61 @@
       ]
     },
     {
+      "id": "arithmetic/scriptnum-canonical",
+      "name": "Canonical ScriptNum boundary",
+      "class": "arithmetic/scriptnum",
+      "summary": "Raw-byte canonicality check for one minimally encoded at-most-four-byte ScriptNum.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/scriptnum-canonical.md",
+      "implementation": "src/arithmetic/scriptint/mod.rs",
+      "documentation": "src/arithmetic/scriptint/README.md",
+      "tests": [
+        "arithmetic::scriptint::tests::verifies_canonical_scriptnum_encoding",
+        "arithmetic::scriptint::tests::rejects_scriptnum_aliases_and_oversized_items"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "scriptnum-canonicality"
+      ],
+      "security": "Rejects raw aliases but does not impose a protocol-specific numeric range or terminal predicate.",
+      "stack_contract": "... item -> ... item, preserving the minimally encoded at-most-four-byte ScriptNum.",
+      "configurations": [
+        {
+          "id": "verify-canonical",
+          "label": "scriptint::verify_canonical()",
+          "parameters": {
+            "maximum_item_bytes": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: raw size bound and reserialization equality check; representative witness is one canonical four-byte ScriptNum; excludes numeric range checks, terminal predicate, and transaction context",
+          "script_bytes": 5,
+          "witness_bytes": 6,
+          "witness_bytes_max": 6,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 5,
+          "metric_keys": [
+            "scriptint_verify_canonical",
+            "scriptint_verify_canonical_witness",
+            "scriptint_verify_canonical_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Four-byte ScriptNum range",
+        "Not validated against Bitcoin Core"
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/scriptnum-hinted-div",
       "name": "Hinted ScriptNum division",
       "class": "arithmetic/scriptnum",
