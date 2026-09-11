@@ -263,6 +263,28 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "checked-high-bit-extraction",
+          "label": "Checked u8 high-bit extraction",
+          "parameters": {
+            "hbit": 4,
+            "input_range": "0..=255"
+          },
+          "includes": "fragment-only: byte range check and high-bit extraction; excludes input push and output check",
+          "script_bytes": 73,
+          "witness_bytes": 4,
+          "witness_bytes_max": 4,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 73,
+          "metric_keys": [
+            "u8_extract_hbit_checked",
+            "u8_extract_hbit_checked_witness",
+            "u8_extract_hbit_checked_stack"
+          ]
         }
       ],
       "limitations": [
