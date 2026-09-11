@@ -201,4 +201,64 @@ mod tests {
         };
         crate::support::execution::run(script);
     }
+
+    #[test]
+    fn word_routing_distinguishes_copy_from_move() {
+        let copy = crate::support::execution::execute_script(script! {
+            for value in 0..8 {
+                { value }
+            }
+            for value in 100..108 {
+                { value }
+            }
+            { u4_copy_u32_from(8) }
+            for value in (0..8).rev() {
+                { value }
+                OP_EQUALVERIFY
+            }
+            for _ in 0..8 {
+                OP_DROP
+            }
+            for value in (0..8).rev() {
+                { value }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(copy.success, "copy routing failed: {copy}");
+
+        let move_result = crate::support::execution::execute_script(script! {
+            for value in 0..8 {
+                { value }
+            }
+            for value in 100..108 {
+                { value }
+            }
+            { u4_move_u32_from(8) }
+            for value in (0..8).rev() {
+                { value }
+                OP_EQUALVERIFY
+            }
+            for _ in 0..8 {
+                OP_DROP
+            }
+            OP_TRUE
+        });
+        assert!(move_result.success, "move routing failed: {move_result}");
+        assert!(copy.stats.max_nb_stack_items > move_result.stats.max_nb_stack_items);
+    }
+
+    #[test]
+    fn word_routing_rejects_a_wrong_source_depth() {
+        let result = std::panic::catch_unwind(|| {
+            crate::support::execution::execute_script(script! {
+                for value in 0..16 {
+                    { value }
+                }
+                { u4_copy_u32_from(9) }
+                OP_TRUE
+            })
+        });
+        assert!(result.map(|info| !info.success).unwrap_or(true));
+    }
 }

@@ -10,6 +10,10 @@ these operations, but this module contains no hash-specific round logic.
   preloaded addition tables are used. There is no universal default.
 - Logic may use full or triangular half tables; shifts and rotations take
   `1..=3` bit counts unless their function documents otherwise.
+- `u4_copy_u32_from(address)` and `u4_move_u32_from(address)` address an
+  8-nibble word at depths `address..=address+7`. Copy preserves the source and
+  adds eight items; move repositions the word without duplicating it. The
+  address is a generated stack-layout fact, not witness validation.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` takes
   an explicit batch size in `1..=234` and has no default for input checking.
 
@@ -24,6 +28,8 @@ each input with the same output-restoration boundary.
 | Fragment | Locking script | Maximum combined stack | Executed non-push opcodes |
 | --- | ---: | ---: | ---: |
 | `u4_push_add_tables()` | <!-- metric:u4_add_tables -->92<!-- /metric:u4_add_tables --> bytes | instance-specific | not recorded |
+| Copy 8-nibble word from depth 8 | <!-- metric:u4_copy_word_depth8 -->16<!-- /metric:u4_copy_word_depth8 --> bytes | <!-- metric:u4_copy_word_depth8_stack -->25<!-- /metric:u4_copy_word_depth8_stack --> items | <!-- metric:u4_copy_word_depth8_opcodes -->8<!-- /metric:u4_copy_word_depth8_opcodes --> |
+| Move 8-nibble word from depth 8 | <!-- metric:u4_move_word_depth8 -->16<!-- /metric:u4_move_word_depth8 --> bytes | <!-- metric:u4_move_word_depth8_stack -->17<!-- /metric:u4_move_word_depth8_stack --> items | <!-- metric:u4_move_word_depth8_opcodes -->8<!-- /metric:u4_move_word_depth8_opcodes --> |
 | Staggered bit-table setup | <!-- metric:u4_bits_table_push -->61<!-- /metric:u4_bits_table_push --> bytes | 61 table items | not recorded |
 | Staggered bit-table cleanup | <!-- metric:u4_bits_table_drop -->31<!-- /metric:u4_bits_table_drop --> bytes | consumes 61 items | not recorded |
 | One checked table query, output on altstack | <!-- metric:u4_bits_checked_query -->22<!-- /metric:u4_bits_checked_query --> bytes | composition-dependent | not recorded |

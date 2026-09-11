@@ -124,7 +124,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/u4.md",
       "implementation": "src/arithmetic/u4/mod.rs",
       "documentation": "src/arithmetic/u4/README.md",
@@ -140,10 +140,11 @@
         "batch-lookup",
         "digit-arithmetic",
         "lookup-table",
+        "stack-routing",
         "tracked-stack"
       ],
-      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API.",
+      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Stack routing trusts generated source depths and does not validate values. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API. Word routing addresses eight-nibble words at generated depths: copy preserves the source, while move repositions it.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -160,6 +161,52 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u4_add_tables"
+          ]
+        },
+        {
+          "id": "copy-word-depth8",
+          "label": "Copy an 8-nibble word from depth 8",
+          "parameters": {
+            "word_items": 8,
+            "address": 8,
+            "preserves_source": true
+          },
+          "includes": "fragment-only: eight OP_PICK word-copy routing operations; excludes source pushes, unrelated state, and terminal predicate",
+          "script_bytes": 16,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 25,
+          "executed_opcodes": 8,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 16,
+          "metric_keys": [
+            "u4_copy_word_depth8",
+            "u4_copy_word_depth8_stack",
+            "u4_copy_word_depth8_opcodes"
+          ]
+        },
+        {
+          "id": "move-word-depth8",
+          "label": "Move an 8-nibble word from depth 8",
+          "parameters": {
+            "word_items": 8,
+            "address": 8,
+            "preserves_source": false
+          },
+          "includes": "fragment-only: eight OP_ROLL word-repositioning operations; excludes source pushes, unrelated state, and terminal predicate",
+          "script_bytes": 16,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 17,
+          "executed_opcodes": 8,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 16,
+          "metric_keys": [
+            "u4_move_word_depth8",
+            "u4_move_word_depth8_stack",
+            "u4_move_word_depth8_opcodes"
           ]
         },
         {

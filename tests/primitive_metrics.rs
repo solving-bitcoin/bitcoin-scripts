@@ -1866,6 +1866,47 @@ fn metrics() -> Vec<Metric> {
         }
     };
     let u4_bits_inputs = vec![scriptnum(15); U4_BITS_BATCH as usize];
+    let u4_copy_word_depth8_stack = script! {
+        for value in 0..8 {
+            { value }
+        }
+        for value in 100..108 {
+            { value }
+        }
+        { u4::stack::u4_copy_u32_from(8) }
+        for value in (0..8).rev() {
+            { value }
+            OP_EQUALVERIFY
+        }
+        for _ in 0..8 {
+            OP_DROP
+        }
+        for value in (0..8).rev() {
+            { value }
+            OP_EQUALVERIFY
+        }
+        for _ in 0..8 {
+            OP_DROP
+        }
+        OP_TRUE
+    };
+    let u4_move_word_depth8_stack = script! {
+        for value in 0..8 {
+            { value }
+        }
+        for value in 100..108 {
+            { value }
+        }
+        { u4::stack::u4_move_u32_from(8) }
+        for value in (0..8).rev() {
+            { value }
+            OP_EQUALVERIFY
+        }
+        for _ in 0..8 {
+            OP_DROP
+        }
+        OP_TRUE
+    };
     let aes_zero_key = [0u8; 16];
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
@@ -2059,6 +2100,36 @@ fn metrics() -> Vec<Metric> {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_add_tables",
             value: script_len(u4::add::u4_push_add_tables()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_word_depth8",
+            value: script_len(u4::stack::u4_copy_u32_from(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_word_depth8_stack",
+            value: max_stack_items(u4_copy_word_depth8_stack, vec![]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_word_depth8_opcodes",
+            value: static_non_push_opcodes(u4::stack::u4_copy_u32_from(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_word_depth8",
+            value: script_len(u4::stack::u4_move_u32_from(8)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_word_depth8_stack",
+            value: max_stack_items(u4_move_word_depth8_stack, vec![]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_word_depth8_opcodes",
+            value: static_non_push_opcodes(u4::stack::u4_move_u32_from(8)),
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
