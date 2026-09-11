@@ -121,6 +121,28 @@ pub fn verify_hash_path(bit_width: usize, commitment: [u8; 20]) -> Script {
     }
 }
 
+/// Verify two ordered hash paths without serializing the intermediate digest.
+///
+/// The first path's digest is duplicated, checked against `first_commitment`,
+/// and then consumed as the second path's preimage. Witness order is
+/// `second_bitN-1 ... second_bit0 first_bitN-1 ... first_bit0 first_preimage`.
+pub fn verify_hash_path_chain(
+    first_bit_width: usize,
+    first_commitment: [u8; 20],
+    second_bit_width: usize,
+    second_commitment: [u8; 20],
+) -> Script {
+    script! {
+        { hash_path_script(first_bit_width) }
+        OP_DUP
+        { first_commitment.to_vec() }
+        OP_EQUALVERIFY
+        { hash_path_script(second_bit_width) }
+        { second_commitment.to_vec() }
+        OP_EQUAL
+    }
+}
+
 /// Verify a generic hash path and save its bits on the altstack.
 ///
 /// Leaves true on the main stack. After verification, bit `N-1` is on top of
@@ -253,19 +275,41 @@ mod tests {
         witness.push(alice_preimage.to_vec());
 
         let result = execute_script_with_inputs(
-            script! {
-                { hash_path_script(alice_bits.len()) }
-                OP_DUP
-                { alice_commitment.to_vec() }
-                OP_EQUALVERIFY
-                { hash_path_script(bob_bits.len()) }
-                { bob_commitment.to_vec() }
-                OP_EQUAL
-            },
+            verify_hash_path_chain(
+                alice_bits.len(),
+                alice_commitment,
+                bob_bits.len(),
+                bob_commitment,
+            ),
             witness,
         );
         assert!(result.success, "{result}");
         assert_eq!(result.final_stack.len(), 1);
+    }
+
+    #[test]
+    fn digest_chain_rejects_a_wrong_intermediate_checkpoint() {
+        let alice_preimage = [0x42; 32];
+        let alice_bits = [true, false, false, true];
+        let bob_bits = [false, true, true];
+        let alice_commitment = hash_path_commitment(&alice_preimage, &alice_bits);
+        let bob_commitment = hash_path_commitment(&alice_commitment, &bob_bits);
+        let mut witness = bob_bits
+            .iter()
+            .rev()
+            .chain(alice_bits.iter().rev())
+            .map(|bit| if *bit { vec![1] } else { vec![] })
+            .collect::<Vec<_>>();
+        witness.push(alice_preimage.to_vec());
+
+        let result = execute_script_with_inputs(
+            verify_hash_path_chain(4, [0x99; 20], 3, bob_commitment),
+            witness,
+        );
+        assert!(
+            !result.success,
+            "accepted a detached intermediate checkpoint"
+        );
     }
 
     #[test]

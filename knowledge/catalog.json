@@ -1564,7 +1564,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "research-unlimited",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/hash-path-integer.md",
       "implementation": "src/commitments/hash_path.rs",
       "documentation": "src/commitments/README.md",
@@ -1575,7 +1575,8 @@
         "bip-342"
       ],
       "techniques": [
-        "mixed-hash-path"
+        "mixed-hash-path",
+        "nested-hash-state"
       ],
       "security": "Hiding depends on min-entropy in the unrevealed preimage and bits; a nested path starting from a public checkpoint needs high-entropy bits. Final RIPEMD-160 limits generic collision resistance to 80 bits.",
       "stack_contract": "... bitN-1 ... bit0 preimage -> ... value",
@@ -1600,6 +1601,31 @@
             "hash_path_integer_31",
             "hash_path_integer_witness_31",
             "hash_path_integer_stack_31"
+          ]
+        },
+        {
+          "id": "chain-4-3",
+          "label": "Two-round 4+3-bit hash-path chain",
+          "parameters": {
+            "first_bit_width": 4,
+            "second_bit_width": 3,
+            "opening_bytes": 32,
+            "checkpoint_bytes": 20
+          },
+          "includes": "fragment-only: first hash path, explicit intermediate checkpoint equality, second hash path seeded by the retained digest, and final equality; witness includes the serialized seven selector bits and one 32-byte opening",
+          "script_bytes": 110,
+          "witness_bytes": 45,
+          "witness_bytes_max": 45,
+          "max_stack_items": 10,
+          "executed_opcodes": 68,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 110,
+          "metric_keys": [
+            "hash_path_chain_4_3",
+            "hash_path_chain_4_3_witness",
+            "hash_path_chain_4_3_stack",
+            "hash_path_chain_4_3_opcodes"
           ]
         }
       ],
