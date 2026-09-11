@@ -3555,6 +3555,11 @@ fn metrics() -> Vec<Metric> {
             value: script_len(ripemd160::ripemd160(32)),
         },
         Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_80_midstate",
+            value: script_len(ripemd160::ripemd160_80bytes_from_midstate([0; 5])),
+        },
+        Metric {
             readme: "src/hashes/sha1/README.md",
             key: "sha1_u32_32",
             value: script_len(sha1::sha1(32)),
