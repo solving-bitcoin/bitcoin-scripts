@@ -1728,6 +1728,67 @@
       ]
     },
     {
+      "id": "hash/hash160-u32",
+      "name": "HASH160 over byte-oriented u32 hashes",
+      "class": "hash/fixed",
+      "summary": "Bitcoin HASH160 composition using SHA-256 followed by RIPEMD-160 over byte-valued stack items.",
+      "status": "compatibility",
+      "evidence": "differentially-validated",
+      "execution": "research-unlimited",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/hash160.md",
+      "implementation": "src/hashes/hash160/mod.rs",
+      "documentation": "src/hashes/hash160/README.md",
+      "tests": [
+        "hashes::hash160::tests::matches_reference_vectors",
+        "hashes::hash160::tests::rejects_unsupported_message_length"
+      ],
+      "references": [
+        "bitcoin-core-v29-hashes",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "composition",
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "HASH160 inherits SHA-256 preimage behavior and RIPEMD-160's 160-bit output and approximately 80-bit generic collision bound; the composition itself does not add authentication beyond the caller's digest check.",
+      "stack_contract": "Consumes one item per message byte and returns 20 byte items with the first digest byte on top.",
+      "configurations": [
+        {
+          "id": "message-32",
+          "label": "32-byte input",
+          "parameters": {
+            "message_bytes": 32,
+            "intermediate_representation": "32 byte-valued stack items"
+          },
+          "includes": "fragment-with-memory: SHA-256 and RIPEMD-160 fragments with table setup and cleanup; excludes message pushes, digest comparison, and witness serialization",
+          "script_bytes": 756491,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 856,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 756491,
+          "metric_keys": [
+            "hash160_32",
+            "hash160_witness_32",
+            "hash160_stack_32"
+          ]
+        }
+      ],
+      "limitations": [
+        "Messages are limited to 511 bytes and fixed at script-generation time",
+        "The representative script exceeds the repository optimizer cutoff and is reported unoptimized",
+        "Bitcoin Core consensus and relay-policy validation were not performed"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-003"
+      ]
+    },
+    {
       "id": "hash/sha1-u32",
       "name": "SHA-1 over u32 bytes",
       "class": "hash/fixed",
