@@ -1849,7 +1849,8 @@
       "implementation": "src/hashes/sha256/sha2_u32.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u32::tests::test_sha256"
+        "hashes::sha256::sha2_u32::tests::test_sha256",
+        "hashes::sha256::sha2_u32::tests::test_sha256_80bytes_from_midstate"
       ],
       "references": [
         "fips-180-4",
@@ -1880,10 +1881,34 @@
           "metric_keys": [
             "sha2_u32_32"
           ]
+        },
+        {
+          "id": "midstate-16-suffix",
+          "label": "64-byte prefix midstate plus 16-byte suffix",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16,
+            "total_message_bytes": 80
+          },
+          "includes": "fragment-only: one-block continuation; excludes midstate generation, prefix binding, message pushes, and digest comparison",
+          "script_bytes": 530631,
+          "witness_bytes": 33,
+          "witness_bytes_max": 33,
+          "max_stack_items": 856,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 530631,
+          "metric_keys": [
+            "sha2_u32_80_midstate",
+            "sha2_u32_80_midstate_witness",
+            "sha2_u32_80_midstate_stack"
+          ]
         }
       ],
       "limitations": [
         "Larger than local u4 configuration",
+        "Caller must bind the supplied midstate to the fixed prefix",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [

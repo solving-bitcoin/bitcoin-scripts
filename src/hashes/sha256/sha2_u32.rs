@@ -127,6 +127,42 @@ pub fn sha256_80bytes() -> Script {
     }
 }
 
+/// Continue SHA-256 from a midstate over a 16-byte suffix.
+pub fn sha256_80bytes_from_midstate(midstate: [u32; 8]) -> Script {
+    let mut state = midstate;
+    state.reverse();
+    script! {
+        {push_reverse_bytes_to_alt(16)}
+        {u8_push_xor_table()}
+        {sha256_k()}
+        for _ in 0..16 {
+            OP_FROMALTSTACK
+        }
+        {0x80}
+        {push_to_stack(0, 39)}
+        {u32_push(0)}
+        {u32_push(640)}
+        for i in 1..16 {
+            {u32_roll(i)}
+        }
+        for word in state {
+            {u32_push(word)}
+        }
+        {sha256_transform(8 + 16 + 64 + 1, 8 + 16)}
+        {sha256_final()}
+        for _ in 0..8 {
+            {u32_toaltstack()}
+        }
+        for _ in 0..64 {
+            {u32_drop()}
+        }
+        {u8_drop_xor_table()}
+        for _ in 0..8 {
+            {u32_fromaltstack()}
+        }
+    }
+}
+
 /// reorder bytes for u32
 pub fn padding_add_roll(num_bytes: usize) -> Script {
     assert!(num_bytes < 512);
@@ -915,9 +951,12 @@ pub fn maj(x: u32, y: u32, z: u32, stack_depth: u32) -> Script {
 mod tests {
     use super::*;
     use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify};
-    use crate::support::{execution::execute_script, script::script};
+    use crate::support::{
+        execution::{execute_script, execute_script_with_inputs},
+        script::script,
+    };
     use bitcoin::hex::{DisplayHex, FromHex};
-    use sha2::{Digest, Sha256};
+    use sha2::{compress256, Digest, Sha256};
 
     fn push_bytes_hex(hex: &str) -> Script {
         let hex: String = hex
@@ -983,6 +1022,52 @@ mod tests {
         };
         let res = execute_script(script);
         assert!(res.success);
+    }
+
+    #[test]
+    fn test_sha256_80bytes_from_midstate() {
+        let prefix = [0x42u8; 64];
+        let suffix: Vec<u8> = (0..16).collect();
+        let mut midstate = INITSTATE;
+        compress256(&mut midstate, &[prefix.into()]);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = Sha256::digest(message).to_lower_hex_string();
+        let script = script! {
+            for byte in suffix.iter().rev() {
+                { *byte }
+            }
+            {sha256_80bytes_from_midstate(midstate)}
+            {push_bytes_hex(&expected)}
+            for _ in 0..32 {
+                OP_TOALTSTACK
+            }
+            for i in 1..32 {
+                {i}
+                OP_ROLL
+            }
+            for _ in 0..32 {
+                OP_FROMALTSTACK
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        };
+        assert!(execute_script(script).success);
+    }
+
+    #[test]
+    fn test_sha256_80bytes_from_midstate_rejects_extra_suffix() {
+        let script = script! {
+            {sha256_80bytes_from_midstate([0; 8])}
+            for _ in 0..32 {
+                OP_DROP
+            }
+            OP_DEPTH
+            OP_0
+            OP_EQUAL
+        };
+        let result = execute_script_with_inputs(script, vec![vec![0x42]; 17]);
+        assert!(!result.success);
     }
 
     #[test]
