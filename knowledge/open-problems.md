@@ -15,6 +15,18 @@ The current zero-key baseline is 6,136 bytes and a 633-item peak. Table packing
 and algebraic sketches without a priced executable circuit do not satisfy
 this criterion; see [the layout search](negative-results/princev2-layout.md).
 
+## OP-020 — Compact TapBranch adapter
+
+Build a deployable TapBranch verifier that binds two hostile 32-byte nodes,
+enforces their BIP341 lexicographic ordering, and computes the exact
+`TapBranch` tagged hash without relying on an external byte-concatenation
+adapter. **Complete when:** a deterministic tapscript fragment stays below
+10,000 serialized script bytes, passes malformed and boundary tests with the
+strict 1,000-item combined stack limit, and is differentially validated
+against BIP341 vectors. The current full u4 circuit is a locally-reproduced
+boundary at 1,106,745 bytes and 969 peak items; it is therefore
+consensus-incompatible and does not close this problem. See [NR-050](negative-results/index.md#nr-050-the-full-u4-tapbranch-circuit-is-not-deployable).
+
 ## OP-001 — Strict execution matrix
 
 Add explicit legacy/P2WSH/tapscript strict and research-unlimited execution

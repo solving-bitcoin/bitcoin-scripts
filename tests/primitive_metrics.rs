@@ -15,7 +15,8 @@ use bitcoin_lab::{
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
-        verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
+        tapbranch_hash_u4, tapbranch_hash_u4_witness, verify_four_way_hash_path_to_integer,
+        verify_hash_path_to_integer, verify_preimage_length,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -4035,6 +4036,51 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn tapbranch_metrics_are_current() {
+    let fragment = tapbranch_hash_u4();
+    let witness = tapbranch_hash_u4_witness([0; 32], [1; 32]);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4_opcodes",
+            value: static_non_push_opcodes(fragment.clone()),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { fragment }
+                    for _ in 0..64 { OP_DROP }
+                    OP_1
+                },
+                witness,
+            ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "tapbranch_hash_u4_hints",
+            value: 0,
+        },
+    ]);
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It
