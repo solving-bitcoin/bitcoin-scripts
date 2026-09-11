@@ -9,7 +9,7 @@
 //!
 //! Both decoders treat every input as hostile. The low-stack decoder rejects
 //! alternate raw ScriptNum encodings and expands exact words through
-//! [`u32_uncompress`]. The faster decoder maps signed words directly to bits;
+//! [`u32_uncompress_canonical`]. The faster decoder maps signed words directly to bits;
 //! it allows at-most-four-byte aliases when execution flags do, without
 //! changing the decoded value. Both reconstruct all 255 payload bits, reject
 //! the padding bit, and reject the centered backend's 19-value canonical gap.
@@ -24,7 +24,7 @@ use num_bigint::BigUint;
 use crate::{
     arithmetic::{
         u31::{u31_to_bits_with_width, U31_LOOKUP_STACK_LIMIT},
-        u32::stack::{u32_compress, u32_uncompress},
+        u32::stack::{u32_compress, u32_uncompress_canonical},
     },
     fields::ed25519::u5_balanced_table::{self, FieldDigits, FIELD_DIGIT_COUNT},
     support::script::*,
@@ -203,28 +203,11 @@ fn byte_to_radix32_stream(carry_bits: usize) -> Script {
     }
 }
 
-// Keep one word only if its byte string is the unique canonical compressed-u32
-// representation. Adding zero cheaply normalizes every at-most-four-byte
-// ScriptNum; raw equality then detects negative zero, redundant sign bytes,
-// and other aliases even when MINIMALDATA is disabled. The only valid
-// five-byte compressed word is canonical -2^31 and is checked directly.
-fn certify_exact_compressed_word() -> Script {
-    script! {
-        OP_SIZE 5 OP_NUMEQUAL
-        OP_IF
-            OP_DUP { -2_147_483_648i64 } OP_EQUALVERIFY
-        OP_ELSE
-            OP_DUP OP_DUP 0 OP_ADD OP_EQUALVERIFY
-        OP_ENDIF
-    }
-}
-
 // Decode one exact top compressed word to four certified bytes.
 fn exact_uncompress_word(keep_original: bool) -> Script {
     script! {
         if keep_original { OP_DUP }
-        { certify_exact_compressed_word() }
-        { u32_uncompress() }
+        { u32_uncompress_canonical() }
     }
 }
 

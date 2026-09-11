@@ -20,6 +20,9 @@ they do not use BN254 or any other field modulus.
   table. With exactly two working words, the usual value is `3`.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
+- `u32_uncompress_canonical()` consumes one minimally encoded signed ScriptNum
+  representing a u32 and returns its four MSB-first bytes. It rejects raw
+  aliases and accepts five bytes only for `-2^31`.
 
 ## Script metrics
 
@@ -39,11 +42,16 @@ as less-than-or-equal.
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+| `u32_uncompress_canonical()` | <!-- metric:u32_uncompress_canonical -->431<!-- /metric:u32_uncompress_canonical --> bytes | <!-- metric:u32_uncompress_canonical_witness -->7<!-- /metric:u32_uncompress_canonical_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_canonical_stack -->7<!-- /metric:u32_uncompress_canonical_stack --> items |
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
 operation-specific hint is needed. The logic table can be shared by any number
 of XOR, AND, and OR operations in one script.
+
+The canonical compressed-u32 row uses the maximum five-byte witness item for
+`-2^31`. It is a raw-encoding boundary: `u32_uncompress()` remains available
+for callers that intentionally accept ScriptNum aliases.
 
 ## Security
 
