@@ -1740,7 +1740,9 @@
       "implementation": "src/hashes/sha1/mod.rs",
       "documentation": "src/hashes/sha1/README.md",
       "tests": [
-        "hashes::sha1::tests::hashes_standard_vectors"
+        "hashes::sha1::tests::hashes_standard_vectors",
+        "hashes::sha1::tests::hashes_output_prefixes",
+        "hashes::sha1::tests::rejects_prefix_boundaries"
       ],
       "references": [
         "fips-180-4",
@@ -1770,6 +1772,26 @@
           "per_use_script_bytes": 209726,
           "metric_keys": [
             "sha1_u32_32"
+          ]
+        },
+        {
+          "id": "message32-prefix8",
+          "label": "32-byte input, first 8 digest bytes",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: SHA-1 hashing plus output-prefix adapter; excludes message pushes and digest comparison",
+          "script_bytes": 209754,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 209754,
+          "metric_keys": [
+            "sha1_u32_prefix_32_8"
           ]
         }
       ],
