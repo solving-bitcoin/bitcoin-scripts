@@ -1,8 +1,94 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-10",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/u32-compressed-equal",
+      "name": "Compressed total-domain u32 equality",
+      "class": "arithmetic/word",
+      "summary": "Canonical two-item ScriptNum wire adapter for u32 equality.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-10",
+      "knowledge_page": "knowledge/primitives/u32-compressed-equal.md",
+      "implementation": "src/arithmetic/u32/stack.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::stack::tests::test_u32_compressed_equal_boundaries",
+        "arithmetic::u32::stack::tests::test_u32_compressed_equal_rejects_noncanonical_inputs",
+        "primitive_metrics::u32_compressed_equal_metrics_are_current",
+        "examples/u32_compressed_equal_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "compact-wire",
+        "canonical-encoding"
+      ],
+      "security": "No independent cryptographic claim. Both compressed words are hostile and must pass exact canonical-wire checks before direct comparison; complete protocol binding and deployment validation remain open.",
+      "stack_contract": "... word_b word_a -> ... (word_a == word_b); both inputs are consumed and unrelated lower stack state is preserved.",
+      "configurations": [
+        {
+          "id": "representative-01020304",
+          "label": "Compressed equality versus four-byte baseline",
+          "parameters": {
+            "value": "0x01020304",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 2
+          },
+          "includes": "fragment-with-memory: two canonical-wire checks and direct equality; excludes input pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 37,
+          "witness_bytes": 11,
+          "witness_bytes_max": 13,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 37,
+          "metric_keys": [
+            "u32_compressed_equal",
+            "u32_compressed_equal_witness",
+            "u32_compressed_equal_witness_max",
+            "u32_compressed_equal_stack"
+          ]
+        },
+        {
+          "id": "byte-baseline",
+          "label": "Four-byte u32_equal() baseline",
+          "parameters": {
+            "value": "0x01020304",
+            "complete_input_items": 8
+          },
+          "includes": "fragment-only: four-byte equality operation; excludes operand pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 18,
+          "witness_bytes": 17,
+          "witness_bytes_max": 17,
+          "max_stack_items": 9,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 18,
+          "metric_keys": [
+            "u32_equal_witness",
+            "u32_equal_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Dominated by the four-byte baseline for locking-script bytes",
+        "Dynamic opcode count is unavailable from the local executor",
+        "Bitcoin Core, complete-transaction, relay-policy, and canonical witness-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",

@@ -93,6 +93,67 @@ fn max_stack_items_strict(script: bitcoin_script::Script, witness: Vec<Vec<u8>>)
     result.stats.max_nb_stack_items
 }
 
+fn compressed_u32_witness(value: u32) -> Vec<u8> {
+    scriptnum(i64::from(value as i32))
+}
+
+fn byte_u32_witness(value: u32) -> [Vec<u8>; 4] {
+    [
+        scriptnum(i64::from(value >> 24)),
+        scriptnum(i64::from((value >> 16) & 0xff)),
+        scriptnum(i64::from((value >> 8) & 0xff)),
+        scriptnum(i64::from(value & 0xff)),
+    ]
+}
+
+fn u32_compressed_equal_metrics() -> Vec<Metric> {
+    const VALUE: u32 = 0x0102_0304;
+    let compressed = u32::stack::u32_compressed_equal();
+    let byte_baseline = u32::stack::u32_equal();
+    let compressed_witness = vec![compressed_u32_witness(VALUE), compressed_u32_witness(VALUE)];
+    let byte_witness = byte_u32_witness(VALUE)
+        .into_iter()
+        .chain(byte_u32_witness(VALUE))
+        .collect::<Vec<_>>();
+    let compressed_stack = max_stack_items_strict(compressed.clone(), compressed_witness.clone());
+    let byte_stack = max_stack_items_strict(byte_baseline.clone(), byte_witness.clone());
+    vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_equal",
+            value: script_len(compressed.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_equal_witness",
+            value: witness_size(&compressed_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_equal_witness_max",
+            value: witness_size(&[
+                compressed_u32_witness(0x8000_0000),
+                compressed_u32_witness(0x8000_0000),
+            ]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_compressed_equal_stack",
+            value: compressed_stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal_witness",
+            value: witness_size(&byte_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal_stack",
+            value: byte_stack,
+        },
+    ]
+}
+
 fn prince_metrics() -> Vec<Metric> {
     let fragment = prince::prince_encrypt(0);
     let compiled = fragment.clone().compile_with_policy();
@@ -3987,6 +4048,7 @@ fn metrics() -> Vec<Metric> {
         },
     ]
     .into_iter()
+    .chain(u32_compressed_equal_metrics())
     .chain(prince_metrics())
     .chain(winternitz_metrics())
     .chain(winternitz_sha256_metrics())
@@ -4035,6 +4097,11 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn u32_compressed_equal_metrics_are_current() {
+    check_readme_metrics(u32_compressed_equal_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

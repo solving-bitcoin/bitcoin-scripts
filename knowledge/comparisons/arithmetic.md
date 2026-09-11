@@ -18,6 +18,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Native secp256k1 base-field square | 29 balanced radix-512 digits, symmetry-specialized | 14,541 | 94-byte/67-item incremental hint; certified operand; 614-item strict peak |
 | Three native secp256k1 ordinary multiplies | Shared table, destructive third-gate recombination | 59,163 | 280-byte/201-item incremental hint; 993-item strict peak; unoptimized above cutoff |
 | Bounded RNS add | Legacy RNS add | 216 | Modulo 69,300 |
+| Compressed u32 equality | Canonical two-item ScriptNum wire comparison | 37 | 2 witness items; 11 representative bytes; 5-item peak |
 | Bounded RNS multiply | Legacy RNS multiply | 1,561 | 903-item peak |
 | Exact 256-bit-product RNS add | 75-prime canonical coordinatewise | 1,131 | 513-bit composite range; 151-item peak |
 | Exact 256-by-256-bit RNS multiply baseline | 75-prime table/Horner hybrid | 15,624 | No relation carries; 183-item peak |
