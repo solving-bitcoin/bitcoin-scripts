@@ -293,6 +293,14 @@ setup, script bytes, executed opcodes, and strict stack peaks are compared on
 the same boundary; malformed encodings are rejected; and a complete tapscript
 leaf is differentially validated against a pinned Bitcoin Core revision.
 
+The local compressed-wire experiment supplies a partial frontier result:
+`u32_compressed_rshift` handles all shifts `1..=31`, recognizes the canonical
+five-byte encoding of `0x80000000`, and rejects malformed raw words. Its
+shift-7 boundary is 1,143 locking bytes with a 6-byte one-item witness versus
+637 bytes and a 12-byte four-item witness for the direct u32 baseline. The
+problem remains open until the complete boundary is differentially validated
+against pinned Bitcoin Core and measured in a complete leaf/transaction.
+
 ## OP-015 — Native secp256k1 field circuit frontier
 
 Turn the native 20,503-byte ordinary multiplication, 20,450-byte factor-16

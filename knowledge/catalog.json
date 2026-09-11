@@ -1,8 +1,97 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-10",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/u32-total-domain-rshift",
+      "name": "Total-domain compressed u32 logical right shift",
+      "class": "arithmetic/word",
+      "summary": "Checked logical right shift for the one-item compressed u32 wire, including the canonical five-byte 0x80000000 sentinel.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-10",
+      "knowledge_page": "knowledge/primitives/u32-total-domain-rshift.md",
+      "implementation": "src/arithmetic/u32/rshift.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::rshift::tests",
+        "tests/primitive_metrics::total_domain_rshift_metrics_are_current",
+        "examples/u32_total_domain_rshift_benchmark.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked",
+        "coins-bitcoin-scripts-8f442e4b"
+      ],
+      "techniques": [
+        "compact-wire",
+        "digit-arithmetic",
+        "lookup-table",
+        "representation"
+      ],
+      "security": "The compressed word is hostile witness data. Checked mode rejects non-minimal encodings, negative zero, wrong-width items, and invalid five-byte values before numeric decoding. No cryptographic claim.",
+      "stack_contract": "compressed ScriptNum -> compressed ScriptNum; the four-byte baseline consumes and returns four byte-valued stack items",
+      "configurations": [
+        {
+          "id": "compressed-shift7",
+          "label": "Compressed one-item wire, logical shift 7",
+          "parameters": {
+            "shift": 7,
+            "semantic_value": "0xa5c319e7",
+            "hint_items_per_invocation": 0,
+            "complete_witness_items": 1
+          },
+          "includes": "fragment-with-memory: canonical input certification, u32 expansion, shared 256-entry byte-logic table setup and cleanup, rotate/mask, recompression, output drop, and terminal truth; excludes input pushes and transaction framing",
+          "script_bytes": 1143,
+          "witness_bytes": 6,
+          "witness_bytes_max": 6,
+          "max_stack_items": 272,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 236,
+          "per_use_script_bytes": 1143,
+          "metric_keys": [
+            "u32_rshift_compressed_7",
+            "u32_rshift_compressed_7_witness",
+            "u32_rshift_compressed_7_stack"
+          ]
+        },
+        {
+          "id": "four-byte-baseline-shift7",
+          "label": "Four-byte u32 rotate/mask baseline, logical shift 7",
+          "parameters": {
+            "shift": 7,
+            "semantic_value": "0xa5c319e7",
+            "hint_items_per_invocation": 0,
+            "complete_witness_items": 4
+          },
+          "includes": "fragment-with-memory: shared 256-entry byte-logic table setup and cleanup, rotate/mask, output drop, and terminal truth; excludes input pushes and transaction framing",
+          "script_bytes": 637,
+          "witness_bytes": 12,
+          "witness_bytes_max": 12,
+          "max_stack_items": 272,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 236,
+          "per_use_script_bytes": 637,
+          "metric_keys": [
+            "u32_rshift_bytes_7",
+            "u32_rshift_bytes_7_witness",
+            "u32_rshift_bytes_7_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "The compressed form loses locking-script bytes and has the same local peak because the 256-item table dominates",
+        "The local executor did not expose a useful dynamic opcode count or validation-weight result",
+        "No complete leaf, transaction, Bitcoin Core differential validation, or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-014"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",
