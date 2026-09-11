@@ -403,6 +403,38 @@ mod tests {
     }
 
     #[test]
+    fn altstack_verifier_preserves_authenticated_digits() {
+        let digits = [0, 1, 2, 3];
+        let preimage = b"four-way altstack nonce";
+        let commitment = four_way_hash_path_commitment(preimage, &digits);
+        let witness = four_way_hash_path_witness(preimage, &digits);
+        let result = execute_script_with_inputs(
+            script! {
+                { verify_four_way_hash_path_to_altstack(digits.len(), commitment) }
+                for digit in digits.iter().rev() {
+                    OP_FROMALTSTACK
+                    { *digit as u32 }
+                    OP_EQUALVERIFY
+                }
+            },
+            witness,
+        );
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn altstack_verifier_rejects_wrong_opening() {
+        let digits = [0, 1, 2, 3];
+        let commitment = four_way_hash_path_commitment(b"bound", &digits);
+        let wrong = four_way_hash_path_witness(b"wrong", &digits);
+        let result = execute_script_with_inputs(
+            script! { { verify_four_way_hash_path_to_altstack(digits.len(), commitment) } OP_DROP OP_1 },
+            wrong,
+        );
+        assert!(!result.success);
+    }
+
+    #[test]
     #[should_panic(expected = "four-way hash-path digits must be in 0..=3")]
     fn host_commitment_rejects_out_of_range_digit() {
         let _ = four_way_hash_path_commitment(b"nonce", &[4]);

@@ -1545,6 +1545,29 @@
             "four_way_hash_path_integer_witness_31",
             "four_way_hash_path_integer_stack_31"
           ]
+        },
+        {
+          "id": "altstack-digits-16",
+          "label": "16-digit four-way path with retained digits",
+          "parameters": {
+            "digit_count": 16,
+            "preimage_bytes": 32,
+            "retained_items": 16
+          },
+          "includes": "fragment-only: four-way path verification and digit retention on the altstack; witness includes serialized digits and preimage, and the measured wrapper drains retained digits",
+          "script_bytes": 360,
+          "witness_bytes": 61,
+          "witness_bytes_max": 61,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 360,
+          "metric_keys": [
+            "four_way_hash_path_altstack_16",
+            "four_way_hash_path_altstack_witness_16",
+            "four_way_hash_path_altstack_stack_16"
+          ]
         }
       ],
       "limitations": [
