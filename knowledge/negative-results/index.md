@@ -3,6 +3,17 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-051: General ScriptNum byte canonicality is unavailable with current opcodes
+
+The enabled opcode set exposes numeric comparison and `OP_SIZE`, but not an
+enabled `OP_SPLIT`, `OP_NUM2BIN`, or equivalent byte-extraction/normalization
+primitive. A verifier can establish a numeric range while remaining unable to
+distinguish negative-zero or redundant sign padding in an arbitrary hostile
+stack item. Relay-policy `MINIMALDATA` rejects some non-minimal pushes, but it
+is not a consensus binding for every script context. This is an `inspected`
+boundary result, not a universal impossibility proof; a future byte primitive
+or fixed-width protocol encoding could close it. See [OP-022](../open-problems.md#op-022--scriptnum-byte-canonicality-adapter).
+
 ## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
 
 The [PRINCEv2 layout search](princev2-layout.md) records the discarded shared
