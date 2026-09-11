@@ -142,8 +142,8 @@
         "lookup-table",
         "tracked-stack"
       ],
-      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API.",
+      "security": "No independent cryptographic claim. Checked bit conversion enforces numeric nibble range before table indexing; checked byte unpacking enforces byte range before its 512-item table lookup; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four big-endian bits per input on the main or altstack as selected by the API. The byte unpacker consumes contiguous byte items, uses a 512-item table, and returns high/low nibble pairs on the main stack.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -184,6 +184,31 @@
             "u4_bits_checked_batch32",
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
+          ]
+        },
+        {
+          "id": "byte-to-nibbles-batch16-checked",
+          "label": "Checked 16-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 16,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, table cleanup, and restoration of all 32 output nibbles; representative witness size records 16 hostile byte data items; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 1168,
+          "witness_bytes": 49,
+          "witness_bytes_max": 49,
+          "max_stack_items": 546,
+          "executed_opcodes": 544,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch16",
+            "u4_unpack_batch16_stack",
+            "u4_unpack_batch16_opcodes"
           ]
         }
       ],

@@ -4111,6 +4111,39 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u4_unpack_metrics_are_current() {
+    const BYTE_COUNT: u32 = 16;
+    let fragment = u4::unpack::u4_bytes_to_nibbles(BYTE_COUNT);
+    let witness = vec![scriptnum(0xff); BYTE_COUNT as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            { u4::stack::u4_drop(2 * BYTE_COUNT) }
+            OP_1
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
