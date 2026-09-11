@@ -2062,6 +2062,26 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
+            key: "u4_half_lookup_push",
+            value: script_len(u4::logic::u4_push_half_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_half_lookup_drop",
+            value: script_len(u4::logic::u4_drop_half_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_full_lookup_push",
+            value: script_len(u4::logic::u4_push_full_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_full_lookup_drop",
+            value: script_len(u4::logic::u4_drop_full_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
             key: "u4_bits_table_push",
             value: script_len(u4::bits::u4_push_to_be_bits_table()),
         },

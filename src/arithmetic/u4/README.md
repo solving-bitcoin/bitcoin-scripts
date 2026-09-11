@@ -10,6 +10,10 @@ these operations, but this module contains no hash-specific round logic.
   preloaded addition tables are used. There is no universal default.
 - Logic may use full or triangular half tables; shifts and rotations take
   `1..=3` bit counts unless their function documents otherwise.
+- `u4_push_half_lookup()` installs 16 triangular offsets for sorted nibble
+  pairs; `u4_push_full_lookup()` installs 17 linear offsets. Each table must
+  be removed with its matching `u4_drop_*_lookup()` helper before the caller's
+  terminal predicate.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` takes
   an explicit batch size in `1..=234` and has no default for input checking.
 
@@ -24,12 +28,23 @@ each input with the same output-restoration boundary.
 | Fragment | Locking script | Maximum combined stack | Executed non-push opcodes |
 | --- | ---: | ---: | ---: |
 | `u4_push_add_tables()` | <!-- metric:u4_add_tables -->92<!-- /metric:u4_add_tables --> bytes | instance-specific | not recorded |
+| Half lookup setup | <!-- metric:u4_half_lookup_push -->35<!-- /metric:u4_half_lookup_push --> bytes | 16 table items | not recorded |
+| Half lookup cleanup | <!-- metric:u4_half_lookup_drop -->8<!-- /metric:u4_half_lookup_drop --> bytes | consumes 16 items | not recorded |
+| Half lookup setup/cleanup lifecycle |  | 16 table items | not recorded |
+| Full lookup setup | <!-- metric:u4_full_lookup_push -->41<!-- /metric:u4_full_lookup_push --> bytes | 17 table items | not recorded |
+| Full lookup cleanup | <!-- metric:u4_full_lookup_drop -->9<!-- /metric:u4_full_lookup_drop --> bytes | consumes 17 items | not recorded |
+| Full lookup setup/cleanup lifecycle |  | 17 table items | not recorded |
 | Staggered bit-table setup | <!-- metric:u4_bits_table_push -->61<!-- /metric:u4_bits_table_push --> bytes | 61 table items | not recorded |
 | Staggered bit-table cleanup | <!-- metric:u4_bits_table_drop -->31<!-- /metric:u4_bits_table_drop --> bytes | consumes 61 items | not recorded |
 | One checked table query, output on altstack | <!-- metric:u4_bits_checked_query -->22<!-- /metric:u4_bits_checked_query --> bytes | composition-dependent | not recorded |
 | Checked table batch, 32 nibbles | <!-- metric:u4_bits_checked_batch32 -->924<!-- /metric:u4_bits_checked_batch32 --> bytes | <!-- metric:u4_bits_checked_batch32_stack -->189<!-- /metric:u4_bits_checked_batch32_stack --> items | <!-- metric:u4_bits_checked_batch32_opcodes -->735<!-- /metric:u4_bits_checked_batch32_opcodes --> |
 | Unchecked table batch, 32 nibbles | <!-- metric:u4_bits_unchecked_batch32 -->764<!-- /metric:u4_bits_unchecked_batch32 --> bytes | 189 items | not recorded |
 | Existing branch splitter, 32 four-bit limbs | <!-- metric:u4_bits_branch_batch32 -->1374<!-- /metric:u4_bits_branch_batch32 --> bytes | <!-- metric:u4_bits_branch_batch32_stack -->130<!-- /metric:u4_bits_branch_batch32_stack --> items | not recorded |
+
+The half lookup keeps one fewer persistent item than the full lookup, at the
+cost of sorting the two query nibbles and using triangular offsets. The full
+lookup is simpler to address but keeps one additional item live. Both counts
+are reusable memory boundaries rather than complete query costs.
 
 The staggered table has 61 setup items and costs 31 bytes to remove. A checked
 query costs 22 bytes and restoring its four bits costs another four, so the
@@ -48,6 +63,10 @@ before using a value as an `OP_PICK` index. `check_inputs=false` must be used
 only when a surrounding fragment already established that range: an invalid
 index can otherwise address below the table. The numeric range check does not
 by itself prove a byte-unique ScriptNum encoding.
+
+Lookup-table setup is locking-script-authored, but the query offsets and table
+depths are caller-controlled composition facts. A wrong cleanup width leaves
+table state live, and a wrong lookup depth can read unrelated stack state.
 
 ## Script compatibility and standardness
 

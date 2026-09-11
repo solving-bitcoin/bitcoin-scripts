@@ -33,6 +33,19 @@ The upstream direct 64-entry table that motivated this search is not on the
 frontier because it is incorrect as published for multiple nibble values. The
 local staggered layout is a corrected construction, not a verbatim port.
 
+## u4 lookup scheduling
+
+| Schedule | Persistent table items | Addressing | Lifecycle |
+| --- | ---: | --- | --- |
+| Triangular half lookup | 16 | Sort the two nibbles, then use triangular offsets | Explicit setup and cleanup |
+| Linear full lookup | 17 | Direct linear offset | Explicit setup and cleanup |
+
+The half schedule saves one live stack item and is the smaller memory boundary
+for pairwise nibble logic. That is not a complete byte-cost comparison: the
+half query pays for sorting and triangular offset arithmetic, while the full
+query pays for one additional table item. Both schedules require the caller to
+keep the table depth fixed and use the matching cleanup fragment.
+
 ## Native secp256k1 field frontier
 
 | Strategy | Total bytes | Table lifecycle | Computation | Peak items |
