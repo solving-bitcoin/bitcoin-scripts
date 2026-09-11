@@ -17,6 +17,8 @@ Serialized witness size includes the witness count and item-length prefixes.
 | Configuration | Locking script | Unlocking witness |
 | --- | ---: | ---: |
 | `n=32`, `t=8`, 32-byte preimages | <!-- metric:hors_lock_n32_t8 -->809<!-- /metric:hors_lock_n32_t8 --> bytes | <!-- metric:hors_witness_n32_t8 -->280<!-- /metric:hors_witness_n32_t8 --> bytes |
+| `n=129`, `t=1`, index 127 | <!-- metric:hors_lock_n129_t1_boundary -->2792<!-- /metric:hors_lock_n129_t1_boundary --> bytes | <!-- metric:hors_witness_n129_t1_index127 -->36<!-- /metric:hors_witness_n129_t1_index127 --> bytes |
+| `n=129`, `t=1`, index 128 | 2,792 bytes | <!-- metric:hors_witness_n129_t1_index128 -->37<!-- /metric:hors_witness_n129_t1_index128 --> bytes |
 
 Maximum depth scales approximately with `n + 2t`; the executable tests include
 the documented `n=32,t=8` case and boundary/malformed cases.
@@ -39,4 +41,6 @@ for the exact documented witness.
 
 No hints beyond the required signature data. The witness contains `t`
 `(index, preimage)` pairs in reverse pair order so pair zero is nearest the top;
-see `hors_unlocking_witness` for canonical construction.
+see `hors_unlocking_witness` for canonical construction. Positive index 128 is
+encoded with a sign-padding byte, so its one-pair witness is one byte larger
+than index 127.

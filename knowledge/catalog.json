@@ -11,7 +11,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/scriptnum-constant-mul.md",
       "implementation": "src/arithmetic/scriptint/mod.rs",
       "documentation": "src/arithmetic/scriptint/README.md",
@@ -2878,6 +2878,33 @@
           "metric_keys": [
             "hors_lock_n32_t8",
             "hors_witness_n32_t8"
+          ]
+        },
+        {
+          "id": "n129-t1-index-boundary",
+          "label": "n=129, t=1, ScriptNum index 127/128 boundary",
+          "parameters": {
+            "n": 129,
+            "t": 1,
+            "preimage_bytes": 32,
+            "index_boundary": [
+              127,
+              128
+            ]
+          },
+          "includes": "fragment-only: locking verifier and serialized one-pair witnesses at the canonical positive ScriptNum sign-padding boundary",
+          "script_bytes": 2792,
+          "witness_bytes": 36,
+          "witness_bytes_max": 37,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2792,
+          "metric_keys": [
+            "hors_lock_n129_t1_boundary",
+            "hors_witness_n129_t1_index127",
+            "hors_witness_n129_t1_index128"
           ]
         }
       ],

@@ -115,6 +115,10 @@ and nodes. Optional `Preimage16` comparisons follow the hash comparison.
 | FastWots32 strict lookup | 32-byte message | 4,934 | 1,476 / 1,542 | 143 | 733 hashes on the balanced vector; explicit range check |
 | FastWots32 exact + clear | 32-byte message | 5,205 | 1,476 / 1,542 | 137 | Staged digits and Horner checksum; terminal predicate excluded |
 
+The HORS witness serializer uses minimal ScriptNum indices. At `n=129,t=1`,
+crossing from index 127 to 128 adds one serialized witness byte because 128
+requires a positive sign-padding byte.
+
 Locking figures are `fragment-only`; witness figures are full serialized item
 vectors. Recorded Winternitz stack peaks are from complete local compositions, but the metric
 executor disables the consensus stack check and therefore remains

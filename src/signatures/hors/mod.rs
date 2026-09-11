@@ -401,6 +401,20 @@ mod tests {
     }
 
     #[test]
+    fn index_serialization_boundary_at_128_is_canonical() {
+        let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_locking_script(&public_keys, 1);
+
+        for (index, encoding) in [(127, vec![0x7f]), (128, vec![0x80, 0x00])] {
+            let witness = hors_unlocking_witness(&preimages, &[index]);
+            assert_eq!(witness[0], encoding, "non-canonical index {index}");
+            let result = execute_script_with_inputs(locking.clone(), witness);
+            assert!(result.success, "index {index} failed: {result}");
+        }
+    }
+
+    #[test]
     fn test_hors_multiple_pairs() {
         let n = 10;
         let t = 3;
