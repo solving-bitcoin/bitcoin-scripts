@@ -3,6 +3,16 @@
 Each problem has a falsifiable completion criterion. Update comparisons and
 negative results when closing one.
 
+## OP-020 — BLAKE3 derive-key boundary
+
+Add a mode-correct derive-key construction to the tracked-stack BLAKE3 backend.
+**Complete when:** a deterministic implementation matches the official
+context/material vectors for an empty context, a short context, and a
+multi-block context; records both `DERIVE_KEY_CONTEXT` and
+`DERIVE_KEY_MATERIAL` phases, the derived chaining-key handoff, script bytes,
+witness shape, and combined stack peak; and either executes under the 1,000-item
+limit or records a measured negative result. See [NR-044](negative-results/index.md).
+
 ## OP-019 — PRINCEv2 M-hat circuit frontier
 
 Find a smaller repeated M-hat circuit for generation-time-key encryption.
