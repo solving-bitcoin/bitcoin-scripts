@@ -15,6 +15,12 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
+The u4 byte unpacker is a checked byte-to-nibble conversion boundary: it
+consumes one byte item per invocation, range-checks it, and emits its
+high/low-nibble pair. Its representative 16-byte batch uses a 512-item table,
+zero incremental hint items, and a 546-item combined peak, so consumers must
+price the conversion before composing it with other u4 state.
+
 For terminal one-time authentication, the host may instead encode an unchanged
 message as a fixed-sum vector. The
 [20-byte Winternitz construction](../primitives/winternitz-constant-sum20.md)
