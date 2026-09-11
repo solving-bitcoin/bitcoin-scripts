@@ -1226,3 +1226,14 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-043: Compressed u32 addition loses locking bytes
+
+The canonical compressed ScriptNum adapter for modulo-`2^32` addition measures
+1,016 locking bytes, 11 representative witness bytes, and an 11-item strict
+peak. The ordinary four-byte carry chain measures 78 locking bytes, 20 witness
+bytes, and a 10-item peak at the same two-word boundary. The compressed form
+saves nine witness bytes and six entry items, but adds 938 locking bytes and is
+dominated whenever script size or combined local cost is primary. It remains a
+locally reproduced option for protocols whose binding constraint is witness
+width; this is not a universal lower-bound claim.

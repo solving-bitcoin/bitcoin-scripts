@@ -1,3 +1,4 @@
+use crate::arithmetic::u32::stack::{u32_compress, u32_uncompress};
 use crate::arithmetic::u32::zip::{u32_copy_zip, u32_zip};
 use crate::support::script::*;
 
@@ -103,17 +104,75 @@ pub fn u32_add_drop(a: u32, b: u32) -> Script {
     }
 }
 
+fn certify_compressed_word() -> Script {
+    script! {
+        OP_DUP
+        OP_SIZE
+        5
+        OP_EQUAL
+        OP_IF
+            -2147483648
+            OP_EQUALVERIFY
+        OP_ELSE
+            OP_DUP
+            0
+            OP_ADD
+            OP_EQUALVERIFY
+        OP_ENDIF
+    }
+}
+
+/// Adds two canonical compressed u32 ScriptNums modulo `2^32`.
+///
+/// The top compressed word is added to the compressed word below it. Both
+/// inputs are consumed and one canonical compressed result is returned.
+pub fn u32_compressed_add() -> Script {
+    script! {
+        { certify_compressed_word() }
+        OP_TOALTSTACK
+        { certify_compressed_word() }
+        { u32_uncompress() }
+        OP_FROMALTSTACK
+        { u32_uncompress() }
+        { u32_add_drop(0, 1) }
+        { u32_compress() }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::arithmetic::u32::stack::{u32_equal, u32_equalverify, u32_push};
-    use crate::support::execution::run;
-    use rand::Rng;
+    use crate::support::execution::{execute_script_with_inputs_strict, run};
+    use rand::{Rng, SeedableRng};
+    use rand_chacha::ChaCha20Rng;
+
+    fn scriptnum(value: u32) -> Vec<u8> {
+        let mut bytes = [0u8; 8];
+        let length = bitcoin::script::write_scriptint(&mut bytes, i64::from(value as i32));
+        bytes[..length].to_vec()
+    }
+
+    fn check_compressed_add(a: u32, b: u32) {
+        let expected = a.wrapping_add(b);
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { u32_compressed_add() }
+                { i64::from(expected as i32) }
+                OP_EQUAL
+            },
+            vec![scriptnum(b), scriptnum(a)],
+        );
+        assert!(
+            result.success,
+            "compressed add failed for {a:08x}+{b:08x}: {result}"
+        );
+    }
 
     #[test]
     fn test_u32_add() {
         println!("u32_len: {}", u32_add_drop(1, 0).len());
-        let mut rng = rand::thread_rng();
+        let mut rng = ChaCha20Rng::seed_from_u64(0x4330_4144);
         for _ in 0..1000 {
             let x = rng.gen();
             let y = rng.gen_range(0..=u32::MAX - x);
@@ -163,6 +222,45 @@ mod test {
                 run(script_without_carry);
                 run(script_with_carry);
             }
+        }
+    }
+
+    #[test]
+    fn test_compressed_add_boundaries_and_random_values() {
+        for &(a, b) in &[
+            (0, 0),
+            (1, 1),
+            (0x7fff_ffff, 1),
+            (0x8000_0000, 0x8000_0000),
+            (u32::MAX, 1),
+            (0xffff_fffe, 3),
+        ] {
+            check_compressed_add(a, b);
+        }
+
+        let mut rng = rand::thread_rng();
+        for _ in 0..64 {
+            check_compressed_add(rng.gen(), rng.gen());
+        }
+    }
+
+    #[test]
+    fn test_compressed_add_rejects_noncanonical_inputs() {
+        let cases = [
+            vec![vec![1, 0], scriptnum(2)],
+            vec![vec![0, 0, 0, 0x80], scriptnum(2)],
+            vec![vec![1, 0, 0, 0, 0], scriptnum(2)],
+            vec![scriptnum(1), vec![2, 0]],
+        ];
+        for witness in cases {
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { u32_compressed_add() }
+                    OP_1
+                },
+                witness,
+            );
+            assert!(!result.success, "noncanonical input was accepted: {result}");
         }
     }
 }

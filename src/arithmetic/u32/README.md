@@ -32,6 +32,7 @@ as less-than-or-equal.
 | Fragment | Locking script | Auxiliary unlocking hints | Maximum main-stack depth |
 | --- | ---: | ---: | ---: |
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
+| `u32_compressed_add()` | <!-- metric:u32_compressed_add -->1016<!-- /metric:u32_compressed_add --> bytes | <!-- metric:u32_compressed_add_witness -->11<!-- /metric:u32_compressed_add_witness --> bytes (<!-- metric:u32_compressed_add_witness_max -->13<!-- /metric:u32_compressed_add_witness_max --> max) | <!-- metric:u32_compressed_add_stack -->11<!-- /metric:u32_compressed_add_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
@@ -39,6 +40,27 @@ as less-than-or-equal.
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+
+`u32_compressed_add()` is a checked wire adapter: it accepts two canonical
+compressed u32 ScriptNums, expands them through the existing byte carry chain,
+and returns the canonical compressed representation of the sum modulo `2^32`.
+The top word is added to the word below it. The representative boundary uses
+two data items and zero auxiliary hints; it includes both canonicality checks,
+expansion, byte addition, and recompression, but excludes witness pushes and a
+terminal predicate. The local strict fixture measures
+<!-- metric:u32_compressed_add_static_opcodes -->765<!-- /metric:u32_compressed_add_static_opcodes --> static non-push operations;
+dynamic opcode counting is unavailable in the local executor.
+
+This is a witness-width tradeoff, not a general byte-cost improvement. At the
+representative values it saves nine serialized witness bytes and six entry
+items versus the four-byte `u32_add_drop` baseline, but adds 938 locking bytes
+and one stack item. It is useful only when witness width or item count matters
+more than locking-script bytes. All compressed inputs are treated as hostile:
+non-minimal aliases, negative zero, wrong five-byte values, and malformed
+widths are rejected before expansion.
+The same representative byte baseline has
+<!-- metric:u32_add_drop_witness -->20<!-- /metric:u32_add_drop_witness --> serialized witness bytes and a
+<!-- metric:u32_add_drop_byte_stack -->10<!-- /metric:u32_add_drop_byte_stack --> item strict peak.
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
