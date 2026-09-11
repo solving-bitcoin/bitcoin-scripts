@@ -235,6 +235,44 @@ mod tests {
     }
 
     #[test]
+    fn altstack_verifier_preserves_authenticated_bits() {
+        let bits = [true, false, true, false, true];
+        let preimage = b"altstack-nonce";
+        let commitment = hash_path_commitment(preimage, &bits);
+        let mut witness = bits
+            .iter()
+            .rev()
+            .map(|bit| if *bit { vec![1] } else { vec![] })
+            .collect::<Vec<_>>();
+        witness.push(preimage.to_vec());
+        let result = execute_script_with_inputs(
+            script! {
+                { verify_hash_path_to_altstack(bits.len(), commitment) }
+                for bit in bits.iter().rev() {
+                    OP_FROMALTSTACK
+                    { *bit as u32 }
+                    OP_EQUALVERIFY
+                }
+            },
+            witness,
+        );
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn altstack_verifier_rejects_wrong_opening_and_zero_width() {
+        let width = 8;
+        let commitment = hash_path_integer_commitment(b"bound", 42, width);
+        let wrong = hash_path_integer_witness(b"bound", 43, width);
+        let result = execute_script_with_inputs(
+            script! { { verify_hash_path_to_altstack(width, commitment) } OP_DROP OP_1 },
+            wrong,
+        );
+        assert!(!result.success);
+        assert!(std::panic::catch_unwind(|| verify_hash_path_to_altstack(0, commitment)).is_err());
+    }
+
+    #[test]
     fn digest_can_seed_a_later_path() {
         let alice_preimage = [0x42; 32];
         let alice_bits = [true, false, false, true];

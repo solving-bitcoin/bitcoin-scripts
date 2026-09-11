@@ -15,7 +15,8 @@ use bitcoin_lab::{
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
-        verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
+        verify_four_way_hash_path_to_integer, verify_hash_path_to_altstack,
+        verify_hash_path_to_integer, verify_preimage_length,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -3698,7 +3699,33 @@ fn metrics() -> Vec<Metric> {
             key: "hash_path_integer_stack_31",
             value: max_stack_items(
                 verify_hash_path_to_integer(31, hash_path_commitment),
-                hash_path_witness,
+                hash_path_witness.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_altstack_31",
+            value: script_len(verify_hash_path_to_altstack(31, hash_path_commitment)),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_altstack_witness_31",
+            value: witness_size(&hash_path_witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_altstack_stack_31",
+            value: max_stack_items(
+                script! {
+                    { verify_hash_path_to_altstack(31, hash_path_commitment) }
+                    for _ in 0..31 {
+                        OP_FROMALTSTACK
+                    }
+                    for _ in 0..31 {
+                        OP_DROP
+                    }
+                },
+                hash_path_witness.clone(),
             ),
         },
         Metric {
