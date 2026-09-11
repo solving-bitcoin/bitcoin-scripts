@@ -18,6 +18,8 @@ they do not use BN254 or any other field modulus.
 - `u32_or(a, b, stack_size)`, like XOR and AND, takes distinct word offsets.
   `stack_size` is one plus the number of u32 words above the shared byte-logic
   table. With exactly two working words, the usual value is `3`.
+- `u32_conditional_select()` consumes `condition | when_true | when_false`,
+  normalizes the condition with `OP_0NOTEQUAL`, and returns one complete word.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
 
@@ -37,19 +39,24 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_conditional_select()` | <!-- metric:u32_conditional_select -->9<!-- /metric:u32_conditional_select --> bytes | <!-- metric:u32_conditional_select_witness_min -->10<!-- /metric:u32_conditional_select_witness_min -->–<!-- metric:u32_conditional_select_witness_max -->19<!-- /metric:u32_conditional_select_witness_max --> bytes | <!-- metric:u32_conditional_select_stack -->9<!-- /metric:u32_conditional_select_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
-operation-specific hint is needed. The logic table can be shared by any number
-of XOR, AND, and OR operations in one script.
+operation-specific hint is needed. The conditional selector uses one condition
+item plus two four-byte words, for nine witness items when all inputs come from
+the witness. The logic table can be shared by any number of XOR, AND, and OR
+operations in one script.
 
 ## Security
 
 There is no independent cryptographic security parameter. Arithmetic is exact
 only for byte limbs in `0..=255`; callers accepting adversarial witness values
 must enforce limb range and canonical Script-number encoding where required.
+The conditional selector normalizes any numeric truthy/falsy condition before
+`OP_IF`, so it does not rely on non-minimal tapscript branch values.
 
 ## Script compatibility and standardness
 

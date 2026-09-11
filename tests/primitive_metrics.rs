@@ -2230,6 +2230,26 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_select",
+            value: script_len(u32::stack::u32_conditional_select()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_select_witness_min",
+            value: witness_size(&vec![Vec::new(); 9]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_select_witness_max",
+            value: witness_size(&vec![vec![1]; 9]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_select_stack",
+            value: max_stack_items(u32::stack::u32_conditional_select(), vec![vec![1]; 9]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
             key: "u8_logic_table_push",
             value: script_len(u32::xor::u8_push_xor_table()),
         },

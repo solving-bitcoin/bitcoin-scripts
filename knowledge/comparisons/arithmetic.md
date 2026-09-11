@@ -9,6 +9,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
+| u32 conditional word selection | u32 normalized truthy selector | 9 | 10–19-byte witness; 9-item peak |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |
 | Ed25519 ordinary-domain multiply | 51 biased centered radix-32 digits, 13 signed tables | <!-- metric:ed25519_field_mul -->9893<!-- /metric:ed25519_field_mul --> | 245-byte/51-item incremental hint; certified operands; 523-item strict peak |
@@ -33,6 +34,13 @@ but longer expressions remain modular unless their bound is proved below its
 513-bit composite modulus. Range checks and conversion remain outside a row
 unless its boundary says otherwise; terminal predicates remain excluded from
 both modular-product rows.
+
+The signed-window decoder is a narrow scheduling primitive rather than a
+general field representation. At 32 digits its shared 156-item table saves 564
+bytes over checked conditional extraction, but raises the peak from 194 to 348
+items. The deterministic sweep measures the table at 643 bytes versus 607 for
+the branch baseline at eight digits, and 1,051 versus 1,215 at sixteen; short
+or stack-constrained callers should keep the branch form.
 
 The 9,893-byte Ed25519 row is the current locking-script-size winner for this
 field. It keeps host values in the ordinary field domain but uses a unique
