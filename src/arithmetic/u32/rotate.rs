@@ -38,7 +38,7 @@ pub fn u8_rrot7(i: u32) -> Script {
     }
 }
 
-/// Right rotation of an u32 element by 7 bits
+/// Right rotation of a u32 element by the fixed SHA-256 shift of 7 bits.
 pub fn u32_rrot7() -> Script {
     script! {
         // First Byte
@@ -266,5 +266,33 @@ mod tests {
                 run(script);
             }
         }
+    }
+
+    #[test]
+    fn fixed_rotation7_matches_reference_boundaries() {
+        for value in [0, 1, 0x80, 0x1122_3344, 0x8000_0000, u32::MAX] {
+            let expected = rrot(value, 7);
+            run(script! {
+                { u32_push(value) }
+                { u32_rrot7() }
+                { u32_push(expected) }
+                { u32_equal() }
+                OP_VERIFY
+                OP_1
+            });
+        }
+    }
+
+    #[test]
+    fn fixed_rotation7_rejects_a_short_word() {
+        assert!(std::panic::catch_unwind(|| {
+            crate::support::execution::execute_script(script! {
+                0
+                0
+                0
+                { u32_rrot7() }
+            });
+        })
+        .is_err());
     }
 }

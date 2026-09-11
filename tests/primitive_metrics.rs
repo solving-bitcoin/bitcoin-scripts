@@ -2230,6 +2230,29 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
+            key: "u32_rrot7",
+            value: script_len(u32::rotate::u32_rrot7()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_rrot7_witness",
+            value: witness_size(&vec![vec![0u8]; 4]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_rrot7_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(0x0123_4567) }
+                    { u32::rotate::u32_rrot7() }
+                    { u32::stack::u32_drop() }
+                    OP_1
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
             key: "u8_logic_table_push",
             value: script_len(u32::xor::u8_push_xor_table()),
         },
