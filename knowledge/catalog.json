@@ -1,8 +1,97 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-11",
   "cost_model": "knowledge/cost-model.md",
   "records": [
+    {
+      "id": "arithmetic/u32-compressed-lessthan",
+      "name": "Compressed total-domain u32 unsigned less-than",
+      "class": "arithmetic/word",
+      "summary": "Canonical two-item ScriptNum wire adapter for total unsigned u32 ordering.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u32-compressed-lessthan.md",
+      "implementation": "src/arithmetic/u32/cmp.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::cmp::tests::test_u32_compressed_lessthan_boundaries_and_random_values",
+        "arithmetic::u32::cmp::tests::test_u32_compressed_lessthan_rejects_noncanonical_inputs",
+        "primitive_metrics::u32_compressed_lessthan_metrics_are_current",
+        "examples/u32_compressed_lessthan_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "compact-wire",
+        "canonical-encoding",
+        "sign-magnitude-normalization"
+      ],
+      "security": "No independent cryptographic claim. Both compressed words are hostile and must pass exact canonical-wire checks before sign correction and comparison; complete protocol binding and deployment validation remain open.",
+      "stack_contract": "... word_a word_b -> ... (word_a < word_b); both inputs are consumed and unrelated lower stack state is preserved.",
+      "configurations": [
+        {
+          "id": "representative-01020304-less-than-05060708",
+          "label": "Compressed unsigned less-than versus four-byte baseline",
+          "parameters": {
+            "a": "0x01020304",
+            "b": "0x05060708",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 2
+          },
+          "includes": "fragment-with-memory: two canonical-wire checks, sign/magnitude normalization, unsigned comparison, and cross-sign correction; excludes input pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 124,
+          "witness_bytes": 11,
+          "witness_bytes_max": 8,
+          "max_stack_items": 6,
+          "executed_opcodes": null,
+          "validation_weight": 0,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 124,
+          "metric_keys": [
+            "u32_compressed_lessthan",
+            "u32_compressed_lessthan_witness",
+            "u32_compressed_lessthan_witness_max",
+            "u32_compressed_lessthan_stack"
+          ]
+        },
+        {
+          "id": "byte-baseline",
+          "label": "Four-byte u32_lessthan() baseline",
+          "parameters": {
+            "a": "0x01020304",
+            "b": "0x05060708",
+            "complete_input_items": 8
+          },
+          "includes": "fragment-only: four-byte unsigned comparison; excludes operand pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 38,
+          "witness_bytes": 17,
+          "witness_bytes_max": 17,
+          "max_stack_items": 9,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 38,
+          "metric_keys": [
+            "u32_lessthan_witness",
+            "u32_lessthan_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Dominated by the four-byte baseline for locking-script bytes",
+        "Dynamic opcode count is unavailable from the local executor",
+        "Bitcoin Core, complete-transaction, relay-policy, and canonical witness-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
     {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",
