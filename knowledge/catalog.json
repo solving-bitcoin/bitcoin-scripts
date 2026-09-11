@@ -2178,7 +2178,8 @@
       "implementation": "src/hashes/shake256/mod.rs",
       "documentation": "src/hashes/shake256/README.md",
       "tests": [
-        "hashes::shake256::tests"
+        "hashes::shake256::tests::hashes_standard_vectors_to_1024_bytes",
+        "hashes::shake256::tests::raw_output_exceeds_strict_stack_limit"
       ],
       "references": [
         "fips-202",
@@ -2199,21 +2200,25 @@
             "output_bytes": 1024,
             "message_bytes_max": 511
           },
-          "includes": "fragment-only: full sponge and squeeze; checked byte metrics not yet recorded",
-          "script_bytes": null,
-          "witness_bytes": null,
-          "witness_bytes_max": null,
-          "max_stack_items": null,
+          "includes": "fragment-with-memory: full sponge and squeeze; message pushes, output comparison, terminal predicate, and witness serialization excluded from script size",
+          "script_bytes": 15927814,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 1709,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": null,
           "per_use_script_bytes": null,
-          "metric_keys": []
+          "metric_keys": [
+            "shake256_32_1024",
+            "shake256_witness_32",
+            "shake256_stack_32_1024"
+          ]
         }
       ],
       "limitations": [
         "Output alone exceeds the 1,000-item consensus stack limit",
-        "No metric snapshot yet"
+        "The representative 32-byte input exceeds the 1,000-item stack limit with the complete 1,024-byte output"
       ],
       "open_problems": [
         "OP-003",
