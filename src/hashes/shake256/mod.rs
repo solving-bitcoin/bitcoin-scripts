@@ -447,7 +447,9 @@ mod tests {
     use super::*;
     use crate::{
         arithmetic::u32::xor::u8_push_xor_table,
-        support::execution::execute_script_without_stack_limit,
+        support::execution::{
+            execute_script_with_inputs_strict, execute_script_without_stack_limit,
+        },
     };
 
     fn push_message(message: &[u8]) -> Script {
@@ -602,5 +604,18 @@ mod tests {
     #[test]
     fn rejects_unsupported_message_length() {
         assert!(std::panic::catch_unwind(|| shake256(512)).is_err());
+    }
+
+    #[test]
+    fn raw_output_exceeds_strict_stack_limit() {
+        let result = execute_script_with_inputs_strict(script! {{ shake256(0) }}, vec![]);
+        assert!(
+            !result.success,
+            "raw SHAKE256 output unexpectedly passed: {result}"
+        );
+        assert!(
+            result.stats.max_nb_stack_items >= 1_000,
+            "strict execution stopped before the stack boundary: {result}"
+        );
     }
 }
