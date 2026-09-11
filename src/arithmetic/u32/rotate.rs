@@ -267,4 +267,22 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn fixed_byte_rotations_match_reference() {
+        for (fragment, expected) in [
+            (u32_rrot8(), 0x4411_2233),
+            (u32_rrot16(), 0x3344_1122),
+            (script! { 3 OP_ROLL }, 0x2233_4411),
+        ] {
+            let result = crate::support::execution::execute_script(script! {
+                { u32_push(0x1122_3344) }
+                { fragment }
+                { u32_push(expected) }
+                { u32_equal() }
+                OP_VERIFY OP_TRUE
+            });
+            assert!(result.success, "fixed rotation failed: {result}");
+        }
+    }
 }
