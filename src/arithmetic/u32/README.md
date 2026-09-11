@@ -18,6 +18,8 @@ they do not use BN254 or any other field modulus.
 - `u32_or(a, b, stack_size)`, like XOR and AND, takes distinct word offsets.
   `stack_size` is one plus the number of u32 words above the shared byte-logic
   table. With exactly two working words, the usual value is `3`.
+- `zero::u32_iszero()` consumes one four-byte word, range-checks every byte,
+  and returns one numeric Boolean.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
 
@@ -39,6 +41,7 @@ as less-than-or-equal.
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+| `u32_iszero()` | <!-- metric:u32_zero -->53<!-- /metric:u32_zero --> bytes | <!-- metric:u32_zero_witness -->13<!-- /metric:u32_zero_witness --> bytes | <!-- metric:u32_zero_stack -->6<!-- /metric:u32_zero_stack --> items; <!-- metric:u32_zero_opcodes -->37<!-- /metric:u32_zero_opcodes --> static non-push opcodes |
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
@@ -50,6 +53,10 @@ of XOR, AND, and OR operations in one script.
 There is no independent cryptographic security parameter. Arithmetic is exact
 only for byte limbs in `0..=255`; callers accepting adversarial witness values
 must enforce limb range and canonical Script-number encoding where required.
+
+`u32_iszero` performs the byte range checks itself, then combines the four
+byte-wise zero predicates without a lookup table. It returns a numeric Boolean
+and does not provide a clean-stack or terminal-script wrapper.
 
 ## Script compatibility and standardness
 

@@ -275,6 +275,71 @@
       ]
     },
     {
+      "id": "arithmetic/u32-zero",
+      "name": "Checked u32 zero predicate",
+      "class": "arithmetic/word",
+      "summary": "Range-checked zero predicate for a four-byte u32 word without lookup-table memory.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u32-zero.md",
+      "implementation": "src/arithmetic/u32/zero.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "src/arithmetic/u32/zero.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "stack-routing"
+      ],
+      "security": "Every hostile byte is range-checked before its zero predicate; the check proves numeric byte range but not byte-unique ScriptNum encoding or a terminal predicate.",
+      "stack_contract": "Consumes four byte-valued limbs in most-significant-byte-first order and replaces them with one numeric Boolean. No lookup table remains resident.",
+      "configurations": [
+        {
+          "id": "checked-word",
+          "label": "u32_iszero()",
+          "parameters": {
+            "byte_count": 4,
+            "input_check": true,
+            "data_items": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: four byte range checks, four zero predicates, Boolean accumulation, and no table memory; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 53,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 6,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 53,
+          "metric_keys": [
+            "u32_zero",
+            "u32_zero_witness",
+            "u32_zero_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Numeric Boolean output is not a complete clean-stack script",
+        "Numeric range checks do not establish byte-unique ScriptNum encoding",
+        "Static non-push opcode count is not an executed-opcode measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u31",
       "name": "u31 prime-field arithmetic",
       "class": "arithmetic/field",

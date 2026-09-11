@@ -6,4 +6,5 @@ pub mod rotate;
 pub mod stack;
 pub mod sub;
 pub mod xor;
+pub mod zero;
 pub mod zip;
