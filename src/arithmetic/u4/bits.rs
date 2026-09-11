@@ -17,41 +17,59 @@ pub const U4_BITS_TABLE_ITEMS: u32 = 61;
 /// main/alt-stack items. Callers with preserved state must reduce the batch.
 pub const U4_BITS_MAX_BATCH: u32 = (1_000 - U4_BITS_TABLE_ITEMS) / 4;
 
-fn table_value_at_depth(depth: u32) -> u32 {
+fn table_value_at_depth(depth: u32, little_endian: bool) -> u32 {
     if depth == 0 {
         return 0;
     }
 
     let nibble = (depth + 3) / 4;
-    let bit_in_be_order = depth - (4 * nibble - 3);
-    (nibble >> (3 - bit_in_be_order)) & 1
+    let bit_in_nibble = depth - (4 * nibble - 3);
+    let bit = if little_endian {
+        bit_in_nibble
+    } else {
+        3 - bit_in_nibble
+    };
+    (nibble >> bit) & 1
 }
 
-/// Push the 61-item staggered lookup table.
-///
-/// The item at depth `4*x-3 ..= 4*x` is the big-endian bit sequence of
-/// canonical nibble `x` for every `x` in `1..=15`. Depth zero is unused.
-pub fn u4_push_to_be_bits_table() -> Script {
+fn push_to_bits_table(little_endian: bool) -> Script {
     script! {
         for depth in (0..U4_BITS_TABLE_ITEMS).rev() {
-            { table_value_at_depth(depth) }
+            { table_value_at_depth(depth, little_endian) }
         }
     }
 }
 
+/// Push the 61-item staggered big-endian lookup table.
+///
+/// The item at depth `4*x-3 ..= 4*x` is the big-endian bit sequence of
+/// canonical nibble `x` for every `x` in `1..=15`. Depth zero is unused.
+pub fn u4_push_to_be_bits_table() -> Script {
+    push_to_bits_table(false)
+}
+
+/// Push the 61-item staggered little-endian lookup table.
+pub fn u4_push_to_le_bits_table() -> Script {
+    push_to_bits_table(true)
+}
+
+fn drop_bits_table() -> Script {
+    u4_drop(U4_BITS_TABLE_ITEMS)
+}
+
 /// Drop the complete staggered nibble-to-bits table.
 pub fn u4_drop_to_be_bits_table() -> Script {
-    u4_drop(U4_BITS_TABLE_ITEMS)
+    drop_bits_table()
 }
 
 /// Convert one nibble immediately below the table and push its bits to altstack.
 ///
 /// Before: `preserved | nibble | table`, where `table` is the 61-item output of
-/// [`u4_push_to_be_bits_table`]. After: `preserved | table` on the main stack,
-/// with `bit3 | bit2 | bit1 | bit0` newly pushed to the altstack in that order.
-/// When `check_input` is true, the numeric nibble is first constrained to
-/// `0..=15`. When false, the caller must already have established that range;
-/// otherwise `OP_PICK` can address outside the table.
+/// either table-push helper. After: `preserved | table` on the main stack, with
+/// the table's four bits newly pushed to the altstack in table order. When
+/// `check_input` is true, the numeric nibble is first constrained to `0..=15`.
+/// When false, the caller must already have established that range; otherwise
+/// `OP_PICK` can address outside the table.
 pub fn u4_nibble_below_bits_table_toaltstack(check_input: bool) -> Script {
     script! {
         { U4_BITS_TABLE_ITEMS }
@@ -101,7 +119,7 @@ pub fn u4_nibbles_to_be_bits_toaltstack(nibble_count: u32, check_inputs: bool) -
         for _ in 0..nibble_count {
             { u4_nibble_below_bits_table_toaltstack(check_inputs) }
         }
-        { u4_drop_to_be_bits_table() }
+        { drop_bits_table() }
     }
 }
 
@@ -114,6 +132,28 @@ pub fn u4_nibbles_to_be_bits_toaltstack(nibble_count: u32, check_inputs: bool) -
 pub fn u4_nibbles_to_be_bits(nibble_count: u32, check_inputs: bool) -> Script {
     script! {
         { u4_nibbles_to_be_bits_toaltstack(nibble_count, check_inputs) }
+        for _ in 0..4 * nibble_count {
+            OP_FROMALTSTACK
+        }
+    }
+}
+
+/// Consume a contiguous nibble batch and replace it with little-endian bits.
+pub fn u4_nibbles_to_le_bits_toaltstack(nibble_count: u32, check_inputs: bool) -> Script {
+    validate_batch_size(nibble_count);
+    script! {
+        { u4_push_to_le_bits_table() }
+        for _ in 0..nibble_count {
+            { u4_nibble_below_bits_table_toaltstack(check_inputs) }
+        }
+        { drop_bits_table() }
+    }
+}
+
+/// Consume a contiguous nibble batch and replace it with little-endian bits.
+pub fn u4_nibbles_to_le_bits(nibble_count: u32, check_inputs: bool) -> Script {
+    script! {
+        { u4_nibbles_to_le_bits_toaltstack(nibble_count, check_inputs) }
         for _ in 0..4 * nibble_count {
             OP_FROMALTSTACK
         }
@@ -142,17 +182,40 @@ mod tests {
         assert!(result.success, "batch conversion failed: {result}");
     }
 
+    fn verify_little_endian_batch(inputs: &[u32], check_inputs: bool) {
+        let result = execute_script(script! {
+            for input in inputs {
+                { *input }
+            }
+            { u4_nibbles_to_le_bits(inputs.len() as u32, check_inputs) }
+            for input in inputs.iter().rev() {
+                for bit in 0..4 {
+                    { (input >> bit) & 1 }
+                    OP_EQUALVERIFY
+                }
+            }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "little-endian batch conversion failed: {result}"
+        );
+    }
+
     #[test]
     fn exhaustive_single_nibbles_are_correct() {
         for nibble in 0..16 {
             verify_batch(&[nibble], true);
             verify_batch(&[nibble], false);
+            verify_little_endian_batch(&[nibble], true);
+            verify_little_endian_batch(&[nibble], false);
         }
     }
 
     #[test]
     fn checked_batch_preserves_nibble_and_bit_order() {
         verify_batch(&(0..16).collect::<Vec<_>>(), true);
+        verify_little_endian_batch(&(0..16).collect::<Vec<_>>(), true);
     }
 
     #[test]
@@ -164,6 +227,16 @@ mod tests {
                 OP_TRUE
             });
             assert!(!result.success, "accepted invalid nibble {invalid}");
+
+            let result = execute_script(script! {
+                { invalid }
+                { u4_nibbles_to_le_bits(1, true) }
+                OP_TRUE
+            });
+            assert!(
+                !result.success,
+                "accepted invalid little-endian nibble {invalid}"
+            );
         }
     }
 
@@ -185,6 +258,11 @@ mod tests {
         assert!(std::panic::catch_unwind(|| u4_nibbles_to_be_bits(0, true)).is_err());
         assert!(std::panic::catch_unwind(|| {
             u4_nibbles_to_be_bits(U4_BITS_MAX_BATCH + 1, true)
+        })
+        .is_err());
+        assert!(std::panic::catch_unwind(|| u4_nibbles_to_le_bits(0, true)).is_err());
+        assert!(std::panic::catch_unwind(|| {
+            u4_nibbles_to_le_bits(U4_BITS_MAX_BATCH + 1, true)
         })
         .is_err());
     }
