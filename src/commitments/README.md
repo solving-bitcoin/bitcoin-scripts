@@ -1,6 +1,6 @@
 # Integer commitments
 
-This module contains three constructions that authenticate a small integer and
+This module contains four constructions that authenticate a small integer and
 return it to the surrounding Bitcoin Script. They are commitment primitives,
 not general-purpose hash functions.
 
@@ -10,10 +10,12 @@ not general-purpose hash functions.
   integer.
 - **Four-way hash path:** two bits select one of four fixed-length hash
   codewords per base-4 digit, reducing witness items and peak stack usage.
+- **Ternary hash path:** three canonical trits select three fixed-length
+  mixed-hash codewords and reconstruct a base-3 integer.
 - **Preimage length:** a SHA-256 preimage is authenticated and its byte length,
   minus a public offset, becomes the committed integer.
 
-All three are experimental. In particular, a hash-path commitment is
+All four are experimental. In particular, a hash-path commitment is
 deterministic and does not hide an opening when both its preimage and bits come
 from small enumerable spaces.
 
@@ -54,6 +56,19 @@ from small enumerable spaces.
 - The generic verifier consumes digits or retains them on the altstack; the
   integer verifier hashes and reconstructs them most-significant first in one
   pass. There is no default variant.
+
+### Ternary hash path
+
+- `bit_width`: required, with integer reconstruction limited to `1..=31`.
+  The adapter uses the smallest fixed number of base-3 trits that covers the
+  full width (`20` trits at 31 bits).
+- `preimage`: caller-chosen byte string subject to the same secrecy and
+  520-byte stack-element obligations as the binary and four-way paths.
+- `commitment`: 20 bytes. The canonical codewords are `0 -> SS`, `1 -> SR`,
+  and `2 -> RS`, leaving `RR` unused. Non-canonical and out-of-range trit
+  encodings are rejected explicitly.
+- The integer verifier hashes least-significant trits first, then reconstructs
+  the base-3 value. There is no default variant.
 
 ## Rolling composition without byte concatenation
 
@@ -132,7 +147,13 @@ the tests with the listed witness.
 | --- | ---: | ---: | ---: |
 | `verify_hash_path_to_integer(31, commitment)` | <!-- metric:hash_path_integer_31 -->520<!-- /metric:hash_path_integer_31 --> bytes | <!-- metric:hash_path_integer_witness_31 -->78<!-- /metric:hash_path_integer_witness_31 --> bytes (32-byte nonce, 31 bits) | <!-- metric:hash_path_integer_stack_31 -->34<!-- /metric:hash_path_integer_stack_31 --> |
 | `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->438<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->19<!-- /metric:four_way_hash_path_integer_stack_31 --> |
+| `verify_ternary_hash_path_to_integer(31, commitment)` | <!-- metric:ternary_hash_path_integer_31 -->924<!-- /metric:ternary_hash_path_integer_31 --> bytes | <!-- metric:ternary_hash_path_integer_witness_31 -->63<!-- /metric:ternary_hash_path_integer_witness_31 --> bytes (32-byte nonce, 20 trits) | <!-- metric:ternary_hash_path_integer_stack_31 -->24<!-- /metric:ternary_hash_path_integer_stack_31 --> |
 | `verify_preimage_length(commitment)` | <!-- metric:preimage_length_default -->44<!-- /metric:preimage_length_default --> bytes | <!-- metric:preimage_length_witness_min -->18<!-- /metric:preimage_length_witness_min -->–<!-- metric:preimage_length_witness_max -->524<!-- /metric:preimage_length_witness_max --> bytes (16–520-byte preimage) | <!-- metric:preimage_length_stack -->3<!-- /metric:preimage_length_stack --> |
+
+The benchmark executes the representative witness under the strict local
+tapscript-context executor. Its `opcode_count` reports `0` because that
+interpreter counter covers legacy execution and is unavailable for tapscript;
+no executed-opcode total is claimed for this fragment.
 
 ## Security
 
@@ -154,6 +175,12 @@ double-hash opcodes are compositions of the former primitives. The fixed-length
 code avoids those structural aliases but is still a non-standard construction
 without a dedicated cryptanalysis.
 
+The ternary path uses three of the four fixed two-hash codewords. Its explicit
+canonical trit checks prevent alternate byte encodings from selecting the same
+digit, but the construction remains a non-standard mixed-hash scheme without
+dedicated cryptanalysis. For ordinary 31-bit integer metrics it is expected to
+lose to the four-way path; its purpose is a native three-valued state encoding.
+
 The preimage-length construction uses SHA-256, giving generic 128-bit collision
 resistance and 256-bit preimage/second-preimage resistance. Its hiding property
 depends on unpredictable preimage bytes; length alone is not secret once the
@@ -173,6 +200,9 @@ more restrictive: its compact range proof relies on tapscript's
 consensus-enforced `MINIMALIF`. It is unsafe under legacy or P2WSH consensus
 semantics without adding explicit range checks, even though every emitted
 opcode exists there. Both measured 31-bit variants are tapscript-only.
+The ternary path performs its own exact trit checks, so it does not rely on
+`MINIMALIF`; its measured 31-bit fragment is still evaluated only in the local
+tapscript-context executor.
 Tapscript still enforces the 1,000-item combined stack limit, the 520-byte
 per-item limit, witness weight, and execution budget.
 
@@ -183,7 +213,7 @@ it with a predicate that leaves one truthy cleanstack item. See
 
 ## Witness and hints
 
-Neither construction uses arithmetic hints.
+These constructions use no arithmetic hints.
 
 For the integer hash path, witness serialization order is `bitN-1, ...,
 bit0, preimage`; the preimage is therefore on top at script entry. A false bit
@@ -198,6 +228,12 @@ helper produces minimal encodings, and the local executor's `MINIMALDATA`
 setting rejects non-minimal test witnesses. Numeric minimality is not itself a
 tapscript consensus rule, so callers must treat the digit value, rather than a
 unique byte representation, as committed.
+
+For the ternary integer path, witness order is `most_significant_trit`, ...,
+`least_significant_trit`, `preimage`. Zero is the empty vector and `1`/`2` are
+exactly `[01]`/`[02]`; padded, negative-zero, and other encodings are rejected.
+The helper produces this canonical encoding and the verifier reconstructs the
+integer in base 3.
 
 For the preimage-length construction, the witness contains the committed
 preimage as one item. The preimage is consumed and only the resulting integer
@@ -220,6 +256,9 @@ remains.
 - `verify_four_way_hash_path`: `... digitN-1 ... digit0 preimage -> ... true`.
 - `verify_four_way_hash_path_to_altstack` leaves digit `N-1` on top of the
   altstack.
+- `verify_ternary_hash_path_to_integer`: `... tritN-1 ... trit0 preimage ->
+  ... value`, with the trits restored from the altstack during reconstruction.
+- `verify_ternary_hash_path`: `... tritN-1 ... trit0 preimage -> ... true`.
 - `verify_preimage_length`: `... preimage -> ... length_minus_offset`.
 
 The hash-path construction generalizes the former fixed-width `BitHash128`

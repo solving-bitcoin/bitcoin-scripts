@@ -1226,3 +1226,13 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+## NR-043: Ternary mixed-hash paths lose to four-way integer paths
+
+The ternary path was implemented as a native three-valued alternative using
+`0 -> SS`, `1 -> SR`, and `2 -> RS`, with explicit canonical trit checks. At
+31 bits and a 32-byte preimage it measures 924 script bytes, 63 serialized
+witness bytes, and a 24-item peak, versus 438/61/19 for the four-way path.
+It is therefore dominated for the measured ordinary integer objective and is
+not retained as a byte-efficiency improvement. The result does not rule out a
+ternary path when protocol state is naturally three-valued or when a different
+consumer amortizes its dispatcher.

@@ -3,6 +3,16 @@
 Each problem has a falsifiable completion criterion. Update comparisons and
 negative results when closing one.
 
+## OP-020 — Ternary commitment composition frontier
+
+Determine whether the ternary mixed-hash path becomes useful when a protocol
+consumes native three-valued state rather than reconstructing an ordinary
+integer. **Complete when:** at least one ternary protocol composition is
+implemented with its terminal predicates and surrounding state, compared on a
+like-for-like boundary against binary and four-way alternatives, and the
+three-codeword mixed-hash binding assumption receives an independent analysis
+or a pinned Core differential fixture.
+
 ## OP-019 — PRINCEv2 M-hat circuit frontier
 
 Find a smaller repeated M-hat circuit for generation-time-key encryption.

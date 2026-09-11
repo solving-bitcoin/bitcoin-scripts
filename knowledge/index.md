@@ -6,7 +6,7 @@ reproducible constructions. The local Rust library is one source of evidence;
 it is not the boundary of the atlas.
 
 The catalog is explicitly time-scoped. Its current review date is
-**2026-09-04**. A record's `as_of` field says when its claims were last checked.
+**2026-09-11**. A record's `as_of` field says when its claims were last checked.
 Missing records are unknown coverage, not proof of nonexistence.
 
 ## How to answer a research question
