@@ -20,6 +20,11 @@ or `OP_MUL` opcodes.
   Script integers supplied on the stack. Their product and every intermediate
   arithmetic value must also fit the four-byte Script-number domain.
 
+Minimal ScriptNum serialization crosses byte boundaries at `127/128`,
+`255/256`, and `-128/-129`; positive values whose high data bit is set gain a
+sign-preserving byte. These encoding changes do not alter the Euclidean
+division contract. The test suite exercises each boundary explicitly.
+
 ## Script metrics
 
 Sizes are generated locking fragments. Witness sizes use Bitcoin's serialized

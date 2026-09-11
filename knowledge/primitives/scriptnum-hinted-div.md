@@ -8,6 +8,8 @@ constant and derives the Euclidean remainder without `OP_DIV` or `OP_MOD`.
 - **Evidence:** locally reproduced, including wrong-hint rejection.
 - **Trust boundary:** the quotient is hostile witness data and is constrained
   by recomposition and remainder bounds.
+- **Encoding boundary:** the locally reproduced division tests cover the
+  minimal ScriptNum transitions at `127/128`, `255/256`, and `-128/-129`.
 - **Representative result:** `hinted_div_rem(8)` is 13 bytes with a 3–11 byte
   serialized witness in the measured range.
 - **Limitation:** not a general wide-integer division primitive.

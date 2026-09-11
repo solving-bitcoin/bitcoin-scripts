@@ -146,6 +146,12 @@ mod tests {
                 -1,
                 0,
                 1,
+                -129,
+                -128,
+                127,
+                128,
+                255,
+                256,
                 119,
                 123_459,
                 2_147_483_647,
@@ -154,6 +160,13 @@ mod tests {
             }
         }
         assert_division(-2_147_483_647, 1);
+    }
+
+    #[test]
+    fn preserves_division_across_scriptnum_sign_byte_boundaries() {
+        for dividend in [-129, -128, 127, 128, 255, 256] {
+            assert_division(dividend, 1);
+        }
     }
 
     #[test]
