@@ -15,6 +15,16 @@ The current zero-key baseline is 6,136 bytes and a 633-item peak. Table packing
 and algebraic sketches without a priced executable circuit do not satisfy
 this criterion; see [the layout search](negative-results/princev2-layout.md).
 
+## OP-022 — ScriptNum byte canonicality adapter
+
+Define and measure a consensus-scoped adapter that rejects negative-zero and
+redundant sign padding for hostile ScriptNum byte strings. **Complete when:**
+the adapter has executable boundary tests, distinguishes numeric equality from
+raw-byte equality, and reports its conversion cost under legacy, P2WSH, and
+tapscript rules. The current enabled opcode set has no general byte-slicing or
+`NUM2BIN` normalization path, so range checks alone do not close this problem;
+see [NR-051](negative-results/index.md#nr-051-general-scriptnum-byte-canonicality-is-unavailable-with-current-opcodes).
+
 ## OP-001 — Strict execution matrix
 
 Add explicit legacy/P2WSH/tapscript strict and research-unlimited execution
