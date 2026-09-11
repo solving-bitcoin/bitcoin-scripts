@@ -267,4 +267,29 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn byte_reorder_covers_all_offsets() {
+        for (offset, expected) in [
+            (0, 0x4433_2211),
+            (1, 0x1144_3322),
+            (2, 0x2211_4433),
+            (3, 0x3322_1144),
+        ] {
+            let result = crate::support::execution::execute_script(script! {
+                { u32_push(0x1122_3344) }
+                { byte_reorder(offset) }
+                { u32_push(expected) }
+                { u32_equal() }
+                OP_VERIFY
+                OP_TRUE
+            });
+            assert!(result.success, "offset {offset} failed: {result}");
+        }
+    }
+
+    #[test]
+    fn byte_reorder_rejects_invalid_offsets() {
+        assert!(std::panic::catch_unwind(|| byte_reorder(4)).is_err());
+    }
 }
