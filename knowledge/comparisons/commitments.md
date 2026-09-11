@@ -4,6 +4,7 @@
 | --- | --- | ---: | ---: | ---: | --- |
 | Preimage length | `len(preimage)-offset` | 44 | 18–524 | 3 | Range coupled to item size |
 | Mixed hash path | 31 authenticated bits | 520 | 78 | 34 | Mixed-hash assumption; wider opcode cost |
+| Two-round mixed hash chain | 4-bit path → 3-bit path | 110 | 45 | 10 | Checkpoint order and widths are protocol-bound |
 | Four-way mixed hash path | 16 authenticated base-4 digits / 31 bits | 453 | 61 | 19 | Tapscript `MINIMALIF` required; non-standard mixed-hash code |
 | Lamport 2-bit | Select one of four preimages | 96 | 11 | small | Strictly one-time |
 

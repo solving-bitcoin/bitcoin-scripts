@@ -14,8 +14,10 @@ use bitcoin_lab::{
     ciphers::{aes, prince},
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
-        hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
-        verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
+        hash_path_commitment as compute_hash_path_commitment, hash_path_integer_commitment,
+        hash_path_integer_witness, preimage_length_commitment,
+        verify_four_way_hash_path_to_integer, verify_hash_path_chain, verify_hash_path_to_integer,
+        verify_preimage_length,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -1849,6 +1851,26 @@ fn metrics() -> Vec<Metric> {
         four_way_hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let four_way_hash_path_witness =
         four_way_hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+    let hash_path_chain_alice_preimage = [0x42; 32];
+    let hash_path_chain_alice_bits = [true, false, false, true];
+    let hash_path_chain_bob_bits = [false, true, true];
+    let hash_path_chain_alice_commitment =
+        compute_hash_path_commitment(&hash_path_chain_alice_preimage, &hash_path_chain_alice_bits);
+    let hash_path_chain_bob_commitment =
+        compute_hash_path_commitment(&hash_path_chain_alice_commitment, &hash_path_chain_bob_bits);
+    let hash_path_chain_witness = hash_path_chain_bob_bits
+        .iter()
+        .rev()
+        .chain(hash_path_chain_alice_bits.iter().rev())
+        .map(|bit| if *bit { vec![1] } else { vec![] })
+        .chain(std::iter::once(hash_path_chain_alice_preimage.to_vec()))
+        .collect::<Vec<_>>();
+    let hash_path_chain_script = verify_hash_path_chain(
+        hash_path_chain_alice_bits.len(),
+        hash_path_chain_alice_commitment,
+        hash_path_chain_bob_bits.len(),
+        hash_path_chain_bob_commitment,
+    );
 
     let length_preimage = vec![0x24; 32];
     let length_commitment = preimage_length_commitment(&length_preimage);
@@ -3700,6 +3722,26 @@ fn metrics() -> Vec<Metric> {
                 verify_hash_path_to_integer(31, hash_path_commitment),
                 hash_path_witness,
             ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_chain_4_3",
+            value: script_len(hash_path_chain_script.clone()),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_chain_4_3_witness",
+            value: witness_size(&hash_path_chain_witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_chain_4_3_stack",
+            value: max_stack_items(hash_path_chain_script.clone(), hash_path_chain_witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "hash_path_chain_4_3_opcodes",
+            value: static_non_push_opcodes(hash_path_chain_script),
         },
         Metric {
             readme: "src/commitments/README.md",

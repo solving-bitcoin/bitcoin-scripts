@@ -97,7 +97,9 @@ complete fairness or poker protocol.
   composition.
 - **Evidence:** `locally-reproduced` with canonical-bit, wrong-opening,
   boundary, and nested-composition tests.
-- **Representative result:** 31 bits use a 520-byte fragment, 78-byte serialized
+- **Representative result:** a two-round 4+3-bit chain uses 110 script bytes,
+  45 serialized witness bytes, 68 static non-push opcodes, and 10 stack items.
+  The 31-bit integer path uses a 520-byte fragment, 78-byte serialized
   witness, and 34 stack items.
 - **Security:** the final 160-bit digest caps generic collision resistance at
   80 bits and generic preimage/second-preimage resistance at 160 bits. Binding
