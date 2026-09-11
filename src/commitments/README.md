@@ -17,6 +17,15 @@ All three are experimental. In particular, a hash-path commitment is
 deterministic and does not hide an opening when both its preimage and bits come
 from small enumerable spaces.
 
+### TapBranch u4 hash
+
+`tapbranch_hash_u4` computes BIP341's `TapBranch` tagged hash over two already
+lexicographically ordered 32-byte nodes. The witness supplies `left || right`
+as 128 canonical u4 items; the fragment inserts the fixed
+`SHA256("TapBranch") || SHA256("TapBranch")` prefix and reuses the u4 SHA-256
+implementation. It returns the 32-byte digest as 64 u4 items. Ordering is a
+caller precondition, not an in-script comparison.
+
 ## Parameters
 
 ### Hash path
@@ -133,6 +142,12 @@ the tests with the listed witness.
 | `verify_hash_path_to_integer(31, commitment)` | <!-- metric:hash_path_integer_31 -->520<!-- /metric:hash_path_integer_31 --> bytes | <!-- metric:hash_path_integer_witness_31 -->78<!-- /metric:hash_path_integer_witness_31 --> bytes (32-byte nonce, 31 bits) | <!-- metric:hash_path_integer_stack_31 -->34<!-- /metric:hash_path_integer_stack_31 --> |
 | `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->438<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->19<!-- /metric:four_way_hash_path_integer_stack_31 --> |
 | `verify_preimage_length(commitment)` | <!-- metric:preimage_length_default -->44<!-- /metric:preimage_length_default --> bytes | <!-- metric:preimage_length_witness_min -->18<!-- /metric:preimage_length_witness_min -->–<!-- metric:preimage_length_witness_max -->524<!-- /metric:preimage_length_witness_max --> bytes (16–520-byte preimage) | <!-- metric:preimage_length_stack -->3<!-- /metric:preimage_length_stack --> |
+| `tapbranch_hash_u4()` | <!-- metric:tapbranch_hash_u4 -->1106745<!-- /metric:tapbranch_hash_u4 --> bytes | <!-- metric:tapbranch_hash_u4_witness -->161<!-- /metric:tapbranch_hash_u4_witness --> bytes, <!-- metric:tapbranch_hash_u4_witness_items -->128<!-- /metric:tapbranch_hash_u4_witness_items --> items | <!-- metric:tapbranch_hash_u4_hints -->0<!-- /metric:tapbranch_hash_u4_hints --> (none) | <!-- metric:tapbranch_hash_u4_stack -->969<!-- /metric:tapbranch_hash_u4_stack --> |
+
+The TapBranch row measures the complete fixed-prefix plus SHA-256 fragment,
+including its 128-item dynamic witness and all temporary tables. Its static
+non-push opcode count is <!-- metric:tapbranch_hash_u4_opcodes -->671107<!-- /metric:tapbranch_hash_u4_opcodes -->; the local executor does not expose a
+consensus validation-budget count.
 
 ## Security
 
@@ -176,6 +191,12 @@ opcode exists there. Both measured 31-bit variants are tapscript-only.
 Tapscript still enforces the 1,000-item combined stack limit, the 520-byte
 per-item limit, witness weight, and execution budget.
 
+The TapBranch u4 fragment uses only available opcodes, but its measured
+1,106,745-byte serialization exceeds the 10,000-byte consensus script-size
+limit. It is therefore consensus-incompatible in bare script, P2SH, P2WSH,
+and tapscript, despite fitting its measured 969-item strict stack peak. Its
+local success is a `research-unlimited` result, not a deployment result.
+
 Neither fragment is a complete locking script by itself: callers must compose
 it with a predicate that leaves one truthy cleanstack item. See
 [`docs/script-types.md`](../../docs/script-types.md) and
@@ -203,6 +224,13 @@ For the preimage-length construction, the witness contains the committed
 preimage as one item. The preimage is consumed and only the resulting integer
 remains.
 
+For `tapbranch_hash_u4`, the witness contains exactly 128 data items in
+`left[0] ... left[63] right[0] ... right[63]` order, with two canonical u4
+items per byte and most-significant nibble first. Zero is the empty vector and
+`1..=15` is the one-byte value. There are 0 hint items; all 128 data items
+coexist at script entry. The caller must enforce `left <= right` before using
+the fragment.
+
 ## Stack contract and operational notes
 
 - `verify_hash_path_to_integer`: `... bitN-1 ... bit0 preimage -> ... value`.
@@ -221,6 +249,9 @@ remains.
 - `verify_four_way_hash_path_to_altstack` leaves digit `N-1` on top of the
   altstack.
 - `verify_preimage_length`: `... preimage -> ... length_minus_offset`.
+- `tapbranch_hash_u4`: `... left_nibbles right_nibbles -> ... digest_nibbles`.
+  It temporarily uses the altstack for node routing and SHA-256 tables, then
+  returns 64 digest nibbles with the altstack empty.
 
 The hash-path construction generalizes the former fixed-width `BitHash128`
 prototype. It is exposed only through the parameterized `commitments::hash_path`

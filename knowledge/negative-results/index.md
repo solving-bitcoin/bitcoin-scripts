@@ -3,6 +3,20 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-050: The full u4 TapBranch circuit is not deployable
+
+The existing u4 SHA-256 circuit can compute the exact BIP341 TapBranch tagged
+hash when the two 32-byte nodes are supplied as 128 canonical nibble items and
+the caller already enforces `left <= right`. The executable fixed-prefix
+composition measures 1,106,745 policy-produced script bytes and 671,107 static
+non-push opcodes. Its strict combined peak is 969 items, so stack usage alone
+does not explain the failure. The serialized script exceeds Bitcoin's 10,000-
+byte consensus script-size limit, making this a `locally-reproduced`,
+`consensus-incompatible` boundary rather than a deployable Taproot adapter.
+The result leaves compact byte concatenation and in-script lexicographic
+ordering as separate open work; it is not an impossibility proof for a smaller
+representation.
+
 ## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
 
 The [PRINCEv2 layout search](princev2-layout.md) records the discarded shared

@@ -1557,6 +1557,77 @@
       "open_problems": []
     },
     {
+      "id": "commitment/tapbranch-u4",
+      "name": "TapBranch tagged hash over u4 nodes",
+      "class": "commitment/taproot",
+      "summary": "Computes BIP341's TapBranch tagged hash over two already-ordered 32-byte nodes using the existing u4 SHA-256 circuit.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "consensus-incompatible",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/tapbranch-u4.md",
+      "implementation": "src/commitments/tapbranch.rs",
+      "documentation": "src/commitments/README.md",
+      "tests": [
+        "commitments::tapbranch::tests::matches_bip341_tagged_hash_for_ordered_nodes",
+        "commitments::tapbranch::tests::rejects_an_out_of_range_witness_nibble",
+        "commitments::tapbranch::tests::wrong_node_order_changes_the_digest",
+        "primitive_metrics::tapbranch_metrics_are_current"
+      ],
+      "references": [
+        "bip-341",
+        "bitcoin-script-stack-locked",
+        "fips-180-4"
+      ],
+      "techniques": [
+        "constant-embedding",
+        "digit-arithmetic",
+        "tagged-hash"
+      ],
+      "security": "The digest inherits SHA-256's generic 128-bit collision and 256-bit preimage bounds, subject to correct TapBranch domain separation. The function does not compare nodes; callers must bind lexicographic ordering before invoking it.",
+      "stack_contract": "left[0] ... left[63] right[0] ... right[63] -> digest[0] ... digest[63], where each item is one canonical u4 nibble and digest order is most-significant first",
+      "configurations": [
+        {
+          "id": "ordered-32-byte-nodes",
+          "label": "Two ordered 32-byte nodes",
+          "parameters": {
+            "tag": "TapBranch",
+            "node_bytes": 32,
+            "input_items": 128,
+            "output_items": 64,
+            "ordering": "left <= right, caller-enforced"
+          },
+          "includes": "fragment-with-memory: fixed tagged-hash prefix, node routing, full 128-byte u4 SHA-256 circuit, table cleanup, and 128-item canonical witness; excludes ordering comparator, terminal output check, tapleaf/control-block wrapper, and transaction context",
+          "script_bytes": 1106745,
+          "witness_bytes": 161,
+          "witness_bytes_max": 257,
+          "max_stack_items": 969,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 1106745,
+          "metric_keys": [
+            "tapbranch_hash_u4",
+            "tapbranch_hash_u4_witness",
+            "tapbranch_hash_u4_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "The 1,106,745-byte generated fragment exceeds Bitcoin's 10,000-byte script-size consensus limit and is research-unlimited only",
+        "Strict local peak is 969 items, leaving 31 items for surrounding composition under the 1,000-item tapscript limit",
+        "Lexicographic node ordering is an external precondition",
+        "The local executor reports no consensus validation-budget count",
+        "Bitcoin Core consensus and relay-policy validation have not been performed"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003",
+        "OP-020"
+      ]
+    },
+    {
       "id": "commitment/hash-path-integer",
       "name": "Mixed-hash integer path",
       "class": "commitment/integer",
