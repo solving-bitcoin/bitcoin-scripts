@@ -667,11 +667,19 @@ mod tests {
                 0x2b, 0x2e,
             ],
         );
+        let all_ones_key = [0xff; 16];
+        let all_ones_plaintext = [0x00; 16];
+        let all_ones_ciphertext = aes128_encrypt_ref(all_ones_key, all_ones_plaintext);
+        let all_ones_stack = execute_vector(all_ones_key, all_ones_plaintext, all_ones_ciphertext);
+        let all_ones_size = aes128_encrypt(all_ones_key).compile_with_policy().len();
         eprintln!(
-            "AES-128 script size: {size} bytes ({zero_key_size} with zero key); max stack: {max_stack}/{zero_stack}"
+            "AES-128 script size: {size} bytes ({zero_key_size} zero-key, {all_ones_size} all-ones); max stack: {max_stack}/{zero_stack}/{all_ones_stack}"
         );
         assert_eq!(zero_key_size, 25_388);
+        assert_eq!(size, 25_449);
         assert_eq!(max_stack, 908);
         assert_eq!(zero_stack, 908);
+        assert_eq!(all_ones_size, 25_520);
+        assert_eq!(all_ones_stack, 908);
     }
 }

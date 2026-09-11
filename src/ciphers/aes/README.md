@@ -22,6 +22,8 @@ and Script-number push widths vary.
 | Fragment | Size/depth |
 | --- | ---: |
 | `aes128_encrypt([0; 16])` | <!-- metric:aes128_encrypt -->25388<!-- /metric:aes128_encrypt --> bytes |
+| `aes128_encrypt([0xff; 16])` | <!-- metric:aes128_all_ones_encrypt -->25520<!-- /metric:aes128_all_ones_encrypt --> bytes |
+| `aes128_encrypt(00..0f)` | <!-- metric:aes128_fips_encrypt -->25449<!-- /metric:aes128_fips_encrypt --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:aes128_witness_min -->33<!-- /metric:aes128_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:aes128_witness_max -->65<!-- /metric:aes128_witness_max --> bytes |
 | Maximum combined main/alt-stack depth | <!-- metric:aes128_stack -->908<!-- /metric:aes128_stack --> items |
@@ -32,9 +34,15 @@ MixColumns with each following AddRoundKey. Each column's `xtime` values are
 computed once and reused by adjacent output rows. The most frequently accessed
 tables occupy the shallowest stack positions.
 
-Tests execute the FIPS-197 known-answer vector and the all-zero vector, compare
-the native reference against three published vectors, and pin the zero-key
-size and maximum stack depth.
+The embedded key changes constant-push widths and fused table choices. The
+three deterministic profiles above span 25,388 bytes for the zero key, 25,449
+bytes for the FIPS key `00..0f`, and 25,520 bytes for the all-ones key; all
+three execute at a 908-item combined peak. These are reproducible key profiles,
+not an exhaustive proof of the maximum possible key-specific serialization.
+
+Tests execute the FIPS-197 known-answer vector and the all-zero and all-ones
+vectors, compare the native reference against three published vectors, and pin
+the deterministic key-profile sizes and maximum stack depth.
 
 ## Security
 

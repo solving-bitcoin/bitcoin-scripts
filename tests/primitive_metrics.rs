@@ -1867,6 +1867,11 @@ fn metrics() -> Vec<Metric> {
     };
     let u4_bits_inputs = vec![scriptnum(15); U4_BITS_BATCH as usize];
     let aes_zero_key = [0u8; 16];
+    let aes_all_ones_key = [0xffu8; 16];
+    let aes_fips_key = [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+        0x0f,
+    ];
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
         for _ in 0..16 {
@@ -3834,6 +3839,16 @@ fn metrics() -> Vec<Metric> {
             readme: "src/ciphers/aes/README.md",
             key: "aes128_stack",
             value: max_stack_items(aes_stack_script, vec![Vec::new(); 32]),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_all_ones_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_all_ones_key)),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_fips_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_fips_key)),
         },
         Metric {
             readme: "src/fields/bn254/bigint29/README.md",
