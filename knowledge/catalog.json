@@ -11,7 +11,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/scriptnum-constant-mul.md",
       "implementation": "src/arithmetic/scriptint/mod.rs",
       "documentation": "src/arithmetic/scriptint/README.md",
@@ -222,7 +222,7 @@
         "lookup-table"
       ],
       "security": "No independent cryptographic claim; every byte item must be canonical and in range.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. Signed less-than interprets the same bytes as two's-complement i32 values and requires canonical byte limbs.",
       "configurations": [
         {
           "id": "add-drop",
@@ -262,6 +262,30 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u8_logic_table_push"
+          ]
+        },
+        {
+          "id": "signed-lessthan",
+          "label": "u32_signed_lessthan()",
+          "parameters": {
+            "representation": "four big-endian byte limbs",
+            "interpretation": "signed two's-complement i32"
+          },
+          "includes": "fragment-only: sign-bit adapter and unsigned comparison; excludes operand pushes and output check",
+          "script_bytes": 63,
+          "witness_bytes": 17,
+          "witness_bytes_max": 17,
+          "max_stack_items": 11,
+          "executed_opcodes": 49,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 63,
+          "hint_items": 0,
+          "metric_keys": [
+            "u32_signed_lessthan",
+            "u32_signed_lessthan_witness",
+            "u32_signed_lessthan_stack",
+            "u32_signed_lessthan_opcodes"
           ]
         }
       ],

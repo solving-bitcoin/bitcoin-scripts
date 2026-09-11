@@ -2174,6 +2174,42 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan",
+            value: script_len(u32::cmp::u32_signed_lessthan()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_witness",
+            value: witness_size(&[
+                scriptnum(0x12),
+                scriptnum(0x34),
+                scriptnum(0x56),
+                scriptnum(0x78),
+                scriptnum(0x9a),
+                scriptnum(0xbc),
+                scriptnum(0xde),
+                scriptnum(0xf0),
+            ]),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(0x1234_5678) }
+                    { u32::stack::u32_push(0x9abc_def0) }
+                    { u32::cmp::u32_signed_lessthan() }
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_opcodes",
+            value: static_non_push_opcodes(u32::cmp::u32_signed_lessthan()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
             key: "u32_lessthanorequal",
             value: script_len(u32::cmp::u32_lessthanorequal()),
         },
