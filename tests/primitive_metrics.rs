@@ -2118,6 +2118,52 @@ fn metrics() -> Vec<Metric> {
             ),
         },
         Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_checked",
+            value: script_len(u4::bits::u4_nibbles_to_byte(true)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_checked_stack",
+            value: max_stack_items(
+                script! {
+                    { 0x0f }
+                    { 0x0f }
+                    { u4::bits::u4_nibbles_to_byte(true) }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_checked_opcodes",
+            value: static_non_push_opcodes(u4::bits::u4_nibbles_to_byte(true)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_unchecked",
+            value: script_len(u4::bits::u4_nibbles_to_byte(false)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_unchecked_stack",
+            value: max_stack_items(
+                script! {
+                    { 0x0f }
+                    { 0x0f }
+                    { u4::bits::u4_nibbles_to_byte(false) }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_nibbles_to_byte_unchecked_opcodes",
+            value: static_non_push_opcodes(u4::bits::u4_nibbles_to_byte(false)),
+        },
+        Metric {
             readme: "src/arithmetic/u32/README.md",
             key: "u32_add_drop",
             value: script_len(u32::add::u32_add_drop(0, 1)),
