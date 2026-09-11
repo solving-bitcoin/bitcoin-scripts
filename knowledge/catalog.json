@@ -263,6 +263,51 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "fixed-rotation-8",
+          "label": "u32_rrot8()",
+          "parameters": { "rotation": 8, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: fixed byte rotation; excludes input pushes and output checks",
+          "script_bytes": 3,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3,
+          "metric_keys": ["u32_rrot8", "u32_rrot8_witness", "u32_rrot8_stack"]
+        },
+        {
+          "id": "fixed-rotation-16",
+          "label": "u32_rrot16()",
+          "parameters": { "rotation": 16, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: fixed byte rotation; excludes input pushes and output checks",
+          "script_bytes": 1,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1,
+          "metric_keys": ["u32_rrot16", "u32_rrot16_witness", "u32_rrot16_stack"]
+        },
+        {
+          "id": "fixed-rotation-24",
+          "label": "u32_rrot(24)",
+          "parameters": { "rotation": 24, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: fixed byte rotation; excludes input pushes and output checks",
+          "script_bytes": 2,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2,
+          "metric_keys": ["u32_rrot24", "u32_rrot24_witness", "u32_rrot24_stack"]
         }
       ],
       "limitations": [

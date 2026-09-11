@@ -4111,6 +4111,50 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u32_fixed_rotation_metrics_are_current() {
+    let witness = vec![vec![1u8]; 4];
+    let fragments = [
+        ("u32_rrot8", u32::rotate::u32_rrot8()),
+        ("u32_rrot16", u32::rotate::u32_rrot16()),
+        ("u32_rrot24", u32::rotate::u32_rrot(24)),
+    ];
+    let mut metrics = Vec::new();
+    for (name, fragment) in fragments {
+        let stack = max_stack_items_strict(
+            script! {
+                { fragment.clone() }
+                { u32::stack::u32_drop() }
+                OP_TRUE
+            },
+            witness.clone(),
+        );
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_stack", stack),
+        ] {
+            let key = match (name, suffix) {
+                ("u32_rrot8", "") => "u32_rrot8",
+                ("u32_rrot8", "_witness") => "u32_rrot8_witness",
+                ("u32_rrot8", "_stack") => "u32_rrot8_stack",
+                ("u32_rrot16", "") => "u32_rrot16",
+                ("u32_rrot16", "_witness") => "u32_rrot16_witness",
+                ("u32_rrot16", "_stack") => "u32_rrot16_stack",
+                ("u32_rrot24", "") => "u32_rrot24",
+                ("u32_rrot24", "_witness") => "u32_rrot24_witness",
+                _ => "u32_rrot24_stack",
+            };
+            metrics.push(Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
