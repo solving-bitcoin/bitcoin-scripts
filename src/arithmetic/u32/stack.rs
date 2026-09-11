@@ -73,6 +73,19 @@ pub fn u32_fromaltstack() -> Script {
     }
 }
 
+/// Move `num_bytes` byte items to the alt stack while preserving their order.
+///
+/// The top byte is restored first by `OP_FROMALTSTACK`; unrelated items may
+/// already be below the moved bytes on either stack.
+pub fn u8_reverse_toaltstack(num_bytes: usize) -> Script {
+    script! {
+        for i in 1..=num_bytes {
+            {num_bytes - i} OP_ROLL
+            OP_TOALTSTACK
+        }
+    }
+}
+
 pub fn u32_dup() -> Script {
     script! { OP_4DUP }
 }
@@ -157,7 +170,38 @@ pub fn u32_uncompress() -> Script {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::run;
+    use crate::support::execution::{execute_script, run};
+
+    #[test]
+    fn reverse_byte_batch_to_altstack_preserves_order_and_state() {
+        let result = execute_script(script! {
+            99 OP_TOALTSTACK
+            0x44 0x33 0x22 0x11
+            { u8_reverse_toaltstack(4) }
+            OP_FROMALTSTACK 0x11 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x22 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x33 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x44 OP_EQUALVERIFY
+            OP_FROMALTSTACK 99 OP_EQUAL
+        });
+        assert!(result.success, "{result}");
+
+        let empty = execute_script(script! {
+            42
+            { u8_reverse_toaltstack(0) }
+            42 OP_EQUAL
+        });
+        assert!(empty.success, "{empty}");
+
+        let underflow = execute_script(script! {
+            0x11
+            { u8_reverse_toaltstack(2) }
+        });
+        assert!(
+            !underflow.success,
+            "accepted a short byte stack: {underflow}"
+        );
+    }
 
     #[test]
     fn test_u32_notequal() {

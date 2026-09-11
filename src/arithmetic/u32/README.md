@@ -20,6 +20,9 @@ they do not use BN254 or any other field modulus.
   table. With exactly two working words, the usual value is `3`.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
+- `u8_reverse_toaltstack(num_bytes)` moves byte items from the main stack to
+  the alt stack and restores their original top-first order. It does not
+  validate byte range or ScriptNum encoding.
 
 ## Script metrics
 
@@ -39,6 +42,7 @@ as less-than-or-equal.
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+| `u8_reverse_toaltstack(4)` | <!-- metric:u8_reverse_toaltstack_4 -->8<!-- /metric:u8_reverse_toaltstack_4 --> bytes | <!-- metric:u8_reverse_toaltstack_4_witness -->9<!-- /metric:u8_reverse_toaltstack_4_witness --> bytes, 4 data items | <!-- metric:u8_reverse_toaltstack_4_stack -->5<!-- /metric:u8_reverse_toaltstack_4_stack --> items |
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No

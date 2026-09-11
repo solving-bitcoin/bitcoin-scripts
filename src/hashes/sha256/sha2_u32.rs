@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::arithmetic::u32::add::u32_add_drop;
+pub use crate::arithmetic::u32::stack::u8_reverse_toaltstack as push_reverse_bytes_to_alt;
 use crate::arithmetic::u32::stack::{u32_dup, u32_roll};
 use crate::arithmetic::u32::{
     and::u32_and,
@@ -836,16 +837,6 @@ pub fn u32_not() -> Script {
         for _ in 0..4 {
             0xff
             4 OP_ROLL OP_SUB
-        }
-    }
-}
-
-/// Push reversed bytes to the alt stack.
-pub fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
-    script! {
-        for i in 1..=num_bytes {
-            {num_bytes-i} OP_ROLL
-            OP_TOALTSTACK
         }
     }
 }
