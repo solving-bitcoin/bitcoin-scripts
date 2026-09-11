@@ -10,6 +10,21 @@ final-selector variant, invalid fixed-address row-removal experiment, and
 bounded global scheduling/CNOT searches. The retained result is a 6,136-byte
 zero-key fragment with zero hints and a strict 633-item combined peak.
 
+## NR-043: Removing the u4 zero sentinel is not a practical stack win
+
+The 61-item staggered nibble-to-big-endian-bit table contains a depth-zero
+all-zero sentinel. A compact experiment removed that item, handled nibble zero
+with a branch, and shifted nonzero table indices. Exhaustive single-nibble,
+multi-nibble, and checked `-1`/`16` rejection tests passed locally, and the
+item-count formula would theoretically move the standalone table boundary
+from 234 to 235 nibbles. That is not a validated execution result: the
+checked 235-nibble script and an unchecked 32-nibble execution remained
+CPU-bound for several minutes in the pinned local interpreter and were
+terminated before completion. The added branch and repeated `OP_PICK` routing
+therefore dominate the one-item memory saving for practical use. The compact
+variant is rejected pending an execution strategy with a reproducible strict
+boundary; the existing 61-item table remains the measured construction.
+
 ## NR-001: Raw 1,024-byte SHAKE256 output exceeds the stack limit
 
 The current byte-lane SHAKE256 leaves 1,024 output items, already exceeding the
