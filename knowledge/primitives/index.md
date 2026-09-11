@@ -9,6 +9,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)
+- [Checked u4 least-significant-bit projection](u4-lsb.md)
 - [u32 word arithmetic](u32.md)
 - [u31 prime-field arithmetic](u31.md)
 - [Native secp256k1 base-field arithmetic](secp256k1-field.md)
