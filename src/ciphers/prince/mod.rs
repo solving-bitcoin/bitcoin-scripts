@@ -1085,6 +1085,7 @@ mod optimized {
 
     #[derive(Clone, Copy)]
     enum PreAction {
+        None,
         Initial,
         Forward(usize),
         MiddleForward,
@@ -1438,6 +1439,7 @@ mod optimized {
 
         fn emit_pre_action(&self, action: PreAction, state: usize) -> Program {
             match action {
+                PreAction::None => Program::default(),
                 PreAction::Initial => self.op_sbox_xor_constant(self.key[state], 0),
                 PreAction::Forward(round) => {
                     let key_index = if (round - 1) % 2 != 0 {
@@ -1671,6 +1673,33 @@ mod optimized {
         }
     }
 
+    pub(super) fn m_layer_engine() -> Script {
+        let mut generator = Generator::new(0);
+        let mut out = generator.init_memory();
+        out.extend(generator.m_layer(PreAction::None));
+
+        // Retire the transformed state, drop persistent lookup memory, and
+        // restore the public MSB-on-top order.
+        let mut remaining = env_top_order(&generator.env);
+        for state in (0..SIZE_STATE).rev() {
+            let moved = move_state_in_order(&remaining, state);
+            out.extend(moved.emit);
+            out.op(OP_TOALTSTACK);
+            remaining = moved.order;
+            remaining.remove(0);
+        }
+        for _ in 0..(generator.tables.memory_size - SIZE_STATE) / 2 {
+            out.op(OP_2DROP);
+        }
+        if (generator.tables.memory_size - SIZE_STATE) & 1 != 0 {
+            out.op(OP_DROP);
+        }
+        for _ in 0..SIZE_STATE {
+            out.op(OP_FROMALTSTACK);
+        }
+        Script::new("PRINCEv2 M-layer").push_script(out.into_script_buf())
+    }
+
     static ENGINES: OnceLock<Mutex<HashMap<u128, ScriptBuf>>> = OnceLock::new();
 
     pub(super) fn engine(key: u128) -> Script {
@@ -1697,6 +1726,32 @@ pub fn prince_encrypt(key: u128) -> Script {
     optimized::engine(key)
 }
 
+/// PRINCEv2's four M-hat blocks over a 16-nibble state.
+///
+/// Input and output use the same MSB-first stack layout as `prince_encrypt`.
+/// The 16 top state items must be numeric nibbles in `0..=15`; unrelated
+/// stack items below them are preserved.
+pub fn prince_m_layer() -> Script {
+    script! {
+        // Certify the nibble domain before any table-derived depth is used.
+        for _ in 0..16 {
+            OP_TOALTSTACK
+        }
+        for _ in 0..16 {
+            OP_FROMALTSTACK
+            OP_DUP
+            0 OP_LESSTHAN OP_NOT OP_VERIFY
+            OP_DUP
+            16 OP_LESSTHAN OP_VERIFY
+            OP_TOALTSTACK
+        }
+        for _ in 0..16 {
+            OP_FROMALTSTACK
+        }
+        { optimized::m_layer_engine() }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Helper: u64 with MSB nibble first ↔ nibble array
 // nibble[i] = get_nibble(v, i) = (v >> (4*(15-i))) & 0xf
@@ -1717,7 +1772,7 @@ pub fn u64_to_nibbles_msb(v: u64) -> [u8; 16] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::execute_script;
+    use crate::support::execution::{execute_script, execute_script_with_inputs_strict};
     use crate::support::script::{script, ScriptCompilation};
     use rand::{Rng, SeedableRng};
     use rand_chacha::ChaCha20Rng;
@@ -1924,6 +1979,57 @@ mod tests {
             "script_m_layer failed: expected {:?}, error={:?}",
             exp_nibs, result.error
         );
+    }
+
+    fn m_layer_witness(state: u64) -> Vec<Vec<u8>> {
+        u64_to_nibbles_msb(state)
+            .into_iter()
+            .rev()
+            .map(|nibble| if nibble == 0 { vec![] } else { vec![nibble] })
+            .collect()
+    }
+
+    #[test]
+    fn test_optimized_m_layer_boundaries_and_random_state() {
+        let fragment = prince_m_layer();
+        for state in [0, u64::MAX, 0x0123_4567_89ab_cdef] {
+            let expected = m_layer(state);
+            let expected_nibbles = u64_to_nibbles_msb(expected);
+            let leaf = script! {
+                { fragment.clone() }
+                for nibble in expected_nibbles {
+                    { nibble as u32 } OP_EQUALVERIFY
+                }
+                OP_TRUE
+            };
+            let result = execute_script_with_inputs_strict(leaf, m_layer_witness(state));
+            assert!(result.success, "state={state:016x}: {result}");
+            assert!(result.stats.max_nb_stack_items <= 1_000);
+        }
+    }
+
+    #[test]
+    fn test_optimized_m_layer_rejects_invalid_nibbles_and_short_input() {
+        let fragment = prince_m_layer();
+        let too_large = {
+            let mut witness = m_layer_witness(0);
+            witness[15] = vec![16];
+            witness
+        };
+        let negative = {
+            let mut witness = m_layer_witness(0);
+            witness[15] = vec![0x81];
+            witness
+        };
+        for witness in [too_large, negative] {
+            let result = execute_script_with_inputs_strict(fragment.clone(), witness);
+            assert!(!result.success, "invalid nibble was accepted: {result}");
+        }
+
+        let mut short = m_layer_witness(0);
+        short.pop();
+        let result = execute_script_with_inputs_strict(fragment, short);
+        assert!(!result.success, "short state was accepted: {result}");
     }
 
     #[test]

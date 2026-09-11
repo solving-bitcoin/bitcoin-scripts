@@ -38,6 +38,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [SHAKE256 over byte lanes](shake256-byte.md)
 - [AES-128 over u4 digits](aes128-u4.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)
+- [PRINCEv2 standalone M-hat layer](princev2-mhat.md)
 
 ## Signatures and one-time authentication
 

@@ -27,3 +27,8 @@ differential test targets avoid the expensive full-repository metric suite.
 
 See the [implementation README](../../src/ciphers/prince/README.md) and catalog
 record `cipher/princev2-u4`.
+
+The reusable linear subconstruction is documented separately as the
+[standalone M-hat layer](princev2-mhat.md). It is a 1,565-byte checked fragment
+with the same measured 633-item peak, not a replacement for full PRINCEv2
+encryption.

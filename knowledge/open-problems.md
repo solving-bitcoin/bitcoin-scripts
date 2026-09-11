@@ -15,6 +15,14 @@ The current zero-key baseline is 6,136 bytes and a 633-item peak. Table packing
 and algebraic sketches without a priced executable circuit do not satisfy
 this criterion; see [the layout search](negative-results/princev2-layout.md).
 
+Progress: the reusable standalone `prince_m_layer()` fragment now measures
+1,565 policy-produced bytes with 16 input data items, zero hints, and a strict
+633-item peak. It includes numeric nibble checks, packed table setup/cleanup,
+all four M-hat blocks, and output restoration. This clears the byte target for
+the linear-layer fragment, but does not yet demonstrate the complete
+generation-time-key encryption circuit against the pinned C fixtures and seeded
+random key/plaintext set, so OP-019 remains open.
+
 ## OP-001 — Strict execution matrix
 
 Add explicit legacy/P2WSH/tapscript strict and research-unlimited execution
