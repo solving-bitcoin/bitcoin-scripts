@@ -163,6 +163,36 @@
           ]
         },
         {
+          "id": "copy-u32-from",
+          "label": "u4_copy_u32_from(0)",
+          "parameters": { "address": 0, "items": 8 },
+          "includes": "fragment-only: eight-item copy from the top word; excludes source pushes and output check",
+          "script_bytes": 16,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 16,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 16,
+          "metric_keys": ["u4_copy_u32_from", "u4_copy_u32_from_stack"]
+        },
+        {
+          "id": "move-u32-from",
+          "label": "u4_move_u32_from(0)",
+          "parameters": { "address": 0, "items": 8 },
+          "includes": "fragment-only: eight-item move from the top word; excludes source pushes and output check",
+          "script_bytes": 16,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 9,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 16,
+          "metric_keys": ["u4_move_u32_from", "u4_move_u32_from_stack"]
+        },
+        {
           "id": "nibble-to-bits-batch32-checked",
           "label": "Checked 32-nibble staggered-table decomposition",
           "parameters": {

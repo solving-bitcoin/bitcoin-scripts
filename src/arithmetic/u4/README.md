@@ -12,6 +12,9 @@ these operations, but this module contains no hash-specific round logic.
   `1..=3` bit counts unless their function documents otherwise.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` takes
   an explicit batch size in `1..=234` and has no default for input checking.
+- `stack::u4_copy_u32_from(address)` copies eight nibbles and
+  `stack::u4_move_u32_from(address)` removes and returns them, both in
+  most-significant-nibble-first order.
 
 ## Script metrics
 
@@ -24,6 +27,8 @@ each input with the same output-restoration boundary.
 | Fragment | Locking script | Maximum combined stack | Executed non-push opcodes |
 | --- | ---: | ---: | ---: |
 | `u4_push_add_tables()` | <!-- metric:u4_add_tables -->92<!-- /metric:u4_add_tables --> bytes | instance-specific | not recorded |
+| `u4_copy_u32_from(0)` | <!-- metric:u4_copy_u32_from -->16<!-- /metric:u4_copy_u32_from --> bytes | 0 bytes | <!-- metric:u4_copy_u32_from_stack -->16<!-- /metric:u4_copy_u32_from_stack --> items |
+| `u4_move_u32_from(0)` | <!-- metric:u4_move_u32_from -->16<!-- /metric:u4_move_u32_from --> bytes | 0 bytes | <!-- metric:u4_move_u32_from_stack -->9<!-- /metric:u4_move_u32_from_stack --> items |
 | Staggered bit-table setup | <!-- metric:u4_bits_table_push -->61<!-- /metric:u4_bits_table_push --> bytes | 61 table items | not recorded |
 | Staggered bit-table cleanup | <!-- metric:u4_bits_table_drop -->31<!-- /metric:u4_bits_table_drop --> bytes | consumes 61 items | not recorded |
 | One checked table query, output on altstack | <!-- metric:u4_bits_checked_query -->22<!-- /metric:u4_bits_checked_query --> bytes | composition-dependent | not recorded |
