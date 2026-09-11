@@ -38,6 +38,20 @@ complete checked batch is `92 + 26*n` bytes. The existing branch splitter is
 Unchecked lookup is `92 + 21*n` and wins from five, but is safe only for
 previously certified nibbles.
 
+### Popcount boundary
+
+| Fragment | Script bytes | Witness bytes | Hint items | Maximum combined stack | Executed opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `popcount(8)` | <!-- metric:u4_popcount_script -->135<!-- /metric:u4_popcount_script --> | <!-- metric:u4_popcount_witness -->17<!-- /metric:u4_popcount_witness --> | <!-- metric:u4_popcount_hints -->0<!-- /metric:u4_popcount_hints --> | <!-- metric:u4_popcount_stack -->27<!-- /metric:u4_popcount_stack --> | <!-- metric:u4_popcount_opcodes -->0<!-- /metric:u4_popcount_opcodes --> |
+
+The popcount fragment uses one 16-item table for eight checked nibbles. Its
+table is generated in the locking script and its witness contains eight
+one-byte numeric items. The table and temporary counts are fully consumed;
+the result is a single Script integer in `0..=32`. The local tapscript
+executor reports `opcode_count=0` for this fragment, so the executed-opcode
+marker is retained as an explicit unavailable measurement rather than
+presented as a consensus budget.
+
 ## Security
 
 No independent cryptographic security claim. Correctness requires callers to

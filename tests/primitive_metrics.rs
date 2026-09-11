@@ -1234,6 +1234,49 @@ fn winternitz20_composition_metrics() -> Vec<Metric> {
         .collect()
 }
 
+fn u4_popcount_metrics() -> Vec<Metric> {
+    const NIBBLE_COUNT: u32 = 8;
+    let fragment = u4::popcount::popcount(NIBBLE_COUNT);
+    let witness = vec![scriptnum(15); NIBBLE_COUNT as usize];
+    let stack_script = script! {
+        { fragment.clone() }
+        OP_DROP
+        OP_TRUE
+    };
+    let strict_result = execute_script_with_inputs_strict(stack_script, witness.clone());
+    assert!(
+        strict_result.success,
+        "popcount metric failed: {strict_result}"
+    );
+    vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_script",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_stack",
+            value: strict_result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_opcodes",
+            value: strict_result.stats.opcode_count,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_hints",
+            value: 0,
+        },
+    ]
+}
+
 fn winternitz20_metrics() -> Vec<Metric> {
     let key = FastWinternitz::<20, Hash160, Preimage16>::signing_key_from_seed([0x42; 32]);
     let pk = FastWinternitz::<20, Hash160, Preimage16>::public_key(&key);
@@ -3995,6 +4038,7 @@ fn metrics() -> Vec<Metric> {
     .chain(winternitz_overview_metrics())
     .chain(winternitz20_metrics())
     .chain(winternitz20_composition_metrics())
+    .chain(u4_popcount_metrics())
     .collect()
 }
 
@@ -4035,6 +4079,11 @@ fn winternitz20_metrics_are_current() {
 #[test]
 fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
+}
+
+#[test]
+fn u4_popcount_metrics_are_current() {
+    check_readme_metrics(u4_popcount_metrics());
 }
 
 /// This isolated fixture exercises only the two small packed decoders. It

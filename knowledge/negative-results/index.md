@@ -1226,3 +1226,13 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-046: Packed-byte adapter search was already covered by the u5 codec
+
+A fresh search direction proposed a canonical packed-byte adapter for a field
+wire. The existing `u5_packed` implementation already provides canonical
+packed-word witness serialization, exact-word checks, padding validation, and
+packed-to-digit conversion. A second adapter would duplicate that boundary
+without a smaller script, witness, or stack result, so the direction was
+discarded. The new u4 popcount experiment instead targets an uncovered
+operation with a distinct output contract.

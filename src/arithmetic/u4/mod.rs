@@ -1,6 +1,7 @@
 pub mod add;
 pub mod bits;
 pub mod logic;
+pub mod popcount;
 pub mod rotate;
 pub mod shift;
 pub mod stack;
