@@ -2842,7 +2842,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/hors-hash160.md",
       "implementation": "src/signatures/hors/mod.rs",
       "documentation": "src/signatures/hors/README.md",
@@ -2870,19 +2870,21 @@
           "script_bytes": 809,
           "witness_bytes": 280,
           "witness_bytes_max": 280,
-          "max_stack_items": null,
+          "max_stack_items": 50,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
           "per_use_script_bytes": 809,
           "metric_keys": [
             "hors_lock_n32_t8",
-            "hors_witness_n32_t8"
+            "hors_witness_n32_t8",
+            "hors_stack_n32_t8"
           ]
         }
       ],
       "limitations": [
         "Message-to-index derivation not implemented",
+        "Out-of-range indices are clamped rather than rejected",
         "One-time key only"
       ],
       "open_problems": [

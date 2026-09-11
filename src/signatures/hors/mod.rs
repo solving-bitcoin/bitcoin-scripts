@@ -203,7 +203,9 @@ fn encode_script_int(v: i64) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::{execute_script, execute_script_with_inputs};
+    use crate::support::execution::{
+        execute_script, execute_script_with_inputs, execute_script_with_inputs_strict,
+    };
     use crate::support::script::script;
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
@@ -475,5 +477,39 @@ mod tests {
 
         let result = execute_script_with_inputs(locking, witness);
         assert!(result.success, "HORS large failed: {:?}", result);
+    }
+
+    #[test]
+    fn test_hors_large_witness_coexists_under_strict_stack_limit() {
+        let preimages = make_preimages(32);
+        let public_keys = hors_public_keys(&preimages);
+        let indices = vec![0usize, 4, 9, 13, 17, 21, 25, 31];
+        let locking = hors_locking_script(&public_keys, indices.len());
+        let witness = hors_unlocking_witness(&preimages, &indices);
+
+        assert_eq!(witness.len(), 16);
+        let result = execute_script_with_inputs_strict(locking, witness.clone());
+        assert!(result.success, "strict HORS execution failed: {result}");
+        assert_eq!(result.stats.max_nb_stack_items, 50);
+
+        let mut truncated = witness.clone();
+        truncated.pop();
+        assert!(
+            !execute_script_with_inputs_strict(
+                hors_locking_script(&public_keys, indices.len()),
+                truncated,
+            )
+            .success
+        );
+
+        let mut extra = witness;
+        extra.push(vec![0]);
+        assert!(
+            !execute_script_with_inputs_strict(
+                hors_locking_script(&public_keys, indices.len()),
+                extra,
+            )
+            .success
+        );
     }
 }

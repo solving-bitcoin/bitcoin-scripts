@@ -3766,6 +3766,14 @@ fn metrics() -> Vec<Metric> {
             value: witness_size(&hors_witness),
         },
         Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_stack_n32_t8",
+            value: max_stack_items_strict(
+                hors::hors_locking_script(&hors_public_keys, 8),
+                hors_witness.clone(),
+            ),
+        },
+        Metric {
             readme: "src/signatures/pointlocks/README.md",
             key: "pointlock_small_r_script",
             value: script_len(small_r_point_lock),

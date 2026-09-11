@@ -21,12 +21,24 @@ Serialized witness size includes the witness count and item-length prefixes.
 Maximum depth scales approximately with `n + 2t`; the executable tests include
 the documented `n=32,t=8` case and boundary/malformed cases.
 
+For the representative `n=32,t=8` profile, the witness contains exactly 16
+complete data items and zero auxiliary hints. All 32 committed hashes and all
+16 witness items coexist at script entry. Strict local tapscript execution
+measures a combined main/alt-stack peak of
+`<!-- metric:hors_stack_n32_t8 -->50<!-- /metric:hors_stack_n32_t8 -->`
+items and 88 static non-push opcodes. The pinned executor reports zero for its
+runtime opcode counter in tapscript, so the static count is the available
+opcode measure. This is a local stack-boundary result, not consensus or policy
+deployment validation.
+
 ## Security
 
 One-time only. Concrete forgery probability depends on `n`, `t`, the message-to-
 subset procedure used by the caller, and prior disclosures. HASH160 bounds each
 commitment to at most 80-bit collision and 160-bit preimage resistance. The
-module does not itself derive indices from a message.
+module does not itself derive indices from a message. The current verifier
+clamps an index above `n - 1` with `OP_MIN` rather than rejecting it; callers
+must bind indices to the canonical range before using this fragment.
 
 ## Script compatibility and standardness
 

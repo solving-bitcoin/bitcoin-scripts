@@ -8,9 +8,12 @@ explicit witness indices.
 - **Evidence:** locally reproduced with boundary, ordering, and malformed
   witnesses.
 - **Representative result:** `n=32,t=8` uses 809 script bytes and a 280-byte
-  witness with 32-byte preimages.
+  witness with 32-byte preimages, exactly 16 data items, zero hints, and a
+  strict combined stack peak of 50 items.
 - **Security:** strictly one-time; concrete forgery probability depends on
   parameters, index derivation, disclosures, and HASH160.
+- **Hostile indices:** the current verifier clamps indices above `n - 1`; it
+  does not provide strict range rejection. A caller must bind the index domain.
 - **Research need:** specify and test a complete message-to-subset transform
   before protocol-level signature claims.
 
