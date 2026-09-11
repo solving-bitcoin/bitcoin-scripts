@@ -1,5 +1,6 @@
 pub mod add;
 pub mod and;
+pub mod byte_planes;
 pub mod cmp;
 pub mod or;
 pub mod rotate;

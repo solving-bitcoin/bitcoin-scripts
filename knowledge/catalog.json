@@ -221,8 +221,8 @@
         "digit-arithmetic",
         "lookup-table"
       ],
-      "security": "No independent cryptographic claim; every byte item must be canonical and in range.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers.",
+      "security": "No independent cryptographic claim; checked byte-plane transposition enforces every byte item in `0..=255`, while the unchecked form preserves hostile items and requires a caller-proven byte invariant.",
+      "stack_contract": "A u32 occupies four byte-valued items in MSB-first order. The checked byte-plane transposition consumes contiguous words and returns byte-major planes while preserving unrelated main and altstack state.",
       "configurations": [
         {
           "id": "add-drop",
@@ -262,6 +262,31 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u8_logic_table_push"
+          ]
+        },
+        {
+          "id": "byte-planes-words8-checked",
+          "label": "Checked 8-word byte-plane transposition",
+          "parameters": {
+            "word_count": 8,
+            "check_inputs": true,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: internal delimiter, byte range checks, generated stack permutation, and output restoration; representative witness supplies 32 byte data items; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 413,
+          "witness_bytes": 97,
+          "witness_bytes_max": 97,
+          "max_stack_items": 36,
+          "executed_opcodes": 254,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u32_byte_planes_words8",
+            "u32_byte_planes_words8_witness",
+            "u32_byte_planes_words8_stack",
+            "u32_byte_planes_words8_opcodes"
           ]
         }
       ],
