@@ -2062,6 +2062,42 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4",
+            value: script_len(u4::stack::u4_toaltstack(4)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4_stack",
+            value: max_stack_items(
+                script! {
+                    1 2 3 4
+                    { u4::stack::u4_toaltstack(4) }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4",
+            value: script_len(u4::stack::u4_fromaltstack(4)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4_stack",
+            value: max_stack_items(
+                script! {
+                    1 2 3 4
+                    { u4::stack::u4_toaltstack(4) }
+                    { u4::stack::u4_fromaltstack(4) }
+                    { u4::stack::u4_drop(4) }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
             key: "u4_bits_table_push",
             value: script_len(u4::bits::u4_push_to_be_bits_table()),
         },
