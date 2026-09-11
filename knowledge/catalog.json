@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-11",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -191,6 +191,76 @@
         "Digit expansion increases stack occupancy",
         "Table coexistence is composition-dependent",
         "The 32-nibble checked batch exceeds legacy and P2WSH opcode limits",
+        "Numeric range checks do not establish byte-unique ScriptNum encoding"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-popcount",
+      "name": "u4 nibble popcount",
+      "class": "arithmetic/word",
+      "summary": "Checked Hamming-weight reduction for a batch of four-bit Script limbs using one shared 16-entry lookup table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/u4-popcount.md",
+      "implementation": "src/arithmetic/u4/popcount.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::popcount::tests::counts_exhaustive_two_nibble_inputs",
+        "arithmetic::u4::popcount::tests::handles_zero_and_all_ones_boundaries",
+        "arithmetic::u4::popcount::tests::rejects_hostile_out_of_range_nibbles",
+        "arithmetic::u4::popcount::tests::rejects_hostile_witness_values",
+        "arithmetic::u4::popcount::tests::preserves_unrelated_stack_state",
+        "arithmetic::u4::popcount::tests::beats_bit_decomposition_when_only_the_count_is_needed",
+        "u4_popcount_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-script-stack-locked"
+      ],
+      "techniques": [
+        "batch-lookup",
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "No cryptographic claim. Every input is checked numerically in 0..=15 before table indexing; byte-unique ScriptNum encoding remains a caller obligation.",
+      "stack_contract": "Consumes preserved | nibble[0] .. nibble[7] and returns preserved | popcount, where each nibble is a checked numeric value in 0..=15 and the result is 0..=32.",
+      "configurations": [
+        {
+          "id": "eight-nibble-checked",
+          "label": "Eight checked nibbles with shared popcount table",
+          "parameters": {
+            "nibble_count": 8,
+            "lookup_table_items": 16,
+            "output_range": "0..=32"
+          },
+          "includes": "fragment-with-memory: 16-item generated popcount table, eight numeric range checks and lookups, altstack count accumulation, table cleanup, and one returned count; excludes input witness pushes, terminal predicate, and transaction context",
+          "script_bytes": 135,
+          "witness_bytes": 17,
+          "witness_bytes_max": 17,
+          "max_stack_items": 27,
+          "executed_opcodes": 0,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_popcount_script",
+            "u4_popcount_witness",
+            "u4_popcount_stack",
+            "u4_popcount_opcodes",
+            "u4_popcount_hints"
+          ]
+        }
+      ],
+      "limitations": [
+        "Fragment only; clean-stack and terminal predicates are caller responsibilities",
+        "The local tapscript executor reports no executed-opcode count for this run",
+        "No Bitcoin Core consensus or relay-policy differential validation",
         "Numeric range checks do not establish byte-unique ScriptNum encoding"
       ],
       "open_problems": [
