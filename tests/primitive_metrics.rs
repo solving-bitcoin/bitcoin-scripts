@@ -4037,6 +4037,44 @@ fn prince_metrics_are_current() {
     check_readme_metrics(prince_metrics());
 }
 
+#[test]
+fn u4_lexicographic_metrics_are_current() {
+    let fragment = u4::compare::lexicographic_le(128);
+    let witness = vec![Vec::new(); 256];
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128_stack",
+            value: max_stack_items_strict(fragment.clone(), witness.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128_hints",
+            value: 0,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lexicographic_le_128_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture exercises only the two small packed decoders. It
 /// stays runnable without enabling the ignored repository-wide metric suite.
 #[test]
