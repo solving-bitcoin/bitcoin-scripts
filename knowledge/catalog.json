@@ -1790,15 +1790,18 @@
       "status": "compatibility",
       "evidence": "differentially-validated",
       "execution": "research-unlimited",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/ripemd160-u32.md",
       "implementation": "src/hashes/ripemd160/mod.rs",
       "documentation": "src/hashes/ripemd160/README.md",
       "tests": [
-        "hashes::ripemd160::tests::hashes_standard_vectors"
+        "hashes::ripemd160::tests::hashes_standard_vectors",
+        "hashes::ripemd160::tests::hashes_output_prefixes",
+        "hashes::ripemd160::tests::rejects_prefix_boundaries_and_non_byte_witnesses"
       ],
       "references": [
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "rust-bitcoin-0.32.102"
       ],
       "techniques": [
         "digit-arithmetic",
@@ -1825,10 +1828,33 @@
           "metric_keys": [
             "ripemd160_u32_32"
           ]
+        },
+        {
+          "id": "message-32-prefix-8",
+          "label": "32-byte input, 8-byte output prefix",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: complete RIPEMD-160 compression plus terminal output routing; excludes message pushes and digest comparison",
+          "script_bytes": 244091,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 406,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 244091,
+          "metric_keys": [
+            "ripemd160_prefix_32_8",
+            "ripemd160_prefix_32_8_witness",
+            "ripemd160_prefix_32_8_stack"
+          ]
         }
       ],
       "limitations": [
         "80-bit ideal collision bound",
+        "Output prefixes intentionally reduce the collision bound",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [

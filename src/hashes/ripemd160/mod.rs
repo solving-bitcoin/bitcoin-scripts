@@ -81,6 +81,34 @@ pub fn ripemd160(num_bytes: usize) -> Script {
     }
 }
 
+/// Hashes `num_bytes` message bytes and leaves the first `output_bytes` digest
+/// bytes on the main stack.
+///
+/// This is a terminal adapter over [`ripemd160`]. It does not reduce the
+/// compression cost; it only removes the unused digest suffix after hashing.
+pub fn ripemd160_prefix(num_bytes: usize, output_bytes: usize) -> Script {
+    assert!(
+        (1..=20).contains(&output_bytes),
+        "RIPEMD-160 output prefix must contain between 1 and 20 bytes"
+    );
+    if output_bytes == 20 {
+        return ripemd160(num_bytes);
+    }
+
+    script! {
+        { ripemd160(num_bytes) }
+        for _ in 0..output_bytes {
+            OP_TOALTSTACK
+        }
+        for _ in 0..20 - output_bytes {
+            OP_DROP
+        }
+        for _ in 0..output_bytes {
+            OP_FROMALTSTACK
+        }
+    }
+}
+
 fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
         for i in 1..=num_bytes {
@@ -463,6 +491,47 @@ mod tests {
         verify_digest(&[0xff; 64]);
         verify_digest(&[0x42; 80]);
         verify_digest(&[0x24; 130]);
+    }
+
+    fn verify_prefix(message: &[u8], output_bytes: usize) {
+        let expected = reference_ripemd160::Hash::hash(message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(message) }
+            { ripemd160_prefix(message.len(), output_bytes) }
+            for byte in expected[..output_bytes].iter() {
+                { *byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn hashes_output_prefixes() {
+        for output_bytes in [1, 8, 19, 20] {
+            verify_prefix(b"abc", output_bytes);
+        }
+        for message_len in [55, 56, 63, 64] {
+            verify_prefix(&vec![0xa5; message_len], 8);
+        }
+    }
+
+    #[test]
+    fn rejects_prefix_boundaries_and_non_byte_witnesses() {
+        for output_bytes in [0, 21] {
+            let panic = std::panic::catch_unwind(|| ripemd160_prefix(1, output_bytes));
+            assert!(panic.is_err());
+        }
+
+        for value in [256i64, -1] {
+            let result = crate::support::execution::execute_script_without_stack_limit(script! {
+                { value }
+                { ripemd160_prefix(1, 8) }
+                OP_TRUE
+            });
+            assert!(!result.success, "non-byte witness was accepted: {result}");
+        }
     }
 
     #[test]

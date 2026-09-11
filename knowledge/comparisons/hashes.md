@@ -8,6 +8,7 @@ Measured fragments exclude input pushes and output comparison.
 | BLAKE3 limb29 | 64-byte input | 72,293 | differentially-validated | Single 1,024-byte chunk only; includes table memory |
 | SHA-1 u32 | 32-byte input | 209,726 | differentially-validated | Collision-broken compatibility hash |
 | RIPEMD-160 u32 | 32-byte input | 244,063 | differentially-validated | 160-bit output |
+| RIPEMD-160 prefix adapter | 32-byte input, 8-byte output | 244,091 | differentially-validated | 64-bit output; compression cost unchanged |
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
 | SHA-256 u32 | 32-byte input | 512,428 | differentially-validated | Larger than local u4 variant |
 | SHAKE256 byte | 32-byte input, 1,024-byte output | 15,927,814 | locally-reproduced | Raw output exceeds 1,000 items |
@@ -27,3 +28,10 @@ Every nontrivial row in the table exceeds the repository optimizer's 32 KiB
 input cutoff and is unoptimized by those upstream passes. BLAKE3 still applies
 its separately documented pinned peephole pass before the repository
 compilation policy.
+
+The RIPEMD-160 prefix row is not a competing compressor: it adds 28 bytes of
+terminal stack routing to retain only eight of the full digest's twenty output
+items. Its measured 406-item peak is unchanged at the representative message
+length because the compressor dominates. The shortened output also lowers the
+generic collision bound to 64 bits, so it is composable only where that bound
+is explicit.

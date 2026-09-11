@@ -3555,6 +3555,24 @@ fn metrics() -> Vec<Metric> {
             value: script_len(ripemd160::ripemd160(32)),
         },
         Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_prefix_32_8",
+            value: script_len(ripemd160::ripemd160_prefix(32, 8)),
+        },
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_prefix_32_8_witness",
+            value: witness_size(&vec![vec![0x42]; 32]),
+        },
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_prefix_32_8_stack",
+            value: max_stack_items(
+                script! { { ripemd160::ripemd160_prefix(32, 8) } OP_TRUE },
+                vec![vec![0x42]; 32],
+            ),
+        },
+        Metric {
             readme: "src/hashes/sha1/README.md",
             key: "sha1_u32_32",
             value: script_len(sha1::sha1(32)),
