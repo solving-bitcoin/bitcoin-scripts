@@ -203,3 +203,20 @@ pub fn decode_digits_with_table_cutoff(preserved_items: u32, table_cutoff: usize
 pub fn decode_digits(preserved_items: u32) -> Script {
     decode_digits_with_table_cutoff(preserved_items, 15)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn preserved_item_frontiers_leave_one_item_of_stack_headroom() {
+        assert!(std::panic::catch_unwind(|| decode(938)).is_ok());
+        assert!(std::panic::catch_unwind(|| decode_digits(907)).is_ok());
+    }
+
+    #[test]
+    fn preserved_item_frontiers_reject_the_next_item() {
+        assert!(std::panic::catch_unwind(|| decode(939)).is_err());
+        assert!(std::panic::catch_unwind(|| decode_digits(908)).is_err());
+    }
+}
