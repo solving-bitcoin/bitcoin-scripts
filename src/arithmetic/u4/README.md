@@ -12,6 +12,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=3` bit counts unless their function documents otherwise.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` takes
   an explicit batch size in `1..=234` and has no default for input checking.
+- `parity::u4_nibbles_to_parity(nibble_count)` takes a checked batch size in
+  `1..=982`.
 
 ## Script metrics
 
@@ -30,6 +32,9 @@ each input with the same output-restoration boundary.
 | Checked table batch, 32 nibbles | <!-- metric:u4_bits_checked_batch32 -->924<!-- /metric:u4_bits_checked_batch32 --> bytes | <!-- metric:u4_bits_checked_batch32_stack -->189<!-- /metric:u4_bits_checked_batch32_stack --> items | <!-- metric:u4_bits_checked_batch32_opcodes -->735<!-- /metric:u4_bits_checked_batch32_opcodes --> |
 | Unchecked table batch, 32 nibbles | <!-- metric:u4_bits_unchecked_batch32 -->764<!-- /metric:u4_bits_unchecked_batch32 --> bytes | 189 items | not recorded |
 | Existing branch splitter, 32 four-bit limbs | <!-- metric:u4_bits_branch_batch32 -->1374<!-- /metric:u4_bits_branch_batch32 --> bytes | <!-- metric:u4_bits_branch_batch32_stack -->130<!-- /metric:u4_bits_branch_batch32_stack --> items | not recorded |
+| Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
+
+<!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.
 
 The staggered table has 61 setup items and costs 31 bytes to remove. A checked
 query costs 22 bytes and restoring its four bits costs another four, so the
@@ -37,6 +42,11 @@ complete checked batch is `92 + 26*n` bytes. The existing branch splitter is
 `43*n` bytes on the same boundary; the checked table wins from six nibbles.
 Unchecked lookup is `92 + 21*n` and wins from five, but is safe only for
 previously certified nibbles.
+
+The parity table has 16 items. A checked 32-nibble batch is measured at 440
+bytes and 50 combined stack items, with no hints and 65 witness bytes across
+32 data items. It returns one numeric bit per nibble and is smaller than
+expanding each nibble to four bits when only parity is needed.
 
 ## Security
 
@@ -48,6 +58,9 @@ before using a value as an `OP_PICK` index. `check_inputs=false` must be used
 only when a surrounding fragment already established that range: an invalid
 index can otherwise address below the table. The numeric range check does not
 by itself prove a byte-unique ScriptNum encoding.
+
+Parity uses the same numeric range proof before its `OP_PICK` lookup. Its
+output is a ScriptNum bit, not a raw byte or a terminal truth value.
 
 ## Script compatibility and standardness
 
@@ -82,13 +95,20 @@ The standalone batch peak is `4*n + 61` combined main/alt-stack items. The
 generator rejects `n > 234`, but callers must reduce the batch further for any
 unrelated live state.
 
+For `u4_nibbles_to_parity(n)`, the same input ordering is consumed and replaced
+one-for-one by parity bits. The standalone peak is `n + 18` during range checks;
+the generator rejects `n > 982`, and callers must reduce the batch for unrelated
+live state.
+
 ## Operational notes
 
 `stack*.rs` contains adapters for `bitcoin-script-stack`; `add.rs`, `logic.rs`,
 `rotate.rs`, and `shift.rs` remain generic. `bits.rs` exhaustively tests every
 nibble in checked and unchecked mode, rejects malformed numeric inputs in
 checked mode, verifies multi-input ordering, and executes the maximum
-standalone batch under the strict local stack limit.
+standalone batch under the strict local stack limit. `parity.rs` exhaustively
+checks the 16-value lookup domain, rejects malformed inputs and invalid batch
+sizes, and measures a representative strict batch.
 
 The four-equal-index query is derived from the combined nibble-table sketch in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/split-into-bits.md).
