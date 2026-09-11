@@ -1601,6 +1601,29 @@
             "hash_path_integer_witness_31",
             "hash_path_integer_stack_31"
           ]
+        },
+        {
+          "id": "altstack-bits-31",
+          "label": "31-bit path with retained bits",
+          "parameters": {
+            "bit_width": 31,
+            "preimage_bytes": 32,
+            "retained_items": 31
+          },
+          "includes": "fragment-only: hash-path verification and bit retention on the altstack; witness includes serialized bits and preimage, and the measured wrapper drains retained bits",
+          "script_bytes": 365,
+          "witness_bytes": 78,
+          "witness_bytes_max": 78,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 365,
+          "metric_keys": [
+            "hash_path_altstack_31",
+            "hash_path_altstack_witness_31",
+            "hash_path_altstack_stack_31"
+          ]
         }
       ],
       "limitations": [
