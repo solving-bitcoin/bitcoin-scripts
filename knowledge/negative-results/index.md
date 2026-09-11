@@ -1226,3 +1226,12 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-048: Constant-composition byte recovery is not yet a composable Script primitive
+
+The fixed-composition Winternitz verifier locally authenticates 49 digit slots,
+but its 20-byte decoder remains host-side. Exact rank recovery needs dynamic
+multinomial buckets and 160-bit arithmetic; a static replacement would need a
+large position/count/digit table whose Script lifetime and stack cost are not
+yet established. Treating the host `decode_message` helper as Script evidence
+would overstate the construction. The boundary remains under OP-021.

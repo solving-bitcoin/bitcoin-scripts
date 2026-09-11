@@ -15,6 +15,16 @@ The current zero-key baseline is 6,136 bytes and a 633-item peak. Table packing
 and algebraic sketches without a priced executable circuit do not satisfy
 this criterion; see [the layout search](negative-results/princev2-layout.md).
 
+## OP-021 — Constant-composition Script decoder
+
+Recover the canonical 20-byte message from the 49-digit fixed-composition
+Winternitz encoding inside Script. **Complete when:** a decoder rejects hostile
+length, radix, composition, and unused-rank inputs; returns exactly 20
+canonical bytes; reports script, witness, hint, stack, executed-opcode, and
+execution-class costs; and is compared against the host `decode_message` helper
+on deterministic boundary vectors. The current inspected non-composable
+boundary is documented in `research/constant-composition-decoder-negative`.
+
 ## OP-001 — Strict execution matrix
 
 Add explicit legacy/P2WSH/tapscript strict and research-unlimited execution
