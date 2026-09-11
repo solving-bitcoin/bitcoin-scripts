@@ -8,6 +8,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
+| Canonical checked byte boundary | `verify_canonical_byte()` | 12 | 4-item peak; 4-byte witness; rejects noncanonical ScriptNums |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide multiply | U254 multiply | 111,466 | Above optimizer cutoff; unoptimized |

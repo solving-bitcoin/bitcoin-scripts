@@ -263,6 +263,28 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "canonical-byte-boundary",
+          "label": "Canonical checked ScriptNum byte",
+          "parameters": {
+            "range": "0..=255",
+            "encoding": "minimal at-most-four-byte ScriptNum"
+          },
+          "includes": "fragment-only: numeric byte range and raw ScriptNum canonicality checks; preserves the value and excludes input push and output check",
+          "script_bytes": 12,
+          "witness_bytes": 4,
+          "witness_bytes_max": 4,
+          "max_stack_items": 4,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 12,
+          "metric_keys": [
+            "u32_canonical_byte",
+            "u32_canonical_byte_witness",
+            "u32_canonical_byte_stack"
+          ]
         }
       ],
       "limitations": [
