@@ -263,6 +263,29 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "uncompress-canonical",
+          "label": "Canonical compressed-u32 decoder",
+          "parameters": {
+            "raw_aliases": false,
+            "data_items": 1,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: exact raw ScriptNum encoding check, canonical signed-u32 expansion, and four byte outputs; representative witness is canonical five-byte -2^31; excludes terminal predicate, input push, and transaction context",
+          "script_bytes": 431,
+          "witness_bytes": 7,
+          "witness_bytes_max": 7,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u32_uncompress_canonical",
+            "u32_uncompress_canonical_witness",
+            "u32_uncompress_canonical_stack"
+          ]
         }
       ],
       "limitations": [

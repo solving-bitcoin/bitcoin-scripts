@@ -4111,6 +4111,39 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u32_uncompress_canonical_metrics_are_current() {
+    let fragment = u32::stack::u32_uncompress_canonical();
+    let witness = vec![scriptnum(i64::from(i32::MIN))];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            OP_2DROP
+            OP_2DROP
+            OP_1
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_canonical",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_canonical_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_canonical_stack",
+            value: stack,
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
