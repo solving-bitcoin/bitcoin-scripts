@@ -13,6 +13,8 @@ they do not use BN254 or any other field modulus.
   `2^32`. The non-`drop` form preserves the word selected by `a`.
 - `u32_sub[_drop](a, b)` computes `a - b` modulo `2^32` for either ordering of
   two distinct offsets. The non-`drop` form preserves the minuend.
+- `u32_conditional_negate()` normalizes a top condition and negates the next
+  word modulo `2^32` when it is nonzero.
 - `u32_{less,greater}than[orequal]()` compares the top two words as unsigned
   integers and consumes both.
 - `u32_or(a, b, stack_size)`, like XOR and AND, takes distinct word offsets.
@@ -33,12 +35,15 @@ as less-than-or-equal.
 | --- | ---: | ---: | ---: |
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
+| `u32_conditional_negate()` | <!-- metric:u32_conditional_negate -->83<!-- /metric:u32_conditional_negate --> bytes | 0 bytes | <!-- metric:u32_conditional_negate_stack -->9<!-- /metric:u32_conditional_negate_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+
+The conditional-negation fragment contains <!-- metric:u32_conditional_negate_opcodes -->52<!-- /metric:u32_conditional_negate_opcodes --> static non-push opcodes under the repository's compilation policy. The local tapscript executor does not expose a useful dynamic opcode counter for this fragment.
 
 Operand witness serialization is deliberately excluded: callers may construct
 words inside the locking script or supply four witness items per word. No
@@ -68,3 +73,9 @@ caller.
 No hints are required. A witness-supplied word occupies four stack items, most
 significant byte first in the module's normal representation. Binary operation
 inputs and any shared logic table must already be at the documented depths.
+
+`u32_conditional_negate()` consumes a condition above one word and leaves the
+word unchanged for zero, or returns its modulo-`2^32` negation for any nonzero
+condition. It normalizes the condition before `OP_IF`, so non-minimal boolean
+values such as `2` and `-1` are accepted as true. It inherits the module's
+byte-limb contract and does not itself range-check the four word limbs.
