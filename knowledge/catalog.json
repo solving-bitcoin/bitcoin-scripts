@@ -263,10 +263,36 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "u32-le-bits",
+          "label": "One u32 word to little-endian bits",
+          "parameters": {
+            "input_bytes": 4,
+            "output_bits": 32,
+            "byte_range_check": true,
+            "bit_order": "least-significant bit of the least-significant byte on top"
+          },
+          "includes": "fragment-only: four numeric byte range checks and bit extraction; excludes witness serialization and terminal predicate",
+          "script_bytes": 520,
+          "witness_bytes": 9,
+          "witness_bytes_max": 9,
+          "max_stack_items": 35,
+          "executed_opcodes": 370,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 520,
+          "metric_keys": [
+            "u32_le_bits",
+            "u32_le_bits_witness",
+            "u32_le_bits_stack",
+            "u32_le_bits_opcodes"
+          ]
         }
       ],
       "limitations": [
         "Boolean table consumes 256 persistent items",
+        "Bit conversion checks numeric byte range but not byte-unique ScriptNum encoding",
         "Not validated against Bitcoin Core"
       ],
       "open_problems": [
