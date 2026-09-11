@@ -4111,6 +4111,61 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u32_zip_metrics_are_current() {
+    let witness = vec![vec![1u8]; 8];
+    let zip = u32::zip::u32_zip(0, 1);
+    let zip_stack = max_stack_items_strict(
+        script! {
+            { zip.clone() }
+            for _ in 0..8 { OP_DROP }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    let copy_zip = u32::zip::u32_copy_zip(0, 1);
+    let copy_zip_stack = max_stack_items_strict(
+        script! {
+            { copy_zip.clone() }
+            for _ in 0..12 { OP_DROP }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_zip",
+            value: script_len(zip),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_zip_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_zip_stack",
+            value: zip_stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_copy_zip",
+            value: script_len(copy_zip),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_copy_zip_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_copy_zip_stack",
+            value: copy_zip_stack,
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
