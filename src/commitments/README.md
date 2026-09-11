@@ -21,6 +21,9 @@ from small enumerable spaces.
 
 ### Hash path
 
+- This is a unary hash-state path, not a conventional binary Merkle branch;
+  standard `HASH256(left || right)` composition would require concatenation or
+  a separate 64-byte compression circuit because `OP_CAT` is disabled.
 - `bit_width`: required, with no default. Integer reconstruction accepts
   `1..=31`; the generic bit-path verifier can be wider subject to the enclosing
   script's limits.

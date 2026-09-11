@@ -60,6 +60,16 @@ checkpoint, participant order, bit width, and round boundary. Script and
 witness cost remain linear in the total path length despite the constant-size
 published state.
 
+## Merkle distinction
+
+The path is deliberately unary. A conventional Bitcoin Merkle branch requires
+`HASH256(left || right)` at each level, but current Script hashes one stack item
+and has no enabled `OP_CAT` to build that 64-byte preimage from two items. The
+existing byte-oriented SHA-256 generator prices one 64-byte layer at 1,060,200
+script bytes and 770,481 static non-push opcodes before double hashing or
+branch routing. That is a measured workaround boundary, not a Merkle verifier;
+see the [negative result](../negative-results/merkle-branch-composition.md).
+
 ## Joint-randomness protocols
 
 Nested paths can authenticate a commit–reveal transcript for a game or
