@@ -55,6 +55,28 @@ pub fn u32_notequal() -> Script {
     }
 }
 
+/// Test whether the top u32 word is numerically zero and consume it.
+///
+/// The four byte limbs must already be canonical values in `0..=255`.
+pub fn u32_iszero() -> Script {
+    script! {
+        OP_0NOTEQUAL
+        OP_NOT
+        OP_SWAP
+        OP_0NOTEQUAL
+        OP_NOT
+        OP_BOOLAND
+        OP_SWAP
+        OP_0NOTEQUAL
+        OP_NOT
+        OP_BOOLAND
+        OP_SWAP
+        OP_0NOTEQUAL
+        OP_NOT
+        OP_BOOLAND
+    }
+}
+
 pub fn u32_toaltstack() -> Script {
     script! {
         OP_TOALTSTACK
@@ -177,5 +199,44 @@ mod tests {
             };
             run(script);
         }
+    }
+
+    #[test]
+    fn test_u32_iszero() {
+        let boundaries = [0, 1, 0xff, 0x100, 0x8000_0000, u32::MAX];
+        for &value in &boundaries {
+            check_u32_iszero(value);
+        }
+
+        for index in 0..256u32 {
+            let value = index.wrapping_mul(0x9e37_79b9).wrapping_add(0x243f_6a88);
+            check_u32_iszero(value);
+        }
+    }
+
+    #[test]
+    fn test_u32_iszero_does_not_treat_invalid_nonzero_limbs_as_zero() {
+        for invalid_limb in [-1, 256, 65_536] {
+            let script = script! {
+                0
+                0
+                0
+                { invalid_limb }
+                { u32_iszero() }
+                OP_0
+                OP_EQUAL
+            };
+            run(script);
+        }
+    }
+
+    fn check_u32_iszero(value: u32) {
+        let script = script! {
+            { u32_push(value) }
+            { u32_iszero() }
+            { (value == 0) as u32 }
+            OP_EQUAL
+        };
+        run(script);
     }
 }
