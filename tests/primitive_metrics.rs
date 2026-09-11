@@ -15,7 +15,9 @@ use bitcoin_lab::{
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
+        ternary_hash_path_integer_commitment, ternary_hash_path_integer_witness,
         verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
+        verify_ternary_hash_path_to_integer,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -1849,6 +1851,11 @@ fn metrics() -> Vec<Metric> {
         four_way_hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let four_way_hash_path_witness =
         four_way_hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+
+    let ternary_hash_path_commitment =
+        ternary_hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
+    let ternary_hash_path_witness =
+        ternary_hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
 
     let length_preimage = vec![0x24; 32];
     let length_commitment = preimage_length_commitment(&length_preimage);
@@ -3724,6 +3731,27 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_31",
+            value: script_len(verify_ternary_hash_path_to_integer(
+                31,
+                ternary_hash_path_commitment,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_witness_31",
+            value: witness_size(&ternary_hash_path_witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_stack_31",
+            value: max_stack_items(
+                verify_ternary_hash_path_to_integer(31, ternary_hash_path_commitment),
+                ternary_hash_path_witness,
+            ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
             key: "preimage_length_default",
             value: script_len(verify_preimage_length(length_commitment)),
         },
@@ -4018,6 +4046,31 @@ fn winternitz_metrics_are_current() {
             .chain(winternitz20_composition_metrics())
             .collect(),
     );
+}
+
+#[test]
+fn ternary_hash_path_metrics_are_current() {
+    let preimage = vec![0x42; 32];
+    let value = 0x1234_5678;
+    let commitment = ternary_hash_path_integer_commitment(&preimage, value, 31);
+    let witness = ternary_hash_path_integer_witness(&preimage, value, 31);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_31",
+            value: script_len(verify_ternary_hash_path_to_integer(31, commitment)),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_witness_31",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "ternary_hash_path_integer_stack_31",
+            value: max_stack_items(verify_ternary_hash_path_to_integer(31, commitment), witness),
+        },
+    ]);
 }
 
 #[test]

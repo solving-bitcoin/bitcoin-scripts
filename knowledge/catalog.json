@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-11",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -1497,6 +1497,75 @@
       "open_problems": [
         "OP-003",
         "OP-004"
+      ]
+    },
+    {
+      "id": "commitment/ternary-hash-path-integer",
+      "name": "Ternary mixed-hash integer path",
+      "class": "commitment/integer",
+      "summary": "Authenticates canonical base-3 trits with fixed-length SHA-256/RIPEMD-160 codewords and reconstructs a 1–31-bit integer.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-11",
+      "knowledge_page": "knowledge/primitives/ternary-hash-path-integer.md",
+      "implementation": "src/commitments/ternary_hash_path.rs",
+      "documentation": "src/commitments/README.md",
+      "tests": [
+        "commitments::ternary_hash_path::tests::verifies_all_ternary_codewords",
+        "commitments::ternary_hash_path::tests::verifies_integer_boundaries_and_values",
+        "commitments::ternary_hash_path::tests::rejects_wrong_openings_and_noncanonical_trits",
+        "commitments::ternary_hash_path::tests::rejects_out_of_range_generic_trits",
+        "primitive_metrics::ternary_hash_path_metrics_are_current",
+        "examples/ternary_hash_path_benchmark.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-scriptexec-locked",
+        "bitcoin-script-locked",
+        "fips-180-4"
+      ],
+      "techniques": [
+        "mixed-hash-path"
+      ],
+      "security": "The final RIPEMD-160 digest limits generic collision resistance to 80 bits; hiding requires min-entropy in the unrevealed preimage/trits, and binding assumes the non-standard three-codeword mixed-hash schedule.",
+      "stack_contract": "... tritN-1 ... trit0 preimage -> ... value",
+      "configurations": [
+        {
+          "id": "integer-31",
+          "label": "31-bit ternary integer path",
+          "parameters": {
+            "bit_width": 31,
+            "trit_count": 20,
+            "preimage_bytes": 32
+          },
+          "includes": "fragment-only: verifier and base-3 integer reconstruction; witness includes serialized trits and preimage",
+          "script_bytes": 924,
+          "witness_bytes": 63,
+          "witness_bytes_max": 63,
+          "max_stack_items": 24,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 924,
+          "metric_keys": [
+            "ternary_hash_path_integer_31",
+            "ternary_hash_path_integer_witness_31",
+            "ternary_hash_path_integer_stack_31"
+          ]
+        }
+      ],
+      "limitations": [
+        "Non-standard mixed-hash construction without dedicated cryptanalysis",
+        "Integer reconstruction limited to 31 bits and 20 trits at that width",
+        "Dominated by the measured four-way path for ordinary 31-bit integer bytes and stack usage",
+        "All trits coexist at script entry; surrounding protocol state must be charged against the 1,000-item stack limit",
+        "Bitcoin Core consensus and policy validation not performed"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-020"
       ]
     },
     {

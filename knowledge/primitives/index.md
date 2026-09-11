@@ -23,6 +23,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Mixed-hash path commitment](hash-path-integer.md)
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
+- [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
 - [Binohash transaction digest](binohash.md)
 
