@@ -20,6 +20,13 @@ digest comparison.
 | --- | ---: |
 | 32-byte input | <!-- metric:sha1_u32_32 -->209726<!-- /metric:sha1_u32_32 --> bytes |
 
+The output-prefix adapter keeps the full compression schedule and removes the
+unused digest suffix:
+
+| Configuration | Hashing script |
+| --- | ---: |
+| 32-byte input, first 8 digest bytes | <!-- metric:sha1_u32_prefix_32_8 -->209754<!-- /metric:sha1_u32_prefix_32_8 --> bytes |
+
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
@@ -56,7 +63,8 @@ value in `0..=255`.
 `sha1(num_bytes)` consumes exactly `num_bytes` main-stack items and leaves the
 20 digest bytes on the main stack with the first digest byte on top. The
 temporary lookup table and message schedule are removed, and the altstack is
-restored to its starting depth.
+restored to its starting depth. `sha1_prefix(num_bytes, output_bytes)` keeps
+the first `1..=20` digest bytes and drops the rest.
 
 ## Operational notes
 

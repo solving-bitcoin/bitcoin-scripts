@@ -58,6 +58,31 @@ pub fn sha1(num_bytes: usize) -> Script {
     }
 }
 
+/// Hashes `num_bytes` message bytes and leaves the first `output_bytes` digest
+/// bytes on the main stack.
+pub fn sha1_prefix(num_bytes: usize, output_bytes: usize) -> Script {
+    assert!(
+        (1..=20).contains(&output_bytes),
+        "SHA-1 output prefix must contain between 1 and 20 bytes"
+    );
+    if output_bytes == 20 {
+        return sha1(num_bytes);
+    }
+
+    script! {
+        { sha1(num_bytes) }
+        for _ in 0..output_bytes {
+            OP_TOALTSTACK
+        }
+        for _ in 0..20 - output_bytes {
+            OP_DROP
+        }
+        for _ in 0..output_bytes {
+            OP_FROMALTSTACK
+        }
+    }
+}
+
 fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
         for i in 1..=num_bytes {
@@ -332,6 +357,21 @@ mod tests {
         assert!(result.success, "{result}");
     }
 
+    fn verify_prefix(message: &[u8], output_bytes: usize) {
+        let expected = reference_sha1::Hash::hash(message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(message) }
+            { sha1_prefix(message.len(), output_bytes) }
+            for byte in expected[..output_bytes].iter() {
+                { *byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(result.success, "{result}");
+    }
+
     #[test]
     fn round_functions_match_reference() {
         let a = 0x0123_4567u32;
@@ -367,6 +407,24 @@ mod tests {
                 OP_FROMALTSTACK
             });
             assert!(result.success, "{result}");
+        }
+    }
+
+    #[test]
+    fn hashes_output_prefixes() {
+        for output_bytes in [1, 8, 19, 20] {
+            verify_prefix(b"abc", output_bytes);
+        }
+        for message_len in [55, 56, 63, 64] {
+            verify_prefix(&vec![0xa5; message_len], 8);
+        }
+    }
+
+    #[test]
+    fn rejects_prefix_boundaries() {
+        for output_bytes in [0, 21] {
+            let panic = std::panic::catch_unwind(|| sha1_prefix(1, output_bytes));
+            assert!(panic.is_err());
         }
     }
 
