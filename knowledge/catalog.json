@@ -206,12 +206,14 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-09-11",
       "knowledge_page": "knowledge/primitives/u32.md",
       "implementation": "src/arithmetic/u32/mod.rs",
       "documentation": "src/arithmetic/u32/README.md",
       "tests": [
-        "src/arithmetic/u32"
+        "src/arithmetic/u32",
+        "arithmetic::u32::stack::tests::test_u32_iszero",
+        "arithmetic::u32::stack::tests::test_u32_iszero_does_not_treat_invalid_nonzero_limbs_as_zero"
       ],
       "references": [
         "bitcoin-script-locked",
@@ -222,7 +224,7 @@
         "lookup-table"
       ],
       "security": "No independent cryptographic claim; every byte item must be canonical and in range.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean.",
       "configurations": [
         {
           "id": "add-drop",
@@ -243,6 +245,30 @@
           "metric_keys": [
             "u32_add_drop",
             "u32_add_drop_stack"
+          ]
+        },
+        {
+          "id": "iszero",
+          "label": "u32_iszero()",
+          "parameters": {
+            "representation": "four big-endian byte limbs",
+            "predicate": "all four limbs numerically zero"
+          },
+          "includes": "fragment-only: four per-limb zero tests and boolean fold; excludes input pushes and output check",
+          "script_bytes": 4,
+          "witness_bytes": 5,
+          "witness_bytes_max": 5,
+          "max_stack_items": 4,
+          "executed_opcodes": 4,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 4,
+          "hint_items": 0,
+          "metric_keys": [
+            "u32_iszero",
+            "u32_iszero_witness",
+            "u32_iszero_stack",
+            "u32_iszero_opcodes"
           ]
         },
         {
