@@ -14,3 +14,10 @@ the four-way path saves 67 script bytes, 17 witness bytes, and 15 peak stack
 items relative to the binary path. This comparison does not erase its stronger
 tapscript-only execution assumption or its non-standard mixed-hash security
 assumption.
+
+Taproot Merkle branches are intentionally absent from this cost table. The
+native-byte adapter search is an inspected negative result: current Script
+cannot bind two hostile 32-byte nodes into the tagged `TapBranch` SHA256
+preimage without an enabled concatenation/splitting operation. See
+[NR-047](../negative-results/index.md#nr-047-native-taproot-merkle-branch-adapter-is-not-available)
+and [OP-020](../open-problems.md#op-020--taproot-merkle-path-verifier).
