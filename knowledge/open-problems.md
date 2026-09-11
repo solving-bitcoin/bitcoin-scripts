@@ -282,6 +282,17 @@ lengths and malformed inputs; and it either beats 59,529 bytes below the
 1,000-item peak or records a machine-checkable lower bound for that search
 space.
 
+## OP-020 — BLAKE3 parent-tree composition
+
+Add a standalone `PARENT` compression fragment over two 32-byte child chaining
+values and compose it with at least two strict 1,024-byte chunk outputs.
+**Complete when:** parent and two-chunk root outputs match pinned BLAKE3
+reference vectors; malformed child-word encodings and extra witness items are
+rejected; the complete tree reports locking-script bytes, serialized witness
+bytes, static/executed opcode evidence where available, and combined main/alt
+stack peaks; and the result is labeled with its actual consensus/policy
+execution class rather than inherited from the current single-chunk fragment.
+
 ## OP-014 — Total-domain ScriptNum right-shift frontier
 
 Determine whether a one-item ScriptNum representation can beat the four-byte
