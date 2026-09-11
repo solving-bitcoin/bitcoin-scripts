@@ -81,6 +81,29 @@ pub fn ripemd160(num_bytes: usize) -> Script {
     }
 }
 
+/// Continues RIPEMD-160 from the state after one 64-byte block over a
+/// 16-byte suffix, producing the digest of the resulting 80-byte message.
+pub fn ripemd160_80bytes_from_midstate(midstate: [u32; 5]) -> Script {
+    let mut state = midstate;
+    state.reverse();
+    script! {
+        { push_reverse_bytes_to_alt(16) }
+        { u8_push_xor_table() }
+        { padding_add_roll_for_total_length(16, 80) }
+        for word in state {
+            { u32_push(word) }
+        }
+        { ripemd160_transform(16) }
+        for _ in 0..5 {
+            { u32_toaltstack() }
+        }
+        { u8_drop_xor_table() }
+        for _ in 0..5 {
+            { u32_fromaltstack() }
+        }
+    }
+}
+
 fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
         for i in 1..=num_bytes {
@@ -92,6 +115,10 @@ fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
 }
 
 fn padding_add_roll(num_bytes: usize) -> Script {
+    padding_add_roll_for_total_length(num_bytes, num_bytes)
+}
+
+fn padding_add_roll_for_total_length(num_bytes: usize, total_message_bytes: usize) -> Script {
     let padding_bytes = if num_bytes % 64 < 56 {
         55 - num_bytes % 64
     } else {
@@ -108,7 +135,7 @@ fn padding_add_roll(num_bytes: usize) -> Script {
 
         // RIPEMD-160 encodes the bit length least-significant word first.
         // The byte swap prepares these values for the per-word reversal below.
-        { u32_push(((num_bytes as u32) * 8).swap_bytes()) }
+        { u32_push(((total_message_bytes as u32) * 8).swap_bytes()) }
         { u32_push(0) }
 
         // Interpret every four input bytes as a little-endian u32.
@@ -390,6 +417,7 @@ fn xor_with_or_not_d(words_above_table: usize) -> Script {
 mod tests {
     use super::*;
     use crate::arithmetic::u32::stack::{u32_equal, u32_push};
+    use crate::support::execution::execute_script_with_inputs;
     use bitcoin::hashes::{ripemd160 as reference_ripemd160, Hash};
 
     fn push_message(message: &[u8]) -> Script {
@@ -412,6 +440,65 @@ mod tests {
             OP_TRUE
         });
         assert!(result.success, "{result}");
+    }
+
+    fn compress(state: &mut [u32; 5], block: &[u8; 64]) {
+        let mut words = [0u32; 16];
+        for (word, bytes) in words.iter_mut().zip(block.chunks_exact(4)) {
+            *word = u32::from_le_bytes(bytes.try_into().unwrap());
+        }
+
+        let mut left = *state;
+        let mut right = *state;
+        for round in 0..80 {
+            let left_function = host_function(round, false, left[1], left[2], left[3]);
+            let left_value = left[0]
+                .wrapping_add(left_function)
+                .wrapping_add(words[LEFT_MESSAGE_ORDER[round]])
+                .wrapping_add(round_constant(round, false))
+                .rotate_left(LEFT_ROTATIONS[round] as u32)
+                .wrapping_add(left[4]);
+            left = [
+                left[4],
+                left_value,
+                left[1],
+                left[2].rotate_left(10),
+                left[3],
+            ];
+
+            let right_function = host_function(round, true, right[1], right[2], right[3]);
+            let right_value = right[0]
+                .wrapping_add(right_function)
+                .wrapping_add(words[RIGHT_MESSAGE_ORDER[round]])
+                .wrapping_add(round_constant(round, true))
+                .rotate_left(RIGHT_ROTATIONS[round] as u32)
+                .wrapping_add(right[4]);
+            right = [
+                right[4],
+                right_value,
+                right[1],
+                right[2].rotate_left(10),
+                right[3],
+            ];
+        }
+
+        let original = *state;
+        state[0] = original[1].wrapping_add(left[2]).wrapping_add(right[3]);
+        state[1] = original[2].wrapping_add(left[3]).wrapping_add(right[4]);
+        state[2] = original[3].wrapping_add(left[4]).wrapping_add(right[0]);
+        state[3] = original[4].wrapping_add(left[0]).wrapping_add(right[1]);
+        state[4] = original[0].wrapping_add(left[1]).wrapping_add(right[2]);
+    }
+
+    fn host_function(round: usize, parallel: bool, x: u32, y: u32, z: u32) -> u32 {
+        match if parallel { 4 - round / 16 } else { round / 16 } {
+            0 => x ^ y ^ z,
+            1 => (x & y) | (!x & z),
+            2 => (x | !y) ^ z,
+            3 => (x & z) | (y & !z),
+            4 => x ^ (y | !z),
+            _ => unreachable!(),
+        }
     }
 
     #[test]
@@ -463,6 +550,46 @@ mod tests {
         verify_digest(&[0xff; 64]);
         verify_digest(&[0x42; 80]);
         verify_digest(&[0x24; 130]);
+    }
+
+    #[test]
+    fn continues_from_midstate() {
+        let prefix = [0x42u8; 64];
+        let suffix: Vec<u8> = (0..16).collect();
+        let mut midstate = INITIAL_STATE;
+        compress(&mut midstate, &prefix);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = reference_ripemd160::Hash::hash(&message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(&suffix) }
+            { ripemd160_80bytes_from_midstate(midstate) }
+            for byte in expected {
+                { byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn rejects_extra_suffix_bytes() {
+        let result = execute_script_with_inputs(
+            script! {
+                { ripemd160_80bytes_from_midstate(INITIAL_STATE) }
+                for _ in 0..20 {
+                    OP_DROP
+                }
+                OP_DEPTH
+                OP_0
+                OP_EQUAL
+            },
+            vec![vec![0x42]; 17],
+        );
+
+        assert!(!result.success);
     }
 
     #[test]

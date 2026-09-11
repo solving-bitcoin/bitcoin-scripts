@@ -19,6 +19,7 @@ digest comparison.
 | Configuration | Hashing script |
 | --- | ---: |
 | 32-byte input | <!-- metric:ripemd160_u32_32 -->244063<!-- /metric:ripemd160_u32_32 --> bytes |
+| 64-byte prefix + 16-byte suffix from midstate | <!-- metric:ripemd160_u32_80_midstate -->243956<!-- /metric:ripemd160_u32_80_midstate --> bytes |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
@@ -57,6 +58,11 @@ value in `0..=255`.
 the 20 digest bytes on the main stack with the first digest byte on top. The
 temporary lookup table, branch states, and message block are removed, and the
 altstack is restored to its starting depth.
+
+`ripemd160_80bytes_from_midstate(midstate)` consumes exactly 16 suffix bytes
+and continues from the state after a 64-byte prefix. The final length encoding
+is fixed to the resulting 80-byte message; callers must authenticate the
+midstate and its prefix binding.
 
 ## Operational notes
 
