@@ -2157,6 +2157,29 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_negate",
+            value: script_len(u32::stack::u32_conditional_negate()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_negate_stack",
+            value: max_stack_items(
+                script! {
+                    { u32::stack::u32_push(0x8000_0000) }
+                    { 1 }
+                    { u32::stack::u32_conditional_negate() }
+                    OP_TRUE
+                },
+                vec![],
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_conditional_negate_opcodes",
+            value: static_non_push_opcodes(u32::stack::u32_conditional_negate()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
             key: "u32_lessthan",
             value: script_len(u32::cmp::u32_lessthan()),
         },

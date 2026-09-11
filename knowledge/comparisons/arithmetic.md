@@ -6,6 +6,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Need | Local construction | Representative script bytes | Main constraint |
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
+| Conditional u32 sign routing | `u32_conditional_negate()` | 83 | 9-item peak; condition normalized before branch |
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |

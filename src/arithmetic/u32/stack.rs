@@ -1,3 +1,4 @@
+use crate::arithmetic::u32::sub::u32_sub_drop;
 use crate::support::script::*;
 use crate::support::script_ops::{push_to_stack, OP_256MUL, OP_4DUP};
 
@@ -52,6 +53,22 @@ pub fn u32_notequal() -> Script {
     script! {
         { u32_equal() }
         OP_NOT
+    }
+}
+
+/// Conditionally negates the top u32 word modulo 2^32.
+///
+/// Before: `preserved | word | condition`.
+/// After: `preserved | (condition == 0 ? word : -word)`.
+/// The condition is normalized with `OP_0NOTEQUAL`; the word must already use
+/// the module's four-byte representation.
+pub fn u32_conditional_negate() -> Script {
+    script! {
+        OP_0NOTEQUAL
+        OP_IF
+            { u32_push(0) }
+            { u32_sub_drop(0, 1) }
+        OP_ENDIF
     }
 }
 
@@ -176,6 +193,28 @@ mod tests {
                 OP_EQUAL
             };
             run(script);
+        }
+    }
+
+    #[test]
+    fn test_u32_conditional_negate() {
+        let words = [0, 1, 0xff, 0x100, 0x7fff_ffff, 0x8000_0000, u32::MAX];
+        for word in words {
+            for condition in [0i64, 1, 2, -1] {
+                let expected = if condition == 0 {
+                    word
+                } else {
+                    word.wrapping_neg()
+                };
+                let script = script! {
+                    { u32_push(word) }
+                    { condition }
+                    { u32_conditional_negate() }
+                    { u32_push(expected) }
+                    { u32_equal() }
+                };
+                run(script);
+            }
         }
     }
 }

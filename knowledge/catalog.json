@@ -246,6 +246,28 @@
           ]
         },
         {
+          "id": "conditional-negate",
+          "label": "u32_conditional_negate()",
+          "parameters": {
+            "condition": "nonzero means negate",
+            "word_representation": "four byte limbs"
+          },
+          "includes": "fragment-only: condition normalization, branch, zero-word construction, and modulo-2^32 subtraction; excludes word pushes and output check",
+          "script_bytes": 83,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": 9,
+          "executed_opcodes": 52,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 83,
+          "metric_keys": [
+            "u32_conditional_negate",
+            "u32_conditional_negate_stack",
+            "u32_conditional_negate_opcodes"
+          ]
+        },
+        {
           "id": "xor-memory",
           "label": "u8_push_xor_table()",
           "parameters": {
