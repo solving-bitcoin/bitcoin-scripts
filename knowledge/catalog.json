@@ -185,6 +185,28 @@
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
           ]
+        },
+        {
+          "id": "copy-u32-from-depth-0",
+          "label": "Stack-preserving eight-nibble u32 copy",
+          "parameters": {
+            "nibble_count": 8,
+            "address": 0
+          },
+          "includes": "fragment-only: eight OP_PICK copies of a contiguous u32 nibble group; excludes input pushes and output checks",
+          "script_bytes": 16,
+          "witness_bytes": 16,
+          "witness_bytes_max": 16,
+          "max_stack_items": 16,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 16,
+          "metric_keys": [
+            "u4_copy_u32_from_0",
+            "u4_copy_u32_from_0_witness",
+            "u4_copy_u32_from_0_stack"
+          ]
         }
       ],
       "limitations": [

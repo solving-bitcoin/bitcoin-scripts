@@ -201,4 +201,20 @@ mod tests {
         };
         crate::support::execution::run(script);
     }
+
+    #[test]
+    fn copy_u32_from_preserves_the_source_and_unrelated_state() {
+        let script = script! {
+            5 OP_TOALTSTACK
+            99
+            { u4_number_to_nibble(0x12345678) }
+            { u4_copy_u32_from(0) }
+            { u4_number_to_nibble(0x12345678) }
+            { verify_n(8) }
+            { u4_drop(8) }
+            OP_FROMALTSTACK 5 OP_EQUALVERIFY
+            99 OP_EQUAL
+        };
+        crate::support::execution::run(script);
+    }
 }
