@@ -17,6 +17,7 @@ pub fn u32_push(value: u32) -> Script {
     }
 }
 
+/// Consumes two u32 words and fails unless their four byte limbs match.
 pub fn u32_equalverify() -> Script {
     script! {
         4
@@ -31,6 +32,7 @@ pub fn u32_equalverify() -> Script {
     }
 }
 
+/// Consumes two u32 words and leaves one Boolean equality result.
 pub fn u32_equal() -> Script {
     script! {
         4
@@ -160,14 +162,50 @@ mod tests {
     use crate::support::execution::run;
 
     #[test]
-    fn test_u32_notequal() {
+    fn test_u32_equality_boundaries() {
         for (a, b) in [
             (0, 0),
             (0, 1),
             (0xff, 0x100),
+            (0x7fff_ffff, 0x8000_0000),
             (u32::MAX, u32::MAX),
             (u32::MAX, 0),
         ] {
+            run(script! {
+                { u32_push(a) }
+                { u32_push(b) }
+                { u32_equal() }
+                { (a == b) as u32 }
+                OP_EQUAL
+            });
+            let equalverify = crate::support::execution::execute_script(script! {
+                { u32_push(a) }
+                { u32_push(b) }
+                { u32_equalverify() }
+                OP_1
+            });
+            assert_eq!(equalverify.success, a == b);
+        }
+    }
+
+    #[test]
+    fn equality_rejects_a_short_word() {
+        let result = crate::support::execution::execute_script(script! {
+            0
+            0
+            0
+            0
+            0
+            0
+            0
+            { u32_equal() }
+        });
+        assert!(!result.success);
+    }
+
+    #[test]
+    fn test_u32_notequal() {
+        for (a, b) in [(0, 0), (0, 1), (u32::MAX, u32::MAX), (u32::MAX, 0)] {
             let script = script! {
                 { u32_push(a) }
                 { u32_push(b) }

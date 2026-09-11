@@ -15,6 +15,8 @@ they do not use BN254 or any other field modulus.
   two distinct offsets. The non-`drop` form preserves the minuend.
 - `u32_{less,greater}than[orequal]()` compares the top two words as unsigned
   integers and consumes both.
+- `u32_equal()` consumes the top two words and leaves one Boolean result;
+  `u32_equalverify()` consumes both and fails on mismatch.
 - `u32_or(a, b, stack_size)`, like XOR and AND, takes distinct word offsets.
   `stack_size` is one plus the number of u32 words above the shared byte-logic
   table. With exactly two working words, the usual value is `3`.
@@ -37,6 +39,8 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_equal()` | <!-- metric:u32_equal -->18<!-- /metric:u32_equal --> bytes | 0 bytes | <!-- metric:u32_equal_stack -->9<!-- /metric:u32_equal_stack --> items |
+| `u32_equalverify()` | <!-- metric:u32_equalverify -->9<!-- /metric:u32_equalverify --> bytes | 0 bytes | <!-- metric:u32_equalverify_stack -->9<!-- /metric:u32_equalverify_stack --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 
