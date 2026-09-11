@@ -246,6 +246,29 @@
           ]
         },
         {
+          "id": "conditional-select",
+          "label": "u32_conditional_select()",
+          "parameters": {
+            "condition": "numeric truthiness normalized with OP_0NOTEQUAL",
+            "word_width_bytes": 4
+          },
+          "includes": "fragment-only: condition normalization, whole-word branch selection, and restoration of the selected byte sequence; excludes input pushes, output check, unrelated live state, and transaction context",
+          "script_bytes": 9,
+          "witness_bytes": 10,
+          "witness_bytes_max": 19,
+          "max_stack_items": 9,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 9,
+          "metric_keys": [
+            "u32_conditional_select",
+            "u32_conditional_select_witness_min",
+            "u32_conditional_select_witness_max",
+            "u32_conditional_select_stack"
+          ]
+        },
+        {
           "id": "xor-memory",
           "label": "u8_push_xor_table()",
           "parameters": {

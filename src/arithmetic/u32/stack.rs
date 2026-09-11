@@ -73,6 +73,24 @@ pub fn u32_fromaltstack() -> Script {
     }
 }
 
+/// Select one complete u32 word using Script truthiness.
+///
+/// Stack before (top first): `condition | when_true | when_false`.
+/// Stack after: the selected word. The condition is consumed; a canonical
+/// boolean is not required because selection follows `OP_IF` semantics.
+pub fn u32_conditional_select() -> Script {
+    script! {
+        OP_0NOTEQUAL
+        OP_IF
+            { u32_toaltstack() }
+            { u32_drop() }
+            { u32_fromaltstack() }
+        OP_ELSE
+            { u32_drop() }
+        OP_ENDIF
+    }
+}
+
 pub fn u32_dup() -> Script {
     script! { OP_4DUP }
 }
@@ -174,6 +192,26 @@ mod tests {
                 { u32_notequal() }
                 { (a != b) as u32 }
                 OP_EQUAL
+            };
+            run(script);
+        }
+    }
+
+    #[test]
+    fn test_u32_conditional_select() {
+        for (condition, expected) in [
+            (0, 0x1122_3344),
+            (1, 0xaabb_ccdd),
+            (2, 0xaabb_ccdd),
+            (-1, 0xaabb_ccdd),
+        ] {
+            let script = script! {
+                { u32_push(0x1122_3344) }
+                { u32_push(0xaabb_ccdd) }
+                { condition }
+                { u32_conditional_select() }
+                { u32_push(expected) }
+                { u32_equal() }
             };
             run(script);
         }
