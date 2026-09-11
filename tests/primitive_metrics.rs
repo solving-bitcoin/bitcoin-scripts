@@ -4111,6 +4111,40 @@ fn ed25519_packed_decoder_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u32_reverse_byte_adapter_metrics_are_current() {
+    let fragment = u32::stack::u8_reverse_toaltstack(4);
+    let witness = vec![vec![0x11], vec![0x22], vec![0x33], vec![0x44]];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..4 {
+                OP_FROMALTSTACK
+                OP_DROP
+            }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u8_reverse_toaltstack_4",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u8_reverse_toaltstack_4_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u8_reverse_toaltstack_4_stack",
+            value: stack,
+        },
+    ]);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));

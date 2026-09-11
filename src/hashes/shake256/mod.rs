@@ -7,7 +7,7 @@
 
 use crate::arithmetic::u32::{
     rotate::u8_extract_hbit,
-    stack::u32_push,
+    stack::{u32_push, u8_reverse_toaltstack},
     xor::{u8_drop_xor_table, u8_push_xor_table, u8_xor},
 };
 use crate::support::script::{script, Script};
@@ -72,7 +72,7 @@ pub fn shake256(num_bytes: usize) -> Script {
     let block_count = num_bytes / RATE_BYTES + 1;
 
     script! {
-        { push_reverse_bytes_to_alt(num_bytes) }
+        { u8_reverse_toaltstack(num_bytes) }
         { u8_push_xor_table() }
 
         // State order is A[24] .. A[0], so lane zero and its least-significant
@@ -87,16 +87,6 @@ pub fn shake256(num_bytes: usize) -> Script {
         }
 
         { squeeze_1024() }
-    }
-}
-
-fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
-    script! {
-        for i in 1..=num_bytes {
-            { num_bytes - i }
-            OP_ROLL
-            OP_TOALTSTACK
-        }
     }
 }
 
