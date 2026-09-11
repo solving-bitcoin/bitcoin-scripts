@@ -1849,7 +1849,8 @@
       "implementation": "src/hashes/sha256/sha2_u32.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u32::tests::test_sha256"
+        "hashes::sha256::sha2_u32::tests::test_sha256",
+        "hashes::sha256::sha2_u32::tests::test_sha256_tagged_hash_32bytes"
       ],
       "references": [
         "fips-180-4",
@@ -1879,6 +1880,29 @@
           "per_use_script_bytes": 512428,
           "metric_keys": [
             "sha2_u32_32"
+          ]
+        },
+        {
+          "id": "bip340-tagged-32",
+          "label": "BIP340 tagged hash over a 32-byte message",
+          "parameters": {
+            "tag_hash_bytes": 32,
+            "message_bytes": 32,
+            "total_message_bytes": 96
+          },
+          "includes": "fragment-only: tag hash prefix and two SHA-256 blocks; excludes message pushes and digest comparison",
+          "script_bytes": 1060563,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 888,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 1060563,
+          "metric_keys": [
+            "sha2_u32_tagged_32",
+            "sha2_u32_tagged_32_witness",
+            "sha2_u32_tagged_32_stack"
           ]
         }
       ],
