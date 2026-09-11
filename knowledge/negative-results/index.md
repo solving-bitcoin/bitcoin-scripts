@@ -1226,3 +1226,13 @@ selector and then unwrap-panics. A dedicated test reproduces that panic;
 it must not be counted as a clean local rejection or Core validation.
 Negative and larger positive indices are tested separately. This executor
 limitation and missing complete-protocol validation remain under OP-009.
+
+## NR-047: Native Taproot Merkle-branch adapter is not available
+
+Taproot `TapBranch` requires tagged SHA256 over the lexicographically ordered
+concatenation of two hostile 32-byte nodes. Current Script can hash one stack
+item but has no enabled native byte concatenation/splitting boundary, so a
+compact adapter cannot bind separately supplied nodes to a 64-byte witness
+blob. The repository's mixed-hash path commits to nested SHA256/RIPEMD160
+outputs and is not TapBranch. A full u4 SHA256 circuit remains possible but is
+not a compact native primitive; this inspected result is tracked under OP-020.
