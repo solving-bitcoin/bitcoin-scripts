@@ -185,6 +185,28 @@
             "u4_bits_checked_batch32_stack",
             "u4_bits_checked_batch32_opcodes"
           ]
+        },
+        {
+          "id": "nibble-pair-to-byte-checked",
+          "label": "Checked u4 high/low nibble pair to byte",
+          "parameters": {
+            "check_inputs": true,
+            "data_items": 2,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: two nibble range checks and arithmetic packing of high | low into one byte; representative witness has two data items; excludes terminal predicate and transaction context",
+          "script_bytes": 20,
+          "witness_bytes": 4,
+          "witness_bytes_max": 4,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 20,
+          "metric_keys": [
+            "u4_pair_to_u8_checked",
+            "u4_pair_to_u8_checked_stack"
+          ]
         }
       ],
       "limitations": [
