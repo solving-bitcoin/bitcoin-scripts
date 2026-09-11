@@ -15,6 +15,11 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
+The u4 bit-plane adapter is a checked transpose boundary: it reuses the
+four-bit decomposition, groups one bit position across all input nibbles, and
+preserves unrelated main and altstack state. Its representative 16-nibble
+batch is 776 bytes with a 125-item combined peak and zero incremental hints.
+
 For terminal one-time authentication, the host may instead encode an unchanged
 message as a fixed-sum vector. The
 [20-byte Winternitz construction](../primitives/winternitz-constant-sum20.md)
