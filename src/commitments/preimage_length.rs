@@ -79,6 +79,43 @@ mod tests {
     }
 
     #[test]
+    fn offset_zero_accepts_an_empty_preimage() {
+        let preimage = Vec::new();
+        let commitment = preimage_length_commitment(&preimage);
+        let result = execute_script_with_inputs(
+            script! {
+                { verify_preimage_length_with_offset(commitment, 0) }
+                OP_0 OP_EQUAL
+            },
+            vec![preimage],
+        );
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn offset_520_accepts_only_the_maximum_stack_element() {
+        let preimage = vec![0x24; MAX_PREIMAGE_LENGTH];
+        let commitment = preimage_length_commitment(&preimage);
+        let result = execute_script_with_inputs(
+            script! {
+                { verify_preimage_length_with_offset(commitment, MAX_PREIMAGE_LENGTH) }
+                OP_0 OP_EQUAL
+            },
+            vec![preimage.clone()],
+        );
+        assert!(result.success, "{result}");
+
+        let result = execute_script_with_inputs(
+            script! { { verify_preimage_length_with_offset(commitment, MAX_PREIMAGE_LENGTH) } },
+            vec![vec![0x24; MAX_PREIMAGE_LENGTH - 1]],
+        );
+        assert!(
+            !result.success,
+            "accepted a preimage shorter than offset 520"
+        );
+    }
+
+    #[test]
     fn wrong_preimage_fails() {
         let commitment = preimage_length_commitment(&[0x11; 32]);
         let result = execute_script_with_inputs(

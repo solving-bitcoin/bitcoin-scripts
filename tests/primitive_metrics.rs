@@ -16,6 +16,7 @@ use bitcoin_lab::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_integer_commitment, hash_path_integer_witness, preimage_length_commitment,
         verify_four_way_hash_path_to_integer, verify_hash_path_to_integer, verify_preimage_length,
+        verify_preimage_length_with_offset,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -3743,6 +3744,48 @@ fn metrics() -> Vec<Metric> {
             value: max_stack_items(
                 verify_preimage_length(length_commitment),
                 vec![length_preimage],
+            ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset0",
+            value: script_len(verify_preimage_length_with_offset(
+                preimage_length_commitment(&[]),
+                0,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset0_witness",
+            value: witness_size(&[vec![]]),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset0_stack",
+            value: max_stack_items(
+                verify_preimage_length_with_offset(preimage_length_commitment(&[]), 0),
+                vec![vec![]],
+            ),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset520",
+            value: script_len(verify_preimage_length_with_offset(
+                preimage_length_commitment(&[0x24; 520]),
+                520,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset520_witness",
+            value: witness_size(&[vec![0x24; 520]]),
+        },
+        Metric {
+            readme: "src/commitments/README.md",
+            key: "preimage_length_offset520_stack",
+            value: max_stack_items(
+                verify_preimage_length_with_offset(preimage_length_commitment(&[0x24; 520]), 520),
+                vec![vec![0x24; 520]],
             ),
         },
         Metric {
