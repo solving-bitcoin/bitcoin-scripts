@@ -263,6 +263,21 @@
           "metric_keys": [
             "u8_logic_table_push"
           ]
+        },
+        {
+          "id": "fixed-rotation-7",
+          "label": "u32_rrot7()",
+          "parameters": { "rotation": 7, "input_items": 4, "output_items": 4 },
+          "includes": "fragment-only: fixed seven-bit rotation; excludes input pushes and output checks",
+          "script_bytes": 76,
+          "witness_bytes": 0,
+          "witness_bytes_max": 9,
+          "max_stack_items": 8,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 76,
+          "metric_keys": ["u32_rrot7", "u32_rrot7_witness", "u32_rrot7_stack"]
         }
       ],
       "limitations": [
