@@ -19,6 +19,7 @@ use bitcoin::{
     Address, Network, ScriptBuf, TapLeafHash, Witness,
 };
 use bitcoin_lab::{
+    arithmetic::u4::lsb::u4_nibbles_to_lsb,
     signatures::winternitz::{ConstantCompositionWinternitz20, Hash160, Preimage16},
     support::{
         execution::execute_raw_script_with_inputs_strict,
@@ -430,6 +431,37 @@ fn fixtures() -> Value {
         ));
     }
 
+    let lsb_script = script! {
+        { u4_nibbles_to_lsb(16) }
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUALVERIFY
+        1 OP_EQUALVERIFY
+        0 OP_EQUAL
+    }
+    .compile_with_policy();
+    fixtures.push(fixture(
+        "u4-lsb-0123456789abcdef",
+        "Checked least-significant-bit projection for all sixteen canonical nibbles, with a terminal equality predicate.",
+        lsb_script,
+        (0u8..=15)
+            .map(|value| if value == 0 { vec![] } else { vec![value] })
+            .collect(),
+        POLICY,
+        expectations(None, None),
+    ));
+
     let signing_key = Wots::signing_key_from_seed([0x42; 32]);
     let public_key = Wots::public_key(&signing_key);
     let message = core::array::from_fn(|i| (37 * i) as u8);
@@ -585,7 +617,7 @@ mod tests {
         assert_eq!(first, fixtures());
         let rows = first["fixtures"].as_array().unwrap();
         assert_eq!(first["fixture_count"], rows.len());
-        assert_eq!(rows.len(), 44);
+        assert_eq!(rows.len(), 45);
         let interpreter = provenance::interpreter().unwrap();
         assert_eq!(first["local_interpreter"]["name"], interpreter.name);
         assert_eq!(first["local_interpreter"]["commit"], interpreter.commit);
@@ -607,6 +639,13 @@ mod tests {
             .find(|row| row["name"] == "op-success-80")
             .unwrap();
         assert_eq!(success80["metrics"]["static_non_push_opcodes"], 1);
+        let lsb = rows
+            .iter()
+            .find(|row| row["name"] == "u4-lsb-0123456789abcdef")
+            .unwrap();
+        assert_eq!(lsb["expected"]["consensus"], true);
+        assert_eq!(lsb["metrics"]["data_items"], 16);
+        assert_eq!(lsb["metrics"]["hint_items"], 0);
         assert_eq!(valid["control_block_hex"].as_str().unwrap().len(), 66);
         assert_eq!(valid["script_pubkey_hex"].as_str().unwrap().len(), 68);
         let names: std::collections::HashSet<_> = rows.iter().map(|row| &row["name"]).collect();

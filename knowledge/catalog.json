@@ -7725,19 +7725,21 @@
       "class": "arithmetic/word",
       "summary": "Range-checked batch projection from canonical u4 nibbles to their least-significant bits.",
       "status": "active",
-      "evidence": "locally-reproduced",
-      "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "evidence": "differentially-validated",
+      "execution": "policy-validated",
+      "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/u4-lsb.md",
       "implementation": "src/arithmetic/u4/lsb.rs",
       "documentation": "src/arithmetic/u4/README.md",
       "tests": [
         "src/arithmetic/u4/lsb.rs",
-        "tests/primitive_metrics.rs"
+        "tests/primitive_metrics.rs",
+        "examples/core_validation_fixtures.rs"
       ],
       "references": [
         "bitcoin-script-locked",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest"
       ],
       "techniques": [
         "batch-lookup",
@@ -7777,7 +7779,7 @@
         "Numeric LSB outputs are ScriptNum bits, not raw byte elements",
         "Lookup table and outputs consume combined stack capacity",
         "Static non-push opcode count is not an executed-opcode measurement",
-        "No Bitcoin Core consensus or relay-policy validation"
+        "Only the deterministic 0x0123456789abcdef complete Taproot fixture is validated by Bitcoin Core; the 32-nibble batch and broader compositions remain open"
       ],
       "open_problems": [
         "OP-001",
