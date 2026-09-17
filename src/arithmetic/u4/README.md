@@ -14,6 +14,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=982`.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
   `1..=982` and returns one bit per input nibble.
+- `transition_count::u4_nibbles_transition_count(nibble_count)` takes a
+  checked batch size in `1..=997` and returns the number of unequal neighbors.
 - `bit_planes::u4_nibbles_to_bit_planes(nibble_count, check_inputs)` reuses
   checked nibble decomposition and transposes batches up to 234 nibbles.
 - `bit_reverse::u4_nibbles_to_bit_reverse(nibble_count)` checks and reverses
@@ -46,11 +48,14 @@ each input with the same output-restoration boundary.
 | `verify_canonical_nibble()` | <!-- metric:u4_canonical_nibble -->10<!-- /metric:u4_canonical_nibble --> bytes | <!-- metric:u4_canonical_nibble_stack -->4<!-- /metric:u4_canonical_nibble_stack --> items | not recorded |
 | `lexicographic_le(128)` | <!-- metric:u4_lexicographic_le_128 -->7500<!-- /metric:u4_lexicographic_le_128 --> bytes | <!-- metric:u4_lexicographic_le_128_stack -->259<!-- /metric:u4_lexicographic_le_128_stack --> items | <!-- metric:u4_lexicographic_le_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_128_opcodes --> |
 | Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
+| Checked transition-count batch, 32 nibbles | <!-- metric:u4_transition_count_batch32 -->619<!-- /metric:u4_transition_count_batch32 --> bytes | <!-- metric:u4_transition_count_batch32_stack -->35<!-- /metric:u4_transition_count_batch32_stack --> items | <!-- metric:u4_transition_count_batch32_opcodes -->422<!-- /metric:u4_transition_count_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_batch16 -->776<!-- /metric:u4_bit_planes_batch16 --> bytes | <!-- metric:u4_bit_planes_batch16_stack -->125<!-- /metric:u4_bit_planes_batch16_stack --> items | <!-- metric:u4_bit_planes_batch16_opcodes -->573<!-- /metric:u4_bit_planes_batch16_opcodes --> |
 | Checked 32-nibble bit reversal | <!-- metric:u4_bit_reverse_batch32 -->344<!-- /metric:u4_bit_reverse_batch32 --> bytes | <!-- metric:u4_bit_reverse_batch32_stack -->51<!-- /metric:u4_bit_reverse_batch32_stack --> items | <!-- metric:u4_bit_reverse_batch32_opcodes -->232<!-- /metric:u4_bit_reverse_batch32_opcodes --> |
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.
+
+<!-- metric:u4_transition_count_batch32_witness -->65<!-- /metric:u4_transition_count_batch32_witness --> serialized witness bytes for the representative transition-count batch.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
 
@@ -73,6 +78,9 @@ The parity table has 16 items. A checked 32-nibble batch is measured at 440
 bytes and 50 combined stack items, with no hints and 65 witness bytes across
 32 data items. It returns one numeric bit per nibble and is smaller than
 expanding each nibble to four bits when only parity is needed.
+The transition counter directly folds inequality bits into one ScriptNum count.
+It avoids returning `n-1` intermediate bits when a caller needs only the
+number of runs minus one.
 The bit-plane transpose reuses the 61-item checked bit table and adds a static
 stack permutation. It has no new witness or hint items; the representative
 16-nibble row above includes the reused decomposition and the transpose.
