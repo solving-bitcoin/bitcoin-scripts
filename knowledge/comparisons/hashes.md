@@ -12,7 +12,7 @@ Measured fragments exclude input pushes and output comparison.
 | SHA-256 u4 | 32-byte input | 332,942 | differentially-validated | Large research fragment |
 | SHA-256 u32 | 32-byte input | 512,428 | differentially-validated | Larger than local u4 variant |
 | SHAKE256 byte | 32-byte input, 1,024-byte output | 15,927,814 | locally-reproduced | Raw output exceeds 1,000 items |
-| SHAKE256 byte prefix | 32-byte input, 32-byte output | 2,000,127 | locally-reproduced | Strict stack-compatible locally; still a 2 MB fragment |
+| SHAKE256 byte prefix | 32-byte input, 32-byte output | 2,000,127 | differentially-validated | Core consensus accepts the exact 2 MB Taproot spend; relay policy remains unmeasured |
 
 BLAKE3's 64-byte row is not directly comparable with the 32-byte hash rows
 without fixing message length and full semantics. The short direct-u4 row does
