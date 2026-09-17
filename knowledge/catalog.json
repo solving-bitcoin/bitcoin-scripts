@@ -587,7 +587,7 @@
             "u4_adjacent_equal_batch32_stack",
             "u4_adjacent_equal_batch32_opcodes"
           ],
-          "static_non_push_opcodes": 427
+          "static_non_push_opcodes": 361
         }
       ],
       "limitations": [
