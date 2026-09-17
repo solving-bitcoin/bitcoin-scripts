@@ -537,6 +537,78 @@
       ]
     },
     {
+      "id": "arithmetic/u4-trichotomy",
+      "name": "Checked u4 embedded-threshold trichotomy",
+      "class": "arithmetic/word",
+      "summary": "Range-checked per-nibble three-way classification against one public generation-time threshold.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-trichotomy.md",
+      "implementation": "src/arithmetic/u4/trichotomy.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::trichotomy::tests::classifies_all_three_relations_in_order",
+        "arithmetic::u4::trichotomy::tests::rejects_invalid_nibbles_and_generation_bounds",
+        "arithmetic::u4::trichotomy::tests::handles_threshold_endpoints",
+        "arithmetic::u4::trichotomy::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u4_trichotomy_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "constant-embedding",
+        "digit-arithmetic",
+        "range-check",
+        "stack-scheduling"
+      ],
+      "security": "Every hostile nibble is range-checked before two comparisons against the embedded threshold; the threshold is validated at generation time, outputs are bounded numeric classes, and no terminal predicate is supplied.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | class[0] ... class[n-1], with class 0 for less-than, 1 for equal, 2 for greater-than and the last class on top.",
+      "configurations": [
+        {
+          "id": "checked-threshold5-batch16",
+          "label": "u4_nibbles_to_trichotomy(5, 16)",
+          "parameters": {
+            "nibble_count": 16,
+            "threshold": 5,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 16 numeric range checks, two comparisons and branch selection per nibble, output restoration, and input consumption; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 426,
+          "witness_bytes": 33,
+          "witness_bytes_max": 33,
+          "max_stack_items": 18,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 426,
+          "metric_keys": [
+            "u4_trichotomy_16",
+            "u4_trichotomy_16_witness",
+            "u4_trichotomy_16_stack",
+            "u4_trichotomy_16_opcodes"
+          ],
+          "static_non_push_opcodes": 301
+        }
+      ],
+      "limitations": [
+        "The threshold is fixed at generation time rather than supplied dynamically",
+        "Numeric class outputs are not byte-oriented masks",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32",
       "name": "u32 byte-word arithmetic",
       "class": "arithmetic/word",
