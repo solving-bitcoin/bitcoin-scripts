@@ -471,6 +471,76 @@
       ]
     },
     {
+      "id": "arithmetic/u4-cyclic-equality",
+      "name": "Checked u4 cyclic lag-equality mask",
+      "class": "arithmetic/word",
+      "summary": "Range-checked fixed-width u4 projection to equality bits at a wrapped caller-selected lag.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-cyclic-equality.md",
+      "implementation": "src/arithmetic/u4/cyclic_equality.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4/cyclic_equality.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "permutation",
+        "cyclic-comparison",
+        "digit-arithmetic"
+      ],
+      "security": "Every hostile source nibble is range-checked before comparison; the mask does not authenticate vector length, prove byte-unique ScriptNum encoding, or provide a terminal predicate.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | equal[0] ... equal[n-1], with the last result on top. The standalone schedule stages all equality results on the altstack before restoration.",
+      "configurations": [
+        {
+          "id": "checked-batch32-lag7",
+          "label": "u4_nibbles_to_cyclic_equality(32, 7)",
+          "parameters": {
+            "nibble_count": 32,
+            "offset": 7,
+            "data_items": 32,
+            "output_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 32 numeric range checks, 32 wrapped direct comparisons, altstack result staging, input cleanup, and output restoration; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 569,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 65,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 569,
+          "metric_keys": [
+            "u4_cyclic_equality_batch32",
+            "u4_cyclic_equality_batch32_witness",
+            "u4_cyclic_equality_batch32_stack",
+            "u4_cyclic_equality_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 368
+        }
+      ],
+      "limitations": [
+        "Outputs are one ScriptNum bit per input rather than a packed mask",
+        "The 499-input standalone ceiling must be reduced when unrelated stack state is live",
+        "Offset is reduced modulo the vector length and is not itself witness-bound",
+        "Static non-push opcode count is not an executed-opcode measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4-parity",
       "name": "Checked u4 parity projection",
       "class": "arithmetic/word",
