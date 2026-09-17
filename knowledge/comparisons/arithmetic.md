@@ -21,6 +21,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | 32 checked signed radix-32 digits to sign/magnitude bits | signed-window staggered table | 1,866 | 348-item peak; wins bytes only after 8–16 digit crossover |
 | Compressed total-domain u32 addition | two-item compressed wire | 1,016 | 11-byte representative witness; byte baseline is 78 bytes and 20-byte witness |
 | Fixed-width u4 ordering | `lexicographic_le(128)` | 7,500 | 256 data items; 4,354 non-push opcodes |
+| 32 checked nibbles to cyclic lag-7 equality bits | `u4_nibbles_to_cyclic_equality(32, 7)` | 569 | 65-item peak; 32 output bits; no lookup table or hints |
 | 32 checked nibbles to parity bits | `u4_nibbles_to_parity(32)` | 440 | 50-item peak; one output bit per input |
 | u32 population count | `u32_popcount()` | 455 | 262-item peak; 256-item byte table |
 | 32 checked nibbles to LSB bits | `u4_nibbles_to_lsb(32)` | 440 | 50-item peak; one output bit per input |
