@@ -37,7 +37,7 @@ executor is the repository's tapscript-context harness with the combined
 
 | Configuration | Query script | Table setup | Witness | Data items | Hints | Peak | Static non-push opcodes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `u4_odd_inverse_mod16` | pending | pending | 3 bytes | 1 | 0 | pending | pending |
+| `u4_odd_inverse_mod16` | 11 | 16 | 3 bytes | 1 | 0 | 20 | 7 |
 
 The result is currently `inspected`; the metric fixture and focused CI run are
 the reproduction boundary for upgrading it to `locally-reproduced`.
