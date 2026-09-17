@@ -46,7 +46,7 @@ as less-than-or-equal.
 | Fragment | Locking script | Witness bytes (see boundary below) | Combined stack peak |
 | --- | ---: | ---: | ---: |
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
-| `u32_and_constant(0x89abcdef)` | <!-- metric:u32_and_constant -->612<!-- /metric:u32_and_constant --> bytes | <!-- metric:u32_and_constant_witness -->13<!-- /metric:u32_and_constant_witness --> bytes, 4 data items | <!-- metric:u32_and_constant_stack -->272<!-- /metric:u32_and_constant_stack --> items; <!-- metric:u32_and_constant_opcodes -->460<!-- /metric:u32_and_constant_opcodes --> static non-push opcodes |
+| `u32_and_constant(0x89abcdef)` | <!-- metric:u32_and_constant -->612<!-- /metric:u32_and_constant --> bytes | <!-- metric:u32_and_constant_witness -->13<!-- /metric:u32_and_constant_witness --> bytes, 4 data items | <!-- metric:u32_and_constant_stack -->272<!-- /metric:u32_and_constant_stack --> items; <!-- metric:u32_and_constant_opcodes -->444<!-- /metric:u32_and_constant_opcodes --> static non-push opcodes |
 | `u32_compressed_add()` | <!-- metric:u32_compressed_add -->1016<!-- /metric:u32_compressed_add --> bytes | <!-- metric:u32_compressed_add_witness -->11<!-- /metric:u32_compressed_add_witness --> bytes (<!-- metric:u32_compressed_add_witness_max -->13<!-- /metric:u32_compressed_add_witness_max --> max) | <!-- metric:u32_compressed_add_stack -->11<!-- /metric:u32_compressed_add_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_conditional_negate()` | <!-- metric:u32_conditional_negate -->83<!-- /metric:u32_conditional_negate --> bytes | 0 bytes | <!-- metric:u32_conditional_negate_stack -->9<!-- /metric:u32_conditional_negate_stack --> items |
@@ -71,7 +71,7 @@ four-limb word, loads the shared 256-item Boolean table, ANDs each byte with
 the embedded public mask, and destructively removes the table before return.
 The representative fixture uses mask `0x89abcdef`, four data items, and zero
 hints. Its 612-byte fragment peaks at 272 combined main-plus-alt-stack items
-and has 460 static non-push opcodes. This is a witness-width construction:
+and has 444 static non-push opcodes. This is a witness-width construction:
 the mask is public, while a caller that already has a second runtime word or
 can share the table should prefer the generic `u32_and` composition.
 

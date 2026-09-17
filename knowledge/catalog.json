@@ -838,7 +838,7 @@
             "u32_and_constant_stack",
             "u32_and_constant_opcodes"
           ],
-          "static_non_push_opcodes": 460
+          "static_non_push_opcodes": 444
         }
       ],
       "limitations": [
