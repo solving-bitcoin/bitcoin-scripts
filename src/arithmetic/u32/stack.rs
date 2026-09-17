@@ -64,6 +64,34 @@ pub fn u32_notequal() -> Script {
     }
 }
 
+/// Replaces the top four-byte word with its bytewise complement.
+///
+/// The input and output use the module's most-significant-byte-first word
+/// layout. Inputs must already be numeric bytes in `0..=255`.
+pub fn u32_not() -> Script {
+    script! {
+        for _ in 0..4 {
+            { verify_canonical_byte() }
+            { u32_not_step() }
+        }
+    }
+}
+
+pub(crate) fn u32_not_unchecked() -> Script {
+    script! {
+        for _ in 0..4 {
+            { u32_not_step() }
+        }
+    }
+}
+
+fn u32_not_step() -> Script {
+    script! {
+        0xff
+        4 OP_ROLL OP_SUB
+    }
+}
+
 fn certify_compressed_word() -> Script {
     script! {
         OP_DUP
@@ -323,6 +351,70 @@ mod tests {
             };
             run(script);
         }
+    }
+
+    #[test]
+    fn complements_boundary_and_pattern_words() {
+        for value in [0, 1, 0x0102_0304, 0x8000_0000, u32::MAX] {
+            let script = script! {
+                { u32_push(value) }
+                { u32_not() }
+                { u32_push(!value) }
+                { u32_equal() }
+                OP_VERIFY
+                OP_TRUE
+            };
+            run(script);
+        }
+    }
+
+    #[test]
+    fn checked_complement_rejects_non_byte_limbs() {
+        for invalid_index in 0..4 {
+            let mut limbs = [1i64, 2, 3, 4];
+            limbs[invalid_index] = if invalid_index % 2 == 0 { -1 } else { 256 };
+            let result = crate::support::execution::execute_script(script! {
+                for limb in limbs {
+                    { limb }
+                }
+                { u32_not() }
+            });
+            assert!(
+                !result.success,
+                "accepted invalid limb {invalid_index}: {result}"
+            );
+        }
+
+        for alias_index in 0..4 {
+            let mut witness = vec![vec![1u8]; 4];
+            witness[alias_index] = vec![1, 0];
+            let result = execute_raw_script_with_inputs_strict(
+                u32_not().compile_with_policy().to_bytes(),
+                witness,
+            );
+            assert!(
+                !result.success,
+                "accepted non-minimal byte alias {alias_index}: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn checked_complement_preserves_surrounding_stacks() {
+        let value = 0x1020_3040;
+        let result = crate::support::execution::execute_script(script! {
+            77 OP_TOALTSTACK
+            { u32_push(value) }
+            { u32_not() }
+            { u32_push(!value) }
+            { u32_equalverify() }
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "stack-preserving complement failed: {result}"
+        );
     }
 
     #[test]
