@@ -1,4 +1,5 @@
 pub mod add;
+pub mod adjacent_eq;
 pub mod bit_planes;
 pub mod bit_reverse;
 pub mod bits;

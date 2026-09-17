@@ -12,6 +12,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=3` bit counts unless their function documents otherwise.
 - `parity::u4_nibbles_to_parity(nibble_count)` takes a checked batch size in
   `1..=982`.
+- `adjacent_eq::u4_adjacent_equal_mask(nibble_count)` takes a checked batch
+  size in `2..=499` and returns one equality bit per adjacent pair.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
   `1..=982` and returns one bit per input nibble.
 - `bit_planes::u4_nibbles_to_bit_planes(nibble_count, check_inputs)` reuses
@@ -46,11 +48,14 @@ each input with the same output-restoration boundary.
 | `verify_canonical_nibble()` | <!-- metric:u4_canonical_nibble -->10<!-- /metric:u4_canonical_nibble --> bytes | <!-- metric:u4_canonical_nibble_stack -->4<!-- /metric:u4_canonical_nibble_stack --> items | not recorded |
 | `lexicographic_le(128)` | <!-- metric:u4_lexicographic_le_128 -->7500<!-- /metric:u4_lexicographic_le_128 --> bytes | <!-- metric:u4_lexicographic_le_128_stack -->259<!-- /metric:u4_lexicographic_le_128_stack --> items | <!-- metric:u4_lexicographic_le_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_128_opcodes --> |
 | Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
+| Checked adjacent-equality batch, 32 nibbles | <!-- metric:u4_adjacent_equal_batch32 -->558<!-- /metric:u4_adjacent_equal_batch32 --> bytes | <!-- metric:u4_adjacent_equal_batch32_stack -->64<!-- /metric:u4_adjacent_equal_batch32_stack --> items | <!-- metric:u4_adjacent_equal_batch32_opcodes -->361<!-- /metric:u4_adjacent_equal_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_batch16 -->776<!-- /metric:u4_bit_planes_batch16 --> bytes | <!-- metric:u4_bit_planes_batch16_stack -->125<!-- /metric:u4_bit_planes_batch16_stack --> items | <!-- metric:u4_bit_planes_batch16_opcodes -->573<!-- /metric:u4_bit_planes_batch16_opcodes --> |
 | Checked 32-nibble bit reversal | <!-- metric:u4_bit_reverse_batch32 -->344<!-- /metric:u4_bit_reverse_batch32 --> bytes | <!-- metric:u4_bit_reverse_batch32_stack -->51<!-- /metric:u4_bit_reverse_batch32_stack --> items | <!-- metric:u4_bit_reverse_batch32_opcodes -->232<!-- /metric:u4_bit_reverse_batch32_opcodes --> |
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.
+
+<!-- metric:u4_adjacent_equal_batch32_witness -->65<!-- /metric:u4_adjacent_equal_batch32_witness --> serialized witness bytes for the representative adjacent-equality batch.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
 
@@ -73,6 +78,10 @@ The parity table has 16 items. A checked 32-nibble batch is measured at 440
 bytes and 50 combined stack items, with no hints and 65 witness bytes across
 32 data items. It returns one numeric bit per nibble and is smaller than
 expanding each nibble to four bits when only parity is needed.
+The adjacent-equality mask performs direct pair comparisons after numeric
+range checks. It consumes `n` checked nibbles and returns `n-1` ScriptNum bits,
+which exposes run boundaries without a lookup table or bit expansion. The
+representative row uses 32 data items, 31 output bits, and no hints.
 The bit-plane transpose reuses the 61-item checked bit table and adds a static
 stack permutation. It has no new witness or hint items; the representative
 16-nibble row above includes the reused decomposition and the transpose.
