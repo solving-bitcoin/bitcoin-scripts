@@ -29,7 +29,7 @@ framing.
 
 | Construction | Locking script | Representative witness | Maximum witness | Data items | Hint items | Peak items | Static non-push opcodes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Embedded mask `0x89abcdef` | 768 | 13 bytes | 13 bytes | 4 | 0 | 272 | 552 |
+| Embedded mask `0x89abcdef` | 768 | 13 bytes | 13 bytes | 4 | 0 | 272 | 544 |
 | Generic `u32_or` with runtime mask | 690 including table setup/cleanup | 21 bytes | 21 bytes | 8 | 0 | table-dependent | not measured here |
 
 The embedded form removes four witness data items and saves the second word's
@@ -50,7 +50,7 @@ alt-stack state.
 
 The strict metric fixture is intended to execute through the repository's
 locked `bitcoin-scriptexec` dependency in a tapscript context with the
-combined main-plus-alt-stack limit. The 552 figure is a static non-push
+combined main-plus-alt-stack limit. The 544 figure is a static non-push
 opcode count, not a dynamic execution or validation-weight claim. No Bitcoin
 Core differential, complete-transaction, relay-policy, or cryptographic
 claim is made.
