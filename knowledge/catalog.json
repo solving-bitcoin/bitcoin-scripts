@@ -537,6 +537,77 @@
       ]
     },
     {
+      "id": "arithmetic/u4-presence",
+      "name": "Checked u4 presence-bit projection",
+      "class": "arithmetic/word",
+      "summary": "Range-checked u4 batch projection to one Boolean membership output per nibble value.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-presence.md",
+      "implementation": "src/arithmetic/u4/presence.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::presence::tests::projects_presence_bits",
+        "arithmetic::u4::presence::tests::rejects_invalid_nibbles_and_batch_sizes",
+        "arithmetic::u4::presence::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u4_presence_bits_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "membership-projection",
+        "range-check"
+      ],
+      "security": "Every hostile nibble is range-checked before the equality scans; outputs are numeric Boolean ScriptNums and no terminal predicate or byte-unique encoding claim is supplied.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | present[0] ... present[15], where present[n] is one iff nibble n occurred; the last output is on top.",
+      "configurations": [
+        {
+          "id": "checked-batch16",
+          "label": "u4_nibbles_to_presence_bits(16)",
+          "parameters": {
+            "nibble_count": 16,
+            "output_items": 16,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0,
+            "bitwise_opcode": false
+          },
+          "includes": "fragment-only: 16 numeric range checks, 256 equality scans, Boolean folds, and output restoration; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 1526,
+          "witness_bytes": 33,
+          "witness_bytes_max": 33,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1526,
+          "metric_keys": [
+            "u4_presence_bits_16",
+            "u4_presence_bits_16_witness",
+            "u4_presence_bits_16_stack",
+            "u4_presence_bits_16_opcodes"
+          ],
+          "static_non_push_opcodes": 936
+        }
+      ],
+      "limitations": [
+        "Returns 16 Boolean items rather than a packed bitmask",
+        "The quadratic equality scan grows with batch length and category count",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32",
       "name": "u32 byte-word arithmetic",
       "class": "arithmetic/word",
