@@ -13,6 +13,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Canonical checked byte boundary | `verify_canonical_byte()` | 12 | 4-item peak; 4-byte witness; rejects noncanonical ScriptNums |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |
+| Public constant u32 XNOR | `u32_xnor_constant(value)` | 678 | 13-byte/4-item witness; 272-item peak; 256-item table |
 | Checked u31 width-9 decomposition | u31 range boundary | 85 | 10-item peak; 4-byte representative witness; numeric `0..=511` check |
 | Checked u4 nibble pair to byte | `u4_pair_to_u8(true)` | 20 | 5-item peak; 2 data items; 5-byte witness |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
@@ -174,3 +175,8 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+The embedded-constant u32 XNOR specializes the table-backed Boolean path for a
+public mask. It uses 678 locking bytes, a 13-byte/4-item witness,
+and a 272-item strict peak. The mask saves four witness items, while the
+complement pass adds a small locking-byte cost; CI remains the authoritative
+metric source.

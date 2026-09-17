@@ -7,5 +7,6 @@ pub mod popcount;
 pub mod rotate;
 pub mod stack;
 pub mod sub;
+pub mod xnor_constant;
 pub mod xor;
 pub mod zip;
