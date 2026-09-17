@@ -30,7 +30,7 @@ predicates, unrelated live state, and transaction framing.
 
 | Construction | Locking script | Representative witness | Maximum witness | Data items | Hint items | Peak items | Static non-push opcodes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Embedded constant `0x89abcdef` | 141 | 9 bytes | 13 bytes | 4 | 0 | 9 | 81 |
+| Embedded constant `0x89abcdef` | 141 | 9 bytes | 13 bytes | 4 | 0 | 9 | 79 |
 | Generic two-word subtract, same values | 77 | 21 bytes | — | 8 | 0 | 9 | — |
 
 The embedded form saves 12 representative witness bytes and four entry items,

@@ -840,7 +840,7 @@
             "u32_sub_constant_stack",
             "u32_sub_constant_static_opcodes"
           ],
-          "static_non_push_opcodes": 81
+          "static_non_push_opcodes": 79
         }
       ],
       "limitations": [

@@ -71,7 +71,7 @@ limb, subtracts the public compile-time constant modulo `2^32`, and returns
 four limbs. The representative fixture embeds `0x89abcdef` and supplies
 `0x12345678` as four data items. It requires no hints and preserves unrelated
 main- and alt-stack state. The fragment is
-<!-- metric:u32_sub_constant_static_opcodes -->81<!-- /metric:u32_sub_constant_static_opcodes --> static
+<!-- metric:u32_sub_constant_static_opcodes -->79<!-- /metric:u32_sub_constant_static_opcodes --> static
 non-push opcodes, with 141 locking-script bytes, 9 serialized
 witness bytes (13 at the maximum canonical byte fixture), and a strict
 combined peak of 10 items. The closest
