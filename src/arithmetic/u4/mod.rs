@@ -3,6 +3,7 @@ pub mod bit_planes;
 pub mod bit_reverse;
 pub mod bits;
 pub mod compare;
+pub mod count;
 pub mod logic;
 pub mod lsb;
 pub mod parity;

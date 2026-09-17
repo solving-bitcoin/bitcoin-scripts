@@ -12,6 +12,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 parity projection](u4-parity.md)
+- [Checked fixed-symbol u4 occurrence count](u4-count.md)
 - [Checked u4 least-significant-bit projection](u4-lsb.md)
 - [u32 word arithmetic](u32.md)
 - [Compressed total-domain u32 addition](u32-compressed-add.md)

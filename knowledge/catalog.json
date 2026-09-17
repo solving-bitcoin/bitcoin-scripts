@@ -537,6 +537,76 @@
       ]
     },
     {
+      "id": "arithmetic/u4-count",
+      "name": "Checked fixed-symbol u4 occurrence count",
+      "class": "arithmetic/word",
+      "summary": "Range-checked u4 batch count for one public generation-time target nibble.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-count.md",
+      "implementation": "src/arithmetic/u4/count.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::count::tests::counts_boundary_and_repeated_symbols",
+        "arithmetic::u4::count::tests::rejects_invalid_nibbles_and_generation_bounds",
+        "arithmetic::u4::count::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u4_symbol_count_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "constant-embedding",
+        "range-check"
+      ],
+      "security": "Every hostile nibble is range-checked before equality scans; the target is public generation-time data, the numeric count is bounded by the batch length, and no terminal predicate is supplied.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | count(target), with the last input on top and count in 0..=n.",
+      "configurations": [
+        {
+          "id": "checked-target-zero-batch16",
+          "label": "u4_nibbles_count(0, 16)",
+          "parameters": {
+            "nibble_count": 16,
+            "target": 0,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 16 numeric range checks, 16 target equality tests, count accumulation, and input cleanup; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 266,
+          "witness_bytes": 33,
+          "witness_bytes_max": 33,
+          "max_stack_items": 19,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 266,
+          "metric_keys": [
+            "u4_symbol_count_16",
+            "u4_symbol_count_16_witness",
+            "u4_symbol_count_16_stack",
+            "u4_symbol_count_16_opcodes"
+          ],
+          "static_non_push_opcodes": 186
+        }
+      ],
+      "limitations": [
+        "The equality scan is linear in batch length for one target",
+        "Counts one public target rather than returning a complete histogram",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32",
       "name": "u32 byte-word arithmetic",
       "class": "arithmetic/word",
