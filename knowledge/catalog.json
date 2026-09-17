@@ -782,6 +782,78 @@
       ]
     },
     {
+      "id": "arithmetic/u32-or-constant",
+      "name": "Embedded-constant u32 OR",
+      "class": "arithmetic/word",
+      "summary": "Checked four-byte u32 bitwise OR with one public compile-time mask embedded in the locking script.",
+      "status": "experimental",
+      "evidence": "inspected",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u32-or-constant.md",
+      "implementation": "src/arithmetic/u32/or_constant.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::or_constant::tests::masks_boundaries_and_patterns",
+        "arithmetic::u32::or_constant::tests::rejects_malformed_and_nonminimal_limbs",
+        "arithmetic::u32::or_constant::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u32_or_constant_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "constant-embedding",
+        "batch-lookup",
+        "canonical-encoding",
+        "range-check"
+      ],
+      "security": "No independent cryptographic claim. The embedded mask is public; hostile input limbs are checked for numeric byte range and minimal ScriptNum encoding. Callers still provide terminal predicates and complete protocol binding.",
+      "stack_contract": "Consumes four canonical most-significant-byte-first limbs from the main stack and returns four limbs for the input OR the embedded mask. A generated 256-item Boolean table and temporary routing occupy the combined main-plus-alt-stack during the fragment and are removed before return; unrelated caller state is preserved.",
+      "configurations": [
+        {
+          "id": "checked-mask-89abcdef",
+          "label": "Embedded public mask",
+          "parameters": {
+            "mask": "0x89abcdef",
+            "byte_count": 4,
+            "table_items": 256,
+            "data_items": 4,
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 4
+          },
+          "includes": "fragment-with-memory: four canonical byte checks, generated shared Boolean table, four OR queries, table cleanup, and output routing; excludes input pushes, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 768,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 272,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 768,
+          "metric_keys": [
+            "u32_or_constant",
+            "u32_or_constant_witness",
+            "u32_or_constant_stack",
+            "u32_or_constant_opcodes"
+          ],
+          "static_non_push_opcodes": 544
+        }
+      ],
+      "limitations": [
+        "The 256-item table and table-backed opcode count make this unsuitable as a standalone legacy P2SH/P2WSH fragment",
+        "Only useful when the mask is public and witness width or item count matters",
+        "Static non-push opcode count is not an executed-opcode measurement",
+        "Bitcoin Core consensus and relay-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32-popcount",
       "name": "Checked u32 population count",
       "class": "arithmetic/word",

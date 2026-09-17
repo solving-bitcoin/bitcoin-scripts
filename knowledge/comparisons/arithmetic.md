@@ -13,6 +13,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Canonical checked byte boundary | `verify_canonical_byte()` | 12 | 4-item peak; 4-byte witness; rejects noncanonical ScriptNums |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |
+| Public constant u32 OR | `u32_or_constant(value)` | 768 | 13-byte/4-item witness; 272-item peak; 256-item table |
 | Checked u31 width-9 decomposition | u31 range boundary | 85 | 10-item peak; 4-byte representative witness; numeric `0..=511` check |
 | Checked u4 nibble pair to byte | `u4_pair_to_u8(true)` | 20 | 5-item peak; 2 data items; 5-byte witness |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
@@ -68,6 +69,12 @@ saves nine representative witness bytes and six entry items, but expands to
 the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
 adder. It is retained for witness-constrained composition, not as a general
 locking-byte winner.
+
+The embedded-constant u32 OR row specializes the table-backed Boolean path for
+a public mask. It uses 768 locking bytes, a 13-byte/4-item witness, and a
+272-item strict peak. It removes the second runtime word but still pays for a
+fresh 256-item table, so a caller with a reusable table or a runtime mask
+should keep the generic two-word operation.
 
 The 9,893-byte Ed25519 row is the current locking-script-size winner for this
 field. It keeps host values in the ordinary field domain but uses a unique

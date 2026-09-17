@@ -3,6 +3,7 @@ pub mod and;
 pub mod bits;
 pub mod cmp;
 pub mod or;
+pub mod or_constant;
 pub mod popcount;
 pub mod rotate;
 pub mod stack;
