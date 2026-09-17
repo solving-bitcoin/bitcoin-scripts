@@ -111,8 +111,8 @@ script. Consensus MINIMALIF remains enabled when numeric minimality is disabled.
 Push encoding is checked only when a push executes, so a nonminimal push in a
 skipped branch passes both profiles.
 
-All **44 Core consensus/policy expectations and exact rejection diagnostics
-pass**. For 43 fixtures, both supported local profile verdicts also agree with
+All **45 Core consensus/policy expectations and exact rejection diagnostics
+pass**. For 44 fixtures, both supported local profile verdicts also agree with
 Core. The remaining fixture changes only the control-block parity bit: both
 local profiles must accept the unchanged leaf while Core must reject its
 commitment. The runner explicitly permits only that named exception to profile
@@ -134,6 +134,7 @@ historical-API outcomes remain separate from the explicit profile verdicts.
 | OP_SUCCESS after a nonminimal or oversized script push | Accept | Reject | Agree |
 | Malformed push before / after OP_SUCCESS | Reject / accept | Reject / reject | Agree |
 | Byte `7e` inside push data, followed by a false result | Reject | Reject | Agree |
+| Checked u32 popcount for `0x12345678` | Accept | Accept | Agree |
 
 The scan decodes instructions, so an OP_SUCCESS-valued payload byte cannot
 trigger unconditional acceptance. Once an OP_SUCCESS is decoded, later
