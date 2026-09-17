@@ -587,7 +587,7 @@
             "u4_transition_count_batch32_stack",
             "u4_transition_count_batch32_opcodes"
           ],
-          "static_non_push_opcodes": 491
+          "static_non_push_opcodes": 422
         }
       ],
       "limitations": [
