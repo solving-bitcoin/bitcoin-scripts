@@ -11,6 +11,9 @@ they do not use BN254 or any other field modulus.
   the word below it, and so on.
 - `u32_add[_drop](a, b)` accepts two distinct word offsets and wraps modulo
   `2^32`. The non-`drop` form preserves the word selected by `a`.
+- `u32_sub_constant(value)` checks one hostile word and subtracts the public
+  compile-time `value` modulo `2^32`; the constant contributes no witness
+  items.
 - `u32_sub[_drop](a, b)` computes `a - b` modulo `2^32` for either ordering of
   two distinct offsets. The non-`drop` form preserves the minuend.
 - `u32_conditional_negate()` normalizes a top condition and negates the next
@@ -43,6 +46,7 @@ as less-than-or-equal.
 | Fragment | Locking script | Witness bytes (see boundary below) | Combined stack peak |
 | --- | ---: | ---: | ---: |
 | `u32_add_drop(0, 1)` | <!-- metric:u32_add_drop -->78<!-- /metric:u32_add_drop --> bytes | 0 bytes | <!-- metric:u32_add_drop_stack -->10<!-- /metric:u32_add_drop_stack --> items |
+| `u32_sub_constant(value)` | <!-- metric:u32_sub_constant -->141<!-- /metric:u32_sub_constant --> bytes | <!-- metric:u32_sub_constant_witness -->9<!-- /metric:u32_sub_constant_witness --> bytes (<!-- metric:u32_sub_constant_witness_max -->13<!-- /metric:u32_sub_constant_witness_max --> max) | <!-- metric:u32_sub_constant_stack -->9<!-- /metric:u32_sub_constant_stack --> items |
 | `u32_compressed_add()` | <!-- metric:u32_compressed_add -->1016<!-- /metric:u32_compressed_add --> bytes | <!-- metric:u32_compressed_add_witness -->11<!-- /metric:u32_compressed_add_witness --> bytes (<!-- metric:u32_compressed_add_witness_max -->13<!-- /metric:u32_compressed_add_witness_max --> max) | <!-- metric:u32_compressed_add_stack -->11<!-- /metric:u32_compressed_add_stack --> items |
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_conditional_negate()` | <!-- metric:u32_conditional_negate -->83<!-- /metric:u32_conditional_negate --> bytes | 0 bytes | <!-- metric:u32_conditional_negate_stack -->9<!-- /metric:u32_conditional_negate_stack --> items |
@@ -61,6 +65,22 @@ as less-than-or-equal.
 | `verify_canonical_byte()` | <!-- metric:u32_canonical_byte -->12<!-- /metric:u32_canonical_byte --> bytes | <!-- metric:u32_canonical_byte_witness -->4<!-- /metric:u32_canonical_byte_witness --> bytes, 1 data item | <!-- metric:u32_canonical_byte_stack -->4<!-- /metric:u32_canonical_byte_stack --> items |
 | `u32_popcount()` | <!-- metric:u32_popcount -->455<!-- /metric:u32_popcount --> bytes | <!-- metric:u32_popcount_witness -->13<!-- /metric:u32_popcount_witness --> bytes | <!-- metric:u32_popcount_stack -->262<!-- /metric:u32_popcount_stack --> items; <!-- metric:u32_popcount_opcodes -->171<!-- /metric:u32_popcount_opcodes --> static non-push opcodes |
 | `u32_to_le_bits()` | <!-- metric:u32_le_bits -->514<!-- /metric:u32_le_bits --> bytes | <!-- metric:u32_le_bits_witness -->9<!-- /metric:u32_le_bits_witness --> bytes | <!-- metric:u32_le_bits_stack -->35<!-- /metric:u32_le_bits_stack --> items |
+
+`u32_sub_constant(value)` consumes one hostile four-limb word, checks each
+limb, subtracts the public compile-time constant modulo `2^32`, and returns
+four limbs. The representative fixture embeds `0x89abcdef` and supplies
+`0x12345678` as four data items. It requires no hints and preserves unrelated
+main- and alt-stack state. The fragment is
+<!-- metric:u32_sub_constant_static_opcodes -->79<!-- /metric:u32_sub_constant_static_opcodes --> static
+non-push opcodes, with 141 locking-script bytes, 9 serialized
+witness bytes (13 at the maximum canonical byte fixture), and a strict
+combined peak of 10 items. The closest
+generic two-word baseline uses
+<!-- metric:u32_sub_drop_constant_witness -->21<!-- /metric:u32_sub_drop_constant_witness -->
+witness bytes across eight data items and peaks at
+<!-- metric:u32_sub_drop_constant_stack -->9<!-- /metric:u32_sub_drop_constant_stack --> items.
+This trades locking-script bytes for four fewer witness items; the constant is
+public and must not be treated as a secret.
 
 `u32_compressed_add()` is a checked wire adapter: it accepts two canonical
 compressed u32 ScriptNums, expands them through the existing byte carry chain,

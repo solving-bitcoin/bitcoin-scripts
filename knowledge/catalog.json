@@ -782,6 +782,79 @@
       ]
     },
     {
+      "id": "arithmetic/u32-sub-constant",
+      "name": "Embedded-constant u32 subtraction",
+      "class": "arithmetic/word",
+      "summary": "Checked four-byte u32 subtraction with one public compile-time subtrahend embedded in the locking script.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u32-sub-constant.md",
+      "implementation": "src/arithmetic/u32/sub_constant.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::sub_constant::tests::subtracts_boundaries_and_wraps",
+        "arithmetic::u32::sub_constant::tests::rejects_malformed_and_nonminimal_limbs",
+        "arithmetic::u32::sub_constant::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u32_sub_constant_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "constant-embedding",
+        "carry-arithmetic",
+        "canonical-encoding",
+        "range-check"
+      ],
+      "security": "No independent cryptographic claim. The embedded subtrahend is public; hostile input limbs are checked for numeric byte range and minimal ScriptNum encoding. Callers still provide terminal predicates and complete protocol binding.",
+      "stack_contract": "Consumes four canonical most-significant-byte-first limbs from the main stack and returns four limbs for the input minus the embedded value modulo 2^32. Temporary borrow items use the altstack and are removed before return; unrelated main- and alt-stack state is preserved.",
+      "configurations": [
+        {
+          "id": "representative-12345678-minus-89abcdef",
+          "label": "Embedded constant subtraction versus two-word baseline",
+          "parameters": {
+            "value": "0x12345678",
+            "constant": "0x89abcdef",
+            "modulus": "2^32",
+            "byte_order": "most-significant byte first",
+            "data_items": 4,
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 4
+          },
+          "includes": "fragment-with-memory: four canonical byte checks, public constant push, modulo-2^32 borrow chain, and temporary borrow cleanup; excludes witness pushes, terminal predicate, transaction framing, and unrelated live state",
+          "script_bytes": 141,
+          "witness_bytes": 9,
+          "witness_bytes_max": 13,
+          "max_stack_items": 9,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 141,
+          "metric_keys": [
+            "u32_sub_constant",
+            "u32_sub_constant_witness",
+            "u32_sub_constant_witness_max",
+            "u32_sub_constant_stack",
+            "u32_sub_constant_static_opcodes"
+          ],
+          "static_non_push_opcodes": 79
+        }
+      ],
+      "limitations": [
+        "Dominated by the generic two-word subtractor for locking-script bytes and strict local peak",
+        "Only useful when the subtrahend is public and witness width or item count matters",
+        "Static non-push opcode count is not an executed-opcode measurement",
+        "Bitcoin Core consensus and relay-policy validation remain open"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32-popcount",
       "name": "Checked u32 population count",
       "class": "arithmetic/word",

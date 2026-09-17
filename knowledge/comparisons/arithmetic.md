@@ -13,6 +13,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Canonical checked byte boundary | `verify_canonical_byte()` | 12 | 4-item peak; 4-byte witness; rejects noncanonical ScriptNums |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |
+| Public constant u32 subtraction | `u32_sub_constant(value)` | 141 | 9-byte/4-item witness; 9-item peak; no hints |
 | Checked u31 width-9 decomposition | u31 range boundary | 85 | 10-item peak; 4-byte representative witness; numeric `0..=511` check |
 | Checked u4 nibble pair to byte | `u4_pair_to_u8(true)` | 20 | 5-item peak; 2 data items; 5-byte witness |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
@@ -68,6 +69,13 @@ saves nine representative witness bytes and six entry items, but expands to
 the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
 adder. It is retained for witness-constrained composition, not as a general
 locking-byte winner.
+
+The embedded-constant u32 subtraction row makes the same tradeoff for a public
+subtrahend: the checked four-limb adapter uses 141 locking bytes, a
+representative 9-byte/4-item witness, and a 9-item strict peak, versus 77
+bytes, 21 witness bytes/8 items, and a 9-item peak when the subtrahend is
+supplied as a second generic word. It is useful for witness-constrained
+callers only when the subtrahend is public and fixed at script-generation time.
 
 The 9,893-byte Ed25519 row is the current locking-script-size winner for this
 field. It keeps host values in the ordinary field domain but uses a unique
