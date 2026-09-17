@@ -4102,6 +4102,7 @@ fn metrics() -> Vec<Metric> {
     .chain(winternitz_overview_metrics())
     .chain(winternitz20_metrics())
     .chain(winternitz20_composition_metrics())
+    .chain(u32_and_constant_metrics())
     .chain(u32_compressed_add_metrics())
     .chain(u32_compressed_equal_metrics())
     .chain(u32_compressed_lessthan_metrics())
@@ -4651,6 +4652,47 @@ fn byte_u32_witness(value: u32) -> [Vec<u8>; 4] {
         scriptnum(i64::from((value >> 8) & 0xff)),
         scriptnum(i64::from(value & 0xff)),
     ]
+}
+
+fn u32_and_constant_metrics() -> Vec<Metric> {
+    let fragment = u32::and_constant::u32_and_constant(0x89ab_cdef);
+    let witness = vec![scriptnum(255); 4];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            OP_2DROP
+            OP_2DROP
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_and_constant",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_and_constant_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_and_constant_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_and_constant_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]
+}
+
+#[test]
+fn u32_and_constant_metrics_are_current() {
+    check_readme_metrics(u32_and_constant_metrics());
 }
 
 fn u32_compressed_add_metrics() -> Vec<Metric> {

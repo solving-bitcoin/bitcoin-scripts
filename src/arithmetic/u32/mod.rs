@@ -1,5 +1,6 @@
 pub mod add;
 pub mod and;
+pub mod and_constant;
 pub mod bits;
 pub mod cmp;
 pub mod or;
