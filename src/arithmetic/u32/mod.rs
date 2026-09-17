@@ -1,4 +1,5 @@
 pub mod add;
+pub mod add_constant;
 pub mod and;
 pub mod bits;
 pub mod cmp;
