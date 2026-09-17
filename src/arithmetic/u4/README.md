@@ -18,6 +18,8 @@ these operations, but this module contains no hash-specific round logic.
   checked nibble decomposition and transposes batches up to 234 nibbles.
 - `bit_reverse::u4_nibbles_to_bit_reverse(nibble_count)` checks and reverses
   each nibble in a shared 16-item lookup table.
+- `mul::u4_mul_mod16()` checks two nibbles and multiplies them modulo 16 using
+  a reusable 256-entry product table.
 - `bits::u4_nibbles_to_be_bits[_toaltstack](nibble_count, check_inputs)` and
   `bits::u4_nibbles_to_le_bits[_toaltstack](nibble_count, check_inputs)` take
   an explicit batch size in `1..=234` and have no default for input checking.
@@ -44,6 +46,7 @@ each input with the same output-restoration boundary.
 | Checked high/low nibble pair to one byte | <!-- metric:u4_pair_to_u8_checked -->20<!-- /metric:u4_pair_to_u8_checked --> bytes | <!-- metric:u4_pair_to_u8_checked_stack -->5<!-- /metric:u4_pair_to_u8_checked_stack --> items | not recorded |
 | Checked byte to high/low nibble pair | <!-- metric:u8_to_u4_pair_checked -->62<!-- /metric:u8_to_u4_pair_checked --> bytes | <!-- metric:u8_to_u4_pair_checked_stack -->4<!-- /metric:u8_to_u4_pair_checked_stack --> items | not recorded |
 | `verify_canonical_nibble()` | <!-- metric:u4_canonical_nibble -->10<!-- /metric:u4_canonical_nibble --> bytes | <!-- metric:u4_canonical_nibble_stack -->4<!-- /metric:u4_canonical_nibble_stack --> items | not recorded |
+| Checked modulo-16 nibble product | <!-- metric:u4_mul_mod16 -->0<!-- /metric:u4_mul_mod16 --> bytes | <!-- metric:u4_mul_mod16_witness -->5<!-- /metric:u4_mul_mod16_witness --> bytes, 2 data items | <!-- metric:u4_mul_mod16_stack -->0<!-- /metric:u4_mul_mod16_stack --> items with 256-item table; <!-- metric:u4_mul_mod16_opcodes -->0<!-- /metric:u4_mul_mod16_opcodes --> static non-push opcodes |
 | `lexicographic_le(128)` | <!-- metric:u4_lexicographic_le_128 -->7500<!-- /metric:u4_lexicographic_le_128 --> bytes | <!-- metric:u4_lexicographic_le_128_stack -->259<!-- /metric:u4_lexicographic_le_128_stack --> items | <!-- metric:u4_lexicographic_le_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_128_opcodes --> |
 | Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
@@ -86,6 +89,12 @@ that consume each nibble least-significant-bit first; reversing four output
 bits per nibble after the big-endian adapter is a separate composition cost.
 The representative little-endian witness is 32 canonical `0x0f` stack items,
 serialized as <!-- metric:u4_bits_le_checked_batch32_witness -->65<!-- /metric:u4_bits_le_checked_batch32_witness --> bytes.
+
+`u4_mul_mod16()` consumes two range-checked nibbles above a reusable 256-item
+product table and returns one modulo-16 product while retaining that table.
+The representative row records two canonical witness items; callers must
+account for the resident table when composing repeated products or other
+table-backed fragments.
 
 ## Security
 

@@ -4912,6 +4912,49 @@ fn u4_parity_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures only checked modulo-16 nibble multiplication.
+#[test]
+fn u4_mul_mod16_metrics_are_current() {
+    let fragment = u4::mul::u4_mul_mod16();
+    let witness = vec![scriptnum(15), scriptnum(15)];
+    let stack_script = script! {
+        OP_TOALTSTACK
+        OP_TOALTSTACK
+        { u4::mul::u4_push_full_product_table() }
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        { fragment.clone() }
+        OP_TOALTSTACK
+        { u4::mul::u4_drop_full_product_table() }
+        OP_FROMALTSTACK
+        OP_DROP
+        OP_TRUE
+    };
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mul_mod16",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mul_mod16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mul_mod16_stack",
+            value: max_stack_items_strict(stack_script, witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mul_mod16_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

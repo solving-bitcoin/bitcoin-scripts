@@ -471,6 +471,49 @@
       ]
     },
     {
+      "id": "arithmetic/u4-mul-mod16",
+      "name": "Checked modulo-16 u4 multiplication",
+      "class": "arithmetic/word",
+      "summary": "Range-checks two u4 limbs and multiplies them modulo 16 through a reusable 256-entry product table.",
+      "status": "experimental",
+      "evidence": "inspected",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-mul-mod16.md",
+      "implementation": "src/arithmetic/u4/mul.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::mul::tests::multiplies_every_nibble_pair",
+        "arithmetic::u4::mul::tests::rejects_out_of_range_nibbles",
+        "arithmetic::u4::mul::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u4_mul_mod16_metrics_are_current"
+      ],
+      "references": ["bitcoin-script-locked", "bitcoin-scriptexec-locked"],
+      "techniques": ["lookup-table", "range-check", "stack-scheduling"],
+      "security": "Every hostile input is range-checked before forming the table index; canonical ScriptNum encoding and terminal predicates remain caller obligations.",
+      "stack_contract": "Consumes two numeric u4 limbs above a resident 256-item product table and returns their product modulo 16 while retaining the table.",
+      "configurations": [
+        {
+          "id": "single-product",
+          "label": "Checked u4 product modulo 16",
+          "parameters": {"modulus": 16, "table_items": 256, "data_items": 2, "hint_items_per_invocation": 0, "complete_input_items": 2},
+          "includes": "fragment-only: two range checks, row-major index formation, and product lookup; excludes table setup/cleanup, input pushes, terminal predicate, and transaction context",
+          "script_bytes": 0,
+          "witness_bytes": 5,
+          "witness_bytes_max": 5,
+          "max_stack_items": 0,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 0,
+          "metric_keys": ["u4_mul_mod16", "u4_mul_mod16_witness", "u4_mul_mod16_stack", "u4_mul_mod16_opcodes"],
+          "static_non_push_opcodes": 0
+        }
+      ],
+      "limitations": ["Requires a resident 256-item product table", "Repeated composition must account for the table and all live operands under the 1,000-item stack limit", "Static opcode count is not a dynamic execution measurement", "Bitcoin Core consensus and relay-policy validation remain open"],
+      "open_problems": ["OP-001", "OP-002", "OP-003"]
+    },
+    {
       "id": "arithmetic/u4-parity",
       "name": "Checked u4 parity projection",
       "class": "arithmetic/word",
