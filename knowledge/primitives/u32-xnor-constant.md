@@ -39,8 +39,8 @@ locking-script bytes.
 
 ## Evidence and execution class
 
-The implementation and metric boundary are currently `inspected`; CI is the
-executable reproduction gate. Deployment is `unclassified`. The fixture uses
+The implementation and metric boundary are `locally-reproduced` by focused CI.
+Deployment is `unclassified`. The fixture uses
 mask `0x89abcdef` and four canonical `0xff` data limbs. Correctness tests cover
 boundary masks, malformed and non-minimal limbs, and surrounding main- and
 alt-stack state.

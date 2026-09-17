@@ -787,7 +787,7 @@
       "class": "arithmetic/word",
       "summary": "Checked four-byte u32 bitwise XNOR with one public compile-time mask embedded in the locking script.",
       "status": "experimental",
-      "evidence": "inspected",
+      "evidence": "locally-reproduced",
       "execution": "unclassified",
       "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/u32-xnor-constant.md",
