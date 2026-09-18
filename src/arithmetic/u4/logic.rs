@@ -16,6 +16,8 @@ pub fn u4_drop_full_logic_table() -> Script {
     u4_drop(16 * 16)
 }
 
+/// Installs the 17-item linear lookup table for pairwise nibble operations.
+/// The caller supplies the lookup depth and matching cleanup boundary.
 pub fn u4_push_full_lookup() -> Script {
     script! {
         for i in (0..=256).rev().step_by(16) {
@@ -24,6 +26,7 @@ pub fn u4_push_full_lookup() -> Script {
     }
 }
 
+/// Removes the 17-item linear lookup table from the top of the main stack.
 pub fn u4_drop_full_lookup() -> Script {
     u4_drop(17)
 }
@@ -149,6 +152,8 @@ pub fn u4_drop_half_table() -> Script {
     u4_drop(136)
 }
 
+/// Installs the 16-item triangular lookup table for sorted nibble pairs.
+/// The caller supplies the lookup depth and matching cleanup boundary.
 pub fn u4_push_half_lookup() -> Script {
     script! {
         136
@@ -170,6 +175,7 @@ pub fn u4_push_half_lookup() -> Script {
     }
 }
 
+/// Removes the 16-item triangular lookup table from the top of the main stack.
 pub fn u4_drop_half_lookup() -> Script {
     u4_drop(16)
 }
@@ -245,4 +251,90 @@ pub fn u4_logic_nibs(
 
 pub fn u4_xor_u32(bases: Vec<u32>, offset: u32, do_xor_with_and: bool) -> Script {
     u4_logic_nibs(8, bases, offset, do_xor_with_and)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::support::execution::execute_script;
+
+    fn assert_table(values: &[u32], push: Script) {
+        let result = execute_script(script! {
+            { push }
+            for value in values {
+                { *value }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(result.success, "lookup table mismatch: {result}");
+    }
+
+    #[test]
+    fn lookup_tables_preserve_their_index_schedule() {
+        assert_table(
+            &[
+                16, 31, 45, 58, 70, 81, 91, 100, 108, 115, 121, 126, 130, 133, 135, 136,
+            ],
+            u4_push_half_lookup(),
+        );
+        assert_table(
+            &[
+                0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240, 256,
+            ],
+            u4_push_full_lookup(),
+        );
+    }
+
+    #[test]
+    fn lookup_lifecycle_preserves_sentinels_and_matching_cleanup() {
+        for (push, drop) in [
+            (u4_push_half_lookup(), u4_drop_half_lookup()),
+            (u4_push_full_lookup(), u4_drop_full_lookup()),
+        ] {
+            let result = execute_script(script! {
+                99 OP_TOALTSTACK
+                77
+                { push }
+                { drop }
+                77 OP_EQUALVERIFY
+                OP_FROMALTSTACK 99 OP_EQUAL
+            });
+            assert!(
+                result.success,
+                "lookup lifecycle changed sentinels: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn lookup_cleanup_boundaries_are_explicit() {
+        let wrong_width = execute_script(script! {
+            { u4_push_half_lookup() }
+            { u4_drop_full_lookup() }
+            OP_TRUE
+        });
+        assert!(!wrong_width.success, "full cleanup accepted a half table");
+
+        let leftover = execute_script(script! {
+            { u4_push_full_lookup() }
+            { u4_drop_half_lookup() }
+            256 OP_EQUAL
+        });
+        assert!(
+            leftover.success,
+            "half cleanup did not leave the full-table item"
+        );
+
+        let consumed_sentinel = execute_script(script! {
+            77 88
+            { u4_push_half_lookup() }
+            { u4_drop_full_lookup() }
+            77 OP_EQUAL
+        });
+        assert!(
+            consumed_sentinel.success,
+            "excess cleanup did not consume the unrelated item"
+        );
+    }
 }

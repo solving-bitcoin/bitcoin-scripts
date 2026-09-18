@@ -4598,6 +4598,202 @@ fn ed25519_packed_decoder_metrics_are_current() {
 }
 
 #[test]
+fn u4_word_transfer_metrics_are_current() {
+    let copy = u4::stack::u4_copy_u32_from(0);
+    let move_script = u4::stack::u4_move_u32_from(0);
+    let witness = (0..8).map(scriptnum).collect::<Vec<_>>();
+    let copy_peak = max_stack_items_strict(
+        script! {
+            { copy.clone() }
+            for _ in 0..8 { OP_2DROP }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    let move_peak = max_stack_items_strict(
+        script! {
+            { move_script.clone() }
+            for _ in 0..4 { OP_2DROP }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_u32_from",
+            value: script_len(copy.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_u32_from_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_u32_from_stack",
+            value: copy_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_copy_u32_from_opcodes",
+            value: static_non_push_opcodes(copy),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_u32_from",
+            value: script_len(move_script.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_u32_from_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_u32_from_stack",
+            value: move_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_move_u32_from_opcodes",
+            value: static_non_push_opcodes(move_script),
+        },
+    ]);
+}
+
+#[test]
+fn u4_altstack_transport_metrics_are_current() {
+    let to_alt = u4::stack::u4_toaltstack(4);
+    let from_alt = u4::stack::u4_fromaltstack(4);
+    let witness = (0..4).map(scriptnum).collect::<Vec<_>>();
+    let to_alt_peak = max_stack_items_strict(
+        script! {
+            { to_alt.clone() }
+            OP_FROMALTSTACK OP_DROP
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    let from_alt_peak = max_stack_items_strict(
+        script! {
+            { to_alt.clone() }
+            { from_alt.clone() }
+            for _ in 0..4 { OP_DROP }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4",
+            value: script_len(to_alt),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4_stack",
+            value: to_alt_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_toaltstack4_opcodes",
+            value: static_non_push_opcodes(u4::stack::u4_toaltstack(4)),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4",
+            value: script_len(from_alt.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4_stack",
+            value: from_alt_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_fromaltstack4_opcodes",
+            value: static_non_push_opcodes(from_alt),
+        },
+    ]);
+}
+
+#[test]
+fn u4_lookup_lifecycle_metrics_are_current() {
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_half_lookup_push",
+            value: script_len(u4::logic::u4_push_half_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_half_lookup_drop",
+            value: script_len(u4::logic::u4_drop_half_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_full_lookup_push",
+            value: script_len(u4::logic::u4_push_full_lookup()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_full_lookup_drop",
+            value: script_len(u4::logic::u4_drop_full_lookup()),
+        },
+    ]);
+}
+
+#[test]
+fn u4_staged_word_verifier_metrics_are_current() {
+    let verifier = u4::stack::u4_u32_verify_from_altstack();
+    let witness = vec![scriptnum(0x12); 16];
+    let peak = max_stack_items_strict(
+        script! {
+            { u4::stack::u4_toaltstack(8) }
+            { verifier.clone() }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_u32_verify_from_altstack",
+            value: script_len(verifier.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_u32_verify_from_altstack_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_u32_verify_from_altstack_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_u32_verify_from_altstack_opcodes",
+            value: static_non_push_opcodes(verifier),
+        },
+    ]);
+}
+
+#[test]
 fn u32_uncompress_canonical_metrics_are_current() {
     let fragment = u32::stack::u32_uncompress_canonical();
     let witness = vec![scriptnum(i64::from(i32::MIN))];

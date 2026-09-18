@@ -33,6 +33,18 @@ The upstream direct 64-entry table that motivated this search is not on the
 frontier because it is incorrect as published for multiple nibble values. The
 local staggered layout is a corrected construction, not a verbatim port.
 
+## u4 lookup scheduling
+
+| Schedule | Offset-table items | Addressing | Lifecycle |
+| --- | ---: | --- | --- |
+| Triangular half lookup | 16 | Sorted pair with triangular offsets | Explicit setup and cleanup |
+| Linear full lookup | 17 | Direct linear offset | Explicit setup and cleanup |
+
+These are offset tables, not complete Boolean lookup memory: the half schedule
+has 136 pairwise entries and the full schedule has 256. The half schedule saves
+one live offset item but pays for sorting and triangular addressing. Both
+require a fixed caller-owned depth and the matching cleanup fragment.
+
 ## Native secp256k1 field frontier
 
 | Strategy | Total bytes | Table lifecycle | Computation | Peak items |
