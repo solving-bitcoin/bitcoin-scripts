@@ -37,8 +37,12 @@ mod tests {
     use super::*;
     use crate::{
         arithmetic::u4::stack::u4_hex_to_nibbles,
-        support::{execution::execute_script, script::script},
+        support::{
+            execution::{execute_script, execute_script_with_inputs_strict},
+            script::script,
+        },
     };
+    use bitcoin_scriptexec::ExecError;
 
     #[test]
     fn packs_all_pairs_in_input_order() {
@@ -71,15 +75,81 @@ mod tests {
     }
 
     #[test]
+    fn packs_scriptnum_boundary_encodings() {
+        for (hex, value, byte_len) in [
+            ("00", 0, 0),
+            ("7f", 0x7f, 1),
+            ("80", 0x80, 2),
+            ("ff", 0xff, 2),
+        ] {
+            let result = execute_script(script! {
+                { u4_hex_to_nibbles(hex) }
+                { u4_nibbles_to_bytes(2) }
+                OP_SIZE { byte_len } OP_EQUALVERIFY
+                OP_DUP { value } OP_EQUALVERIFY
+                OP_DROP OP_TRUE
+            });
+            assert!(result.success, "wrong encoding for {hex}: {result}");
+        }
+    }
+
+    #[test]
+    fn rejects_invalid_nibbles_at_every_position() {
+        for position in 0..4 {
+            let mut input = vec![1; 4];
+            input[position] = if position % 2 == 0 { -1 } else { 16 };
+            let result = execute_script(script! {
+                for nibble in input { { nibble } }
+                { u4_nibbles_to_bytes(4) }
+            });
+            assert!(!result.success, "accepted invalid position {position}");
+        }
+    }
+
+    #[test]
     fn preserves_surrounding_stack_items() {
         let result = execute_script(script! {
+            77 OP_TOALTSTACK
             77
             { u4_hex_to_nibbles("1122") }
             { u4_nibbles_to_bytes(4) }
             0x22 OP_EQUALVERIFY
             0x11 OP_EQUALVERIFY
-            77 OP_EQUAL
+            77 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
         });
         assert!(result.success, "stack preservation failed: {result}");
+    }
+
+    #[test]
+    fn maximum_batch_reaches_but_does_not_exceed_stack_limit() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { u4_nibbles_to_bytes(U4_PACK_MAX_BATCH) }
+                { u4_drop(U4_PACK_MAX_BATCH / 2) }
+                OP_TRUE
+            },
+            vec![Vec::new(); U4_PACK_MAX_BATCH as usize],
+        );
+        assert!(result.success, "maximum batch failed: {result}");
+        assert_eq!(result.stats.max_nb_stack_items, 1000);
+
+        let mut witness = vec![vec![0x42]];
+        witness.extend(vec![Vec::new(); U4_PACK_MAX_BATCH as usize]);
+        let preserved = execute_script_with_inputs_strict(
+            script! {
+                { u4_nibbles_to_bytes(U4_PACK_MAX_BATCH) }
+            },
+            witness,
+        );
+        assert_eq!(preserved.error, Some(ExecError::StackSize));
+        assert_eq!(preserved.stats.max_nb_stack_items, 1001);
+    }
+
+    #[test]
+    #[should_panic(expected = "nibble-pack batch exceeds Bitcoin Script's stack limit")]
+    fn rejects_batch_above_stack_limit() {
+        let _ = u4_nibbles_to_bytes(U4_PACK_MAX_BATCH + 2);
     }
 }

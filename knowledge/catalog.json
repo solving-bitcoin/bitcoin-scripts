@@ -10729,14 +10729,17 @@
       "class": "arithmetic/word",
       "summary": "Range-checked even-width u4 vector packing to byte-valued ScriptNums.",
       "status": "active",
-      "evidence": "inspected",
+      "evidence": "locally-reproduced",
       "execution": "unclassified",
       "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/u4-batch-pack.md",
       "implementation": "src/arithmetic/u4/pack.rs",
       "documentation": "src/arithmetic/u4/README.md",
       "tests": [
-        "src/arithmetic/u4/pack.rs",
+        "arithmetic::u4::pack::tests::packs_all_pairs_in_input_order",
+        "arithmetic::u4::pack::tests::packs_scriptnum_boundary_encodings",
+        "arithmetic::u4::pack::tests::rejects_invalid_nibbles_at_every_position",
+        "arithmetic::u4::pack::tests::maximum_batch_reaches_but_does_not_exceed_stack_limit",
         "tests/primitive_metrics.rs"
       ],
       "references": [

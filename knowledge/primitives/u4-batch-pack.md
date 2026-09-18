@@ -15,13 +15,14 @@ input order.
 
 ## Evidence
 
-- evidence: `inspected`
+- evidence: `locally-reproduced`
 - execution: `unclassified`
 - representative configuration: 32 hostile nibble items, 16 output bytes
 - comparison: batch scheduling versus repeated caller-managed pair fragments
 
 The implementation tests all pair positions, invalid and odd widths, hostile
-nibbles, and surrounding-stack preservation. It is a fragment, not a complete
+nibbles, exact ScriptNum boundary encodings, the combined stack frontier, and
+surrounding main/alt-stack preservation. It is a fragment, not a complete
 locking script, and makes no consensus, policy, or cryptographic-security
 claim.
 
