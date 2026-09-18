@@ -168,6 +168,34 @@ pub fn u4_nibbles_to_be_bits_canonical(nibble_count: u32) -> Script {
     }
 }
 
+/// Pack four big-endian bits into one nibble.
+///
+/// Before: `preserved | bit0 | bit1 | bit2 | bit3`, with `bit3` on top.
+/// After: `preserved | nibble`, where the nibble is
+/// `bit0 + 2*bit1 + 4*bit2 + 8*bit3`. When `check_inputs` is true, every input
+/// is constrained to the numeric range `0..=1`.
+pub fn u4_be_bits_to_nibble(check_inputs: bool) -> Script {
+    script! {
+        for _ in 0..3 {
+            if check_inputs {
+                OP_DUP OP_0 OP_2 OP_WITHIN OP_VERIFY
+            }
+            OP_TOALTSTACK
+        }
+        if check_inputs {
+            OP_DUP OP_0 OP_2 OP_WITHIN OP_VERIFY
+        }
+
+        // Restore from bit0 upward and accumulate bit0 + 2*bit1 + 4*bit2 + 8*bit3.
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_ADD
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
+        OP_FROMALTSTACK
+        OP_DUP OP_ADD OP_DUP OP_ADD OP_DUP OP_ADD OP_ADD
+    }
+}
+
 /// Consume a contiguous nibble batch and replace it with little-endian bits.
 pub fn u4_nibbles_to_le_bits_toaltstack(nibble_count: u32, check_inputs: bool) -> Script {
     validate_batch_size(nibble_count);
@@ -298,6 +326,79 @@ mod tests {
                 "accepted invalid little-endian nibble {invalid}"
             );
         }
+    }
+
+    #[test]
+    fn inverse_packs_big_endian_bits() {
+        for check_inputs in [true, false] {
+            for nibble in 0..16 {
+                let result = execute_script(script! {
+                    { nibble & 1 }
+                    { (nibble >> 1) & 1 }
+                    { (nibble >> 2) & 1 }
+                    { (nibble >> 3) & 1 }
+                    { u4_be_bits_to_nibble(check_inputs) }
+                    { nibble }
+                    OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "nibble {nibble}, checked {check_inputs}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn inverse_rejects_non_bit_inputs() {
+        for invalid in [-1, 2] {
+            for position in 0..4 {
+                let mut bits = [0; 4];
+                bits[position] = invalid;
+                let result = execute_script(script! {
+                    for bit in bits {
+                        { bit }
+                    }
+                    { u4_be_bits_to_nibble(true) }
+                });
+                assert_eq!(result.error, Some(bitcoin_scriptexec::ExecError::Verify));
+            }
+        }
+    }
+
+    #[test]
+    fn inverse_rejects_short_stacks() {
+        for available in 0..4 {
+            let result = execute_script(script! {
+                for _ in 0..available {
+                    OP_0
+                }
+                { u4_be_bits_to_nibble(true) }
+            });
+            assert_eq!(
+                result.error,
+                Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+            );
+        }
+    }
+
+    #[test]
+    fn inverse_round_trip_preserves_surrounding_stacks() {
+        let result = execute_script(script! {
+            99
+            42 OP_TOALTSTACK
+            9
+            { u4_nibbles_to_be_bits_toaltstack(1, true) }
+            for _ in 0..4 {
+                OP_FROMALTSTACK
+            }
+            { u4_be_bits_to_nibble(true) }
+            9 OP_EQUALVERIFY
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK
+            42 OP_EQUAL
+        });
+        assert!(result.success, "round trip failed: {result}");
     }
 
     #[test]

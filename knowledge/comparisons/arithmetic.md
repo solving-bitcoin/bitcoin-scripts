@@ -16,6 +16,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Checked u32 seven-bit rotation | `u32_rrot7_checked()` | 130 | 8-item peak; 9-byte representative/13-byte maximum witness; rejects raw aliases |
 | Canonical checked u32 rotate-right by 8 | `u32_rrot8_checked()` | 57 | 7-item peak; 9-byte witness; reuses byte rotation |
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
+| Four checked bits to one nibble | u4 big-endian bit packer | 41 | 5–9-byte witness; 7-item peak |
 | 32 canonical checked nibbles to 128 bits | u4 canonical big-endian table adapter | 1,306 | 189-item peak; 65-byte witness; rejects raw aliases |
 | 32 canonical checked nibbles to 128 big-endian bits on altstack | u4 canonical altstack table adapter | 1,178 | 189-item peak; 65-byte witness; rejects raw aliases |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |

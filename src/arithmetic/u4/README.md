@@ -81,6 +81,8 @@ these operations, but this module contains no hash-specific round logic.
   raw ScriptNum encoding and leaves big-endian output on the altstack.
 - `bits::u4_nibbles_to_le_bits_toaltstack_canonical(nibble_count)` validates
   raw ScriptNum encoding and leaves little-endian output on the altstack.
+- `bits::u4_be_bits_to_nibble(check_inputs)` packs four big-endian bits, with
+  the most-significant bit on top, into one nibble.
 
 ## Script metrics
 
@@ -97,6 +99,7 @@ each input with the same output-restoration boundary.
 | Staggered bit-table setup | <!-- metric:u4_bits_table_push -->61<!-- /metric:u4_bits_table_push --> bytes | 61 table items | not recorded |
 | Staggered bit-table cleanup | <!-- metric:u4_bits_table_drop -->31<!-- /metric:u4_bits_table_drop --> bytes | consumes 61 items | not recorded |
 | One checked table query, output on altstack | <!-- metric:u4_bits_checked_query -->22<!-- /metric:u4_bits_checked_query --> bytes | composition-dependent | not recorded |
+| Checked four-bit packer | <!-- metric:u4_bits_to_nibble -->41<!-- /metric:u4_bits_to_nibble --> bytes | <!-- metric:u4_bits_to_nibble_stack -->7<!-- /metric:u4_bits_to_nibble_stack --> items | <!-- metric:u4_bits_to_nibble_opcodes -->33<!-- /metric:u4_bits_to_nibble_opcodes --> |
 | Little-endian staggered bit-table setup | <!-- metric:u4_bits_le_table_push -->61<!-- /metric:u4_bits_le_table_push --> bytes | 61 table items | not recorded |
 | Checked table batch, 32 nibbles | <!-- metric:u4_bits_checked_batch32 -->924<!-- /metric:u4_bits_checked_batch32 --> bytes | <!-- metric:u4_bits_checked_batch32_stack -->189<!-- /metric:u4_bits_checked_batch32_stack --> items | <!-- metric:u4_bits_checked_batch32_opcodes -->735<!-- /metric:u4_bits_checked_batch32_opcodes --> |
 | Canonical checked table batch, 32 nibbles | <!-- metric:u4_bits_canonical_batch32 -->1306<!-- /metric:u4_bits_canonical_batch32 --> bytes | <!-- metric:u4_bits_canonical_batch32_stack -->189<!-- /metric:u4_bits_canonical_batch32_stack --> items | <!-- metric:u4_bits_canonical_batch32_opcodes -->1021<!-- /metric:u4_bits_canonical_batch32_opcodes --> |
@@ -220,7 +223,8 @@ query costs 22 bytes and restoring its four bits costs another four, so the
 complete checked batch is `92 + 26*n` bytes. The existing branch splitter is
 `43*n` bytes on the same boundary; the checked table wins from six nibbles.
 Unchecked lookup is `92 + 21*n` and wins from five, but is safe only for
-previously certified nibbles.
+previously certified nibbles. The checked inverse packer uses a
+<!-- metric:u4_bits_to_nibble_witness_min -->5<!-- /metric:u4_bits_to_nibble_witness_min -->–<!-- metric:u4_bits_to_nibble_witness_max -->9<!-- /metric:u4_bits_to_nibble_witness_max -->-byte serialized witness.
 
 The modulo-16 sum reducer uses a 31-item table for intermediate sums from 0
 through 30. It validates each nibble's numeric range and canonical ScriptNum
@@ -490,6 +494,10 @@ The standalone batch peak is `4*n + 61` combined main/alt-stack items. The
 generator rejects `n > 234`, but callers must reduce the batch further for any
 unrelated live state.
 
+For `u4_be_bits_to_nibble(...)`, input is `preserved | bit0 | bit1 | bit2 |
+bit3`, with `bit3` on top; the four items are consumed and replaced by
+`bit0 + 2*bit1 + 4*bit2 + 8*bit3`.
+
 For `u4_nibbles_to_parity(n)`, the same input ordering is consumed and replaced
 one-for-one by parity bits. The standalone peak is `n + 18` during range checks;
 the generator rejects `n > 982`, and callers must reduce the batch for unrelated
@@ -589,7 +597,10 @@ nibble in checked and unchecked mode, rejects malformed numeric inputs in
 checked mode, verifies multi-input ordering, and executes the maximum
 standalone batch under the strict local stack limit. `parity.rs`, `one_hot.rs`, `centered.rs`, `mirror.rs`, `leading_zeros.rs`, `bit_transitions.rs`, `trailing_zeros.rs`, `lowbit.rs`, `gray_inverse.rs`, `power_of_two.rs`
 exhaustively check the 16-value lookup domain, reject malformed
-inputs and invalid batch sizes, and measure representative strict batches.
+inputs and invalid batch sizes, and measure representative strict batches. The
+inverse packer tests all 16 nibbles in checked and unchecked modes, rejects
+malformed bit positions and short stacks, and verifies surrounding stack
+preservation.
 
 The four-equal-index query is derived from the combined nibble-table sketch in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/split-into-bits.md).
