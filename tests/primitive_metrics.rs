@@ -4598,6 +4598,148 @@ fn ed25519_packed_decoder_metrics_are_current() {
 }
 
 #[test]
+fn u32_equality_metrics_are_current() {
+    const VALUE: u32 = 0x0102_0304;
+    let witness = byte_u32_witness(VALUE)
+        .into_iter()
+        .chain(byte_u32_witness(VALUE))
+        .collect::<Vec<_>>();
+    let witness_max = byte_u32_witness(0x8080_8080)
+        .into_iter()
+        .chain(byte_u32_witness(0x8080_8080))
+        .collect::<Vec<_>>();
+    let equal = u32::stack::u32_equal();
+    let equalverify = u32::stack::u32_equalverify();
+    let equal_stack = max_stack_items_strict(
+        script! {
+            { equal.clone() }
+            OP_DROP
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    let equalverify_stack = max_stack_items_strict(
+        script! {
+            { equalverify.clone() }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal",
+            value: script_len(equal),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal_witness_max",
+            value: witness_size(&witness_max),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equal_stack",
+            value: equal_stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equalverify",
+            value: script_len(equalverify),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equalverify_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equalverify_witness_max",
+            value: witness_size(&witness_max),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_equalverify_stack",
+            value: equalverify_stack,
+        },
+    ]);
+}
+
+#[test]
+fn u32_fixed_rotation_metrics_are_current() {
+    let witness = vec![vec![1u8]; 4];
+    let witness_max = byte_u32_witness(0x8080_8080).to_vec();
+    let fragments = [
+        (
+            "u32_rrot7",
+            u32::rotate::u32_rrot7(),
+            "u32_rrot7_witness",
+            "u32_rrot7_witness_max",
+            "u32_rrot7_stack",
+        ),
+        (
+            "u32_rrot8",
+            u32::rotate::u32_rrot8(),
+            "u32_rrot8_witness",
+            "u32_rrot8_witness_max",
+            "u32_rrot8_stack",
+        ),
+        (
+            "u32_rrot16",
+            u32::rotate::u32_rrot16(),
+            "u32_rrot16_witness",
+            "u32_rrot16_witness_max",
+            "u32_rrot16_stack",
+        ),
+        (
+            "u32_rrot24",
+            u32::rotate::u32_rrot(24),
+            "u32_rrot24_witness",
+            "u32_rrot24_witness_max",
+            "u32_rrot24_stack",
+        ),
+    ];
+    let mut metrics = Vec::new();
+    for (script_key, fragment, witness_key, witness_max_key, stack_key) in fragments {
+        let stack = max_stack_items_strict(
+            script! {
+                { fragment.clone() }
+                { u32::stack::u32_drop() }
+                OP_TRUE
+            },
+            witness.clone(),
+        );
+        metrics.extend([
+            Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: script_key,
+                value: script_len(fragment),
+            },
+            Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: witness_key,
+                value: witness_size(&witness),
+            },
+            Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: witness_max_key,
+                value: witness_size(&witness_max),
+            },
+            Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: stack_key,
+                value: stack,
+            },
+        ]);
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn u32_uncompress_canonical_metrics_are_current() {
     let fragment = u32::stack::u32_uncompress_canonical();
     let witness = vec![scriptnum(i64::from(i32::MIN))];

@@ -26,6 +26,9 @@ pub fn verify_canonical_byte() -> Script {
     }
 }
 
+/// Consumes two u32 words and fails unless their four raw byte limbs match.
+///
+/// It leaves no result on success; callers must provide any terminal predicate.
 pub fn u32_equalverify() -> Script {
     script! {
         4
@@ -40,6 +43,9 @@ pub fn u32_equalverify() -> Script {
     }
 }
 
+/// Consumes two u32 words and leaves one Boolean result for byte-for-byte equality.
+///
+/// It does not validate byte range or canonical ScriptNum encoding.
 pub fn u32_equal() -> Script {
     script! {
         4
@@ -471,6 +477,77 @@ mod tests {
                 OP_EQUAL
             };
             run(script);
+        }
+    }
+
+    #[test]
+    fn test_u32_equality_boundaries_and_raw_encoding() {
+        for position in 0..4 {
+            let mut left = vec![vec![1u8]; 4];
+            let mut right = vec![vec![1u8]; 4];
+            right[position] = vec![2];
+            let witness = left.drain(..).chain(right).collect::<Vec<_>>();
+            let result =
+                execute_script_with_inputs_strict(script! { { u32_equal() } OP_NOT }, witness);
+            assert!(
+                result.success,
+                "limb mismatch was not detected at {position}: {result}"
+            );
+        }
+
+        let noncanonical = vec![vec![1, 0]; 8];
+        let equal = execute_script_with_inputs_strict(
+            script! { { u32_equal() } OP_VERIFY OP_TRUE },
+            noncanonical.clone(),
+        );
+        assert!(
+            equal.success,
+            "identical raw limbs did not compare equal: {equal}"
+        );
+
+        let mut alias_mismatch = vec![vec![1]; 8];
+        alias_mismatch[4] = vec![1, 0];
+        let unequal =
+            execute_script_with_inputs_strict(script! { { u32_equal() } OP_NOT }, alias_mismatch);
+        assert!(
+            unequal.success,
+            "raw aliases compared numerically: {unequal}"
+        );
+
+        let equal_result = execute_script_with_inputs_strict(
+            script! {
+                77 OP_TOALTSTACK
+                { u32_equal() }
+                OP_VERIFY
+                OP_FROMALTSTACK 77 OP_EQUAL
+            },
+            vec![vec![1u8]; 8],
+        );
+        assert!(
+            equal_result.success,
+            "equal stack preservation failed: {equal_result}"
+        );
+
+        let equalverify_result = execute_script_with_inputs_strict(
+            script! {
+                77 OP_TOALTSTACK
+                { u32_equalverify() }
+                OP_FROMALTSTACK 77 OP_EQUAL
+            },
+            vec![vec![1u8]; 8],
+        );
+        assert!(
+            equalverify_result.success,
+            "equalverify stack preservation failed: {equalverify_result}"
+        );
+    }
+
+    #[test]
+    fn equality_rejects_short_words_with_an_execution_error() {
+        for equality in [u32_equal(), u32_equalverify()] {
+            let result =
+                execute_script_with_inputs_strict(script! { { equality } }, vec![vec![1u8]; 7]);
+            assert!(result.error.is_some(), "accepted a short word: {result}");
         }
     }
 

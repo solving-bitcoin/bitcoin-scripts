@@ -73,6 +73,10 @@ they do not use BN254 or any other field modulus.
   direct byte-aligned logical left shift.
 - `u32_rrot16_checked()` validates four canonical byte limbs before applying
   the existing one-opcode sixteen-bit rotation.
+- `u32_rrot8()`, `u32_rrot16()`, and `u32_rrot(24)` are unchecked fixed-byte
+  permutations; callers own byte-range and canonical ScriptNum validation.
+- `u32_rrot7()` is the unchecked fixed seven-bit right rotation used by
+  SHA-256; callers own byte-range and canonical ScriptNum validation.
 
 ## Script metrics
 
@@ -100,6 +104,8 @@ as less-than-or-equal.
 | `u32_nor(0, 1, 3)` (table excluded) | <!-- metric:u32_nor -->346<!-- /metric:u32_nor --> bytes | 0 bytes | <!-- metric:u32_nor_stack -->272<!-- /metric:u32_nor_stack --> items, including table; <!-- metric:u32_nor_opcodes -->250<!-- /metric:u32_nor_opcodes --> static non-push opcodes |
 | `u32_xnor(0, 1, 3)` (table excluded) | <!-- metric:u32_xnor -->222<!-- /metric:u32_xnor --> bytes | 0 bytes | <!-- metric:u32_xnor_stack -->272<!-- /metric:u32_xnor_stack --> items, including table; <!-- metric:u32_xnor_opcodes -->182<!-- /metric:u32_xnor_opcodes --> static non-push opcodes |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_equal()` | <!-- metric:u32_equal -->18<!-- /metric:u32_equal --> bytes | <!-- metric:u32_equal_witness -->17<!-- /metric:u32_equal_witness --> bytes (<!-- metric:u32_equal_witness_max -->25<!-- /metric:u32_equal_witness_max --> max), 8 data items, 0 hints | <!-- metric:u32_equal_stack -->9<!-- /metric:u32_equal_stack --> items |
+| `u32_equalverify()` | <!-- metric:u32_equalverify -->9<!-- /metric:u32_equalverify --> bytes | <!-- metric:u32_equalverify_witness -->17<!-- /metric:u32_equalverify_witness --> bytes (<!-- metric:u32_equalverify_witness_max -->25<!-- /metric:u32_equalverify_witness_max --> max), 8 data items, 0 hints | <!-- metric:u32_equalverify_stack -->9<!-- /metric:u32_equalverify_stack --> items |
 | `u32_compressed_equal()` | <!-- metric:u32_compressed_equal -->37<!-- /metric:u32_compressed_equal --> bytes | <!-- metric:u32_compressed_equal_witness -->11<!-- /metric:u32_compressed_equal_witness --> bytes | <!-- metric:u32_compressed_equal_stack -->5<!-- /metric:u32_compressed_equal_stack --> items |
 | `u32_conditional_select()` | <!-- metric:u32_conditional_select -->9<!-- /metric:u32_conditional_select --> bytes | <!-- metric:u32_conditional_select_witness_min -->10<!-- /metric:u32_conditional_select_witness_min -->–<!-- metric:u32_conditional_select_witness_max -->30<!-- /metric:u32_conditional_select_witness_max --> bytes | <!-- metric:u32_conditional_select_stack -->9<!-- /metric:u32_conditional_select_stack --> items |
 | `u32_iszero()` | <!-- metric:u32_iszero -->4<!-- /metric:u32_iszero --> bytes | <!-- metric:u32_iszero_witness -->5<!-- /metric:u32_iszero_witness --> bytes | <!-- metric:u32_iszero_stack -->4<!-- /metric:u32_iszero_stack --> items |
@@ -131,6 +137,10 @@ as less-than-or-equal.
 | `u32_rrot7_checked()` | <!-- metric:u32_rrot7_checked -->130<!-- /metric:u32_rrot7_checked --> bytes | <!-- metric:u32_rrot7_checked_witness -->9<!-- /metric:u32_rrot7_checked_witness --> bytes (<!-- metric:u32_rrot7_checked_witness_max -->13<!-- /metric:u32_rrot7_checked_witness_max --> max), 4 data items | <!-- metric:u32_rrot7_checked_stack -->8<!-- /metric:u32_rrot7_checked_stack --> items; <!-- metric:u32_rrot7_checked_opcodes -->87<!-- /metric:u32_rrot7_checked_opcodes --> static non-push opcodes |
 | `u32_rrot8_checked()` | <!-- metric:u32_rrot8_checked -->57<!-- /metric:u32_rrot8_checked --> bytes | <!-- metric:u32_rrot8_checked_witness -->9<!-- /metric:u32_rrot8_checked_witness --> bytes (<!-- metric:u32_rrot8_checked_witness_max -->13<!-- /metric:u32_rrot8_checked_witness_max --> max), 4 data items | <!-- metric:u32_rrot8_checked_stack -->7<!-- /metric:u32_rrot8_checked_stack --> items; <!-- metric:u32_rrot8_checked_opcodes -->36<!-- /metric:u32_rrot8_checked_opcodes --> static non-push opcodes |
 | `u32_rrot16_checked()` | <!-- metric:u32_rrot16_checked -->55<!-- /metric:u32_rrot16_checked --> bytes | <!-- metric:u32_rrot16_checked_witness -->9<!-- /metric:u32_rrot16_checked_witness --> bytes (<!-- metric:u32_rrot16_checked_witness_max -->13<!-- /metric:u32_rrot16_checked_witness_max --> max), 4 data items | <!-- metric:u32_rrot16_checked_stack -->7<!-- /metric:u32_rrot16_checked_stack --> items; <!-- metric:u32_rrot16_checked_opcodes -->35<!-- /metric:u32_rrot16_checked_opcodes --> static non-push opcodes |
+| `u32_rrot7()` | <!-- metric:u32_rrot7 -->76<!-- /metric:u32_rrot7 --> bytes | <!-- metric:u32_rrot7_witness -->9<!-- /metric:u32_rrot7_witness --> bytes (<!-- metric:u32_rrot7_witness_max -->13<!-- /metric:u32_rrot7_witness_max --> max), 4 data items, 0 hints | <!-- metric:u32_rrot7_stack -->8<!-- /metric:u32_rrot7_stack --> items |
+| `u32_rrot8()` | <!-- metric:u32_rrot8 -->3<!-- /metric:u32_rrot8 --> bytes | <!-- metric:u32_rrot8_witness -->9<!-- /metric:u32_rrot8_witness --> bytes (<!-- metric:u32_rrot8_witness_max -->13<!-- /metric:u32_rrot8_witness_max --> max), 4 data items, 0 hints | <!-- metric:u32_rrot8_stack -->5<!-- /metric:u32_rrot8_stack --> items |
+| `u32_rrot16()` | <!-- metric:u32_rrot16 -->1<!-- /metric:u32_rrot16 --> bytes | <!-- metric:u32_rrot16_witness -->9<!-- /metric:u32_rrot16_witness --> bytes (<!-- metric:u32_rrot16_witness_max -->13<!-- /metric:u32_rrot16_witness_max --> max), 4 data items, 0 hints | <!-- metric:u32_rrot16_stack -->4<!-- /metric:u32_rrot16_stack --> items |
+| `u32_rrot(24)` | <!-- metric:u32_rrot24 -->2<!-- /metric:u32_rrot24 --> bytes | <!-- metric:u32_rrot24_witness -->9<!-- /metric:u32_rrot24_witness --> bytes (<!-- metric:u32_rrot24_witness_max -->13<!-- /metric:u32_rrot24_witness_max --> max), 4 data items, 0 hints | <!-- metric:u32_rrot24_stack -->5<!-- /metric:u32_rrot24_stack --> items |
 | `u32_popcount()` | <!-- metric:u32_popcount -->455<!-- /metric:u32_popcount --> bytes | <!-- metric:u32_popcount_witness -->13<!-- /metric:u32_popcount_witness --> bytes | <!-- metric:u32_popcount_stack -->262<!-- /metric:u32_popcount_stack --> items; <!-- metric:u32_popcount_opcodes -->171<!-- /metric:u32_popcount_opcodes --> static non-push opcodes |
 | `u32_byte_popcounts()` | <!-- metric:u32_byte_popcounts -->452<!-- /metric:u32_byte_popcounts --> bytes | <!-- metric:u32_byte_popcounts_witness -->13<!-- /metric:u32_byte_popcounts_witness --> bytes | <!-- metric:u32_byte_popcounts_stack -->262<!-- /metric:u32_byte_popcounts_stack --> items; <!-- metric:u32_byte_popcounts_opcodes -->168<!-- /metric:u32_byte_popcounts_opcodes --> static non-push opcodes |
 | `u32_byte_parity()` | <!-- metric:u32_byte_parity -->452<!-- /metric:u32_byte_parity --> bytes | <!-- metric:u32_byte_parity_witness -->13<!-- /metric:u32_byte_parity_witness --> bytes, 4 data items | <!-- metric:u32_byte_parity_stack -->262<!-- /metric:u32_byte_parity_stack --> items; <!-- metric:u32_byte_parity_opcodes -->168<!-- /metric:u32_byte_parity_opcodes --> static non-push opcodes |
@@ -289,10 +299,11 @@ returns one Boolean. It checks the exact ScriptNum encoding, including the
 `0x80000000` sentinel, then compares the canonical wire values directly; it
 does not expand the words. The representative compressed witness is two data
 items and 11 serialized bytes, versus eight items and 17 bytes for the
-four-byte `u32_equal()` witness. The maximum sentinel witness is 13 bytes.
+four-byte `u32_equal()` witness. The maximum two-word canonical byte witness
+is 25 bytes.
 The 37-byte fragment is a deliberate trade: it reduces witness item count and
 width while costing 19 more locking bytes than `u32_equal()`. The measured
-snapshot records a <!-- metric:u32_compressed_equal_witness_max -->13<!-- /metric:u32_compressed_equal_witness_max -->-byte maximum witness and a <!-- metric:u32_equal_witness -->17<!-- /metric:u32_equal_witness -->-byte, <!-- metric:u32_equal_stack -->9<!-- /metric:u32_equal_stack -->-item byte baseline.
+snapshot records a <!-- metric:u32_compressed_equal_witness_max -->13<!-- /metric:u32_compressed_equal_witness_max -->-byte maximum witness and a 17-byte, 9-item byte baseline.
 
 `u32_compressed_lessthan()` accepts two canonical compressed u32 ScriptNums
 with the same `... a b -> ... (a < b)` contract as `u32_lessthan()`. It

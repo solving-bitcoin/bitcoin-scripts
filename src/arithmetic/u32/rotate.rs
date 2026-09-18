@@ -44,7 +44,7 @@ pub fn u32_rrot8_checked() -> Script {
     }
 }
 
-/// Right rotation of the i-th u8 element by 7 bits
+/// Right rotation of a u32 word by the fixed seven-bit SHA-256 rotation.
 pub fn u8_rrot7(i: u32) -> Script {
     let roll_script = match i {
         0 => script! {},
@@ -274,6 +274,7 @@ mod tests {
     use super::*;
     use crate::arithmetic::test_helpers::{run_with_witness, word_witness};
     use crate::arithmetic::u32::stack::*;
+    use crate::support::execution::run;
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     fn rrot(x: u32, n: usize) -> u32 {
@@ -303,6 +304,72 @@ mod tests {
                 run_with_witness(script, word_witness(rrot(x, i)).chain(word_witness(x)));
             }
         }
+    }
+
+    #[test]
+    fn fixed_byte_rotations_match_reference() {
+        for (fragment, expected) in [
+            (u32_rrot8(), 0x4411_2233),
+            (u32_rrot16(), 0x3344_1122),
+            (u32_rrot(24), 0x2233_4411),
+        ] {
+            let result = crate::support::execution::execute_script_with_inputs_strict(
+                script! {
+                    99 OP_TOALTSTACK
+                    { fragment }
+                    { u32_push(expected) }
+                    { u32_equalverify() }
+                    OP_FROMALTSTACK 99 OP_EQUAL
+                },
+                vec![vec![0x11], vec![0x22], vec![0x33], vec![0x44]],
+            );
+            assert!(result.success, "fixed rotation failed: {result}");
+        }
+    }
+
+    #[test]
+    fn fixed_rotation7_matches_reference_boundaries() {
+        for value in [0, 1, 0x80, 0x1122_3344, 0x8000_0000, u32::MAX] {
+            let expected = rrot(value, 7);
+            run(script! {
+                { u32_push(value) }
+                { u32_rrot7() }
+                { u32_push(expected) }
+                { u32_equal() }
+                OP_VERIFY OP_TRUE
+            });
+        }
+    }
+
+    #[test]
+    fn fixed_rotation7_preserves_runtime_stack_state() {
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { u32_rrot7() }
+                { u32_push(0x8822_4466) }
+                { u32_equalverify() }
+                OP_FROMALTSTACK 99 OP_EQUAL
+            },
+            vec![vec![0x11], vec![0x22], vec![0x33], vec![0x44]],
+        );
+        assert!(
+            result.success,
+            "rotation or stack preservation failed: {result}"
+        );
+    }
+
+    #[test]
+    fn fixed_rotation7_rejects_a_short_word_with_an_execution_error() {
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! { { u32_rrot7() } },
+            vec![vec![1u8]; 3],
+        );
+        assert!(!result.success);
+        assert!(matches!(
+            result.error,
+            Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+        ));
     }
 
     #[test]
