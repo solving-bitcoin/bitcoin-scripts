@@ -20,12 +20,26 @@ digest comparison.
 | --- | ---: |
 | 32-byte input | <!-- metric:sha1_u32_32 -->205558<!-- /metric:sha1_u32_32 --> bytes |
 
+The output-prefix adapter keeps the full compression schedule and removes the
+unused digest suffix:
+
+| Configuration | Hashing script |
+| --- | ---: |
+| 32-byte input, first 8 digest bytes | <!-- metric:sha1_u32_prefix_32_8 -->205586<!-- /metric:sha1_u32_prefix_32_8 --> bytes |
+
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
 Maximum stack depth depends on the message length. The implementation uses a
 256-item bitwise lookup table and expands each active block to 80 u32 words;
 some inputs exceed the default 1,000-item combined stack limit.
+
+The 32-byte prefix profile uses a 65-byte witness. Its combined peak is
+`<!-- metric:sha1_u32_prefix_32_8_stack -->632<!-- /metric:sha1_u32_prefix_32_8_stack -->`
+items and its static non-push count is
+`<!-- metric:sha1_u32_prefix_32_8_opcodes -->144693<!-- /metric:sha1_u32_prefix_32_8_opcodes -->`.
+These are `research-unlimited` local metrics; the full compression schedule
+still runs.
 
 ## Security
 
@@ -34,6 +48,9 @@ collision resistance and 160-bit generic preimage and second-preimage
 resistance, but practical SHA-1 collision attacks invalidate the collision
 bound. Do not use it where collision resistance, signatures over
 attacker-chosen content, or a modern security margin is required.
+
+An 8-byte prefix has at most a 32-bit generic collision bound and an ideal
+64-bit preimage bound; truncation does not remove the SHA-1 compression work.
 
 ## Script compatibility and standardness
 
@@ -51,12 +68,17 @@ No hints are required. The witness places the last message byte deepest and
 the first message byte on top, with every item canonically representing a
 value in `0..=255`.
 
+The representative prefix witness is
+`<!-- metric:sha1_u32_prefix_32_8_witness -->65<!-- /metric:sha1_u32_prefix_32_8_witness -->`
+bytes for 32 one-byte items.
+
 ## Stack contract
 
 `sha1(num_bytes)` consumes exactly `num_bytes` main-stack items and leaves the
 20 digest bytes on the main stack with the first digest byte on top. The
 temporary lookup table and message schedule are removed, and the altstack is
-restored to its starting depth.
+restored to its starting depth. `sha1_prefix(num_bytes, output_bytes)` keeps
+the first `1..=20` digest bytes and drops the rest.
 
 ## Operational notes
 

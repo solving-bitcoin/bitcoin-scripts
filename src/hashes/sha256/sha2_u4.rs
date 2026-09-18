@@ -463,6 +463,21 @@ pub fn sha256(num_bytes: u32) -> Script {
     }
 }
 
+/// Hash `num_bytes` and retain only the leading `output_nibbles` digest items.
+///
+/// The returned fragment leaves the selected nibbles in the same order as the
+/// full digest and preserves the caller's altstack depth.
+pub fn sha256_prefix(num_bytes: u32, output_nibbles: u32) -> Script {
+    assert!(
+        (1..=64).contains(&output_nibbles),
+        "SHA-256 output prefix must contain between 1 and 64 nibbles"
+    );
+    script! {
+        { sha256(num_bytes) }
+        { u4_drop(64 - output_nibbles) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -555,6 +570,51 @@ mod tests {
         test_sha256(hex);
         let hex = "7788ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffaaaaaaaaaaaaaaaa001122334455667788";
         test_sha256(hex);
+    }
+
+    #[test]
+    fn test_sha256_prefix() {
+        let hex_in = "48656c6c6f2e";
+        let mut hasher = Sha256::new();
+        hasher.update(Vec::<u8>::from_hex(hex_in).unwrap());
+        let digest = hasher.finalize().to_lower_hex_string();
+
+        for output_nibbles in [1, 8, 63, 64] {
+            let prefix = &digest[..output_nibbles as usize];
+            let script = script! {
+                77 OP_TOALTSTACK
+                99
+                { u4_hex_to_nibbles(hex_in) }
+                { sha256_prefix(hex_in.len() as u32 / 2, output_nibbles) }
+                { u4_hex_to_nibbles(prefix) }
+                for _ in 0..output_nibbles {
+                    OP_TOALTSTACK
+                }
+                for i in 1..output_nibbles {
+                    { i }
+                    OP_ROLL
+                }
+                for _ in 0..output_nibbles {
+                    OP_FROMALTSTACK
+                    OP_EQUALVERIFY
+                }
+                OP_FROMALTSTACK 77 OP_EQUALVERIFY
+                99 OP_EQUALVERIFY
+                OP_TRUE
+            };
+            assert!(
+                execute_script(script).success,
+                "prefix length {output_nibbles}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sha256_prefix_rejects_boundaries() {
+        assert_eq!(sha256_prefix(32, 64), sha256(32));
+        for output_nibbles in [0, 65] {
+            assert!(std::panic::catch_unwind(|| sha256_prefix(32, output_nibbles)).is_err());
+        }
     }
 
     #[test]

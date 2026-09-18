@@ -3583,7 +3583,10 @@
       "implementation": "src/hashes/sha1/mod.rs",
       "documentation": "src/hashes/sha1/README.md",
       "tests": [
-        "hashes::sha1::tests::hashes_standard_vectors"
+        "hashes::sha1::tests::hashes_standard_vectors",
+        "hashes::sha1::tests::hashes_output_prefixes",
+        "hashes::sha1::tests::rejects_prefix_boundaries",
+        "primitive_metrics::output_prefix_metrics_are_current"
       ],
       "references": [
         "fips-180-4",
@@ -3614,6 +3617,29 @@
           "metric_keys": [
             "sha1_u32_32"
           ]
+        },
+        {
+          "id": "message32-prefix8",
+          "label": "32-byte input, first 8 digest bytes",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: SHA-1 hashing plus output-prefix adapter; excludes message pushes and digest comparison",
+          "script_bytes": 205586,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 632,
+          "executed_opcodes": 144693,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 205586,
+          "metric_keys": [
+            "sha1_u32_prefix_32_8",
+            "sha1_u32_prefix_32_8_witness",
+            "sha1_u32_prefix_32_8_stack",
+            "sha1_u32_prefix_32_8_opcodes"
+          ]
         }
       ],
       "limitations": [
@@ -3638,10 +3664,14 @@
       "implementation": "src/hashes/ripemd160/mod.rs",
       "documentation": "src/hashes/ripemd160/README.md",
       "tests": [
-        "hashes::ripemd160::tests::hashes_standard_vectors"
+        "hashes::ripemd160::tests::hashes_standard_vectors",
+        "hashes::ripemd160::tests::hashes_output_prefixes",
+        "hashes::ripemd160::tests::rejects_prefix_boundaries_and_missing_input",
+        "primitive_metrics::output_prefix_metrics_are_current"
       ],
       "references": [
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "rust-bitcoin-0.32.102"
       ],
       "techniques": [
         "digit-arithmetic",
@@ -3668,10 +3698,34 @@
           "metric_keys": [
             "ripemd160_u32_32"
           ]
+        },
+        {
+          "id": "message-32-prefix-8",
+          "label": "32-byte input, 8-byte output prefix",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: complete RIPEMD-160 compression plus terminal output routing; excludes message pushes and digest comparison",
+          "script_bytes": 240251,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 406,
+          "executed_opcodes": 169971,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 240251,
+          "metric_keys": [
+            "ripemd160_prefix_32_8",
+            "ripemd160_prefix_32_8_witness",
+            "ripemd160_prefix_32_8_stack",
+            "ripemd160_prefix_32_8_opcodes"
+          ]
         }
       ],
       "limitations": [
         "80-bit ideal collision bound",
+        "Output prefixes intentionally reduce the collision bound",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [
@@ -3692,7 +3746,10 @@
       "implementation": "src/hashes/sha256/sha2_u32.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u32::tests::test_sha256"
+        "hashes::sha256::sha2_u32::tests::test_sha256",
+        "hashes::sha256::sha2_u32::tests::hashes_output_prefixes",
+        "hashes::sha256::sha2_u32::tests::rejects_prefix_boundaries",
+        "primitive_metrics::output_prefix_metrics_are_current"
       ],
       "references": [
         "fips-180-4",
@@ -3723,6 +3780,29 @@
           "metric_keys": [
             "sha2_u32_32"
           ]
+        },
+        {
+          "id": "message-32-prefix-8",
+          "label": "32-byte input, first 8 digest bytes",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 8
+          },
+          "includes": "fragment-only: hashing fragment plus output-prefix cleanup; excludes message pushes and digest comparison",
+          "script_bytes": 512468,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 856,
+          "executed_opcodes": 372178,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 512468,
+          "metric_keys": [
+            "sha2_u32_prefix_32_8",
+            "sha2_u32_prefix_32_8_witness",
+            "sha2_u32_prefix_32_8_stack",
+            "sha2_u32_prefix_32_8_opcodes"
+          ]
         }
       ],
       "limitations": [
@@ -3747,7 +3827,10 @@
       "implementation": "src/hashes/sha256/sha2_u4.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u4::tests::test_sha256_strs"
+        "hashes::sha256::sha2_u4::tests::test_sha256_strs",
+        "hashes::sha256::sha2_u4::tests::test_sha256_prefix",
+        "hashes::sha256::sha2_u4::tests::test_sha256_prefix_rejects_boundaries",
+        "primitive_metrics::output_prefix_metrics_are_current"
       ],
       "references": [
         "fips-180-4",
@@ -3805,6 +3888,29 @@
           "per_use_script_bytes": 332942,
           "metric_keys": [
             "sha2_u4_32"
+          ]
+        },
+        {
+          "id": "message-32-prefix-8-nibbles",
+          "label": "32-byte input, 8-nibble output prefix",
+          "parameters": {
+            "message_bytes": 32,
+            "output_nibbles": 8
+          },
+          "includes": "fragment-only: full hash plus output-suffix drop; excludes message pushes and digest comparison",
+          "script_bytes": 332970,
+          "witness_bytes": 129,
+          "witness_bytes_max": 129,
+          "max_stack_items": 969,
+          "executed_opcodes": 195231,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 332970,
+          "metric_keys": [
+            "sha2_u4_prefix_32_8",
+            "sha2_u4_prefix_32_8_witness",
+            "sha2_u4_prefix_32_8_stack",
+            "sha2_u4_prefix_32_8_opcodes"
           ]
         }
       ],
