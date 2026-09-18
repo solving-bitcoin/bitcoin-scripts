@@ -471,6 +471,72 @@
       ]
     },
     {
+      "id": "arithmetic/u4-odd-inverse-mod16",
+      "name": "Checked odd u4 inverse modulo 16",
+      "class": "arithmetic/word",
+      "summary": "Range-checks an odd u4 input and selects its multiplicative inverse modulo 16 from a reusable 16-item table.",
+      "status": "active",
+      "evidence": "inspected",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-odd-inverse-mod16.md",
+      "implementation": "src/arithmetic/u4/odd_inverse.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4/odd_inverse.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "checked-lookup",
+        "digit-arithmetic",
+        "lookup-table"
+      ],
+      "security": "The input is range-checked before OP_PICK and even values map to a rejecting zero table entry; this proves odd numeric u4 validity but not byte-unique ScriptNum encoding or a terminal predicate.",
+      "stack_contract": "Consumes preserved | table[16] | odd value and returns preserved | table[16] | value^-1 mod 16.",
+      "configurations": [
+        {
+          "id": "checked-query",
+          "label": "u4_odd_inverse_mod16",
+          "parameters": {
+            "table_items": 16,
+            "data_items": 1,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: one numeric range check, odd-unit check, and table query; excludes witness pushes, table setup and cleanup from the query script size, terminal predicate, and transaction context",
+          "script_bytes": 11,
+          "witness_bytes": 3,
+          "witness_bytes_max": 3,
+          "max_stack_items": 20,
+          "executed_opcodes": 7,
+          "validation_weight": null,
+          "setup_script_bytes": 16,
+          "per_use_script_bytes": 11,
+          "metric_keys": [
+            "u4_odd_inverse_mod16",
+            "u4_odd_inverse_mod16_table",
+            "u4_odd_inverse_mod16_witness",
+            "u4_odd_inverse_mod16_stack",
+            "u4_odd_inverse_mod16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only odd u4 values are supported",
+        "The 16-item table remains resident until the caller drops it",
+        "Numeric range checks do not establish byte-unique ScriptNum encoding",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4-parity",
       "name": "Checked u4 parity projection",
       "class": "arithmetic/word",

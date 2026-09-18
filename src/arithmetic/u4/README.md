@@ -44,6 +44,7 @@ each input with the same output-restoration boundary.
 | Checked high/low nibble pair to one byte | <!-- metric:u4_pair_to_u8_checked -->20<!-- /metric:u4_pair_to_u8_checked --> bytes | <!-- metric:u4_pair_to_u8_checked_stack -->5<!-- /metric:u4_pair_to_u8_checked_stack --> items | not recorded |
 | Checked byte to high/low nibble pair | <!-- metric:u8_to_u4_pair_checked -->62<!-- /metric:u8_to_u4_pair_checked --> bytes | <!-- metric:u8_to_u4_pair_checked_stack -->4<!-- /metric:u8_to_u4_pair_checked_stack --> items | not recorded |
 | `verify_canonical_nibble()` | <!-- metric:u4_canonical_nibble -->10<!-- /metric:u4_canonical_nibble --> bytes | <!-- metric:u4_canonical_nibble_stack -->4<!-- /metric:u4_canonical_nibble_stack --> items | not recorded |
+| Checked odd-unit inverse modulo 16 | <!-- metric:u4_odd_inverse_mod16 -->11<!-- /metric:u4_odd_inverse_mod16 --> bytes | <!-- metric:u4_odd_inverse_mod16_stack -->20<!-- /metric:u4_odd_inverse_mod16_stack --> items | <!-- metric:u4_odd_inverse_mod16_opcodes -->7<!-- /metric:u4_odd_inverse_mod16_opcodes --> |
 | `lexicographic_le(128)` | <!-- metric:u4_lexicographic_le_128 -->7500<!-- /metric:u4_lexicographic_le_128 --> bytes | <!-- metric:u4_lexicographic_le_128_stack -->259<!-- /metric:u4_lexicographic_le_128_stack --> items | <!-- metric:u4_lexicographic_le_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_128_opcodes --> |
 | Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
@@ -80,12 +81,18 @@ The bit-reversal primitive installs 16 table items, checks each nibble, and
 uses no witness hints beyond its input nibbles. Its 32-nibble row above is the
 representative batch; callers with unrelated live state must reduce the 981
 nibble standalone ceiling.
+The odd-unit inverse primitive installs a 16-item table, rejects even and
+out-of-range inputs, and consumes each checked input while leaving its inverse
+on the table-backed stack. Its representative row uses one witness item and
+zero incremental hint items.
 The little-endian row has the same size and stack profile: it changes only the
 four values stored in each staggered table group. It is intended for callers
 that consume each nibble least-significant-bit first; reversing four output
 bits per nibble after the big-endian adapter is a separate composition cost.
 The representative little-endian witness is 32 canonical `0x0f` stack items,
 serialized as <!-- metric:u4_bits_le_checked_batch32_witness -->65<!-- /metric:u4_bits_le_checked_batch32_witness --> bytes.
+
+<!-- metric:u4_odd_inverse_mod16_table -->16<!-- /metric:u4_odd_inverse_mod16_table --> bytes for the 16-item inverse table; <!-- metric:u4_odd_inverse_mod16_witness -->3<!-- /metric:u4_odd_inverse_mod16_witness --> serialized witness bytes for one odd nibble.
 
 ## Security
 
@@ -161,6 +168,10 @@ For `bit_reverse::u4_nibbles_to_bit_reverse(n)`, input and output order are
 unchanged: each `nibble[i]` is replaced by its bit-reversed value. The checked
 standalone peak is `n + 19` combined items, and the generator rejects empty
 batches and batches above 981.
+For `odd_inverse::u4_odd_inverse_mod16()`, the caller supplies
+`preserved | table[16] | value` with an odd value in `1..=15`; the fragment
+returns `preserved | table[16] | value^-1 mod 16`. Even values fail through the
+zero entries in the table. The table remains resident for repeated queries.
 
 ## Operational notes
 

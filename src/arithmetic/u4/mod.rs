@@ -5,6 +5,7 @@ pub mod bits;
 pub mod compare;
 pub mod logic;
 pub mod lsb;
+pub mod odd_inverse;
 pub mod parity;
 pub mod rotate;
 pub mod shift;
