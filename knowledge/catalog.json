@@ -1278,7 +1278,7 @@
         },
         {
           "id": "iszero",
-          "label": "u32_iszero()",
+          "label": "zero::u32_iszero()",
           "parameters": {
             "representation": "four big-endian byte limbs",
             "predicate": "all four limbs numerically zero"
@@ -11789,14 +11789,14 @@
             "hint_items": 0
           },
           "includes": "fragment-only: four byte range checks, four zero predicates, Boolean accumulation, and no table memory; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
-          "script_bytes": 53,
+          "script_bytes": 61,
           "witness_bytes": 13,
           "witness_bytes_max": 13,
           "max_stack_items": 6,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
-          "per_use_script_bytes": 53,
+          "per_use_script_bytes": 61,
           "metric_keys": [
             "u32_zero",
             "u32_zero_witness",
