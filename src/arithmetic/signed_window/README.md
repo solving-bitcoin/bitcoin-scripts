@@ -62,3 +62,11 @@ The table wins script bytes only when enough signed digits amortize its 156
 items of memory; the branch baseline remains preferable for short or highly
 stack-constrained fragments. The measured 32-digit boundary is a local
 comparison, not a global optimum claim.
+
+The composed U256 scalar-reconstruction boundary crosses over at 16 digits:
+the shared table is 20,167 versus 20,333 bytes at 16 digits and 43,206 versus
+43,804 at 32 digits. At 32 digits it peaks at 348 items versus 212 for the
+branch schedule, with the same 35-byte, 32-item witness and zero hints. This
+is a `locally-reproduced` scalar-reconstruction result, not elliptic-curve
+multiplication or complete-transaction validation. Reproduce it with
+`cargo run --locked --release --example signed_window_scalar_schedule`.

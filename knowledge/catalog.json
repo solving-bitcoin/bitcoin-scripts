@@ -4902,7 +4902,7 @@
       "status": "experimental",
       "evidence": "differentially-validated",
       "execution": "research-unlimited",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-16",
       "knowledge_page": "knowledge/primitives/secp256k1-schnorr.md",
       "implementation": "src/signatures/schnorr/csfs.rs",
       "documentation": "src/signatures/schnorr/README.md",
@@ -8834,14 +8834,15 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-16",
       "knowledge_page": "knowledge/primitives/signed-radix32-decoder.md",
       "implementation": "src/arithmetic/signed_window/mod.rs",
       "documentation": "src/arithmetic/signed_window/README.md",
       "tests": [
         "arithmetic::signed_window::tests",
         "tests/primitive_metrics.rs",
-        "examples/signed_window_benchmark.rs"
+        "examples/signed_window_benchmark.rs",
+        "examples/signed_window_scalar_schedule.rs"
       ],
       "references": [
         "bip-342",
@@ -8886,10 +8887,10 @@
       "limitations": [
         "The shared table loses the branch baseline through eight digits and raises stack usage substantially",
         "The repository executor did not provide a useful dynamic opcode count for this standalone fragment; static non-push counts are documented separately",
-        "No complete scalar schedule, Bitcoin Core differential validation, consensus validation, or relay-policy validation"
+        "No elliptic-curve scalar multiplication schedule, Bitcoin Core differential validation, consensus validation, or relay-policy validation"
       ],
       "open_problems": [
-        "OP-019"
+        "OP-027"
       ]
     },
     {

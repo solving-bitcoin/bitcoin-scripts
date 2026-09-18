@@ -766,15 +766,16 @@ fn select_point(table: &[Option<AffinePoint>]) -> Script {
     select_point_range(table, 0, table.len())
 }
 
-fn window_tables(base: &AffinePoint) -> Vec<Vec<Option<AffinePoint>>> {
-    let mut tables = Vec::with_capacity(WINDOW_COUNT);
+fn window_tables_for_bits(base: &AffinePoint, window_bits: usize) -> Vec<Vec<Option<AffinePoint>>> {
+    let window_count = 256usize.div_ceil(window_bits);
+    let mut tables = Vec::with_capacity(window_count);
     let mut window_base = base.clone();
-    for window_index in 0..WINDOW_COUNT {
-        let remaining_bits = 256usize.saturating_sub(window_index * WINDOW_BITS);
-        let maximum_magnitude = if window_index + 1 == WINDOW_COUNT {
+    for window_index in 0..window_count {
+        let remaining_bits = 256usize.saturating_sub(window_index * window_bits);
+        let maximum_magnitude = if window_index + 1 == window_count {
             1usize << remaining_bits
         } else {
-            1usize << (WINDOW_BITS - 1)
+            1usize << (window_bits - 1)
         };
         let table_len = maximum_magnitude + 1;
         let mut table = Vec::with_capacity(table_len);
@@ -785,7 +786,7 @@ fn window_tables(base: &AffinePoint) -> Vec<Vec<Option<AffinePoint>>> {
             table.push(current.clone());
         }
         tables.push(table);
-        for _ in 0..WINDOW_BITS {
+        for _ in 0..window_bits {
             window_base = point_add(Some(&window_base), Some(&window_base))
                 .expect("prime-order base does not double to infinity");
         }
@@ -793,22 +794,28 @@ fn window_tables(base: &AffinePoint) -> Vec<Vec<Option<AffinePoint>>> {
     tables
 }
 
-fn scalar_windows(value: &BigUint) -> Vec<usize> {
-    let mut windows = value.to_radix_le(1u32 << WINDOW_BITS);
-    windows.resize(WINDOW_COUNT, 0);
-    assert_eq!(windows.len(), WINDOW_COUNT);
+fn window_tables(base: &AffinePoint) -> Vec<Vec<Option<AffinePoint>>> {
+    window_tables_for_bits(base, WINDOW_BITS)
+}
+
+fn scalar_windows_for_bits(value: &BigUint, window_bits: usize) -> Vec<usize> {
+    let window_count = 256usize.div_ceil(window_bits);
+    let mut windows = value.to_radix_le(1u32 << window_bits);
+    windows.resize(window_count, 0);
+    assert_eq!(windows.len(), window_count);
     windows.into_iter().map(usize::from).collect()
 }
 
-fn scalar_signed_windows(value: &BigUint) -> Vec<i16> {
-    let radix = 1i16 << WINDOW_BITS;
+fn scalar_signed_windows_for_bits(value: &BigUint, window_bits: usize) -> Vec<i16> {
+    let window_count = 256usize.div_ceil(window_bits);
+    let radix = 1i16 << window_bits;
     let half = radix / 2;
     let mut carry = 0i16;
-    let unsigned = scalar_windows(value);
-    let top_unsigned = unsigned[WINDOW_COUNT - 1];
+    let unsigned = scalar_windows_for_bits(value, window_bits);
+    let top_unsigned = unsigned[window_count - 1];
     let mut windows = unsigned
         .into_iter()
-        .take(WINDOW_COUNT - 1)
+        .take(window_count - 1)
         .map(|window| {
             let combined = i16::try_from(window).expect("window fits i16") + carry;
             if combined >= half {
@@ -825,13 +832,18 @@ fn scalar_signed_windows(value: &BigUint) -> Vec<i16> {
     windows
 }
 
-fn u256_to_signed_windows_altstack() -> Script {
-    let radix = 1u32 << WINDOW_BITS;
+fn scalar_signed_windows(value: &BigUint) -> Vec<i16> {
+    scalar_signed_windows_for_bits(value, WINDOW_BITS)
+}
+
+fn u256_to_signed_windows_altstack_for_bits(window_bits: usize) -> Script {
+    let window_count = 256usize.div_ceil(window_bits);
+    let radix = 1u32 << window_bits;
     let half = radix / 2;
     script! {
-        { U256::transform_limbsize(29, WINDOW_BITS as u32) }
+        { U256::transform_limbsize(29, window_bits as u32) }
         0
-        for _ in 0..WINDOW_COUNT - 1 {
+        for _ in 0..window_count - 1 {
             OP_ADD
             OP_DUP { half } OP_GREATERTHANOREQUAL
             OP_IF
@@ -842,6 +854,10 @@ fn u256_to_signed_windows_altstack() -> Script {
         }
         OP_ADD OP_TOALTSTACK
     }
+}
+
+fn u256_to_signed_windows_altstack() -> Script {
+    u256_to_signed_windows_altstack_for_bits(WINDOW_BITS)
 }
 
 fn negate_selected_point() -> Script {
@@ -1237,6 +1253,7 @@ pub fn verifier_with_generator_low32_leaf(
 mod tests {
     use super::*;
     use bitcoin::secp256k1::{Keypair, Message, Secp256k1, SecretKey, XOnlyPublicKey};
+    use num_bigint::{BigInt, Sign};
 
     use crate::support::{execution::execute_script_with_inputs, script::ScriptCompilation};
 
@@ -1379,13 +1396,39 @@ mod tests {
 
     #[test]
     fn signed_window_recode_covers_full_scalar_domain() {
+        let tables = window_tables(&generator());
+        assert_eq!(tables.len(), WINDOW_COUNT);
+        assert!(tables[..WINDOW_COUNT - 1]
+            .iter()
+            .all(|table| table.len() == 129));
+        assert_eq!(tables[WINDOW_COUNT - 1].len(), 257);
+
         for value in [
             BigUint::from(0u8),
             BigUint::from(1u8),
-            BigUint::from(1u8) << 255usize,
-            group_order() - BigUint::from(1u8),
+            BigUint::from(127u8),
+            BigUint::from(128u8),
+            BigUint::from(255u8),
+            BigUint::from(256u16),
+            (BigUint::from(1u8) << 256usize) - BigUint::from(1u8),
         ] {
             let windows = scalar_signed_windows(&value);
+            assert_eq!(windows.len(), WINDOW_COUNT);
+            assert!(windows[..WINDOW_COUNT - 1]
+                .iter()
+                .all(|digit| (-128..=127).contains(digit)));
+            assert!((0..=256).contains(&windows[WINDOW_COUNT - 1]));
+            let reconstructed = windows
+                .iter()
+                .enumerate()
+                .fold(BigInt::from(0), |value, (index, digit)| {
+                    value + (BigInt::from(*digit) << (WINDOW_BITS * index))
+                });
+            assert_eq!(
+                reconstructed,
+                BigInt::from_bytes_be(Sign::Plus, &value.to_bytes_be())
+            );
+
             let mut witness = Vec::new();
             append_u256(&mut witness, &value);
             let script = script! {
@@ -1525,16 +1568,14 @@ mod tests {
         let _ = public_point;
     }
 
-    #[test]
-    #[ignore = "megabyte-scale MSM diagnostic"]
-    fn generator_window_msm_matches_host() {
+    fn generator_window_msm_probe(window_bits: usize) -> (usize, usize, usize) {
         let (_, _, signature) = fixture();
         let scalar = BigUint::from_bytes_be(&signature[32..]);
-        let windows = scalar_signed_windows(&scalar);
-        let tables = window_tables(&generator());
+        let windows = scalar_signed_windows_for_bits(&scalar, window_bits);
+        let tables = window_tables_for_bits(&generator(), window_bits);
         let mut witness = Vec::new();
         let mut accumulator = None;
-        for table_index in (0..WINDOW_COUNT).rev() {
+        for table_index in (0..tables.len()).rev() {
             let selected = append_signed_selection_hints(
                 &mut witness,
                 &tables[table_index],
@@ -1546,9 +1587,9 @@ mod tests {
         append_u256(&mut witness, &scalar);
         let script = script! {
             { U256::verify_bigint_on_stack() }
-            { u256_to_signed_windows_altstack() }
+            { u256_to_signed_windows_altstack_for_bits(window_bits) }
             { push_point(None) }
-            for table_index in (0..WINDOW_COUNT).rev() {
+            for table_index in (0..tables.len()).rev() {
                 OP_FROMALTSTACK
                 { select_signed_point(&tables[table_index]) }
                 { point_add_complete() }
@@ -1558,8 +1599,28 @@ mod tests {
             { field_equalverify(0, 1) }
             OP_TRUE
         };
+        let compiled = script.clone().compile_with_policy();
+        let witness_bytes =
+            bitcoin::consensus::encode::serialize(&bitcoin::Witness::from_slice(&witness)).len();
+        let witness_items = witness.len();
         let result = execute_script_with_inputs(script, witness);
         assert!(result.success, "generator MSM mismatch: {result}");
+        (compiled.len(), witness_bytes, witness_items)
+    }
+
+    #[test]
+    #[ignore = "megabyte-scale MSM diagnostic"]
+    fn generator_window_msm_matches_host() {
+        let _ = generator_window_msm_probe(WINDOW_BITS);
+    }
+
+    #[test]
+    #[ignore = "width comparison diagnostic"]
+    fn generator_window_width5_probe() {
+        let (script_bytes, witness_bytes, witness_items) = generator_window_msm_probe(5);
+        assert_eq!(script_bytes, 4_880_087);
+        assert_eq!(witness_bytes, 63_917);
+        assert_eq!(witness_items, 25_489);
     }
 
     #[test]

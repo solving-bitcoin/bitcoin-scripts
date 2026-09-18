@@ -55,6 +55,14 @@ known to exceed the 1,000-item stack rule, and the revealed script alone also
 cannot fit within a Bitcoin block's weight limit. It is therefore not a
 deployable tapscript despite using tapscript opcodes.
 
+The ignored `generator_window_width5_probe` is a curve-level width comparison,
+not a production change: the same fixed-base generator MSM is 4,880,087 script
+bytes, 63,917 witness bytes, and 25,489 witness items at width 5, versus
+3,557,157 bytes, 40,471 bytes, and 16,129 items at width 8. Both execute only
+with the relaxed helper, so this is `locally-reproduced` and
+`research-unlimited`. The width-5/radix-32 direction is dominated before a
+shared signed-window decoder is added.
+
 ### Why wNAF, GLV, and projective coordinates do not win here
 
 Those techniques materially accelerate the fixed-instance host generator

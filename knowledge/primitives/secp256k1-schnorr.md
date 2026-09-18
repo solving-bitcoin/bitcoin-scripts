@@ -34,6 +34,19 @@ the independent libsecp256k1 API, so acceptance behavior is
 helper disables the stack limit, and the construction is known to violate
 both the 1,000-item stack bound and transaction/block-weight feasibility.
 
+### Width-5 fixed-base probe
+
+To test whether the signed-radix-32 direction could be integrated into this
+curve schedule, the same generator MSM was parameterized for five-bit windows.
+The width-5 schedule uses 52 windows and measures 4,880,087 script bytes,
+63,917 witness bytes, and 25,489 witness items. The existing width-8 schedule
+uses 32 windows and measures 3,557,157 script bytes, 40,471 witness bytes, and
+16,129 witness items on the same fixture. Both probes execute successfully
+under the relaxed helper, but width 5 is 37.1% larger in script and 58.0%
+larger in witness items before adding the shared decoder. This is
+`locally-reproduced` `research-unlimited` evidence against integrating the
+radix-32 layout into the current CSFS curve schedule.
+
 Affine is smaller than projective on this boundary because the inversion is
 already outsourced. Inspected mixed-Jacobian formulas cost roughly 7M+4S per
 addition and 2M+5S per doubling before normalization and exception handling;

@@ -33,6 +33,11 @@ These are not substitutes on the same boundary. The explicit CSFS row really
 does place `r`, `s`, and the message in the witness, computes the tagged hash,
 validates the supplied even nonce, and checks `sG-eP=R`; its size, stack, and
 weight make it a research circuit rather than a deployable opcode replacement.
+An isolated width-5 fixed-base generator probe is already dominated by the
+current width-8 schedule: 4,880,087 versus 3,557,157 script bytes and 25,489
+versus 16,129 witness items. Adding the signed-radix-32 decoder would only add
+representation work to that dominated layout, so no CSFS integration PR is
+planned from this experiment.
 The native-field instance construction is useful only when a protocol needs an
 explicit, inspectable field certificate for an already-fixed BIP340 instance.
 Its GLV/wNAF/Jacobian engine runs in the trusted deterministic generator;

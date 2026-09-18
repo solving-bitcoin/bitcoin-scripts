@@ -129,6 +129,12 @@ bytes over checked conditional extraction, but raises the peak from 194 to 348
 items. The deterministic sweep measures the table at 643 bytes versus 607 for
 the branch baseline at eight digits, and 1,051 versus 1,215 at sixteen; short
 or stack-constrained callers should keep the branch form.
+When composed with an exact U256 Horner consumer and terminal equality check,
+the crossover moves to 16 digits: 20,167 versus 20,333 bytes at 16 and 43,206
+versus 43,804 at 32 (table versus branches). The 32-digit table schedule still
+uses 348 versus 212 peak items, so this is a scalar-reconstruction boundary,
+not evidence that the decoder is a drop-in replacement for the repository's
+width-8/9 elliptic-curve schedules.
 The compressed u32 addition row is a deliberate witness-width tradeoff: it
 saves nine representative witness bytes and six entry items, but expands to
 the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
