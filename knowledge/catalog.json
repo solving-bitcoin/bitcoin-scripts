@@ -3179,7 +3179,8 @@
       "implementation": "src/commitments/four_way_hash_path/mod.rs",
       "documentation": "src/commitments/four_way_hash_path/README.md",
       "tests": [
-        "commitments::four_way_hash_path::tests"
+        "commitments::four_way_hash_path::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342"
@@ -3212,6 +3213,26 @@
             "four_way_hash_path_integer_witness_31",
             "four_way_hash_path_integer_stack_31"
           ]
+        },
+        {
+          "id": "retained-digits-16",
+          "label": "16 retained four-way hash-path digits",
+          "parameters": { "digit_count": 16, "bit_width": 31, "preimage_bytes": 32, "retained_items": 16 },
+          "includes": "fragment-only: four-way verifier retaining raw digit encodings on altstack; excludes staging, retained-digit cleanup, and terminal predicate; witness has 16 digit items and one preimage, zero hints",
+          "script_bytes": 360,
+          "witness_bytes": 61,
+          "witness_bytes_max": 66,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 360,
+          "metric_keys": [
+            "four_way_hash_path_altstack_16",
+            "four_way_hash_path_altstack_witness_16",
+            "four_way_hash_path_altstack_witness_max_16",
+            "four_way_hash_path_altstack_stack_16"
+          ]
         }
       ],
       "limitations": [
@@ -3236,7 +3257,8 @@
       "implementation": "src/commitments/hash_path/mod.rs",
       "documentation": "src/commitments/hash_path/README.md",
       "tests": [
-        "commitments::hash_path::tests"
+        "commitments::hash_path::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342",
@@ -3247,7 +3269,7 @@
         "nested-hash-state"
       ],
       "security": "Starting preimage must be independently bound: (x, 1) and (SHA256(x), 0) otherwise open the same state. Hiding depends on opening entropy; mixed-hash binding remains experimental, with at most 80-bit generic collision resistance.",
-      "stack_contract": "... bitN-1 ... bit0 preimage -> ... value",
+      "stack_contract": "... bitN-1 ... bit0 preimage -> ... value; retained verification leaves true on main and normalized bitN-1 ... bit0 on altstack, with the starting preimage still caller-bound",
       "configurations": [
         {
           "id": "integer-31",
@@ -3269,6 +3291,26 @@
             "hash_path_integer_31",
             "hash_path_integer_witness_31",
             "hash_path_integer_stack_31"
+          ]
+        },
+        {
+          "id": "retained-bits-31",
+          "label": "31-bit retained hash-path bits",
+          "parameters": { "bit_width": 31, "preimage_bytes": 32, "retained_items": 31 },
+          "includes": "fragment-only: hash-path verifier retaining normalized bits on altstack; excludes staging, initial-state binding, retained-bit cleanup, and terminal predicate; witness has 31 selector items and one preimage, zero hints",
+          "script_bytes": 302,
+          "witness_bytes": 78,
+          "witness_bytes_max": 96,
+          "max_stack_items": 33,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 302,
+          "metric_keys": [
+            "hash_path_altstack_31",
+            "hash_path_altstack_witness_31",
+            "hash_path_altstack_witness_max_31",
+            "hash_path_altstack_stack_31"
           ]
         },
         {
@@ -3325,7 +3367,8 @@
       "implementation": "src/commitments/preimage_length/mod.rs",
       "documentation": "src/commitments/preimage_length/README.md",
       "tests": [
-        "commitments::preimage_length::tests"
+        "commitments::preimage_length::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342",
@@ -3335,7 +3378,7 @@
         "constant-embedding"
       ],
       "security": "Binding uses SHA-256; hiding depends on unpredictable preimage bytes and the length is revealed on opening.",
-      "stack_contract": "... preimage -> ... len(preimage)-offset",
+      "stack_contract": "... preimage -> ... len(preimage)-offset; the result is a non-negative integer, not a success Boolean, and the caller supplies any terminal predicate",
       "configurations": [
         {
           "id": "offset-16",
@@ -3359,6 +3402,44 @@
             "preimage_length_witness_min",
             "preimage_length_witness_max",
             "preimage_length_stack"
+          ]
+        },
+        {
+          "id": "offset-0-boundary",
+          "label": "Empty preimage at offset 0",
+          "parameters": { "offset": 0, "preimage_bytes": 0 },
+          "includes": "fragment-only: preimage hash and zero-length result; excludes terminal predicate; one empty data item and zero hints",
+          "script_bytes": 42,
+          "witness_bytes": 2,
+          "witness_bytes_max": 2,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 42,
+          "metric_keys": [
+            "preimage_length_offset0",
+            "preimage_length_offset0_witness",
+            "preimage_length_offset0_stack"
+          ]
+        },
+        {
+          "id": "offset-520-boundary",
+          "label": "520-byte preimage at offset 520",
+          "parameters": { "offset": 520, "preimage_bytes": 520 },
+          "includes": "fragment-only: consensus-size preimage hash and zero-length result; excludes terminal predicate; one 520-byte data item and zero hints; no relay-policy claim",
+          "script_bytes": 46,
+          "witness_bytes": 524,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 46,
+          "metric_keys": [
+            "preimage_length_offset520",
+            "preimage_length_offset520_witness",
+            "preimage_length_offset520_stack"
           ]
         }
       ],
@@ -5056,7 +5137,9 @@
       "implementation": "src/signatures/hors/mod.rs",
       "documentation": "src/signatures/hors/README.md",
       "tests": [
-        "signatures::hors::tests"
+        "signatures::hors::tests",
+        "primitive_metrics::hors_index_boundary_metrics_are_current",
+        "primitive_metrics::hors_witness_boundary_metrics_are_current"
       ],
       "references": [
         "binohash-paper"
@@ -5065,7 +5148,7 @@
         "hash-chain"
       ],
       "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160.",
-      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true.",
+      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true. Host indices are minimally serialized, but the verifier clamps with OP_MIN and does not independently require canonical index bytes.",
       "configurations": [
         {
           "id": "n32-t8",
@@ -5078,15 +5161,37 @@
           "includes": "fragment-only: locking verifier and serialized subset witness",
           "script_bytes": 809,
           "witness_bytes": 280,
-          "witness_bytes_max": 280,
-          "max_stack_items": null,
+          "witness_bytes_max": 281,
+          "max_stack_items": 50,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
           "per_use_script_bytes": 809,
           "metric_keys": [
             "hors_lock_n32_t8",
-            "hors_witness_n32_t8"
+            "hors_witness_n32_t8",
+            "hors_witness_n32_t8_max",
+            "hors_stack_n32_t8"
+          ]
+        },
+        {
+          "id": "n129-t1-index-boundary",
+          "label": "n=129, t=1 HORS index serialization boundary",
+          "parameters": { "n": 129, "t": 1, "preimage_bytes": 32, "indices": [127, 128] },
+          "includes": "fragment-only: locking verifier and canonical index boundary witnesses; index 127 is one byte and index 128 is two bytes; zero hints; verifier clamps out-of-range indices with OP_MIN",
+          "script_bytes": 2792,
+          "witness_bytes": 36,
+          "witness_bytes_max": 37,
+          "max_stack_items": 133,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2792,
+          "metric_keys": [
+            "hors_lock_n129_t1",
+            "hors_witness_n129_t1_index127",
+            "hors_witness_n129_t1_index128",
+            "hors_stack_n129_t1"
           ]
         }
       ],

@@ -16,8 +16,9 @@ use bitcoin_lab::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_commitment as compute_hash_path_commitment, hash_path_integer_commitment,
         hash_path_integer_witness, preimage_length_commitment,
-        verify_four_way_hash_path_to_integer, verify_hash_path_chain, verify_hash_path_to_integer,
-        verify_preimage_length,
+        verify_four_way_hash_path_to_altstack, verify_four_way_hash_path_to_integer,
+        verify_hash_path_chain, verify_hash_path_to_altstack, verify_hash_path_to_integer,
+        verify_preimage_length, verify_preimage_length_with_offset,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -1551,14 +1552,32 @@ fn commitment_metrics() -> Vec<Metric> {
     let hash_path_commitment =
         hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let hash_path_witness = hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+    let hash_path_altstack = verify_hash_path_to_altstack(31, hash_path_commitment);
+    let hash_path_altstack_witness = hash_path_witness.clone();
+    let hash_path_altstack_witness_max = {
+        let mut witness = vec![vec![1]; 31];
+        witness.push(vec![0; 32]);
+        witness
+    };
 
     let four_way_hash_path_commitment =
         four_way_hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let four_way_hash_path_witness =
         four_way_hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+    let four_way_hash_path_altstack =
+        verify_four_way_hash_path_to_altstack(16, four_way_hash_path_commitment);
+    let four_way_hash_path_altstack_witness = four_way_hash_path_witness.clone();
+    let four_way_hash_path_altstack_witness_max = {
+        let mut witness = vec![vec![3]; 16];
+        witness.push(vec![0; 32]);
+        witness
+    };
 
     let length_preimage = vec![0x24; 32];
     let length_commitment = preimage_length_commitment(&length_preimage);
+    let length_zero_commitment = preimage_length_commitment(&[]);
+    let length_max_preimage = vec![0x24; 520];
+    let length_max_commitment = preimage_length_commitment(&length_max_preimage);
 
     vec![
         Metric {
@@ -1577,6 +1596,34 @@ fn commitment_metrics() -> Vec<Metric> {
             value: max_stack_items(
                 verify_hash_path_to_integer(31, hash_path_commitment),
                 hash_path_witness,
+            ),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_31",
+            value: script_len(hash_path_altstack.clone()),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_witness_31",
+            value: witness_size(&hash_path_altstack_witness),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_witness_max_31",
+            value: witness_size(&hash_path_altstack_witness_max),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_stack_31",
+            value: max_stack_items_strict(
+                script! {
+                    { hash_path_altstack }
+                    OP_VERIFY
+                    for _ in 0..31 { OP_FROMALTSTACK OP_DROP }
+                    OP_TRUE
+                },
+                hash_path_altstack_witness,
             ),
         },
         Metric {
@@ -1601,6 +1648,34 @@ fn commitment_metrics() -> Vec<Metric> {
             ),
         },
         Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_16",
+            value: script_len(four_way_hash_path_altstack.clone()),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_witness_16",
+            value: witness_size(&four_way_hash_path_altstack_witness),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_witness_max_16",
+            value: witness_size(&four_way_hash_path_altstack_witness_max),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_stack_16",
+            value: max_stack_items_strict(
+                script! {
+                    { four_way_hash_path_altstack }
+                    OP_VERIFY
+                    for _ in 0..16 { OP_FROMALTSTACK OP_DROP }
+                    OP_TRUE
+                },
+                four_way_hash_path_altstack_witness,
+            ),
+        },
+        Metric {
             readme: "src/commitments/preimage_length/README.md",
             key: "preimage_length_default",
             value: script_len(verify_preimage_length(length_commitment)),
@@ -1621,6 +1696,54 @@ fn commitment_metrics() -> Vec<Metric> {
             value: max_stack_items(
                 verify_preimage_length(length_commitment),
                 vec![length_preimage],
+            ),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0",
+            value: script_len(verify_preimage_length_with_offset(
+                length_zero_commitment,
+                0,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0_witness",
+            value: witness_size(&[Vec::new()]),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { verify_preimage_length_with_offset(length_zero_commitment, 0) }
+                    OP_0 OP_EQUAL
+                },
+                vec![Vec::new()],
+            ),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520",
+            value: script_len(verify_preimage_length_with_offset(
+                length_max_commitment,
+                520,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520_witness",
+            value: witness_size(&[length_max_preimage.clone()]),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { verify_preimage_length_with_offset(length_max_commitment, 520) }
+                    OP_0 OP_EQUAL
+                },
+                vec![length_max_preimage],
             ),
         },
     ]
@@ -6362,6 +6485,62 @@ fn u32_iszero_metrics_are_current() {
 #[test]
 fn commitment_metrics_are_current() {
     check_readme_metrics(commitment_metrics());
+}
+
+#[test]
+fn hors_index_boundary_metrics_are_current() {
+    let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+    let public_keys = hors::hors_public_keys(&preimages);
+    let locking = hors::hors_locking_script(&public_keys, 1);
+    let witness_127 = hors::hors_unlocking_witness(&preimages, &[127]);
+    let witness_128 = hors::hors_unlocking_witness(&preimages, &[128]);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_lock_n129_t1",
+            value: script_len(locking.clone()),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index127",
+            value: witness_size(&witness_127),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index128",
+            value: witness_size(&witness_128),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_stack_n129_t1",
+            value: max_stack_items_strict(locking, witness_127),
+        },
+    ]);
+}
+
+#[test]
+fn hors_witness_boundary_metrics_are_current() {
+    let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+    let public_keys = hors::hors_public_keys(&preimages);
+    let locking = hors::hors_locking_script(&public_keys, 8);
+    let witness = hors::hors_unlocking_witness(&preimages, &(1..=8).collect::<Vec<_>>());
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_lock_n32_t8",
+            value: script_len(locking.clone()),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n32_t8_max",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_stack_n32_t8",
+            value: max_stack_items_strict(locking, witness),
+        },
+    ]);
 }
 
 fn u254_sub_noborrow_metrics() -> Vec<Metric> {
