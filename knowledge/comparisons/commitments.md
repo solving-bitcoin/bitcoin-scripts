@@ -29,3 +29,10 @@ cannot bind two hostile 32-byte nodes into the tagged `TapBranch` SHA256
 preimage without an enabled concatenation/splitting operation. See
 [NR-057](../negative-results/index.md#nr-057-native-taproot-merkle-branch-adapter-is-not-available)
 and [OP-021](../open-problems.md#op-021--taproot-merkle-path-verifier).
+
+Ordinary `HASH256(left || right)` Merkle composition is a separate negative
+result. The current byte-oriented SHA-256 backend measures one 64-byte layer
+at 1,060,200 unoptimized script bytes and 770,481 static non-push opcodes,
+with a 129-byte one-byte fixture witness or 193-byte canonical maximum for 64
+data items and zero hints. This is a backend-specific compile-only profile,
+not a universal lower bound or a complete branch verifier; see [NR-064](../negative-results/merkle-branch-composition.md).

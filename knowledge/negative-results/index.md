@@ -1586,3 +1586,18 @@ peaking at 5 instead of 7, with the same one-item witness. The construction is
 retained as a stack-shape primitive and a complete-width correctness result,
 not as a general script-byte optimization. Evidence is `locally-reproduced`;
 deployment is `unclassified`; OP-026 remains open.
+
+## NR-064: Standard Merkle branch composition without `OP_CAT`
+
+The conventional Bitcoin Merkle step is `HASH256(left || right)`, while the
+current Script opcode set has no enabled native concatenation. The existing
+mixed-hash path is unary and is not a Merkle proof. A compile-only probe of the
+byte-oriented `sha2_u32::sha256(64)` backend measures 1,060,200 unoptimized
+script bytes and 770,481 static non-push opcodes before double hashing or
+routing; 64 one-byte items serialize to a 129-byte fixture witness, while
+64 canonical two-byte payloads serialize to 193 bytes. This is a
+`locally-reproduced`, backend-specific profile, not a universal lower bound,
+complete verifier, consensus result, or policy result. Ordinary Merkle
+composition is distinct from Taproot `TapBranch`; see [NR-057](#nr-057-native-taproot-merkle-branch-adapter-is-not-available),
+[OP-021](../open-problems.md#op-021--taproot-merkle-path-verifier), and the
+[full record](merkle-branch-composition.md).

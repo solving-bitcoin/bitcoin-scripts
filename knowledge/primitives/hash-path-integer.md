@@ -65,6 +65,21 @@ Script:
 separation. Pin every checkpoint, initial state, participant order, bit width,
 and round boundary externally. Script and witness cost remain linear.
 
+## Merkle distinction
+
+The path is deliberately unary. A conventional Bitcoin Merkle branch requires
+`HASH256(left || right)` at each level, but current Script hashes one stack item
+and has no enabled `OP_CAT` to build that 64-byte preimage from two items. The
+existing `sha2_u32::sha256(64)` backend has a 1,060,200-byte unoptimized,
+compile-only profile and 770,481 static non-push opcodes before double hashing
+or branch routing. Its 129-byte one-byte fixture witness becomes 193 bytes for
+64 canonical two-byte payloads; both have 64 data items and zero hints. This is
+a backend-specific workaround profile, not a Merkle verifier or universal cost
+lower bound. Ordinary Merkle branches also differ from BIP341 TapBranch's
+tagged, ordered-node construction; see [NR-064](../negative-results/merkle-branch-composition.md),
+[NR-057](../negative-results/index.md#nr-057-native-taproot-merkle-branch-adapter-is-not-available),
+and [OP-021](../open-problems.md#op-021--taproot-merkle-path-verifier).
+
 ## Joint-randomness protocols
 
 Nested paths can authenticate a commit–reveal transcript for a game or

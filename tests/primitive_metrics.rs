@@ -5971,6 +5971,17 @@ fn hash_path_chain_metrics_are_current() {
     check_readme_metrics(hash_path_chain_metrics());
 }
 
+#[test]
+fn merkle_branch_boundary_metrics_are_current() {
+    let script = sha256::sha2_u32::sha256(64);
+    let fixture_witness = vec![vec![1u8]; 64];
+    let maximum_witness = vec![vec![0xff, 0x00]; 64];
+    assert_eq!(script_len(script.clone()), 1_060_200);
+    assert_eq!(static_non_push_opcodes(script), 770_481);
+    assert_eq!(witness_size(&fixture_witness), 129);
+    assert_eq!(witness_size(&maximum_witness), 193);
+}
+
 fn hash160_composition_metrics() -> Vec<Metric> {
     let shared = hash160::hash160_shared_table(32);
     vec![
