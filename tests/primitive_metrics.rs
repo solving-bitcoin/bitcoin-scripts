@@ -7,6 +7,7 @@
 use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
+use bitcoin::hashes::{sha256 as bitcoin_sha256, Hash};
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
@@ -52,6 +53,35 @@ use num_traits::One;
 
 // FullWidth comparison rows remain stable when the public default changes.
 type FullWidthWots32 = FastWinternitz<32, Hash160, FullWidth>;
+
+const SHA256_MIDSTATE_42X64: [u32; 8] = [
+    0x8aab60bc, 0xcc769b35, 0x02b9786a, 0x434e707f, 0x943ce9ea, 0xd219ae8e, 0xdd54f002, 0xdc7dbb82,
+];
+
+fn sha256_midstate_u4_witness() -> Vec<Vec<u8>> {
+    (0u8..16)
+        .flat_map(|byte| [byte >> 4, byte & 0x0f])
+        .map(|nibble| {
+            if nibble == 0 {
+                Vec::new()
+            } else {
+                vec![nibble]
+            }
+        })
+        .collect()
+}
+
+fn sha256_midstate_u32_witness() -> Vec<Vec<u8>> {
+    (0u8..16).map(|byte| vec![byte]).collect()
+}
+
+fn bip340_challenge_tag_hash() -> [u8; 32] {
+    bitcoin_sha256::Hash::hash(b"BIP0340/challenge").to_byte_array()
+}
+
+fn sha256_tagged_hash_witness() -> Vec<Vec<u8>> {
+    vec![vec![0x42]; 32]
+}
 
 struct Metric {
     readme: &'static str,
@@ -1627,6 +1657,14 @@ fn commitment_metrics() -> Vec<Metric> {
 }
 
 fn metrics() -> Vec<Metric> {
+    let sha2_u4_midstate_script =
+        sha256::sha2_u4::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let sha2_u4_midstate_witness = sha256_midstate_u4_witness();
+    let sha2_u4_midstate_boundary = script! {
+        { sha2_u4_midstate_script.clone() }
+        { u4::stack::u4_drop(64) }
+        OP_TRUE
+    };
     let blake3_message: [u8; 64] = std::array::from_fn(|index| index as u8);
     let blake3_expected = *::blake3::hash(&blake3_message).as_bytes();
     let blake3_push = blake3::blake3_push_message_script_with_limb(&blake3_message, 29);
@@ -3880,8 +3918,80 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate",
+            value: script_len(sha256::sha2_u32::sha256_80bytes_from_midstate(
+                SHA256_MIDSTATE_42X64,
+            )),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_witness",
+            value: witness_size(&sha256_midstate_u32_witness()),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_stack",
+            value: max_stack_items(
+                script! {
+                    { sha256::sha2_u32::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64) }
+                    for _ in 0..32 {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                vec![Vec::new(); 16],
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32",
+            value: script_len(sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                bip340_challenge_tag_hash(),
+            )),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_witness",
+            value: witness_size(&sha256_tagged_hash_witness()),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                        bip340_challenge_tag_hash(),
+                    ) }
+                    for _ in 0..32 { OP_DROP }
+                    OP_TRUE
+                },
+                vec![Vec::new(); 32],
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate",
+            value: script_len(sha2_u4_midstate_script),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_witness",
+            value: witness_size(&sha2_u4_midstate_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_stack",
+            value: max_stack_items(sha2_u4_midstate_boundary.clone(), vec![Vec::new(); 32]),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_opcodes",
+            value: static_non_push_opcodes(sha2_u4_midstate_boundary),
         },
         Metric {
             readme: "src/hashes/shake256/README.md",
@@ -8276,6 +8386,99 @@ fn sha2_u4_shared_lookup_metrics() -> Vec<Metric> {
 #[test]
 fn sha2_u4_shared_lookup_metrics_are_current() {
     check_readme_metrics(sha2_u4_shared_lookup_metrics());
+}
+
+#[test]
+fn sha256_midstate_metrics_are_current() {
+    let u32_fragment = sha256::sha2_u32::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let u32_witness = sha256_midstate_u32_witness();
+    let u4_fragment = sha256::sha2_u4::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let u4_witness = sha256_midstate_u4_witness();
+    let u32_stack = max_stack_items(
+        script! {
+            { u32_fragment.clone() }
+            for _ in 0..32 { OP_DROP }
+            OP_TRUE
+        },
+        vec![Vec::new(); 16],
+    );
+    let u4_boundary = script! {
+        { u4_fragment.clone() }
+        { u4::stack::u4_drop(64) }
+        OP_TRUE
+    };
+    let u4_stack = max_stack_items_strict(u4_boundary.clone(), vec![Vec::new(); 32]);
+    assert_eq!(witness_size(&u32_witness), 33);
+    assert_eq!(witness_size(&vec![vec![0x80, 0]; 16]), 49);
+    assert_eq!(witness_size(&u4_witness), 48);
+    assert_eq!(witness_size(&vec![vec![0x0f]; 32]), 65);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate",
+            value: script_len(u32_fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_witness",
+            value: witness_size(&u32_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_stack",
+            value: u32_stack,
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate",
+            value: script_len(u4_fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_witness",
+            value: witness_size(&u4_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_stack",
+            value: u4_stack,
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_opcodes",
+            value: static_non_push_opcodes(u4_boundary),
+        },
+    ]);
+}
+
+#[test]
+fn sha256_tagged_hash_metrics_are_current() {
+    let fragment = sha256::sha2_u32::sha256_tagged_hash_32bytes(bip340_challenge_tag_hash());
+    let boundary = script! {
+        { fragment.clone() }
+        for _ in 0..32 { OP_DROP }
+        OP_TRUE
+    };
+    let witness = sha256_tagged_hash_witness();
+    assert_eq!(witness_size(&witness), 65);
+    assert_eq!(witness_size(&vec![vec![0x80, 0]; 32]), 97);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_stack",
+            value: max_stack_items_strict(boundary, vec![Vec::new(); 32]),
+        },
+    ]);
 }
 
 /// This isolated fixture measures only the checked u32 zero predicate.
