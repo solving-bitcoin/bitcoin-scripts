@@ -73,6 +73,9 @@ they do not use BN254 or any other field modulus.
   direct byte-aligned logical left shift.
 - `u32_rrot16_checked()` validates four canonical byte limbs before applying
   the existing one-opcode sixteen-bit rotation.
+- `byte_planes::u32_words_to_byte_planes(word_count, check_inputs)` transposes
+  contiguous MSB-first words into byte-major planes. Checked batches are
+  limited to 249 words by the combined stack bound.
 
 ## Script metrics
 
@@ -139,6 +142,21 @@ as less-than-or-equal.
 | `u32_to_le_bits_canonical()` | <!-- metric:u32_le_bits_canonical -->562<!-- /metric:u32_le_bits_canonical --> bytes | <!-- metric:u32_le_bits_canonical_witness -->9<!-- /metric:u32_le_bits_canonical_witness --> bytes (<!-- metric:u32_le_bits_canonical_witness_max -->13<!-- /metric:u32_le_bits_canonical_witness_max --> max) | <!-- metric:u32_le_bits_canonical_stack -->35<!-- /metric:u32_le_bits_canonical_stack --> items; <!-- metric:u32_le_bits_canonical_opcodes -->366<!-- /metric:u32_le_bits_canonical_opcodes --> static non-push opcodes |
 | `u32_iszero()` | <!-- metric:u32_zero -->53<!-- /metric:u32_zero --> bytes | <!-- metric:u32_zero_witness -->13<!-- /metric:u32_zero_witness --> bytes | <!-- metric:u32_zero_stack -->6<!-- /metric:u32_zero_stack --> items; <!-- metric:u32_zero_opcodes -->37<!-- /metric:u32_zero_opcodes --> static non-push opcodes |
 | `u32_pick(2)` | <!-- metric:u32_pick_2 -->8<!-- /metric:u32_pick_2 --> bytes | <!-- metric:u32_pick_2_witness -->24<!-- /metric:u32_pick_2_witness --> bytes, 12 data items | <!-- metric:u32_pick_2_stack -->16<!-- /metric:u32_pick_2_stack --> items |
+
+The checked byte-plane adapter has a separate combined-stack metric boundary:
+
+| Fragment | Locking script | Serialized witness | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: |
+| 8-word checked byte-plane transpose | <!-- metric:u32_byte_planes_words8 -->411<!-- /metric:u32_byte_planes_words8 --> bytes | <!-- metric:u32_byte_planes_words8_witness -->97<!-- /metric:u32_byte_planes_words8_witness --> bytes, 32 data items, 0 hints | <!-- metric:u32_byte_planes_words8_stack -->35<!-- /metric:u32_byte_planes_words8_stack --> items | <!-- metric:u32_byte_planes_words8_opcodes -->252<!-- /metric:u32_byte_planes_words8_opcodes --> |
+
+The byte-plane row includes four byte data items per word, a 32-item witness,
+and zero incremental hint items. The transpose is a stack permutation, not a
+cryptographic operation; its checked form enforces each byte's `0..=255` range.
+The 249-word ceiling is a static standalone bound (`4*n + 3` combined items);
+large batches have quadratic cumulative stack-shifting work even though the
+generated script contains only `4*n` `OP_ROLL` operations. The 97-byte witness
+uses minimal one-byte encodings; accepted four-byte numeric aliases can reach
+161 bytes.
 
 `u32_compressed_add()` is a checked wire adapter: it accepts two canonical
 compressed u32 ScriptNums, expands them through the existing byte carry chain,

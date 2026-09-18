@@ -15,6 +15,14 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
+The checked u32 byte-plane adapter is a fixed-width stack-scheduling boundary:
+it transposes word-major MSB-first bytes into byte-major planes, preserves
+unrelated state, and costs 411 bytes for eight words with a 35-item combined
+peak and zero incremental hints. The generated permutation contains 4*n
+`OP_ROLL` operations, but cumulative stack-shifting work is quadratic in batch
+width, so consumers should price the actual batch rather than the 249-word
+static ceiling.
+
 The u4 bit-plane adapter is a checked transpose boundary: it reuses the
 four-bit decomposition, groups one bit position across all input nibbles, and
 preserves unrelated main and altstack state. Its representative 16-nibble

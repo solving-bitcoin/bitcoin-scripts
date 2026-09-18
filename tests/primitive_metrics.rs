@@ -4598,6 +4598,44 @@ fn ed25519_packed_decoder_metrics_are_current() {
 }
 
 #[test]
+fn u32_byte_planes_metrics_are_current() {
+    const WORD_COUNT: u32 = 8;
+    let fragment = u32::byte_planes::u32_words_to_byte_planes(WORD_COUNT, true);
+    let witness = vec![scriptnum(0xff); (4 * WORD_COUNT) as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..4 * WORD_COUNT { OP_DROP }
+            OP_1
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+#[test]
 fn u32_uncompress_canonical_metrics_are_current() {
     let fragment = u32::stack::u32_uncompress_canonical();
     let witness = vec![scriptnum(i64::from(i32::MIN))];

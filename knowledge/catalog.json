@@ -923,7 +923,13 @@
         "arithmetic::u32::shift_left::tests::checked_shift_accepts_boundaries",
         "arithmetic::u32::shift_left::tests::checked_shift_rejects_malformed_bytes",
         "arithmetic::u32::shift_left::tests::checked_shift_preserves_surrounding_stacks",
-        "primitive_metrics::u32_lshift8_checked_metrics_are_current"
+        "primitive_metrics::u32_lshift8_checked_metrics_are_current",
+        "arithmetic::u32::byte_planes::tests::transposes_words_in_msb_first_order",
+        "arithmetic::u32::byte_planes::tests::preserves_unrelated_main_and_alt_stack_items",
+        "arithmetic::u32::byte_planes::tests::checked_mode_rejects_malformed_byte_items_at_every_position",
+        "arithmetic::u32::byte_planes::tests::unchecked_mode_preserves_hostile_items_for_certified_callers",
+        "arithmetic::u32::byte_planes::tests::batch_guard_matches_the_strict_peak",
+        "primitive_metrics::u32_byte_planes_metrics_are_current"
       ],
       "references": [
         "bitcoin-script-locked",
@@ -933,8 +939,8 @@
         "digit-arithmetic",
         "lookup-table"
       ],
-      "security": "No independent cryptographic claim; every byte item must be canonical and in range. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
+      "security": "No independent cryptographic claim; every checked byte-plane input is constrained to numeric 0..=255, while the unchecked form preserves hostile items and requires a caller-proven byte invariant. The canonical rrot8 adapter performs its byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The checked byte-plane transposition consumes contiguous MSB-first words and returns byte-major planes while preserving unrelated main-stack and altstack state. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
       "configurations": [
         {
           "id": "add-drop",
@@ -1610,6 +1616,32 @@
             "u32_byte_reorder_witness_3",
             "u32_byte_reorder_stack_3"
           ]
+        },
+        {
+          "id": "byte-planes-words8-checked",
+          "label": "Checked 8-word byte-plane transposition",
+          "parameters": {
+            "word_count": 8,
+            "check_inputs": true,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: internal delimiter, byte range checks, generated stack permutation, and output restoration; representative witness supplies 32 minimally encoded byte data items; accepted four-byte numeric aliases can reach 161 witness bytes; static non-push opcode count is 252; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 411,
+          "witness_bytes": 97,
+          "witness_bytes_max": 161,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u32_byte_planes_words8",
+            "u32_byte_planes_words8_witness",
+            "u32_byte_planes_words8_stack",
+            "u32_byte_planes_words8_opcodes"
+          ],
+          "static_non_push_opcodes": 252
         }
       ],
       "limitations": [

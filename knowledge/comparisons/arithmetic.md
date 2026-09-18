@@ -18,6 +18,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | 32 canonical checked nibbles to 128 bits | u4 canonical big-endian table adapter | 1,306 | 189-item peak; 65-byte witness; rejects raw aliases |
 | 32 canonical checked nibbles to 128 big-endian bits on altstack | u4 canonical altstack table adapter | 1,178 | 189-item peak; 65-byte witness; rejects raw aliases |
+| 8 checked u32 words to byte planes | u32 stack permutation | 411 | 35-item combined peak; 97-byte minimal witness |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |
 | Canonical nonnegative compressed-u32 decode | u32 narrow raw-encoding boundary | 405 | 7-item peak; 6-byte maximum witness; rejects negative values and aliases |
 | Canonical u32 byte-word compression | `u32_compress_canonical()` | 130 | 7-item peak; 9-byte representative/13-byte maximum witness; rejects raw limb aliases |

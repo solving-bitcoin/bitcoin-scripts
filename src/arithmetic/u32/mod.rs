@@ -4,6 +4,7 @@ pub mod bits;
 pub mod byte_eq_mask;
 pub mod byte_less_mask;
 pub mod byte_parity;
+pub mod byte_planes;
 pub mod cmp;
 pub mod msb_mask;
 pub mod nand;
