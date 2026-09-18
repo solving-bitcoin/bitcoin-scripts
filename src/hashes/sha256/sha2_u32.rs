@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::arithmetic::u32::add::u32_add_drop;
-use crate::arithmetic::u32::stack::{u32_dup, u32_roll};
+use crate::arithmetic::u32::stack::{u32_dup, u32_not_unchecked, u32_roll};
 use crate::arithmetic::u32::{
     and::u32_and,
     rotate::u32_rrot,
@@ -831,15 +831,6 @@ pub fn ep1(stack_depth: u32) -> Script {
     }
 }
 
-pub fn u32_not() -> Script {
-    script! {
-        for _ in 0..4 {
-            0xff
-            4 OP_ROLL OP_SUB
-        }
-    }
-}
-
 /// Push reversed bytes to the alt stack.
 pub fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
@@ -861,7 +852,7 @@ pub fn ch(x: u32, y: u32, z: u32, stack_depth: u32) -> Script {
         {u32_fromaltstack()}
 
         {u32_pick(x+1)}
-        {u32_not()}
+        {u32_not_unchecked()}
         {u32_pick(z+2)}
         {u32_and(0, 1, stack_depth+3)}
         {u32_toaltstack()}

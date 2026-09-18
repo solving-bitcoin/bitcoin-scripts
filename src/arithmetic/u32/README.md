@@ -26,6 +26,9 @@ they do not use BN254 or any other field modulus.
   byte, and returns its set-bit count in `0..=32`.
 - `u32_conditional_select()` consumes `condition | when_true | when_false`,
   normalizes the condition with `OP_0NOTEQUAL`, and returns one complete word.
+- `u32::stack::u32_not()` checks four canonical byte limbs and replaces the word
+  with its bytewise complement. The SHA-256 kernel uses the crate-private
+  unchecked form after its own byte-domain invariants are established.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
 - `u32_uncompress_canonical()` consumes one minimally encoded signed ScriptNum
@@ -51,6 +54,7 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_not()` | <!-- metric:u32_not -->72<!-- /metric:u32_not --> bytes | <!-- metric:u32_not_witness -->13<!-- /metric:u32_not_witness --> bytes, 4 data items | <!-- metric:u32_not_stack -->7<!-- /metric:u32_not_stack --> items; <!-- metric:u32_not_opcodes -->36<!-- /metric:u32_not_opcodes --> static non-push opcodes |
 | `u32_compressed_equal()` | <!-- metric:u32_compressed_equal -->37<!-- /metric:u32_compressed_equal --> bytes | <!-- metric:u32_compressed_equal_witness -->11<!-- /metric:u32_compressed_equal_witness --> bytes | <!-- metric:u32_compressed_equal_stack -->5<!-- /metric:u32_compressed_equal_stack --> items |
 | `u32_conditional_select()` | <!-- metric:u32_conditional_select -->9<!-- /metric:u32_conditional_select --> bytes | <!-- metric:u32_conditional_select_witness_min -->10<!-- /metric:u32_conditional_select_witness_min -->–<!-- metric:u32_conditional_select_witness_max -->30<!-- /metric:u32_conditional_select_witness_max --> bytes | <!-- metric:u32_conditional_select_stack -->9<!-- /metric:u32_conditional_select_stack --> items |
 | `u32_iszero()` | <!-- metric:u32_iszero -->4<!-- /metric:u32_iszero --> bytes | <!-- metric:u32_iszero_witness -->5<!-- /metric:u32_iszero_witness --> bytes | <!-- metric:u32_iszero_stack -->4<!-- /metric:u32_iszero_stack --> items |
@@ -169,5 +173,15 @@ byte-limb contract and does not itself range-check the four word limbs.
 `u32_push(0) + u32_equal()` baseline under the same policy compilation. The
 zero predicate contains <!-- metric:u32_iszero_opcodes -->4<!-- /metric:u32_iszero_opcodes -->
 static non-push opcodes; the baseline measures <!-- metric:u32_iszero_equal_baseline -->21<!-- /metric:u32_iszero_equal_baseline --> bytes.
+
+`u32_not()` is the checked reusable bytewise complement. It validates each
+limb's numeric range and minimal ScriptNum encoding before applying
+`255 - limb`, preserving the four-byte word shape for callers such as
+SHA-256's choose function. Its strict metric uses four canonical `0xff`
+witness limbs and includes no auxiliary hints. The
+SHA-256 implementation calls the crate-private unchecked helper because its
+internal byte representation is already maintained by the surrounding hash
+kernel; callers with hostile word witnesses should use the checked public
+fragment.
 
 The zero-word fixture uses 5 serialized witness bytes; the maximum canonical byte-word witness is <!-- metric:u32_iszero_witness_max -->13<!-- /metric:u32_iszero_witness_max --> bytes. The little-endian bit fixture uses four `0x42` limbs (9 bytes), with a maximum canonical witness of <!-- metric:u32_le_bits_witness_max -->13<!-- /metric:u32_le_bits_witness_max --> bytes. These focused metrics use strict local tapscript execution; deployment remains `unclassified`.

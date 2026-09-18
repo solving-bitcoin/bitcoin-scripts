@@ -848,6 +848,73 @@
       ]
     },
     {
+      "id": "arithmetic/u32-byte-not",
+      "name": "Checked u32 bytewise complement",
+      "class": "arithmetic/word",
+      "summary": "Range-checked bytewise complement for the four-limb u32 representation without a lookup table.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u32-byte-not.md",
+      "implementation": "src/arithmetic/u32/stack.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::stack::tests::complements_boundary_and_pattern_words",
+        "arithmetic::u32::stack::tests::checked_complement_rejects_non_byte_limbs",
+        "arithmetic::u32::stack::tests::checked_complement_preserves_surrounding_stacks",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "stack-scheduling"
+      ],
+      "security": "Every hostile limb is checked for minimal ScriptNum encoding and numeric range before subtraction; the fragment still does not provide a terminal predicate.",
+      "stack_contract": "Consumes four byte-valued limbs in most-significant-byte-first order and returns their bytewise complements in the same order; the least-significant output byte remains on top.",
+      "configurations": [
+        {
+          "id": "checked-word",
+          "label": "u32_not()",
+          "parameters": {
+            "byte_count": 4,
+            "input_check": true,
+            "data_items": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: four canonical byte checks and four 255-minus-byte operations; representative witness is four canonical 0xff items; excludes input pushes, output cleanup, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 72,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 72,
+          "hint_items": 0,
+          "metric_keys": [
+            "u32_not",
+            "u32_not_witness",
+            "u32_not_stack",
+            "u32_not_opcodes"
+          ],
+          "static_non_push_opcodes": 36
+        }
+      ],
+      "limitations": [
+        "Numeric range checks do not establish minimal ScriptNum byte encoding",
+        "No independent cryptographic security claim",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u31",
       "name": "u31 prime-field arithmetic",
       "class": "arithmetic/field",
