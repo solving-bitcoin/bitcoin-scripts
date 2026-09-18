@@ -38,6 +38,9 @@ these operations, but this module contains no hash-specific round logic.
   to a bit indicating whether each is a nonzero power of two.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
   `1..=982` and returns one bit per input nibble.
+- `lsb::u4_nibbles_to_lsb_canonical(nibble_count)` takes a canonical batch size
+  in `1..=981`; the extra raw-encoding check consumes one additional stack item
+  per input.
 - `sum::u4_nibbles_to_sum_mod16(nibble_count)` takes a checked batch size in
   `1..=965` and returns the batch sum modulo 16.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
@@ -133,6 +136,7 @@ each input with the same output-restoration boundary.
 | Checked power-of-two batch, 32 nibbles | <!-- metric:u4_power_of_two_batch32 -->440<!-- /metric:u4_power_of_two_batch32 --> bytes | <!-- metric:u4_power_of_two_batch32_stack -->50<!-- /metric:u4_power_of_two_batch32_stack --> items | <!-- metric:u4_power_of_two_batch32_opcodes -->328<!-- /metric:u4_power_of_two_batch32_opcodes --> |
 | Checked modulo-three batch, 32 nibbles | <!-- metric:u4_mod3_batch32 -->440<!-- /metric:u4_mod3_batch32 --> bytes | <!-- metric:u4_mod3_batch32_stack -->50<!-- /metric:u4_mod3_batch32_stack --> items | <!-- metric:u4_mod3_batch32_opcodes -->328<!-- /metric:u4_mod3_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
+| Canonical checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_canonical_batch32 -->504<!-- /metric:u4_lsb_canonical_batch32 --> bytes | <!-- metric:u4_lsb_canonical_batch32_stack -->51<!-- /metric:u4_lsb_canonical_batch32_stack --> items | <!-- metric:u4_lsb_canonical_batch32_opcodes -->360<!-- /metric:u4_lsb_canonical_batch32_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
 | Checked popcount batch, 32 nibbles | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> bytes | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack --> items | <!-- metric:u4_popcount_batch32_opcodes -->328<!-- /metric:u4_popcount_batch32_opcodes --> |
 | Checked 32-nibble zero bitmask batch | <!-- metric:u4_zero_bitmask_batch32 -->482<!-- /metric:u4_zero_bitmask_batch32 --> bytes | <!-- metric:u4_zero_bitmask_batch32_stack -->36<!-- /metric:u4_zero_bitmask_batch32_stack --> items | <!-- metric:u4_zero_bitmask_batch32_opcodes -->382<!-- /metric:u4_zero_bitmask_batch32_opcodes --> |
@@ -186,6 +190,8 @@ The square row measures only the checked reusable query; its generated
 <!-- metric:u4_mod3_batch32_witness -->65<!-- /metric:u4_mod3_batch32_witness --> serialized witness bytes for the representative modulo-three batch.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
+
+<!-- metric:u4_lsb_canonical_batch32_witness -->65<!-- /metric:u4_lsb_canonical_batch32_witness --> serialized witness bytes for the representative canonical LSB batch.
 
 <!-- metric:u4_zero_mask_batch32_witness -->65<!-- /metric:u4_zero_mask_batch32_witness --> serialized witness bytes for the representative zero-mask batch.
 
@@ -365,6 +371,14 @@ witness and adds one raw ScriptNum boundary check per nibble.
 The canonical altstack row adds one raw ScriptNum boundary check per nibble and
 stops before restoring the 128 output bits to the main stack. It measures 1,178
 bytes, 893 static non-push opcodes, and a 189-item peak.
+
+`u4_nibbles_to_lsb_canonical(nibble_count)` uses the same 16-item table and
+output contract as the ordinary LSB batch, but proves minimal ScriptNum
+encoding for every hostile nibble. Its standalone range is `1..=981`, because
+canonical validation raises the combined peak by one item per input. In a
+composition, keep `n + 19 + unrelated_live_items <= 1000`, counting both the
+main and alt stacks; the ordinary range-checked form has the looser standalone
+bound `1..=982` when canonical encodings are already established.
 
 ## Security
 

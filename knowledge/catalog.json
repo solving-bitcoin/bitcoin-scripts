@@ -9302,7 +9302,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/u4-lsb.md",
       "implementation": "src/arithmetic/u4/lsb.rs",
       "documentation": "src/arithmetic/u4/README.md",
@@ -9346,6 +9346,33 @@
             "u4_lsb_batch32_witness",
             "u4_lsb_batch32_stack"
           ]
+        },
+        {
+          "id": "canonical-checked-batch32",
+          "label": "u4_nibbles_to_lsb_canonical(32)",
+          "parameters": {
+            "nibble_count": 32,
+            "table_items": 16,
+            "input_check": "canonical ScriptNum and numeric range",
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: generated 16-item LSB table, 32 canonical-nibble queries, table cleanup, and output restoration; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 504,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 51,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_lsb_canonical_batch32",
+            "u4_lsb_canonical_batch32_witness",
+            "u4_lsb_canonical_batch32_stack",
+            "u4_lsb_canonical_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 360
         }
       ],
       "limitations": [
