@@ -153,6 +153,9 @@ that consume each nibble least-significant-bit first; reversing four output
 bits per nibble after the big-endian adapter is a separate composition cost.
 The representative little-endian witness is 32 canonical `0x0f` stack items,
 serialized as <!-- metric:u4_bits_le_checked_batch32_witness -->65<!-- /metric:u4_bits_le_checked_batch32_witness --> bytes.
+An independent Core v30.3 run accepts a complete 16-nibble
+`0x0123456789abcdef` LSB leaf with default relay policy; the 32-nibble metric
+configuration and larger compositions remain unvalidated.
 
 ## Security
 
