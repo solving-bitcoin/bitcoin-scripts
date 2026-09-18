@@ -82,6 +82,8 @@ jobs:
         run: python3 tools/tapscript_signature_regtest.py --download-core --output target/ci-reports/tapscript-signatures.json
       - name: Validate checked PRINCEv2 spends
         run: python3 tools/prince_regtest.py --download-core --output target/ci-reports/prince.json
+      - name: Validate SHAKE256 output prefix under Core consensus
+        run: python3 tools/shake256_prefix_regtest.py --download-core --output target/ci-reports/shake256-prefix.json
       - name: Upload Core comparison reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -8467,9 +8467,9 @@
       "class": "hash/xof",
       "summary": "FIPS 202 SHAKE256 with a generation-time output prefix that avoids materializing the unused XOF suffix.",
       "status": "experimental",
-      "evidence": "locally-reproduced",
-      "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/shake256-prefix.md",
       "implementation": "src/hashes/shake256/mod.rs",
       "documentation": "src/hashes/shake256/README.md",
@@ -8478,11 +8478,14 @@
         "hashes::shake256::tests::small_prefix_stays_below_the_stack_limit",
         "hashes::shake256::tests::rejects_invalid_prefix_lengths",
         "primitive_metrics::shake256_prefix_metrics_are_current",
-        "examples/shake256_prefix_benchmark.rs"
+        "examples/shake256_prefix_benchmark.rs",
+        "examples/shake256_prefix_consensus_fixture.rs",
+        "tools/shake256_prefix_regtest.py"
       ],
       "references": [
         "fips-202",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest"
       ],
       "techniques": [
         "sponge",
@@ -8517,9 +8520,9 @@
       ],
       "limitations": [
         "Only the representative 32-byte prefix has a strict local stack measurement",
-        "The 2,000,127-byte fragment remains impractical for ordinary script-size and relay-policy limits",
+        "The 2,000,127-byte fragment is not suitable for bare script, P2SH, or P2WSH and relay policy was not measured",
         "Executed-opcode counter is unavailable in the local tapscript interpreter",
-        "Bitcoin Core consensus and policy validation not performed"
+        "Only the exact 32-byte deterministic Taproot spend has been validated by Core consensus; incremental squeeze and policy validation remain open"
       ],
       "open_problems": [
         "OP-001",

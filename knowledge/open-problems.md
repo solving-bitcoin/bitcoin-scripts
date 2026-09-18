@@ -265,9 +265,10 @@ against FIPS 202 for boundary message/output lengths.
 
 Progress: `shake256_prefix` now parameterizes the output length. Prefixes of
 1, 32, 135, 136, 137, and 256 bytes match the independent reference, and the
-32-byte prefix peaks at 813 items under the strict local executor. The
-representative fragment is still 2,000,127 bytes, and Bitcoin Core/policy
-validation plus an incremental consumer remain open.
+32-byte prefix peaks at 813 items under the strict local executor. A complete
+32-byte Taproot spend with the 2,000,144-byte terminal fragment is accepted by
+pinned Bitcoin Core v30.3 consensus; relay policy and an incremental consumer
+remain open.
 
 ## OP-006 — BN254 hinted-operation inventory
 

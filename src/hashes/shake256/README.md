@@ -57,12 +57,14 @@ avoids this failure for small outputs; the representative 32-byte prefix is
 strictly executed below the limit. Larger prefixes still require a measured
 stack check after accounting for the live state and lookup table.
 
-The implementation does not rely on disabled opcodes or transaction context,
-but the output shape makes the standalone primitive non-standard and
-non-consensus-executable under current limits. The 15.9 MB fragment is also
-unsuitable for bare script, P2SH, and P2WSH size limits. Tapscript does not make
-the raw construction deployable because its 1,709-item measured peak still
-violates the combined-stack consensus rule. See
+The implementation does not rely on disabled opcodes or transaction context.
+The 1,024-byte output remains consensus-incompatible because its 1,709-item
+peak exceeds the combined-stack limit. The representative 32-byte prefix was
+also validated as a complete Taproot spend by pinned Bitcoin Core v30.3
+consensus via `generateblock`; that exact spend uses a 2,000,248-byte witness.
+Relay-policy acceptance was not measured, and no general deployment claim is
+made. The raw fragments are unsuitable for bare script, P2SH, and P2WSH size
+limits. See
 [`docs/script-types.md`](../../../docs/script-types.md) and
 [`docs/standardness.md`](../../../docs/standardness.md).
 
@@ -88,7 +90,8 @@ truthy predicate.
 
 Tests differentially validate all 1,024 output bytes for empty input, `abc`,
 and an exact 136-byte rate block, plus prefix lengths crossing the 136-byte
-rate boundary. A 32-byte prefix also passes the strict combined-stack check.
-These executions use `bitcoin-scriptexec` in a tapscript context; the full
-output remains `research-unlimited` and `consensus-incompatible`, while the
-small prefix has `unclassified` deployment evidence pending Core validation.
+rate boundary. A 32-byte prefix passes the strict combined-stack check and a
+complete deterministic Taproot spend is accepted by pinned Bitcoin Core v30.3
+consensus. The full output remains `research-unlimited` and
+`consensus-incompatible`; the 32-byte prefix is `consensus-validated` for that
+exact Core regtest fixture, with relay policy intentionally unmeasured.
