@@ -537,6 +537,78 @@
       ]
     },
     {
+      "id": "arithmetic/u4-threshold",
+      "name": "Checked u4 embedded-threshold mask",
+      "class": "arithmetic/word",
+      "summary": "Range-checked per-nibble less-than mask against one public generation-time threshold.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/u4-threshold.md",
+      "implementation": "src/arithmetic/u4/threshold.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::threshold::tests::projects_all_threshold_boundaries_in_order",
+        "arithmetic::u4::threshold::tests::rejects_invalid_nibbles_and_generation_bounds",
+        "arithmetic::u4::threshold::tests::handles_threshold_endpoints",
+        "arithmetic::u4::threshold::tests::preserves_surrounding_main_and_alt_stack_items",
+        "primitive_metrics::u4_lt_mask_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "constant-embedding",
+        "range-check",
+        "stack-scheduling"
+      ],
+      "security": "Every hostile nibble is range-checked before the embedded threshold comparison; the threshold is validated at generation time, outputs are numeric Booleans, and no terminal predicate is supplied.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | mask[0] ... mask[n-1], with mask[i] equal to nibble[i] < threshold and the last mask on top.",
+      "configurations": [
+        {
+          "id": "checked-threshold5-batch16",
+          "label": "u4_nibbles_to_lt_mask(5, 16)",
+          "parameters": {
+            "nibble_count": 16,
+            "threshold": 5,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 16 numeric range checks, 16 embedded-threshold comparisons, output restoration, and input consumption; excludes input pushes, witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 218,
+          "witness_bytes": 33,
+          "witness_bytes_max": 33,
+          "max_stack_items": 18,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 218,
+          "metric_keys": [
+            "u4_lt_mask_16",
+            "u4_lt_mask_16_witness",
+            "u4_lt_mask_16_stack",
+            "u4_lt_mask_16_opcodes"
+          ],
+          "static_non_push_opcodes": 157
+        }
+      ],
+      "limitations": [
+        "The threshold is fixed at generation time rather than supplied dynamically",
+        "Numeric Boolean outputs are not byte-oriented masks",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u32",
       "name": "u32 byte-word arithmetic",
       "class": "arithmetic/word",

@@ -4987,6 +4987,48 @@ fn u4_parity_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures an embedded-threshold u4 mask.
+#[test]
+fn u4_lt_mask_metrics_are_current() {
+    const NIBBLE_COUNT: u32 = 16;
+    let fragment = u4::threshold::u4_nibbles_to_lt_mask(5, NIBBLE_COUNT);
+    let witness = vec![scriptnum(15); NIBBLE_COUNT as usize];
+    let peak = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..NIBBLE_COUNT {
+                OP_DROP
+            }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    assert_eq!(witness.len(), NIBBLE_COUNT as usize);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lt_mask_16",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lt_mask_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lt_mask_16_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_lt_mask_16_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {
