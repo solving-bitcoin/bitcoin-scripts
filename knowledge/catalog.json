@@ -3638,7 +3638,12 @@
       "implementation": "src/hashes/ripemd160/mod.rs",
       "documentation": "src/hashes/ripemd160/README.md",
       "tests": [
-        "hashes::ripemd160::tests::hashes_standard_vectors"
+        "hashes::ripemd160::tests::hashes_standard_vectors",
+        "hashes::ripemd160::tests::continues_from_midstate",
+        "hashes::ripemd160::tests::continues_from_asymmetric_midstate_vector",
+        "hashes::ripemd160::tests::rejects_short_suffix_bytes",
+        "hashes::ripemd160::tests::rejects_extra_suffix_bytes",
+        "hashes::ripemd160::tests::padding_boundary_lengths"
       ],
       "references": [
         "bitcoin-scriptexec-locked"
@@ -3648,7 +3653,7 @@
         "lookup-table"
       ],
       "security": "160-bit output limits generic collision resistance to 80 bits.",
-      "stack_contract": "Consumes one item per message byte and returns 20 byte items with the first digest byte on top.",
+      "stack_contract": "Consumes one item per message byte and returns 20 byte items with the first digest byte on top; the midstate continuation consumes exactly 16 suffix-byte items and requires the caller to authenticate the supplied prefix state.",
       "configurations": [
         {
           "id": "message-32",
@@ -3667,6 +3672,33 @@
           "per_use_script_bytes": 240223,
           "metric_keys": [
             "ripemd160_u32_32"
+          ]
+        },
+        {
+          "id": "message-80-midstate",
+          "label": "64-byte prefix plus 16-byte suffix from midstate",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16,
+            "total_message_bytes": 80,
+            "witness_data_items": 16,
+            "hint_items": 0,
+            "execution_context": "strict local bitcoin-scriptexec tapscript with combined main-plus-alt stack limit enabled",
+            "execution_class": "research-unlimited"
+          },
+          "includes": "fragment-only: one-block midstate continuation, final padding, and digest restoration; excludes prefix authentication, suffix pushes, digest comparison, and terminal predicate; stack measured in a strict composition wrapper with all 16 suffix items present at entry",
+          "script_bytes": 240152,
+          "witness_bytes": 33,
+          "witness_bytes_max": 49,
+          "max_stack_items": 406,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 240152,
+          "metric_keys": [
+            "ripemd160_u32_80_midstate",
+            "ripemd160_u32_80_midstate_witness",
+            "ripemd160_u32_80_midstate_stack"
           ]
         }
       ],

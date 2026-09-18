@@ -89,6 +89,29 @@ fn ripemd160_with_table(num_bytes: usize, push_table: bool, drop_table: bool) ->
     }
 }
 
+/// Continues RIPEMD-160 from the state after one 64-byte block over a
+/// 16-byte suffix, producing the digest of the resulting 80-byte message.
+pub fn ripemd160_80bytes_from_midstate(midstate: [u32; 5]) -> Script {
+    let mut state = midstate;
+    state.reverse();
+    script! {
+        { push_reverse_bytes_to_alt(16) }
+        { u8_push_xor_table() }
+        { padding_add_roll_for_total_length(16, 80) }
+        for word in state {
+            { u32_push(word) }
+        }
+        { ripemd160_transform(16) }
+        for _ in 0..5 {
+            { u32_toaltstack() }
+        }
+        { u8_drop_xor_table() }
+        for _ in 0..5 {
+            { u32_fromaltstack() }
+        }
+    }
+}
+
 fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
     script! {
         for i in 1..=num_bytes {
@@ -100,6 +123,10 @@ fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
 }
 
 fn padding_add_roll(num_bytes: usize) -> Script {
+    padding_add_roll_for_total_length(num_bytes, num_bytes)
+}
+
+fn padding_add_roll_for_total_length(num_bytes: usize, total_message_bytes: usize) -> Script {
     let padding_bytes = if num_bytes % 64 < 56 {
         55 - num_bytes % 64
     } else {
@@ -116,7 +143,7 @@ fn padding_add_roll(num_bytes: usize) -> Script {
 
         // RIPEMD-160 encodes the bit length least-significant word first.
         // The byte swap prepares these values for the per-word reversal below.
-        { u32_push(((num_bytes as u32) * 8).swap_bytes()) }
+        { u32_push(((total_message_bytes as u32) * 8).swap_bytes()) }
         { u32_push(0) }
 
         // Interpret every four input bytes as a little-endian u32.
@@ -382,7 +409,8 @@ fn xor_with_or_not_d(words_above_table: usize) -> Script {
 mod tests {
     use super::*;
     use crate::arithmetic::u32::stack::{u32_equal, u32_push};
-    use bitcoin::hashes::{ripemd160 as reference_ripemd160, Hash};
+    use crate::support::execution::execute_script_with_inputs_strict;
+    use bitcoin::hashes::{ripemd160 as reference_ripemd160, Hash, HashEngine};
 
     fn push_message(message: &[u8]) -> Script {
         script! {
@@ -404,6 +432,15 @@ mod tests {
             OP_TRUE
         });
         assert!(result.success, "{result}");
+    }
+
+    fn midstate_for_prefix(prefix: &[u8; 64]) -> [u32; 5] {
+        let mut engine = reference_ripemd160::HashEngine::default();
+        engine.input(prefix);
+        let bytes = engine.midstate();
+        std::array::from_fn(|index| {
+            u32::from_le_bytes(bytes[index * 4..index * 4 + 4].try_into().unwrap())
+        })
     }
 
     #[test]
@@ -455,6 +492,99 @@ mod tests {
         verify_digest(&[0xff; 64]);
         verify_digest(&[0x42; 80]);
         verify_digest(&[0x24; 130]);
+    }
+
+    #[test]
+    fn continues_from_midstate() {
+        let prefix = [0x42u8; 64];
+        let suffix: Vec<u8> = (0..16).collect();
+        let midstate = midstate_for_prefix(&prefix);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = reference_ripemd160::Hash::hash(&message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(&suffix) }
+            { ripemd160_80bytes_from_midstate(midstate) }
+            for byte in expected {
+                { byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn continues_from_asymmetric_midstate_vector() {
+        let mut prefix = [0u8; 64];
+        for (index, byte) in prefix.iter_mut().enumerate() {
+            *byte = index as u8;
+        }
+        prefix[1] = 0x7f;
+        prefix[2] = 0x80;
+        prefix[3] = 0xff;
+        let suffix = [
+            0x00, 0x7f, 0x80, 0xff, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa,
+            0xbb, 0xcc,
+        ];
+        let midstate = midstate_for_prefix(&prefix);
+        let mut message = prefix.to_vec();
+        message.extend_from_slice(&suffix);
+        let expected = reference_ripemd160::Hash::hash(&message).to_byte_array();
+        let result = crate::support::execution::execute_script_without_stack_limit(script! {
+            { push_message(&suffix) }
+            { ripemd160_80bytes_from_midstate(midstate) }
+            for byte in expected {
+                { byte }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+
+        assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn rejects_short_suffix_bytes() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { ripemd160_80bytes_from_midstate(INITIAL_STATE) }
+                for _ in 0..20 {
+                    OP_DROP
+                }
+                OP_TRUE
+            },
+            vec![Vec::new(); 15],
+        );
+
+        assert!(!result.success);
+    }
+
+    #[test]
+    fn rejects_extra_suffix_bytes() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { ripemd160_80bytes_from_midstate(INITIAL_STATE) }
+                for _ in 0..20 {
+                    OP_DROP
+                }
+                OP_DEPTH
+                OP_0
+                OP_EQUAL
+            },
+            vec![vec![0x42]; 17],
+        );
+
+        assert!(!result.success);
+    }
+
+    #[test]
+    fn padding_boundary_lengths() {
+        for length in [55, 56, 63, 64, 65] {
+            let message: Vec<u8> = (0..length).map(|index| index as u8).collect();
+            verify_digest(&message);
+        }
     }
 
     #[test]

@@ -7,6 +7,7 @@
 use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
+use bitcoin::hashes::{ripemd160 as bitcoin_ripemd160, HashEngine};
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
@@ -52,6 +53,19 @@ use num_traits::One;
 
 // FullWidth comparison rows remain stable when the public default changes.
 type FullWidthWots32 = FastWinternitz<32, Hash160, FullWidth>;
+
+fn ripemd160_midstate_42x64() -> [u32; 5] {
+    let mut engine = bitcoin_ripemd160::HashEngine::default();
+    engine.input(&[0x42; 64]);
+    let bytes = engine.midstate();
+    std::array::from_fn(|index| {
+        u32::from_le_bytes(bytes[index * 4..index * 4 + 4].try_into().unwrap())
+    })
+}
+
+fn ripemd160_midstate_witness() -> Vec<Vec<u8>> {
+    (0u8..16).map(|byte| vec![byte]).collect()
+}
 
 struct Metric {
     readme: &'static str,
@@ -3867,6 +3881,13 @@ fn metrics() -> Vec<Metric> {
             readme: "src/hashes/ripemd160/README.md",
             key: "ripemd160_u32_32",
             value: script_len(ripemd160::ripemd160(32)),
+        },
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_80_midstate",
+            value: script_len(ripemd160::ripemd160_80bytes_from_midstate(
+                ripemd160_midstate_42x64(),
+            )),
         },
         Metric {
             readme: "src/hashes/sha1/README.md",
@@ -8586,4 +8607,34 @@ fn consuming_bitwise_and_hash_metrics_are_current() {
         },
     ]);
     check_readme_metrics(metrics);
+}
+
+#[test]
+fn ripemd160_midstate_metrics_are_current() {
+    let fragment = ripemd160::ripemd160_80bytes_from_midstate(ripemd160_midstate_42x64());
+    let boundary = script! {
+        { fragment.clone() }
+        for _ in 0..20 { OP_DROP }
+        OP_TRUE
+    };
+    let witness = ripemd160_midstate_witness();
+    assert_eq!(witness_size(&witness), 33);
+    assert_eq!(witness_size(&vec![vec![0x80, 0]; 16]), 49);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_80_midstate",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_80_midstate_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/hashes/ripemd160/README.md",
+            key: "ripemd160_u32_80_midstate_stack",
+            value: max_stack_items_strict(boundary, vec![Vec::new(); 16]),
+        },
+    ]);
 }

@@ -16,9 +16,10 @@ and little-endian message and digest encoding.
 The metric covers the hashing fragment only. It excludes message pushes and
 digest comparison.
 
-| Configuration | Hashing script |
-| --- | ---: |
-| 32-byte input | <!-- metric:ripemd160_u32_32 -->240223<!-- /metric:ripemd160_u32_32 --> bytes |
+| Configuration | Hashing script | Witness | Combined stack peak |
+| --- | ---: | ---: | ---: |
+| 32-byte input | <!-- metric:ripemd160_u32_32 -->240223<!-- /metric:ripemd160_u32_32 --> bytes | — | — |
+| 64-byte prefix + 16-byte suffix from midstate | <!-- metric:ripemd160_u32_80_midstate -->240152<!-- /metric:ripemd160_u32_80_midstate --> bytes | <!-- metric:ripemd160_u32_80_midstate_witness -->33<!-- /metric:ripemd160_u32_80_midstate_witness --> bytes | <!-- metric:ripemd160_u32_80_midstate_stack -->406<!-- /metric:ripemd160_u32_80_midstate_stack --> items |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
@@ -49,7 +50,10 @@ also require a non-standard execution environment. See
 
 No hints are required. The witness places the last message byte deepest and
 the first message byte on top, with every item canonically representing a
-value in `0..=255`.
+value in `0..=255`. The representative continuation witness has 16 one-byte
+items (33 serialized bytes); the canonical numeric-byte maximum is 49 bytes.
+The strict composition wrapper measures the combined main-plus-alt-stack peak
+with empty suffix items and requires no auxiliary hints.
 
 ## Stack contract
 
@@ -57,6 +61,11 @@ value in `0..=255`.
 the 20 digest bytes on the main stack with the first digest byte on top. The
 temporary lookup table, branch states, and message block are removed, and the
 altstack is restored to its starting depth.
+
+`ripemd160_80bytes_from_midstate(midstate)` consumes exactly 16 suffix bytes
+and continues from the state after a 64-byte prefix. The final length encoding
+is fixed to the resulting 80-byte message; callers must authenticate the
+midstate and its prefix binding.
 
 ## Operational notes
 
