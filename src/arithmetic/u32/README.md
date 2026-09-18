@@ -123,6 +123,8 @@ as less-than-or-equal.
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
 | `u32_uncompress_canonical()` | <!-- metric:u32_uncompress_canonical -->431<!-- /metric:u32_uncompress_canonical --> bytes | <!-- metric:u32_uncompress_canonical_witness -->7<!-- /metric:u32_uncompress_canonical_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_canonical_stack -->7<!-- /metric:u32_uncompress_canonical_stack --> items |
 | `u32_uncompress_canonical_nonnegative()` | <!-- metric:u32_uncompress_canonical_nonnegative -->405<!-- /metric:u32_uncompress_canonical_nonnegative --> bytes | <!-- metric:u32_uncompress_canonical_nonnegative_witness -->6<!-- /metric:u32_uncompress_canonical_nonnegative_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_canonical_nonnegative_stack -->7<!-- /metric:u32_uncompress_canonical_nonnegative_stack --> items; <!-- metric:u32_uncompress_canonical_nonnegative_opcodes -->328<!-- /metric:u32_uncompress_canonical_nonnegative_opcodes --> executed fragment opcodes |
+| `u32_compress()` | <!-- metric:u32_compress -->76<!-- /metric:u32_compress --> bytes | <!-- metric:u32_compress_witness -->9<!-- /metric:u32_compress_witness --> bytes (<!-- metric:u32_compress_witness_max -->13<!-- /metric:u32_compress_witness_max --> max), 4 data items | <!-- metric:u32_compress_stack -->7<!-- /metric:u32_compress_stack --> items |
+| `u32_uncompress()` | <!-- metric:u32_uncompress -->413<!-- /metric:u32_uncompress --> bytes | <!-- metric:u32_uncompress_witness -->7<!-- /metric:u32_uncompress_witness --> bytes (<!-- metric:u32_uncompress_witness_max -->7<!-- /metric:u32_uncompress_witness_max --> max), 1 data item | <!-- metric:u32_uncompress_stack -->7<!-- /metric:u32_uncompress_stack --> items |
 | `u32_compress_canonical()` | <!-- metric:u32_compress_canonical -->130<!-- /metric:u32_compress_canonical --> bytes | <!-- metric:u32_compress_canonical_witness -->9<!-- /metric:u32_compress_canonical_witness --> bytes (<!-- metric:u32_compress_canonical_witness_max -->13<!-- /metric:u32_compress_canonical_witness_max --> max), 4 data items | <!-- metric:u32_compress_canonical_stack -->7<!-- /metric:u32_compress_canonical_stack --> items; <!-- metric:u32_compress_canonical_opcodes -->102<!-- /metric:u32_compress_canonical_opcodes --> static non-push opcodes |
 | `u8_extract_hbit_checked(4)` | <!-- metric:u8_extract_hbit_checked -->73<!-- /metric:u8_extract_hbit_checked --> bytes | <!-- metric:u8_extract_hbit_checked_witness -->4<!-- /metric:u8_extract_hbit_checked_witness --> bytes, 1 data item | <!-- metric:u8_extract_hbit_checked_stack -->5<!-- /metric:u8_extract_hbit_checked_stack --> items |
 | `verify_canonical_byte()` | <!-- metric:u32_canonical_byte -->12<!-- /metric:u32_canonical_byte --> bytes | <!-- metric:u32_canonical_byte_witness -->4<!-- /metric:u32_canonical_byte_witness --> bytes, 1 data item | <!-- metric:u32_canonical_byte_stack -->4<!-- /metric:u32_canonical_byte_stack --> items |
@@ -190,6 +192,13 @@ avoid the extra word-routing fragment.
 The canonical compressed-u32 row uses the maximum five-byte witness item for
 `-2^31`. It is a raw-encoding boundary: `u32_uncompress()` remains available
 for callers that intentionally accept ScriptNum aliases.
+
+The unchecked `u32_compress()` maps the four-byte u32 through signed
+two's-complement before minimal ScriptNum serialization: `0xffffffff` becomes
+`-1` (`81`), while `0x80000000` becomes `-2^31` (`00 00 00 80 80`). The
+unchecked `u32_uncompress()` treats every five-byte input as that special
+`-2^31` boundary. Callers needing a validated wire format must use the
+canonical wrappers.
 The nonnegative decoder is a domain-specialized alternative: it omits signed
 normalization and the five-byte sentinel path, saving locking bytes while
 rejecting the negative half of the compressed u32 domain.

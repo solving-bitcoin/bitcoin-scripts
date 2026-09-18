@@ -912,8 +912,9 @@
       "knowledge_page": "knowledge/primitives/u32.md",
       "implementation": "src/arithmetic/u32/mod.rs",
       "documentation": "src/arithmetic/u32/README.md",
-      "tests": [
-        "src/arithmetic/u32",
+    "tests": [
+      "src/arithmetic/u32",
+      "primitive_metrics::u32_compression_metrics_are_current",
         "arithmetic::u32::stack::tests::test_u32_iszero",
         "arithmetic::u32::stack::tests::test_u32_iszero_does_not_treat_invalid_nonzero_limbs_as_zero",
         "arithmetic::u32::shift::tests::checked_shift_accepts_boundaries",
@@ -934,7 +935,7 @@
         "lookup-table"
       ],
       "security": "No independent cryptographic claim; every byte item must be canonical and in range. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
+  "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. u32_compress maps the byte word through signed two's-complement before minimal ScriptNum serialization, and u32_uncompress treats every five-byte input as the -2^31 sentinel; canonical wrappers are required for hostile wire inputs. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
       "configurations": [
         {
           "id": "add-drop",
@@ -1360,6 +1361,55 @@
             "u32_rrot7_checked_opcodes"
           ],
           "static_non_push_opcodes": 87
+        },
+        {
+          "id": "compress-unchecked",
+          "label": "u32_compress()",
+          "parameters": {
+            "byte_count": 4,
+            "mapping": "value as i32, then minimal signed ScriptNum",
+            "data_items": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: four-byte-word packing and signed ScriptNum serialization; 0x80000000 maps to -2^31 and 0xffffffff maps to -1; excludes byte-range/canonical checks, witness pushes, output check, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 76,
+          "witness_bytes": 9,
+          "witness_bytes_max": 13,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 76,
+          "metric_keys": [
+            "u32_compress",
+            "u32_compress_witness",
+            "u32_compress_witness_max",
+            "u32_compress_stack"
+          ]
+        },
+        {
+          "id": "uncompress-unchecked",
+          "label": "u32_uncompress()",
+          "parameters": {
+            "input_items": 1,
+            "five_byte_behavior": "any five-byte input selects -2^31",
+            "hint_items": 0
+          },
+          "includes": "fragment-only: ScriptNum expansion to four byte items; the five-byte branch is an unchecked -2^31 sentinel and inputs wider than five bytes fail during Script arithmetic; excludes canonicality checks, witness pushes, output check, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 413,
+          "witness_bytes": 7,
+          "witness_bytes_max": 7,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 413,
+          "metric_keys": [
+            "u32_uncompress",
+            "u32_uncompress_witness",
+            "u32_uncompress_witness_max",
+            "u32_uncompress_stack"
+          ]
         },
         {
           "id": "compress-canonical",

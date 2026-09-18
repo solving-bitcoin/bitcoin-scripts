@@ -309,7 +309,12 @@ pub fn u32_pick(n: u32) -> Script {
     }
 }
 
-/// Compresses the top u32 element into a single element
+/// Compresses the top u32 element into a single signed ScriptNum item.
+///
+/// The four MSB-first byte items are interpreted as a u32 and then mapped to
+/// `value as i32`; the result uses minimal signed ScriptNum encoding. The
+/// helper does not validate byte range, canonical encoding, or the unsigned
+/// domain.
 pub fn u32_compress() -> Script {
     script! {
         OP_SWAP OP_2SWAP OP_SWAP
@@ -339,6 +344,10 @@ pub fn u32_compress_canonical() -> Script {
     }
 }
 
+/// Expands a ScriptNum of at most five bytes into four byte items.
+///
+/// Any five-byte input takes the special `-2^31` branch; callers must enforce
+/// the intended signed representation and canonical encoding first.
 pub fn u32_uncompress() -> Script {
     script! {
         OP_SIZE OP_5 OP_EQUAL
@@ -479,6 +488,71 @@ mod tests {
         for value in [0, 127, 128, 0x7fff_ffff, 0x8000_0000, u32::MAX] {
             accepts_canonical(value);
         }
+    }
+
+    #[test]
+    fn compress_emits_signed_scriptnum_encodings() {
+        for (value, expected) in [
+            (0, vec![]),
+            (1, vec![0x01]),
+            (0x7f, vec![0x7f]),
+            (0x80, vec![0x80, 0x00]),
+            (0xff, vec![0xff, 0x00]),
+            (0x100, vec![0x00, 0x01]),
+            (0x7fff_ffff, vec![0xff, 0xff, 0xff, 0x7f]),
+            (0x8000_0000, vec![0x00, 0x00, 0x00, 0x80, 0x80]),
+            (u32::MAX, vec![0x81]),
+        ] {
+            let result = execute_script(script! {
+                { u32_push(value) }
+                { u32_compress() }
+            });
+            assert!(
+                result.error.is_none(),
+                "compression failed for {value:#x}: {result}"
+            );
+            assert_eq!(
+                result.final_stack.get(0),
+                expected,
+                "wrong encoding for {value:#x}"
+            );
+        }
+    }
+
+    #[test]
+    fn uncompress_treats_any_five_byte_input_as_the_signed_boundary() {
+        for raw in [
+            scriptnum(-2_147_483_648),
+            scriptnum(2_147_483_648),
+            vec![1, 2, 3, 4, 5],
+        ] {
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { u32_uncompress() }
+                    { u32_push(0x8000_0000) }
+                    { u32_equalverify() }
+                    OP_TRUE
+                },
+                vec![raw],
+            );
+            assert!(result.success, "unexpected five-byte behavior: {result}");
+        }
+    }
+
+    #[test]
+    fn uncompress_rejects_scriptnums_wider_than_five_bytes() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { u32_uncompress() }
+                { u32_drop() }
+                OP_TRUE
+            },
+            vec![vec![0, 0, 0, 0, 0, 0]],
+        );
+        assert_eq!(
+            result.error,
+            Some(bitcoin_scriptexec::ExecError::ScriptIntNumericOverflow)
+        );
     }
 
     #[test]
