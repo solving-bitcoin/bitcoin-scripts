@@ -4255,6 +4255,44 @@
           ]
         },
         {
+          "id": "fips-key",
+          "label": "Embedded FIPS-197 key 00..0f",
+          "parameters": {
+            "key_hex": "000102030405060708090a0b0c0d0e0f"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25449,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25449,
+          "metric_keys": [
+            "aes128_fips_encrypt"
+          ]
+        },
+        {
+          "id": "all-ones-key",
+          "label": "Embedded all-ones key",
+          "parameters": {
+            "key_hex": "ffffffffffffffffffffffffffffffff"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25520,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25520,
+          "metric_keys": [
+            "aes128_all_ones_encrypt"
+          ]
+        },
+        {
           "id": "shift-rows",
           "label": "AES-128 ShiftRows state permutation",
           "parameters": {

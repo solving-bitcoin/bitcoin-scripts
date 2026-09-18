@@ -30,6 +30,8 @@ and Script-number push widths vary.
 | Fragment | Size/depth |
 | --- | ---: |
 | `aes128_encrypt([0; 16])` | <!-- metric:aes128_encrypt -->25388<!-- /metric:aes128_encrypt --> bytes |
+| `aes128_encrypt(00..0f)` | <!-- metric:aes128_fips_encrypt -->25449<!-- /metric:aes128_fips_encrypt --> bytes |
+| `aes128_encrypt([0xff; 16])` | <!-- metric:aes128_all_ones_encrypt -->25520<!-- /metric:aes128_all_ones_encrypt --> bytes |
 | Plaintext witness, all-zero block | <!-- metric:aes128_witness_min -->33<!-- /metric:aes128_witness_min --> bytes |
 | Plaintext witness, no zero nibbles | <!-- metric:aes128_witness_max -->65<!-- /metric:aes128_witness_max --> bytes |
 | Maximum combined main/alt-stack depth | <!-- metric:aes128_stack -->908<!-- /metric:aes128_stack --> items |
@@ -52,6 +54,12 @@ and Script-number push widths vary.
 | MixColumns maximum combined main/alt-stack depth | <!-- metric:aes128_mix_columns_stack -->908<!-- /metric:aes128_mix_columns_stack --> items |
 | MixColumns static non-push opcodes | <!-- metric:aes128_mix_columns_opcodes -->1959<!-- /metric:aes128_mix_columns_opcodes --> |
 | MixColumns shared lookup items | <!-- metric:aes128_mix_columns_table_items -->832<!-- /metric:aes128_mix_columns_table_items --> |
+
+The embedded key changes constant-push widths and fused table choices. The
+three deterministic profiles above span 25,388 bytes for the zero key, 25,449
+bytes for the FIPS key `00..0f`, and 25,520 bytes for the all-ones key; all
+three execute at a 908-item combined peak. These are reproducible key profiles,
+not an exhaustive proof of the maximum possible key-specific serialization.
 
 The generator uses one 832-item shared lookup memory. It fuses the initial
 AddRoundKey into the first SubBytes pass, SubBytes with ShiftRows, and
@@ -80,9 +88,9 @@ checks every witness nibble for canonical `0..=15` encoding, and removes the
 temporary table before returning. It returns the 32 substituted nibbles in
 state order and requires no hints.
 
-Tests execute the FIPS-197 known-answer vector and the all-zero vector, compare
-the native reference against three published vectors, and pin the zero-key
-size and maximum stack depth. SubBytes and MixColumns tests cover boundary/random vectors,
+Tests execute the FIPS-197 known-answer vector and the all-zero and all-ones
+vectors, compare the native reference against three published vectors, and pin
+the deterministic key-profile sizes and maximum stack depth. SubBytes and MixColumns tests cover boundary/random vectors,
 non-canonical and out-of-range nibbles, and preservation of surrounding stack
 state.
 

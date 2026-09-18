@@ -2148,6 +2148,11 @@ fn metrics() -> Vec<Metric> {
     };
     let u4_bits_inputs = vec![scriptnum(15); U4_BITS_BATCH as usize];
     let aes_zero_key = [0u8; 16];
+    let aes_all_ones_key = [0xffu8; 16];
+    let aes_fips_key = [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+        0x0f,
+    ];
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
         for _ in 0..16 {
@@ -4089,6 +4094,16 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/ciphers/aes/README.md",
+            key: "aes128_all_ones_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_all_ones_key)),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_fips_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_fips_key)),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
             key: "aes128_shift_rows",
             value: script_len(aes_shift_rows.clone()),
         },
@@ -4336,6 +4351,36 @@ fn aes128_shift_rows_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+#[test]
+fn aes_key_profile_metrics_are_current() {
+    let profiles = [
+        ([0u8; 16], "aes128_encrypt"),
+        (
+            [
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                0x0e, 0x0f,
+            ],
+            "aes128_fips_encrypt",
+        ),
+        ([0xffu8; 16], "aes128_all_ones_encrypt"),
+    ];
+    let witness = vec![Vec::new(); 32];
+    let witness_max = vec![vec![1]; 32];
+    let mut metrics = Vec::new();
+
+    assert_eq!(witness_size(&witness), 33);
+    assert_eq!(witness_size(&witness_max), 65);
+    for (key, metric_key) in profiles {
+        let fragment = aes::aes128_encrypt(key);
+        metrics.push(Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: metric_key,
+            value: script_len(fragment),
+        });
+    }
+    check_readme_metrics(metrics);
 }
 
 /// Exercise every Winternitz profile without the ignored repository-wide suite.
