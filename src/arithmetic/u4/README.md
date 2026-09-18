@@ -389,8 +389,10 @@ the reusable altstack boundary.
 
 `compare::lexicographic_le(n)` range-checks two `n`-nibble big-endian vectors,
 compares the first differing nibble, consumes both vectors, and returns one
-truth value. For the representative 128-nibble vectors, the complete witness
-is <!-- metric:u4_lexicographic_le_128_witness -->259<!-- /metric:u4_lexicographic_le_128_witness --> bytes across <!-- metric:u4_lexicographic_le_128_witness_items -->256<!-- /metric:u4_lexicographic_le_128_witness_items --> data items and <!-- metric:u4_lexicographic_le_128_hints -->0<!-- /metric:u4_lexicographic_le_128_hints --> hint items; all data items coexist at entry. Numeric range validation does not make non-minimal raw ScriptNum encodings byte-unique under consensus.
+truth value. It accepts widths `1..=498`: the standalone combined peak is
+`2*n + 3`, leaving one item at the 498-nibble frontier for surrounding state.
+For the representative 128-nibble vectors, the complete witness is
+<!-- metric:u4_lexicographic_le_128_witness -->259<!-- /metric:u4_lexicographic_le_128_witness --> bytes across <!-- metric:u4_lexicographic_le_128_witness_items -->256<!-- /metric:u4_lexicographic_le_128_witness_items --> data items and <!-- metric:u4_lexicographic_le_128_hints -->0<!-- /metric:u4_lexicographic_le_128_hints --> hint items; all data items coexist at entry. Numeric range validation does not make non-minimal raw ScriptNum encodings byte-unique under consensus.
 Parity uses the same numeric range proof before its `OP_PICK` lookup. Its
 output is a ScriptNum bit, not a raw byte or a terminal truth value.
 Adjacent delta uses the same numeric range proof before subtraction. The

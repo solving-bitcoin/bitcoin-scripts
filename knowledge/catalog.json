@@ -262,8 +262,9 @@
       "limitations": [
         "Fixed-width u4 vectors only",
         "Numeric nibble checks do not prove unique raw ScriptNum byte encodings",
-        "4,354 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH policy boundary",
-        "Bitcoin Core consensus and relay-policy validation have not been performed"
+        "4,354 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH consensus boundary",
+        "Legacy/P2WSH 10,000-byte and 201-opcode limits do not apply to tapscript; Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Widths are limited to 1..=498 because the standalone combined stack peak is 2*n + 3"
       ],
       "open_problems": [
         "OP-001",
