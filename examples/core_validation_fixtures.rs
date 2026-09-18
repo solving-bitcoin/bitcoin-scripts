@@ -19,6 +19,7 @@ use bitcoin::{
     Address, Network, ScriptBuf, TapLeafHash, Witness,
 };
 use bitcoin_lab::{
+    arithmetic::u32::popcount::u32_popcount,
     signatures::winternitz::{ConstantCompositionWinternitz20, Hash160, Preimage16},
     support::{
         execution::execute_raw_script_with_inputs_strict,
@@ -430,6 +431,20 @@ fn fixtures() -> Value {
         ));
     }
 
+    let popcount_script = script! {
+        { u32_popcount() }
+        13 OP_EQUAL
+    }
+    .compile_with_policy();
+    fixtures.push(fixture(
+        "u32-popcount-0x12345678",
+        "Checked four-byte population count with a terminal equality predicate; all four hostile byte limbs are supplied in the witness.",
+        popcount_script,
+        vec![vec![0x12], vec![0x34], vec![0x56], vec![0x78]],
+        POLICY,
+        expectations(None, None),
+    ));
+
     let signing_key = Wots::signing_key_from_seed([0x42; 32]);
     let public_key = Wots::public_key(&signing_key);
     let message = core::array::from_fn(|i| (37 * i) as u8);
@@ -585,7 +600,7 @@ mod tests {
         assert_eq!(first, fixtures());
         let rows = first["fixtures"].as_array().unwrap();
         assert_eq!(first["fixture_count"], rows.len());
-        assert_eq!(rows.len(), 44);
+        assert_eq!(rows.len(), 45);
         let interpreter = provenance::interpreter().unwrap();
         assert_eq!(first["local_interpreter"]["name"], interpreter.name);
         assert_eq!(first["local_interpreter"]["commit"], interpreter.commit);
@@ -607,6 +622,13 @@ mod tests {
             .find(|row| row["name"] == "op-success-80")
             .unwrap();
         assert_eq!(success80["metrics"]["static_non_push_opcodes"], 1);
+        let popcount = rows
+            .iter()
+            .find(|row| row["name"] == "u32-popcount-0x12345678")
+            .unwrap();
+        assert_eq!(popcount["expected"]["consensus"], true);
+        assert_eq!(popcount["metrics"]["data_items"], 4);
+        assert_eq!(popcount["metrics"]["hint_items"], 0);
         assert_eq!(valid["control_block_hex"].as_str().unwrap().len(), 66);
         assert_eq!(valid["script_pubkey_hex"].as_str().unwrap().len(), 68);
         let names: std::collections::HashSet<_> = rows.iter().map(|row| &row["name"]).collect();

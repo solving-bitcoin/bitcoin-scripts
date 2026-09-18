@@ -182,7 +182,9 @@ The conditional selector normalizes any numeric truthy/falsy condition before
 
 `u32_popcount` performs the byte range checks itself because unchecked values
 would address outside the popcount table. Its output is a numeric ScriptNum,
-not a four-byte word or a terminal predicate.
+not a four-byte word or a terminal predicate. A complete `0x12345678` leaf
+with `13 OP_EQUAL` is accepted by Bitcoin Core v30.3 consensus and default
+policy; this does not cover all inputs or batched composition.
 
 `u32_rshift8_checked()` is the byte-aligned member of the logical right-shift
 frontier. It reuses canonical byte validation, moves only three retained bytes
