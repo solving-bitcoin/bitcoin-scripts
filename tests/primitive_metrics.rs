@@ -5577,6 +5577,46 @@ fn u4_parity_metrics_are_current() {
 }
 
 #[test]
+fn u4_parity_canonical_metrics_are_current() {
+    const NIBBLE_COUNT: u32 = 32;
+    let fragment = u4::parity::u4_nibbles_to_parity_canonical(NIBBLE_COUNT);
+    let witness = vec![scriptnum(15); NIBBLE_COUNT as usize];
+    let peak = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..NIBBLE_COUNT {
+                OP_DROP
+            }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_parity_canonical_batch32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_parity_canonical_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_parity_canonical_batch32_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_parity_canonical_batch32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+#[test]
 fn u4_xor_reduce_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 16;
     let fragment = u4::xor_reduce::u4_nibbles_to_xor(NIBBLE_COUNT);

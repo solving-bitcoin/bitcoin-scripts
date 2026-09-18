@@ -12,6 +12,9 @@ these operations, but this module contains no hash-specific round logic.
   `1..=3` bit counts unless their function documents otherwise.
 - `parity::u4_nibbles_to_parity(nibble_count)` takes a checked batch size in
   `1..=982`.
+- `parity::u4_nibbles_to_parity_canonical(nibble_count)` takes a canonical
+  batch size in `1..=981`; raw-encoding validation adds one stack item per
+  input during the peak.
 - `xor_reduce::u4_nibbles_to_xor(nibble_count)` takes a checked batch size in
   `1..=742` and reduces the batch to one nibble with the full XOR table.
 - `popcount::u4_nibbles_to_popcount(nibble_count)` takes a checked batch size
@@ -114,6 +117,7 @@ each input with the same output-restoration boundary.
 | `lexicographic_le(128)` | <!-- metric:u4_lexicographic_le_128 -->7500<!-- /metric:u4_lexicographic_le_128 --> bytes | <!-- metric:u4_lexicographic_le_128_stack -->259<!-- /metric:u4_lexicographic_le_128_stack --> items | <!-- metric:u4_lexicographic_le_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_128_opcodes --> |
 | `lexicographic_le_constant(128)` | <!-- metric:u4_lexicographic_le_constant_128 -->7628<!-- /metric:u4_lexicographic_le_constant_128 --> bytes | <!-- metric:u4_lexicographic_le_constant_128_stack -->259<!-- /metric:u4_lexicographic_le_constant_128_stack --> items | <!-- metric:u4_lexicographic_le_constant_128_opcodes -->4354<!-- /metric:u4_lexicographic_le_constant_128_opcodes --> |
 | Checked parity batch, 32 nibbles | <!-- metric:u4_parity_batch32 -->440<!-- /metric:u4_parity_batch32 --> bytes | <!-- metric:u4_parity_batch32_stack -->50<!-- /metric:u4_parity_batch32_stack --> items | <!-- metric:u4_parity_batch32_opcodes -->328<!-- /metric:u4_parity_batch32_opcodes --> |
+| Canonical checked parity batch, 32 nibbles | <!-- metric:u4_parity_canonical_batch32 -->504<!-- /metric:u4_parity_canonical_batch32 --> bytes | <!-- metric:u4_parity_canonical_batch32_stack -->51<!-- /metric:u4_parity_canonical_batch32_stack --> items | <!-- metric:u4_parity_canonical_batch32_opcodes -->360<!-- /metric:u4_parity_canonical_batch32_opcodes --> |
 | Checked XOR reduction, 16 nibbles | <!-- metric:u4_xor_reduce_batch16 -->740<!-- /metric:u4_xor_reduce_batch16 --> bytes | <!-- metric:u4_xor_reduce_batch16_stack -->273<!-- /metric:u4_xor_reduce_batch16_stack --> items | <!-- metric:u4_xor_reduce_batch16_opcodes -->438<!-- /metric:u4_xor_reduce_batch16_opcodes --> |
 | Checked nondecreasing batch, 32 nibbles | <!-- metric:u4_nondecreasing_batch32 -->588<!-- /metric:u4_nondecreasing_batch32 --> bytes | <!-- metric:u4_nondecreasing_batch32_stack -->35<!-- /metric:u4_nondecreasing_batch32_stack --> items | <!-- metric:u4_nondecreasing_batch32_opcodes -->391<!-- /metric:u4_nondecreasing_batch32_opcodes --> |
 | Checked exact-sum batch, 32 nibbles | <!-- metric:u4_exact_sum_batch32 -->489<!-- /metric:u4_exact_sum_batch32 --> bytes | <!-- metric:u4_exact_sum_batch32_stack -->35<!-- /metric:u4_exact_sum_batch32_stack --> items | <!-- metric:u4_exact_sum_batch32_opcodes -->334<!-- /metric:u4_exact_sum_batch32_opcodes --> |
@@ -156,6 +160,8 @@ The square row measures only the checked reusable query; its generated
 
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.
+
+<!-- metric:u4_parity_canonical_batch32_witness -->65<!-- /metric:u4_parity_canonical_batch32_witness --> serialized witness bytes for the representative canonical parity batch.
 
 <!-- metric:u4_nondecreasing_batch32_witness -->65<!-- /metric:u4_nondecreasing_batch32_witness --> serialized witness bytes for the representative nondecreasing batch.
 
@@ -494,6 +500,10 @@ For `u4_nibbles_to_parity(n)`, the same input ordering is consumed and replaced
 one-for-one by parity bits. The standalone peak is `n + 18` during range checks;
 the generator rejects `n > 982`, and callers must reduce the batch for unrelated
 live state.
+For `u4_nibbles_to_parity_canonical(n)`, the standalone peak is `n + 19` because
+minimal ScriptNum validation adds one temporary item. The canonical generator
+rejects `n > 981`; compositions must satisfy
+`n + 19 + unrelated_live_items <= 1000`, counting both stacks.
 For `adjacent_delta::u4_nibbles_to_adjacent_delta(n)`, the input vector is
 consumed and replaced by `n-1` forward modulo-16 deltas in input order. The
 standalone schedule keeps the `n` input items and up to `n-1` output items
