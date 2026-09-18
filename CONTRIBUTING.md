@@ -7,6 +7,16 @@ Before contributing, read [`AGENTS.md`](AGENTS.md),
 [`knowledge/cost-model.md`](knowledge/cost-model.md), and
 [`knowledge/evidence.md`](knowledge/evidence.md).
 
+Enable the repository pre-commit checks once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The hook checks Rust formatting and validates the knowledge base on every
+commit. It also checks metric snapshots when staged source, README, or metric
+files could affect them.
+
 ## Minimum research contribution
 
 - State exact semantics, assumptions, and comparison objective.
