@@ -8,4 +8,5 @@ pub mod rotate;
 pub mod stack;
 pub mod sub;
 pub mod xor;
+pub mod xor_constant;
 pub mod zip;

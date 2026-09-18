@@ -24,6 +24,8 @@ they do not use BN254 or any other field modulus.
   table. With exactly two working words, the usual value is `3`.
 - `popcount::u32_popcount()` consumes one four-byte word, range-checks every
   byte, and returns its set-bit count in `0..=32`.
+- `xor_constant::u32_xor_constant(value)` checks one canonical word and XORs it
+  with an embedded constant, removing the constant word from the witness.
 - `u32_conditional_select()` consumes `condition | when_true | when_false`,
   normalizes the condition with `OP_0NOTEQUAL`, and returns one complete word.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
@@ -51,6 +53,7 @@ as less-than-or-equal.
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
 | `u32_or(0, 1, 3)` (table excluded) | <!-- metric:u32_or -->326<!-- /metric:u32_or --> bytes | 0 bytes | <!-- metric:u32_or_stack -->272<!-- /metric:u32_or_stack --> items, including table |
 | `u32_notequal()` | <!-- metric:u32_notequal -->19<!-- /metric:u32_notequal --> bytes | 0 bytes | <!-- metric:u32_notequal_stack -->9<!-- /metric:u32_notequal_stack --> items |
+| `u32_xor_constant(0x89abcdef)` | <!-- metric:u32_xor_constant -->652<!-- /metric:u32_xor_constant --> bytes | <!-- metric:u32_xor_constant_witness -->13<!-- /metric:u32_xor_constant_witness --> bytes, 4 data items | <!-- metric:u32_xor_constant_stack -->272<!-- /metric:u32_xor_constant_stack --> items; <!-- metric:u32_xor_constant_opcodes -->484<!-- /metric:u32_xor_constant_opcodes --> static non-push opcodes |
 | `u32_compressed_equal()` | <!-- metric:u32_compressed_equal -->37<!-- /metric:u32_compressed_equal --> bytes | <!-- metric:u32_compressed_equal_witness -->11<!-- /metric:u32_compressed_equal_witness --> bytes | <!-- metric:u32_compressed_equal_stack -->5<!-- /metric:u32_compressed_equal_stack --> items |
 | `u32_conditional_select()` | <!-- metric:u32_conditional_select -->9<!-- /metric:u32_conditional_select --> bytes | <!-- metric:u32_conditional_select_witness_min -->10<!-- /metric:u32_conditional_select_witness_min -->–<!-- metric:u32_conditional_select_witness_max -->30<!-- /metric:u32_conditional_select_witness_max --> bytes | <!-- metric:u32_conditional_select_stack -->9<!-- /metric:u32_conditional_select_stack --> items |
 | `u32_iszero()` | <!-- metric:u32_iszero -->4<!-- /metric:u32_iszero --> bytes | <!-- metric:u32_iszero_witness -->5<!-- /metric:u32_iszero_witness --> bytes | <!-- metric:u32_iszero_stack -->4<!-- /metric:u32_iszero_stack --> items |
@@ -82,6 +85,15 @@ widths are rejected before expansion.
 The same representative byte baseline has
 <!-- metric:u32_add_drop_witness -->20<!-- /metric:u32_add_drop_witness --> serialized witness bytes and a
 <!-- metric:u32_add_drop_byte_stack -->10<!-- /metric:u32_add_drop_byte_stack --> item strict peak.
+
+`u32_xor_constant()` is a fixed-mask adapter: it embeds the second word in
+the locking script and therefore removes four witness data items, but costs
+652 bytes and still loads and drops the 256-item XOR table for each call. The
+raw generic `u32_xor()` is 202 bytes, or 566 bytes with the same table setup
+and cleanup, but does not perform the adapter's hostile-input checks. Use the
+adapter when witness width or item count matters more than script bytes; the
+generic form remains preferable when the mask is already present or the table
+can be shared across a larger composition.
 
 The conditional-negation fragment contains <!-- metric:u32_conditional_negate_opcodes -->52<!-- /metric:u32_conditional_negate_opcodes --> static non-push opcodes under the repository's compilation policy. The local tapscript executor does not expose a useful dynamic opcode counter for this fragment.
 

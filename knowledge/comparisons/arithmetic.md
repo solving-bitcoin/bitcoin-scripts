@@ -23,6 +23,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | Fixed-width u4 ordering | `lexicographic_le(128)` | 7,500 | 256 data items; 4,354 non-push opcodes |
 | 32 checked nibbles to parity bits | `u4_nibbles_to_parity(32)` | 440 | 50-item peak; one output bit per input |
 | u32 population count | `u32_popcount()` | 455 | 262-item peak; 256-item byte table |
+| u32 XOR with embedded constant | `u32_xor_constant(0x89abcdef)` | <!-- metric:u32_xor_constant -->652<!-- /metric:u32_xor_constant --> | <!-- metric:u32_xor_constant_stack -->272<!-- /metric:u32_xor_constant_stack -->-item strict peak; four data items; shared XOR table setup/cleanup |
 | 32 checked nibbles to LSB bits | `u4_nibbles_to_lsb(32)` | 440 | 50-item peak; one output bit per input |
 | 16 checked nibbles to four bit planes | u4 table plus stack transpose | 776 | 125-item peak; 33-byte witness |
 | 32 checked nibble bit reversals | u4 16-item reversal table | 344 | 51-item peak; 65-byte witness |

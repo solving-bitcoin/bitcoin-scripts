@@ -18,6 +18,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Compressed total-domain u32 equality](u32-compressed-equal.md)
 - [Compressed total-domain u32 unsigned less-than](u32-compressed-lessthan.md)
 - [Checked u32 population count](u32-popcount.md)
+- [Checked u32 XOR with an embedded constant](u32-xor-constant.md)
 - [u31 prime-field arithmetic](u31.md)
 - [Native secp256k1 base-field arithmetic](secp256k1-field.md)
 - [Ed25519 base-field multiplication](ed25519-field.md)
