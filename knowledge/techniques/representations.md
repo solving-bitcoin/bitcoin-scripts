@@ -19,6 +19,9 @@ The u4 bit-plane adapter is a checked transpose boundary: it reuses the
 four-bit decomposition, groups one bit position across all input nibbles, and
 preserves unrelated main and altstack state. Its representative 16-nibble
 batch is 776 bytes with a 125-item combined peak and zero incremental hints.
+Its standalone peak is `4*n + 61`; live main- or alt-stack state must be
+included in that bound, so the 234-nibble generator ceiling is not a universal
+composition width.
 
 The u4 bit-reversal adapter is a checked per-nibble representation change. It
 preserves lane order, uses a 16-item table, and costs 344 bytes for 32 input

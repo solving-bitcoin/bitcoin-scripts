@@ -432,6 +432,7 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u4_bit_planes_batch16",
+            "u4_bit_planes_batch16_witness",
             "u4_bit_planes_batch16_stack",
             "u4_bit_planes_batch16_opcodes"
           ],

@@ -5795,6 +5795,11 @@ fn u4_bit_planes_metrics_are_current() {
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
+            key: "u4_bit_planes_batch16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
             key: "u4_bit_planes_batch16_stack",
             value: stack,
         },

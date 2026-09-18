@@ -200,6 +200,7 @@ representative left witness is <!-- metric:u4_lexicographic_le_constant_128_witn
 <!-- metric:u4_bit_reverse_canonical_batch32_witness -->65<!-- /metric:u4_bit_reverse_canonical_batch32_witness --> serialized witness bytes for the representative canonical bit-reversal batch.
 
 <!-- metric:u4_bit_planes_canonical_batch16_witness -->33<!-- /metric:u4_bit_planes_canonical_batch16_witness --> serialized witness bytes for the representative canonical bit-plane batch.
+<!-- metric:u4_bit_planes_batch16_witness -->33<!-- /metric:u4_bit_planes_batch16_witness --> serialized witness bytes for the representative checked bit-plane batch.
 
 <!-- metric:u4_bits_canonical_batch32_witness -->65<!-- /metric:u4_bits_canonical_batch32_witness --> serialized witness bytes for the representative canonical big-endian batch.
 <!-- metric:u4_bits_be_alt_canonical_batch32_witness -->65<!-- /metric:u4_bits_be_alt_canonical_batch32_witness --> serialized witness bytes for the representative canonical altstack batch.
@@ -344,7 +345,10 @@ small-radix representation for ternary accumulators without a general modulo
 interpreter.
 The bit-plane transpose reuses the 61-item checked bit table and adds a static
 stack permutation. It has no new witness or hint items; the representative
-16-nibble row above includes the reused decomposition and the transpose.
+16-nibble row above includes the reused decomposition and the transpose. Its
+standalone peak is `4*n + 61` items; with surrounding state the applicable
+bound is `4*n + 61 + preserved_main + preserved_alt <= 1000`, so callers must
+reduce the 234-nibble generator ceiling for live state.
 The bit-reversal primitive installs 16 table items, checks each nibble, and
 uses no witness hints beyond its input nibbles. Its 32-nibble row above is the
 representative batch; callers with unrelated live state must reduce the 981
