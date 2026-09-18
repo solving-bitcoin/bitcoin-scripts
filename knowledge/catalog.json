@@ -772,7 +772,7 @@
       "id": "arithmetic/u4-parity",
       "name": "Checked u4 parity projection",
       "class": "arithmetic/word",
-      "summary": "Range-checked batch projection from canonical u4 nibbles to numeric parity bits.",
+      "summary": "Range-checked batch projection from numeric u4 nibbles to numeric parity bits.",
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
