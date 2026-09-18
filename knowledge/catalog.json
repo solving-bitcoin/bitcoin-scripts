@@ -9298,17 +9298,19 @@
       "id": "arithmetic/u4-lsb",
       "name": "Checked u4 least-significant-bit projection",
       "class": "arithmetic/word",
-      "summary": "Range-checked batch projection from canonical u4 nibbles to their least-significant bits.",
+      "summary": "Range-checked batch projection from numeric u4 nibbles to their least-significant bits.",
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-18",
       "knowledge_page": "knowledge/primitives/u4-lsb.md",
       "implementation": "src/arithmetic/u4/lsb.rs",
       "documentation": "src/arithmetic/u4/README.md",
       "tests": [
-        "src/arithmetic/u4/lsb.rs",
-        "tests/primitive_metrics.rs"
+        "arithmetic::u4::lsb::tests::projects_all_nibble_least_significant_bits_in_order",
+        "arithmetic::u4::lsb::tests::rejects_out_of_range_nibbles_at_each_position",
+        "arithmetic::u4::lsb::tests::respects_stack_frontier_and_preserves_state",
+        "primitive_metrics::u4_lsb_metrics_are_current"
       ],
       "references": [
         "bitcoin-script-locked",

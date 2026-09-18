@@ -37,7 +37,8 @@ these operations, but this module contains no hash-specific round logic.
 - `power_of_two::u4_nibbles_to_power_of_two(nibble_count)` maps checked nibbles
   to a bit indicating whether each is a nonzero power of two.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
-  `1..=982` and returns one bit per input nibble.
+  `1..=982` and returns one bit per input nibble; the range check does not
+  establish canonical ScriptNum encoding.
 - `sum::u4_nibbles_to_sum_mod16(nibble_count)` takes a checked batch size in
   `1..=965` and returns the batch sum modulo 16.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
