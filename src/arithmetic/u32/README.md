@@ -60,6 +60,9 @@ they do not use BN254 or any other field modulus.
   and returns one numeric Boolean.
 - Stack helpers use whole-word offsets. Rotation helpers additionally take a
   rotation count. There are no implicit parameter defaults.
+- `u8_reverse_toaltstack(num_bytes)` moves raw stack items to the alt stack and
+  restores their top-first order. It does not validate byte range or ScriptNum
+  encoding.
 - `u32_rrot8_checked()` validates four canonical byte limbs before the
   byte-aligned eight-bit rotation.
 - `u32_uncompress_canonical()` consumes one minimally encoded signed ScriptNum
@@ -121,6 +124,7 @@ as less-than-or-equal.
 | `byte_reorder(3)` | <!-- metric:u32_byte_reorder_3 -->3<!-- /metric:u32_byte_reorder_3 --> bytes | <!-- metric:u32_byte_reorder_witness_3 -->9<!-- /metric:u32_byte_reorder_witness_3 --> bytes, 4 data items | <!-- metric:u32_byte_reorder_stack_3 -->4<!-- /metric:u32_byte_reorder_stack_3 --> items |
 | `u8_push_xor_table()` | <!-- metric:u8_logic_table_push -->236<!-- /metric:u8_logic_table_push --> bytes | 0 bytes | 256 table items |
 | `u8_drop_xor_table()` | <!-- metric:u8_logic_table_drop -->128<!-- /metric:u8_logic_table_drop --> bytes | 0 bytes | consumes 256 table items |
+| `u8_reverse_toaltstack(4)` | <!-- metric:u8_reverse_toaltstack_4 -->8<!-- /metric:u8_reverse_toaltstack_4 --> bytes | <!-- metric:u8_reverse_toaltstack_4_witness -->9<!-- /metric:u8_reverse_toaltstack_4_witness --> bytes, 4 data items | <!-- metric:u8_reverse_toaltstack_4_stack -->5<!-- /metric:u8_reverse_toaltstack_4_stack --> items |
 | `u32_uncompress_canonical()` | <!-- metric:u32_uncompress_canonical -->431<!-- /metric:u32_uncompress_canonical --> bytes | <!-- metric:u32_uncompress_canonical_witness -->7<!-- /metric:u32_uncompress_canonical_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_canonical_stack -->7<!-- /metric:u32_uncompress_canonical_stack --> items |
 | `u32_uncompress_canonical_nonnegative()` | <!-- metric:u32_uncompress_canonical_nonnegative -->405<!-- /metric:u32_uncompress_canonical_nonnegative --> bytes | <!-- metric:u32_uncompress_canonical_nonnegative_witness -->6<!-- /metric:u32_uncompress_canonical_nonnegative_witness --> bytes, 1 data item | <!-- metric:u32_uncompress_canonical_nonnegative_stack -->7<!-- /metric:u32_uncompress_canonical_nonnegative_stack --> items; <!-- metric:u32_uncompress_canonical_nonnegative_opcodes -->328<!-- /metric:u32_uncompress_canonical_nonnegative_opcodes --> executed fragment opcodes |
 | `u32_compress_canonical()` | <!-- metric:u32_compress_canonical -->130<!-- /metric:u32_compress_canonical --> bytes | <!-- metric:u32_compress_canonical_witness -->9<!-- /metric:u32_compress_canonical_witness --> bytes (<!-- metric:u32_compress_canonical_witness_max -->13<!-- /metric:u32_compress_canonical_witness_max --> max), 4 data items | <!-- metric:u32_compress_canonical_stack -->7<!-- /metric:u32_compress_canonical_stack --> items; <!-- metric:u32_compress_canonical_opcodes -->102<!-- /metric:u32_compress_canonical_opcodes --> static non-push opcodes |
@@ -169,6 +173,9 @@ operation-specific hint is needed. The conditional selector uses one condition
 item plus two four-byte words, for nine witness items when all inputs come from
 the witness. Its maximum canonical witness uses a four-byte ScriptNum condition and eight two-byte ScriptNum limbs. The logic table can be shared by any number of XOR, AND, and OR
 operations in one script.
+
+The adapter row reports a representative four-item witness of 9 serialized
+bytes; four canonical byte-valued ScriptNums can require up to 13 bytes.
 
 `u32_nand()` is a fused universal-gate adapter: it performs the existing
 byte-table AND schedule and complements each result before restoring the word.

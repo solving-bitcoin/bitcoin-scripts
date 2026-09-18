@@ -912,9 +912,10 @@
       "knowledge_page": "knowledge/primitives/u32.md",
       "implementation": "src/arithmetic/u32/mod.rs",
       "documentation": "src/arithmetic/u32/README.md",
-      "tests": [
-        "src/arithmetic/u32",
-        "arithmetic::u32::stack::tests::test_u32_iszero",
+    "tests": [
+      "src/arithmetic/u32",
+      "primitive_metrics::u32_reverse_byte_adapter_metrics_are_current",
+      "arithmetic::u32::stack::tests::test_u32_iszero",
         "arithmetic::u32::stack::tests::test_u32_iszero_does_not_treat_invalid_nonzero_limbs_as_zero",
         "arithmetic::u32::shift::tests::checked_shift_accepts_boundaries",
         "arithmetic::u32::shift::tests::checked_shift_rejects_malformed_bytes",
@@ -933,8 +934,8 @@
         "digit-arithmetic",
         "lookup-table"
       ],
-      "security": "No independent cryptographic claim; every byte item must be canonical and in range. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
+  "security": "No independent cryptographic claim; arithmetic consumers require canonical byte items in range. The raw reverse-byte adapter deliberately does not validate or normalize its moved items. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
+  "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. u8_reverse_toaltstack moves raw items to the alt stack and restores their top-first order while preserving unrelated state. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
       "configurations": [
         {
           "id": "add-drop",
@@ -1072,6 +1073,29 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u8_logic_table_push"
+          ]
+        },
+        {
+          "id": "reverse-byte-adapter",
+          "label": "u8_reverse_toaltstack(4)",
+          "parameters": {
+            "byte_items": 4,
+            "preserves_unrelated_state": true,
+            "validates_inputs": false
+          },
+          "includes": "fragment-only: moves four raw stack items from the main stack to the alt stack and restores their top-first order; representative witness is four one-byte items; maximum witness is 13 bytes for four canonical byte-valued ScriptNums; excludes input pushes and output checks",
+          "script_bytes": 8,
+          "witness_bytes": 9,
+          "witness_bytes_max": 13,
+          "max_stack_items": 5,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 8,
+          "metric_keys": [
+            "u8_reverse_toaltstack_4",
+            "u8_reverse_toaltstack_4_witness",
+            "u8_reverse_toaltstack_4_stack"
           ]
         },
         {

@@ -5,7 +5,9 @@ use crate::arithmetic::u32::stack::{u32_dup, u32_roll};
 use crate::arithmetic::u32::{
     and::u32_and,
     rotate::u32_rrot,
-    stack::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_toaltstack},
+    stack::{
+        u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_toaltstack, u8_reverse_toaltstack,
+    },
     xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
 };
 use crate::support::script::{script, Script};
@@ -57,7 +59,7 @@ fn sha256_with_table_after_input(
     }
 
     script! {
-        if move_input { {push_reverse_bytes_to_alt(num_bytes)} }
+        if move_input { {u8_reverse_toaltstack(num_bytes)} }
 
         // top of stack: [ [n bytes input] ]
         if push_table { {u8_push_xor_table()} }
@@ -91,7 +93,7 @@ pub fn sha256_32bytes() -> Script {
 
 fn sha256_32bytes_with_table(push_table: bool, drop_table: bool, move_input: bool) -> Script {
     script! {
-        if move_input { {push_reverse_bytes_to_alt(32)} }
+        if move_input { {u8_reverse_toaltstack(32)} }
 
         // top of stack: [ [n bytes input] ]
         if push_table { {u8_push_xor_table()} }
@@ -123,7 +125,7 @@ pub fn sha256_80bytes() -> Script {
 
 fn sha256_80bytes_with_table(push_table: bool, drop_table: bool, move_input: bool) -> Script {
     script! {
-        if move_input { {push_reverse_bytes_to_alt(80)} }
+        if move_input { {u8_reverse_toaltstack(80)} }
 
         // top of stack: [ [n bytes input] ]
         if push_table { {u8_push_xor_table()} }
@@ -865,16 +867,6 @@ pub fn u32_not() -> Script {
     }
 }
 
-/// Push reversed bytes to the alt stack.
-pub fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
-    script! {
-        for i in 1..=num_bytes {
-            {num_bytes-i} OP_ROLL
-            OP_TOALTSTACK
-        }
-    }
-}
-
 /// Push (((x) & (y)) ^ (~(x) & (z))) into stack
 pub fn ch(x: u32, y: u32, z: u32, stack_depth: u32) -> Script {
     script! {
@@ -1024,7 +1016,7 @@ mod tests {
 
         let script = script! {
             {push_bytes_hex(hex_in)}
-            {push_reverse_bytes_to_alt(hex_in.len()/2)}
+            {u8_reverse_toaltstack(hex_in.len()/2)}
             {u8_push_xor_table()}
             {sha256_k()}
             {padding_add_roll(hex_in.len()/2)}

@@ -260,6 +260,19 @@ pub fn u32_fromaltstack() -> Script {
     }
 }
 
+/// Move `num_bytes` raw stack items to the alt stack while preserving order.
+///
+/// The top item is restored first by `OP_FROMALTSTACK`; callers must enforce
+/// byte range and canonical ScriptNum encoding when those invariants matter.
+pub fn u8_reverse_toaltstack(num_bytes: usize) -> Script {
+    script! {
+        for i in 1..=num_bytes {
+            {num_bytes - i} OP_ROLL
+            OP_TOALTSTACK
+        }
+    }
+}
+
 /// Select one complete u32 word using Script truthiness.
 ///
 /// Stack before (top first): `condition | when_true | when_false`.
@@ -575,7 +588,7 @@ mod tests {
     fn canonical_compress_rejects_malformed_limbs() {
         let script = script! {
             { u32_compress_canonical() }
-            OP_DROP OP_TRUE
+            OP_TRUE
         };
         for position in 0..4 {
             for replacement in [vec![1, 0], vec![0, 1], vec![0x80], vec![0xff]] {
@@ -605,6 +618,48 @@ mod tests {
             vec![vec![77], vec![1], vec![2], vec![3], vec![4]],
         );
         assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn reverse_byte_batch_preserves_order_state_and_raw_items() {
+        let result = execute_script(script! {
+            99 OP_TOALTSTACK
+            0x44 0x33 0x22 0x11
+            { u8_reverse_toaltstack(4) }
+            OP_FROMALTSTACK 0x11 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x22 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x33 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x44 OP_EQUALVERIFY
+            OP_FROMALTSTACK 99 OP_EQUAL
+        });
+        assert!(result.success, "{result}");
+
+        let raw_items = execute_script_with_inputs_strict(
+            script! {
+            { u8_reverse_toaltstack(2) }
+            OP_FROMALTSTACK OP_SIZE 2 OP_EQUALVERIFY OP_DROP
+            OP_FROMALTSTACK OP_SIZE 1 OP_EQUALVERIFY OP_DROP
+            OP_TRUE
+            },
+            vec![vec![0x80], vec![0x01, 0x00]],
+        );
+        assert!(raw_items.success, "{raw_items}");
+
+        let empty = execute_script(script! {
+            42
+            { u8_reverse_toaltstack(0) }
+            42 OP_EQUAL
+        });
+        assert!(empty.success, "{empty}");
+
+        let underflow = execute_script(script! {
+            0x11
+            { u8_reverse_toaltstack(2) }
+        });
+        assert_eq!(
+            underflow.error,
+            Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+        );
     }
     fn compressed_scriptnum(value: u32) -> Vec<u8> {
         let mut bytes = [0u8; 8];

@@ -5,7 +5,10 @@ use crate::arithmetic::u32::{
     and::u32_and_drop,
     or::u32_or_drop,
     rotate::u32_rrot,
-    stack::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_roll, u32_toaltstack},
+    stack::{
+        u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_roll, u32_toaltstack,
+        u8_reverse_toaltstack,
+    },
     xor::{u32_xor_drop, u8_drop_xor_table, u8_push_xor_table},
 };
 use crate::support::script::{script, Script};
@@ -70,7 +73,7 @@ fn ripemd160_with_table(num_bytes: usize, push_table: bool, drop_table: bool) ->
     }
 
     script! {
-        { push_reverse_bytes_to_alt(num_bytes) }
+        { u8_reverse_toaltstack(num_bytes) }
         if push_table { { u8_push_xor_table() } }
         { padding_add_roll(num_bytes) }
         { ripemd160_init() }
@@ -85,16 +88,6 @@ fn ripemd160_with_table(num_bytes: usize, push_table: bool, drop_table: bool) ->
         if drop_table { { u8_drop_xor_table() } }
         for _ in 0..5 {
             { u32_fromaltstack() }
-        }
-    }
-}
-
-fn push_reverse_bytes_to_alt(num_bytes: usize) -> Script {
-    script! {
-        for i in 1..=num_bytes {
-            { num_bytes - i }
-            OP_ROLL
-            OP_TOALTSTACK
         }
     }
 }
