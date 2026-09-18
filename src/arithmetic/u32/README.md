@@ -17,6 +17,8 @@ they do not use BN254 or any other field modulus.
   word modulo `2^32` when it is nonzero.
 - `u32_{less,greater}than[orequal]()` compares the top two words as unsigned
   integers and consumes both.
+- `u32_signed_lessthan()` compares the top two canonical byte words as signed
+  two's-complement i32 values and consumes both.
 - `u32_iszero()` consumes the top word and returns whether all four limbs are
   numerically zero.
 - `zero_byte_mask::u32_to_zero_byte_mask()` consumes the top word and returns
@@ -89,6 +91,7 @@ as less-than-or-equal.
 | `u32_sub_drop(0, 1)` | <!-- metric:u32_sub_drop -->77<!-- /metric:u32_sub_drop --> bytes | 0 bytes | <!-- metric:u32_sub_drop_stack -->9<!-- /metric:u32_sub_drop_stack --> items |
 | `u32_conditional_negate()` | <!-- metric:u32_conditional_negate -->83<!-- /metric:u32_conditional_negate --> bytes | 0 bytes | <!-- metric:u32_conditional_negate_stack -->9<!-- /metric:u32_conditional_negate_stack --> items |
 | `u32_lessthan()` | <!-- metric:u32_lessthan -->38<!-- /metric:u32_lessthan --> bytes | 0 bytes | <!-- metric:u32_lessthan_stack -->9<!-- /metric:u32_lessthan_stack --> items |
+| `u32_signed_lessthan()` | <!-- metric:u32_signed_lessthan -->63<!-- /metric:u32_signed_lessthan --> bytes | <!-- metric:u32_signed_lessthan_witness -->21<!-- /metric:u32_signed_lessthan_witness --> bytes (25 max) | <!-- metric:u32_signed_lessthan_stack -->11<!-- /metric:u32_signed_lessthan_stack --> items; <!-- metric:u32_signed_lessthan_opcodes -->49<!-- /metric:u32_signed_lessthan_opcodes --> static non-push opcodes |
 | `u32_compressed_lessthan()` | <!-- metric:u32_compressed_lessthan -->124<!-- /metric:u32_compressed_lessthan --> bytes | <!-- metric:u32_compressed_lessthan_witness -->11<!-- /metric:u32_compressed_lessthan_witness --> bytes | <!-- metric:u32_compressed_lessthan_stack -->6<!-- /metric:u32_compressed_lessthan_stack --> items |
 | `u32_compressed_lessthan_constant(0x89abcdef)` | <!-- metric:u32_compressed_lessthan_constant -->127<!-- /metric:u32_compressed_lessthan_constant --> bytes | <!-- metric:u32_compressed_lessthan_constant_witness -->6<!-- /metric:u32_compressed_lessthan_constant_witness --> bytes (<!-- metric:u32_compressed_lessthan_constant_witness_max -->7<!-- /metric:u32_compressed_lessthan_constant_witness_max --> max), 1 data item | <!-- metric:u32_compressed_lessthan_constant_stack -->6<!-- /metric:u32_compressed_lessthan_constant_stack --> items; <!-- metric:u32_compressed_lessthan_constant_opcodes -->71<!-- /metric:u32_compressed_lessthan_constant_opcodes --> static non-push opcodes |
 | `u32_lessthanorequal()` | <!-- metric:u32_lessthanorequal -->61<!-- /metric:u32_lessthanorequal --> bytes | 0 bytes | <!-- metric:u32_lessthanorequal_stack -->13<!-- /metric:u32_lessthanorequal_stack --> items |
@@ -283,6 +286,13 @@ caller.
 No hints are required. A witness-supplied word occupies four stack items, most
 significant byte first in the module's normal representation. Binary operation
 inputs and any shared logic table must already be at the documented depths.
+
+`u32_signed_lessthan()` uses the same four canonical byte limbs and interprets
+them as signed two's-complement i32 values. Its deterministic correctness sweep
+uses `ChaCha20Rng` seed `0x5532434f4d500001` for 256 generated operand pairs,
+in addition to 36 boundary pairs; the oracle is `(a as i32) < (b as i32)`.
+The representative opposite-sign witness serializes to 21 bytes, while all
+eight canonical byte limbs have a 25-byte maximum. No hints are required.
 
 `u32_compressed_equal()` accepts two canonical compressed u32 ScriptNums and
 returns one Boolean. It checks the exact ScriptNum encoding, including the

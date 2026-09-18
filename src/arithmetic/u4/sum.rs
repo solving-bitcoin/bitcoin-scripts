@@ -145,7 +145,6 @@ mod tests {
     }
 }
 
-
 /// Largest standalone batch before accounting for unrelated live stack state.
 pub const U4_EXACT_SUM_MAX_BATCH: u32 = 997;
 

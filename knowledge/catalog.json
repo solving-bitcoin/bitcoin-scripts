@@ -923,7 +923,9 @@
         "arithmetic::u32::shift_left::tests::checked_shift_accepts_boundaries",
         "arithmetic::u32::shift_left::tests::checked_shift_rejects_malformed_bytes",
         "arithmetic::u32::shift_left::tests::checked_shift_preserves_surrounding_stacks",
-        "primitive_metrics::u32_lshift8_checked_metrics_are_current"
+        "primitive_metrics::u32_lshift8_checked_metrics_are_current",
+        "arithmetic::u32::cmp::tests::test_u32_signed_less_than",
+        "primitive_metrics::u32_signed_lessthan_metrics_are_current"
       ],
       "references": [
         "bitcoin-script-locked",
@@ -933,8 +935,8 @@
         "digit-arithmetic",
         "lookup-table"
       ],
-      "security": "No independent cryptographic claim; every byte item must be canonical and in range. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
+      "security": "No independent cryptographic claim; every byte item must be canonical and in range. The signed less-than comparator additionally requires the two's-complement interpretation of those four limbs. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. Unsigned and signed comparisons consume two words and return one Boolean. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
       "configurations": [
         {
           "id": "add-drop",
@@ -9012,6 +9014,36 @@
             "u32_compressed_equal_witness",
             "u32_compressed_equal_witness_max",
             "u32_compressed_equal_stack"
+          ]
+        },
+        {
+          "id": "signed-lessthan",
+          "label": "u32_signed_lessthan()",
+          "parameters": {
+            "representation": "four big-endian byte limbs",
+            "interpretation": "signed two's-complement i32",
+            "random_generator": "ChaCha20Rng",
+            "random_seed": "0x5532434f4d500001",
+            "random_case_count": 256,
+            "boundary_pair_count": 36,
+            "oracle": "(a as i32) < (b as i32)",
+            "hint_items": 0
+          },
+          "includes": "fragment-only: sign-bit extraction and signed comparison over two canonical four-byte words; excludes operand pushes, terminal predicate, and transaction context",
+          "script_bytes": 63,
+          "witness_bytes": 21,
+          "witness_bytes_max": 25,
+          "max_stack_items": 11,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 49,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 63,
+          "metric_keys": [
+            "u32_signed_lessthan",
+            "u32_signed_lessthan_witness",
+            "u32_signed_lessthan_stack",
+            "u32_signed_lessthan_opcodes"
           ]
         },
         {

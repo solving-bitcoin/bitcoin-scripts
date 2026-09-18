@@ -84,6 +84,17 @@ fn scriptnum(value: i64) -> Vec<u8> {
     bytes[..len].to_vec()
 }
 
+fn signed_u32_witness(left: u32, right: u32) -> Vec<Vec<u8>> {
+    [left, right]
+        .into_iter()
+        .flat_map(|word| {
+            [word >> 24, word >> 16, word >> 8, word]
+                .into_iter()
+                .map(|byte| scriptnum(i64::from((byte & 0xff) as u8)))
+        })
+        .collect()
+}
+
 fn max_stack_items(script: bitcoin_script::Script, witness: Vec<Vec<u8>>) -> usize {
     let result = execute_script_with_inputs(script, witness);
     assert!(result.success, "metric execution failed: {result}");
@@ -2458,6 +2469,33 @@ fn metrics() -> Vec<Metric> {
                 },
                 vec![],
             ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan",
+            value: script_len(u32::cmp::u32_signed_lessthan()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_witness",
+            value: witness_size(&signed_u32_witness(0x9abc_def0, 0x1234_5678)),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { u32::cmp::u32_signed_lessthan() }
+                    OP_VERIFY
+                    OP_TRUE
+                },
+                signed_u32_witness(0x9abc_def0, 0x1234_5678),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_opcodes",
+            value: static_non_push_opcodes(u32::cmp::u32_signed_lessthan()),
         },
         Metric {
             readme: "src/arithmetic/u32/README.md",
@@ -5012,6 +5050,57 @@ fn u32_rshift8_checked_metrics_are_current() {
         Metric {
             readme: "src/arithmetic/u32/README.md",
             key: "u32_rshift8_checked_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+#[test]
+fn u32_signed_lessthan_metrics_are_current() {
+    let fragment = u32::cmp::u32_signed_lessthan();
+    for (left, right) in [(0x9abc_def0, 0x1234_5678), (0x1234_5678, 0x9abc_def0)] {
+        let expected = ((left as i32) < (right as i32)) as u32;
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { fragment.clone() }
+                { expected } OP_EQUALVERIFY
+                OP_TRUE
+            },
+            signed_u32_witness(left, right),
+        );
+        assert!(
+            result.success,
+            "signed comparison failed for {left:08x} and {right:08x}: {result}"
+        );
+    }
+
+    let witness = signed_u32_witness(0x9abc_def0, 0x1234_5678);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { fragment.clone() }
+                    OP_VERIFY
+                    OP_TRUE
+                },
+                witness,
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_signed_lessthan_opcodes",
             value: static_non_push_opcodes(fragment),
         },
     ]);
