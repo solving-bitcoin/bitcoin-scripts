@@ -196,7 +196,8 @@ rejecting the negative half of the compressed u32 domain.
 The popcount table is separate from the Boolean XOR table. Its representative
 32-bit all-ones witness uses four data items and serializes to 13 bytes; the
 strict combined peak is 262 items. The table is generated once per fragment
-and removed before the single numeric result is returned.
+and removed before the single numeric result is returned. Composition must
+leave `262 + preserved_main + preserved_alt <= 1000` combined items.
 
 `u32_byte_popcounts()` keeps the four table results instead of adding them. It
 is useful when a caller needs lane-local Hamming weights; use `u32_popcount()`
