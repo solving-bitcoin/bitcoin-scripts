@@ -1586,3 +1586,49 @@ peaking at 5 instead of 7, with the same one-item witness. The construction is
 retained as a stack-shape primitive and a complete-width correctness result,
 not as a general script-byte optimization. Evidence is `locally-reproduced`;
 deployment is `unclassified`; OP-026 remains open.
+
+## Historical PR #3: rotate-and-mask loses on the tested compressed-input shifts
+
+The question is whether the rotate-and-mask construction proposed in
+[PR #3](https://github.com/solving-bitcoin/bitcoin-scripts/pull/3) improves
+logical right shifts when both alternatives consume the same canonical
+compressed u32 input. The
+[review published on 2026-09-18](https://github.com/solving-bitcoin/bitcoin-scripts/pull/3#issuecomment-5725210260)
+reports that PR #8 is smaller at each tested shift: `1, 7, 8, 16, 24, 31`.
+The review provides the following exact measurements for input `0xa5c319e7`:
+
+| Shift | PR #3 script bytes | PR #8 script bytes | PR #3 combined peak | PR #8 combined peak |
+| --- | ---: | ---: | ---: | ---: |
+| 7 | 1,141 | 519 | 272 | 5 |
+| 31 | 1,136 | 58 | 272 | 5 |
+
+Boundary: `fragment-only:` policy-compiled operation size excludes input
+pushes and terminal checks on both sides; combined main/alt-stack peaks
+include identical result checks. Each isolated invocation has one entry data
+item, zero hint items, and six serialized data-witness bytes, excluding script
+and control block. No repeated configuration is reported. Executed-opcode,
+validation-budget, and complete-transaction measurements are unavailable.
+
+Provenance: PR #3's reviewed implementation is pinned at
+[`e9cbd4788962a727945eb8d8dc618a8696693fdb`](https://github.com/solving-bitcoin/bitcoin-scripts/blob/e9cbd4788962a727945eb8d8dc618a8696693fdb/src/arithmetic/u32/rshift.rs);
+PR #8's implementation is pinned at
+[`e6159c65edd10f57a77833888dfb3e14a4fa66b2`](https://github.com/solving-bitcoin/bitcoin-scripts/blob/e6159c65edd10f57a77833888dfb3e14a4fa66b2/src/arithmetic/u32/shift.rs).
+These are historical measurements, separate from NR-062's shift-by-eight
+decode/re-encode comparison. They must not replace current metric snapshots.
+
+Evidence for this archived comparison is `reported`: the reviewer labels the
+probes `locally-reproduced` using strict local execution, but this documentation
+change does not rerun them. Deployment remains `unclassified`. The review
+does not supply the exact comparison harness or interpreter revision; a fresh
+reproduction must pin those, compile both fragments through
+`compile_with_policy()`, and use identical witness and result-check boundaries.
+It must also test malformed encodings and semantic boundaries before extending
+the claim beyond the reported input and shifts.
+
+The measured compressed-input configurations justify retiring PR #3 as a
+competing implementation. They do not establish dominance over its standalone
+four-byte `u32_bytes_rshift()` API. That remains an open comparison under
+[OP-014](../open-problems.md#op-014--total-domain-scriptnum-right-shift-frontier):
+for an identified byte-oriented caller, compare direct byte shifting with
+compression, PR #8's shift, and conversion back, including validation,
+table setup/cleanup, routing, and the same output checks on both sides.

@@ -519,6 +519,12 @@ local decode-byte-shift-reencode baseline. The full OP-014 criterion remains
 open because the comparison is local and the complete Core differential is
 not yet present.
 
+The [historical PR #3 comparison](negative-results/index.md#historical-pr-3-rotate-and-mask-loses-on-the-tested-compressed-input-shifts)
+reports dominance only for the tested compressed-input configurations. The
+byte-oriented API remains unresolved: identify a caller and compare direct
+four-byte shifting with compression, compressed shifting, and conversion back,
+including validation and table setup/cleanup at the same boundary.
+
 ## OP-026 — Total-domain compressed-u32 shift pair
 
 Determine whether a canonical one-item compressed u32 representation can

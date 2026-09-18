@@ -3,6 +3,11 @@
 The table is a navigation aid, not a single benchmark: semantics and boundaries
 differ. Follow each catalog configuration before comparing numbers.
 
+The [archived PR #3 right-shift comparison](../negative-results/index.md#historical-pr-3-rotate-and-mask-loses-on-the-tested-compressed-input-shifts)
+records reported dominance of PR #8 over rotate-and-mask for the tested
+compressed-input shifts. Its historical numbers have a separate boundary from
+the current byte-oriented and decode/re-encode configurations below.
+
 | Need | Local construction | Representative script bytes | Main constraint |
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
