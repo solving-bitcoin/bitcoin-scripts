@@ -16,9 +16,15 @@ suitable for new collision-resistant constructions.
 The metric covers the hashing fragment only. It excludes message pushes and
 digest comparison.
 
-| Configuration | Hashing script |
-| --- | ---: |
-| 32-byte input | <!-- metric:sha1_u32_32 -->205558<!-- /metric:sha1_u32_32 --> bytes |
+| Configuration | Hashing script | Witness | Combined stack peak |
+| --- | ---: | ---: | ---: |
+| 32-byte input | <!-- metric:sha1_u32_32 -->205558<!-- /metric:sha1_u32_32 --> bytes | — | — |
+| 64-byte prefix + 16-byte suffix from midstate | <!-- metric:sha1_u32_80_midstate -->205489<!-- /metric:sha1_u32_80_midstate --> bytes | <!-- metric:sha1_u32_80_midstate_witness -->33<!-- /metric:sha1_u32_80_midstate_witness --> bytes | <!-- metric:sha1_u32_80_midstate_stack -->632<!-- /metric:sha1_u32_80_midstate_stack --> items |
+
+The representative continuation witness has 16 one-byte items (33 serialized
+bytes); the canonical numeric-byte maximum is 49 bytes. It uses no auxiliary
+hints. The stack figure is measured with empty zero-value suffix items in the
+strict composition wrapper.
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
@@ -58,9 +64,14 @@ value in `0..=255`.
 temporary lookup table and message schedule are removed, and the altstack is
 restored to its starting depth.
 
+`sha1_80bytes_from_midstate(midstate)` consumes exactly 16 canonical
+byte-valued suffix items and continues from H0..H4 after one unpadded 64-byte
+prefix block. It returns the 20-byte digest for the resulting 80-byte message;
+the caller must authenticate the supplied state and prefix binding.
+
 ## Operational notes
 
-Padding uses SHA-1's big-endian length encoding with a zero high 32-bit word,
-which is sufficient for the supported range. Tests cover standard empty,
+Padding uses SHA-1's big-endian 64-bit length encoding with a zero high 32-bit
+word; the 80-byte continuation encodes 640 in the low word. Tests cover standard empty,
 single-block, padding-boundary, and multi-block vectors, plus the message
 schedule and all three round functions.

@@ -8,6 +8,7 @@ Measured fragments exclude input pushes and output comparison.
 | BLAKE3 sparse direct u4, low 128 bits | 32-byte input | 59,105 | differentially-validated | Fixed length at generation time; standard digest prefix only |
 | BLAKE3 limb29 | 64-byte input | 72,293 | differentially-validated | Single 1,024-byte chunk only; includes table memory |
 | SHA-1 u32 | 32-byte input | 205,558 | differentially-validated | Collision-broken compatibility hash |
+| SHA-1 u32 midstate | 64-byte prefix + 16-byte suffix | 205,489 | differentially-validated | Requires authenticated H0..H4 after the prefix; collision-broken |
 | RIPEMD-160 u32 | 32-byte input | 240,223 | differentially-validated | 160-bit output |
 | HASH160 SHA-256 → RIPEMD-160 | 32-byte input | 752,651 | differentially-validated | Large composed research fragment |
 | HASH160 shared byte table | 32-byte input | 752,327 | differentially-validated | Saves 324 bytes by sharing the 256-item lookup |
