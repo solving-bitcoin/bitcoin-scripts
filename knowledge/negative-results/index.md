@@ -3,6 +3,14 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-064: u4 MSB lookup table is dominated by a direct threshold at n=32
+
+The former 16-entry lookup implementation measured 440 locking-script bytes
+and a 50-item peak, while the direct range-checked `nibble >= 8` implementation
+measures 446 bytes and a 34-item peak at the same 32-nibble boundary. This is
+scoped to `n=32` and does not claim dominance for other batch sizes. Evidence
+is `locally-reproduced`; deployment is `unclassified`.
+
 ## NR-049: Signature opcodes still diverge after resource repairs
 
 The [funded signature experiment](../tapscript-signature-validation.md) records

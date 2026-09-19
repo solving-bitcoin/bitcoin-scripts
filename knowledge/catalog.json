@@ -835,6 +835,75 @@
       ]
     },
     {
+      "id": "arithmetic/u4-msb",
+      "name": "Checked u4 most-significant-bit projection",
+      "class": "arithmetic/word",
+      "summary": "Range-checked batch projection from numeric u4 nibbles to their most-significant bits.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-18",
+      "knowledge_page": "knowledge/primitives/u4-msb.md",
+      "implementation": "src/arithmetic/u4/msb.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::msb::tests::projects_asymmetric_boundary_values_in_order",
+        "arithmetic::u4::msb::tests::rejects_invalid_nibbles_at_each_position",
+        "arithmetic::u4::msb::tests::respects_direct_threshold_stack_frontier",
+        "primitive_metrics::u4_msb_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "threshold-comparison"
+      ],
+      "security": "Every hostile input is range-checked before the threshold comparison; numeric range does not prove byte-unique ScriptNum encoding or a terminal predicate.",
+      "stack_contract": "Consumes preserved | nibble[0] ... nibble[n-1] and returns preserved | msb[0] ... msb[n-1], with the last bit on top; each input is 0..=15.",
+      "configurations": [
+        {
+          "id": "checked-batch32",
+          "label": "u4_nibbles_to_msb(32)",
+          "parameters": {
+            "nibble_count": 32,
+            "input_items": 32,
+            "output_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 32 range checks, direct >=8 threshold comparisons, output staging/restoration, and no hints; excludes input pushes, witness serialization, terminal predicate, unrelated state, and transaction context",
+          "script_bytes": 446,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 446,
+          "metric_keys": [
+            "u4_msb_batch32",
+            "u4_msb_batch32_witness",
+            "u4_msb_batch32_stack",
+            "u4_msb_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 350
+        }
+      ],
+      "limitations": [
+        "Widths are limited to 1..=998 because the direct standalone peak is n+2",
+        "Preserved main- or alt-stack state reduces the maximum width",
+        "Numeric outputs are ScriptNum bits, not raw bytes",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4-triplet",
       "name": "Checked u4 triplet-to-u12 packing",
       "class": "arithmetic/word",

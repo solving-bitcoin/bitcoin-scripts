@@ -19,6 +19,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 nonzero-power-of-two predicate](u4-power-of-two.md)
 - [Checked u4 modulo-three projection](u4-mod3.md)
 - [Checked u4 parity projection](u4-parity.md)
+- [Checked u4 most-significant-bit projection](u4-msb.md)
 - [Checked u4 triplet-to-u12 packing](u4-triplet.md)
 - [Checked u4 quad-to-u16 packing](u4-quad.md)
 - [Checked u4 XOR reduction](u4-xor-reduction.md)
