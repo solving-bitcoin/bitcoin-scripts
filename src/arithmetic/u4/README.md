@@ -16,6 +16,9 @@ these operations, but this module contains no hash-specific round logic.
   `1..=742` and reduces the batch to one nibble with the full XOR table.
 - `popcount::u4_nibbles_to_popcount(nibble_count)` takes a checked batch size
   in `1..=982` and returns one Hamming weight in `0..=4` per input nibble.
+- `popcount::u4_popcount(nibble_count)` takes the same checked batch (up to 982
+  items without unrelated live state) and returns one total Hamming weight in
+  `0..=4*nibble_count`.
 - `pack::u4_nibbles_to_bytes(nibble_count)` takes an even checked batch size in
   `2..=664` and returns one byte per high/low nibble pair.
 - `adjacent_delta::u4_nibbles_to_adjacent_delta(nibble_count)` takes a checked
@@ -135,6 +138,7 @@ each input with the same output-restoration boundary.
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
 | Checked popcount batch, 32 nibbles | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> bytes | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack --> items | <!-- metric:u4_popcount_batch32_opcodes -->328<!-- /metric:u4_popcount_batch32_opcodes --> |
+| Checked total popcount, 32 nibbles | <!-- metric:u4_popcount_total_batch32 -->471<!-- /metric:u4_popcount_total_batch32 --> bytes | <!-- metric:u4_popcount_total_batch32_stack -->50<!-- /metric:u4_popcount_total_batch32_stack --> items | <!-- metric:u4_popcount_total_batch32_opcodes -->359<!-- /metric:u4_popcount_total_batch32_opcodes --> |
 | Checked 32-nibble zero bitmask batch | <!-- metric:u4_zero_bitmask_batch32 -->482<!-- /metric:u4_zero_bitmask_batch32 --> bytes | <!-- metric:u4_zero_bitmask_batch32_stack -->36<!-- /metric:u4_zero_bitmask_batch32_stack --> items | <!-- metric:u4_zero_bitmask_batch32_opcodes -->382<!-- /metric:u4_zero_bitmask_batch32_opcodes --> |
 | Checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_batch16 -->776<!-- /metric:u4_bit_planes_batch16 --> bytes | <!-- metric:u4_bit_planes_batch16_stack -->125<!-- /metric:u4_bit_planes_batch16_stack --> items | <!-- metric:u4_bit_planes_batch16_opcodes -->573<!-- /metric:u4_bit_planes_batch16_opcodes --> |
 | Canonical checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_canonical_batch16 -->966<!-- /metric:u4_bit_planes_canonical_batch16 --> bytes | <!-- metric:u4_bit_planes_canonical_batch16_stack -->125<!-- /metric:u4_bit_planes_canonical_batch16_stack --> items | <!-- metric:u4_bit_planes_canonical_batch16_opcodes -->715<!-- /metric:u4_bit_planes_canonical_batch16_opcodes --> |
@@ -153,6 +157,8 @@ The square row measures only the checked reusable query; its generated
 <!-- metric:u4_square_mod16_witness -->3<!-- /metric:u4_square_mod16_witness --> serialized bytes for one input item and has zero incremental hint items.
 
 <!-- metric:u4_popcount_batch32_witness -->65<!-- /metric:u4_popcount_batch32_witness --> serialized witness bytes for the representative checked popcount batch.
+
+<!-- metric:u4_popcount_total_batch32_witness -->65<!-- /metric:u4_popcount_total_batch32_witness --> serialized witness bytes for the representative checked total-popcount batch.
 
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.

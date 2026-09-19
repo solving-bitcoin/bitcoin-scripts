@@ -7082,6 +7082,42 @@ fn u4_popcount_metrics_are_current() {
 }
 
 #[test]
+fn u4_total_popcount_metrics_are_current() {
+    const NIBBLE_COUNT: u32 = 32;
+    let fragment = u4::popcount::u4_popcount(NIBBLE_COUNT);
+    let witness = vec![scriptnum(15); NIBBLE_COUNT as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            128 OP_EQUALVERIFY OP_TRUE
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+#[test]
 fn u4_zero_bitmask_metrics_are_current() {
     let fragment = u4::zero_bitmask::u4_nibbles_to_zero_bitmasks(32);
     let witness = vec![scriptnum(15); 32];

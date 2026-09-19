@@ -42,12 +42,25 @@ pub fn u4_nibbles_to_popcount(nibble_count: u32) -> Script {
     }
 }
 
+/// Consume checked u4 nibbles and return their total Hamming weight.
+pub fn u4_popcount(nibble_count: u32) -> Script {
+    script! {
+        { u4_nibbles_to_popcount(nibble_count) }
+        for _ in 1..nibble_count {
+            OP_ADD
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
         arithmetic::u4::stack::u4_hex_to_nibbles,
-        support::{execution::execute_script, script::script},
+        support::{
+            execution::{execute_script, execute_script_with_inputs_strict},
+            script::script,
+        },
     };
 
     #[test]
@@ -105,5 +118,75 @@ mod tests {
             77 OP_EQUAL
         });
         assert!(result.success, "stack preservation failed: {result}");
+    }
+
+    #[test]
+    fn sums_checked_nibble_popcounts() {
+        for high in 0u32..16 {
+            for low in 0u32..16 {
+                let result = execute_script(script! {
+                    { high }
+                    { low }
+                    { u4_popcount(2) }
+                    { high.count_ones() + low.count_ones() }
+                    OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "popcount failed for {high}, {low}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn enforces_aggregate_stack_frontier() {
+        let at_limit = execute_script_with_inputs_strict(
+            script! {
+                { u4_popcount(U4_POPCOUNT_MAX_BATCH) }
+                0 OP_EQUALVERIFY OP_TRUE
+            },
+            vec![vec![]; U4_POPCOUNT_MAX_BATCH as usize],
+        );
+        assert!(at_limit.success, "standalone frontier failed: {at_limit}");
+        assert_eq!(
+            at_limit.stats.max_nb_stack_items, 1_000,
+            "frontier metric changed: {at_limit}"
+        );
+
+        let with_state = execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { u4_popcount(U4_POPCOUNT_MAX_BATCH - 2) }
+                0 OP_EQUALVERIFY
+                OP_FROMALTSTACK 99 OP_EQUALVERIFY
+                77 OP_EQUAL
+            },
+            {
+                let mut witness = vec![vec![77]];
+                witness.extend(vec![vec![]; (U4_POPCOUNT_MAX_BATCH - 2) as usize]);
+                witness
+            },
+        );
+        assert!(
+            with_state.success,
+            "preserved-state frontier failed: {with_state}"
+        );
+
+        let over_state = execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { u4_popcount(U4_POPCOUNT_MAX_BATCH - 1) }
+            },
+            {
+                let mut witness = vec![vec![77]];
+                witness.extend(vec![vec![]; (U4_POPCOUNT_MAX_BATCH - 1) as usize]);
+                witness
+            },
+        );
+        assert_eq!(
+            over_state.error,
+            Some(bitcoin_scriptexec::ExecError::StackSize)
+        );
     }
 }

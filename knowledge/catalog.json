@@ -300,7 +300,7 @@
         "tracked-stack"
       ],
       "security": "No independent cryptographic claim. Checked bit conversion, bit-plane transposition, and bit reversal enforce numeric nibble range before table indexing; the zero-mask projection performs canonical-nibble checks without a lookup table; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The per-nibble popcount projection returns one checked weight per input, while u4_popcount folds those weights to one total. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -490,6 +490,34 @@
             "u4_popcount_batch32_opcodes"
           ],
           "static_non_push_opcodes": 328
+        },
+        {
+          "id": "nibble-popcount-total-batch32-checked",
+          "label": "Checked total popcount of 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "check_inputs": true,
+            "table_items": 16,
+            "data_items": 32,
+            "hint_items": 0,
+            "output_range": "0..=128"
+          },
+          "includes": "fragment-only: shared 16-item popcount table, 32 range-checked queries, table cleanup, output folding, and one returned total; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 471,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 50,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 16,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_popcount_total_batch32",
+            "u4_popcount_total_batch32_witness",
+            "u4_popcount_total_batch32_stack",
+            "u4_popcount_total_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 359
         },
         {
           "id": "nibble-to-le-bits-batch32-checked",
