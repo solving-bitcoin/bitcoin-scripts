@@ -38,6 +38,8 @@ these operations, but this module contains no hash-specific round logic.
   to a bit indicating whether each is a nonzero power of two.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
   `1..=982` and returns one bit per input nibble.
+- `unpack::u4_bytes_to_nibbles(byte_count)` takes a checked batch size in
+  `1..=243` and returns high/low nibbles for each input byte.
 - `sum::u4_nibbles_to_sum_mod16(nibble_count)` takes a checked batch size in
   `1..=965` and returns the batch sum modulo 16.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
@@ -133,6 +135,10 @@ each input with the same output-restoration boundary.
 | Checked power-of-two batch, 32 nibbles | <!-- metric:u4_power_of_two_batch32 -->440<!-- /metric:u4_power_of_two_batch32 --> bytes | <!-- metric:u4_power_of_two_batch32_stack -->50<!-- /metric:u4_power_of_two_batch32_stack --> items | <!-- metric:u4_power_of_two_batch32_opcodes -->328<!-- /metric:u4_power_of_two_batch32_opcodes --> |
 | Checked modulo-three batch, 32 nibbles | <!-- metric:u4_mod3_batch32 -->440<!-- /metric:u4_mod3_batch32 --> bytes | <!-- metric:u4_mod3_batch32_stack -->50<!-- /metric:u4_mod3_batch32_stack --> items | <!-- metric:u4_mod3_batch32_opcodes -->328<!-- /metric:u4_mod3_batch32_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
+| Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
+| Scalar checked splitter baseline, 16 bytes | <!-- metric:u4_unpack_scalar_batch16 -->1066<!-- /metric:u4_unpack_scalar_batch16 --> bytes | <!-- metric:u4_unpack_scalar_batch16_stack -->34<!-- /metric:u4_unpack_scalar_batch16_stack --> items | <!-- metric:u4_unpack_scalar_batch16_opcodes -->682<!-- /metric:u4_unpack_scalar_batch16_opcodes --> |
+| Scalar checked splitter baseline, 32 bytes | <!-- metric:u4_unpack_scalar_batch32 -->2138<!-- /metric:u4_unpack_scalar_batch32 --> bytes | <!-- metric:u4_unpack_scalar_batch32_stack -->66<!-- /metric:u4_unpack_scalar_batch32_stack --> items | <!-- metric:u4_unpack_scalar_batch32_opcodes -->1370<!-- /metric:u4_unpack_scalar_batch32_opcodes --> |
+| Scalar checked splitter baseline, 243 bytes | <!-- metric:u4_unpack_scalar_batch243 -->16275<!-- /metric:u4_unpack_scalar_batch243 --> bytes | <!-- metric:u4_unpack_scalar_batch243_stack -->488<!-- /metric:u4_unpack_scalar_batch243_stack --> items | <!-- metric:u4_unpack_scalar_batch243_opcodes -->10443<!-- /metric:u4_unpack_scalar_batch243_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
 | Checked popcount batch, 32 nibbles | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> bytes | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack --> items | <!-- metric:u4_popcount_batch32_opcodes -->328<!-- /metric:u4_popcount_batch32_opcodes --> |
 | Checked 32-nibble zero bitmask batch | <!-- metric:u4_zero_bitmask_batch32 -->482<!-- /metric:u4_zero_bitmask_batch32 --> bytes | <!-- metric:u4_zero_bitmask_batch32_stack -->36<!-- /metric:u4_zero_bitmask_batch32_stack --> items | <!-- metric:u4_zero_bitmask_batch32_opcodes -->382<!-- /metric:u4_zero_bitmask_batch32_opcodes --> |
@@ -186,6 +192,11 @@ The square row measures only the checked reusable query; its generated
 <!-- metric:u4_mod3_batch32_witness -->65<!-- /metric:u4_mod3_batch32_witness --> serialized witness bytes for the representative modulo-three batch.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
+
+<!-- metric:u4_unpack_batch16_witness -->49<!-- /metric:u4_unpack_batch16_witness --> serialized witness bytes for the representative 16-byte unpack batch.
+<!-- metric:u4_unpack_scalar_batch16_witness -->49<!-- /metric:u4_unpack_scalar_batch16_witness --> serialized witness bytes for the 16-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch32_witness -->97<!-- /metric:u4_unpack_scalar_batch32_witness --> serialized witness bytes for the 32-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch243_witness -->730<!-- /metric:u4_unpack_scalar_batch243_witness --> serialized witness bytes for the 243-byte scalar baseline.
 
 <!-- metric:u4_zero_mask_batch32_witness -->65<!-- /metric:u4_zero_mask_batch32_witness --> serialized witness bytes for the representative zero-mask batch.
 
@@ -248,6 +259,17 @@ by `OP_NUMEQUAL`, so it needs no resident table. A checked 32-nibble batch is
 That is 26 bytes and 15 items below the existing 16-item table-shaped
 parity/LSB projections at the same witness boundary. The output is a numeric
 zero predicate per nibble, not a terminal aggregate.
+
+The checked byte unpacker keeps a 512-item high/low table resident. Its
+standalone peak is `512 + 2*n + 2 + preserved_main + preserved_alt`, so the
+generator ceiling is 243 bytes before unrelated state. At 16 bytes it costs
+1,168 bytes versus 1,066 bytes for a fair repeated checked
+`u8_to_u4_pair(true)` baseline; the table path is smaller by 32 bytes and
+already uses 546 rather than 34 combined stack items. At 32 bytes the table
+path is the smaller representation, while the scalar baseline remains the
+lower-stack option. These comparisons include input validation, output
+staging/restoration, and zero hints; static opcode counts are not executed
+opcode measurements.
 
 The XOR reduction keeps a 256-item full table while folding a checked batch to
 one nibble. Its representative 16-nibble boundary is measured at 740 bytes,

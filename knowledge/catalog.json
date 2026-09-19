@@ -286,6 +286,10 @@
       "tests": [
         "src/arithmetic/u4",
         "src/arithmetic/u4/popcount.rs",
+        "arithmetic::u4::unpack::tests::boundary_bytes_decode_in_input_order",
+        "arithmetic::u4::unpack::tests::rejects_non_bytes_at_each_position",
+        "arithmetic::u4::unpack::tests::batch_size_guard_accounts_for_altstack_outputs",
+        "primitive_metrics::u4_unpack_metrics_are_current",
         "primitive_metrics::u4_popcount_metrics_are_current"
       ],
       "references": [
@@ -300,7 +304,7 @@
         "tracked-stack"
       ],
       "security": "No independent cryptographic claim. Checked bit conversion, bit-plane transposition, and bit reversal enforce numeric nibble range before table indexing; the zero-mask projection performs canonical-nibble checks without a lookup table; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The byte unpacker consumes contiguous byte items, uses a 512-item high/low table, and returns high/low nibble pairs on the main stack. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -685,6 +689,33 @@
             "u4_bits_le_alt_canonical_batch32_opcodes"
           ],
           "static_non_push_opcodes": 893
+        },
+        {
+          "id": "byte-to-nibbles-batch16-checked",
+          "label": "Checked 16-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 16,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, table cleanup, and restoration of all 32 output nibbles; representative witness records 16 hostile byte data items; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 1168,
+          "witness_bytes": 49,
+          "witness_bytes_max": 49,
+          "max_stack_items": 546,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch16",
+            "u4_unpack_batch16_witness",
+            "u4_unpack_batch16_stack",
+            "u4_unpack_batch16_opcodes"
+          ],
+          "static_non_push_opcodes": 544
         }
       ],
       "limitations": [

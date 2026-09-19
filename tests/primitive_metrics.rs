@@ -4666,6 +4666,116 @@ fn u32_uncompress_canonical_nonnegative_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn u4_unpack_metrics_are_current() {
+    const BYTE_COUNT: u32 = 16;
+    let fragment = u4::unpack::u4_bytes_to_nibbles(BYTE_COUNT);
+    let witness = vec![scriptnum(0xff); BYTE_COUNT as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            { u4::stack::u4_drop(2 * BYTE_COUNT) }
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    let scalar = |byte_count: u32| {
+        script! {
+            for _ in 0..byte_count {
+                { u4::stack::u8_to_u4_pair(true) }
+                OP_TOALTSTACK OP_TOALTSTACK
+            }
+            for _ in 0..byte_count {
+                OP_FROMALTSTACK OP_FROMALTSTACK OP_SWAP
+            }
+        }
+    };
+    let mut comparison_metrics = Vec::new();
+    for byte_count in [16, 32, 243] {
+        let scalar_fragment = scalar(byte_count);
+        let scalar_witness = vec![scriptnum(0xff); byte_count as usize];
+        let scalar_stack = max_stack_items_strict(
+            script! {
+                { scalar_fragment.clone() }
+                { u4::stack::u4_drop(2 * byte_count) }
+                OP_TRUE
+            },
+            scalar_witness.clone(),
+        );
+        let (script_key, witness_key, stack_key, opcode_key) = match byte_count {
+            16 => (
+                "u4_unpack_scalar_batch16",
+                "u4_unpack_scalar_batch16_witness",
+                "u4_unpack_scalar_batch16_stack",
+                "u4_unpack_scalar_batch16_opcodes",
+            ),
+            32 => (
+                "u4_unpack_scalar_batch32",
+                "u4_unpack_scalar_batch32_witness",
+                "u4_unpack_scalar_batch32_stack",
+                "u4_unpack_scalar_batch32_opcodes",
+            ),
+            243 => (
+                "u4_unpack_scalar_batch243",
+                "u4_unpack_scalar_batch243_witness",
+                "u4_unpack_scalar_batch243_stack",
+                "u4_unpack_scalar_batch243_opcodes",
+            ),
+            _ => unreachable!(),
+        };
+        comparison_metrics.extend([
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: script_key,
+                value: script_len(scalar_fragment.clone()),
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: witness_key,
+                value: witness_size(&scalar_witness),
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: stack_key,
+                value: scalar_stack,
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: opcode_key,
+                value: static_non_push_opcodes(scalar_fragment),
+            },
+        ]);
+    }
+    assert_eq!(witness_size(&witness), 49);
+    assert_eq!(witness.len(), BYTE_COUNT as usize);
+
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_unpack_batch16_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ];
+    metrics.extend(comparison_metrics);
+    check_readme_metrics(metrics);
+}
+
 fn check_readme_metrics(metrics: Vec<Metric>) {
     let update = env::var_os("UPDATE_PRIMITIVE_METRICS").is_some();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));

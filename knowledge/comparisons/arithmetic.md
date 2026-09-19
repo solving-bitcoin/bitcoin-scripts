@@ -28,6 +28,10 @@ differ. Follow each catalog configuration before comparing numbers.
 | Checked u4 nibble quad to u16 | `u4_quad_to_u16(true)` | <!-- metric:u4_quad_to_u16_checked -->76<!-- /metric:u4_quad_to_u16_checked --> | <!-- metric:u4_quad_to_u16_checked_stack -->7<!-- /metric:u4_quad_to_u16_checked_stack -->-item peak; 4 data items; 16-bit ScriptNum |
 | Checked u4 nibble popcount batch, 32 inputs | `u4_nibbles_to_popcount(32)` | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack -->-item peak; 65-byte witness; 32 data items; no hints; bit-plane expansion is 924 bytes and 189 items |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
+| Checked 16-byte table unpack to nibbles | `u4_bytes_to_nibbles(16)` | 1,168 | 546-item peak; 49-byte witness; 544 static non-push opcodes |
+| Fair scalar 16-byte unpack baseline | 16 checked `u8_to_u4_pair(true)` calls with staging | 1,066 | 34-item peak; 49-byte witness; 682 static non-push opcodes |
+| Fair scalar 32-byte unpack baseline | 32 checked `u8_to_u4_pair(true)` calls with staging | 2,138 | 66-item peak; 97-byte witness; 1,370 static non-push opcodes |
+| Fair scalar 243-byte unpack baseline | 243 checked `u8_to_u4_pair(true)` calls with staging | 16,275 | 488-item peak; 730-byte witness; 10,443 static non-push opcodes |
 | Checked u8 high-bit extraction | `u8_extract_hbit_checked(4)` | 73 | 5-item peak; 4-byte witness; rejects non-byte ScriptNums |
 | Canonical checked nibble boundary | `verify_canonical_nibble()` | 10 | 4-item peak; 3-byte witness; rejects noncanonical ScriptNums |
 | 32 checked signed radix-32 digits to sign/magnitude bits | signed-window staggered table | 1,866 | 348-item peak; wins bytes only after 8–16 digit crossover |

@@ -15,6 +15,14 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
+The checked u4 byte unpacker is a batch representation bridge: it validates
+each byte, queries a shared 512-item high/low table, stages the 2*n nibble
+outputs, and restores them in input order. At 16 bytes it measures 1,168
+locking bytes and a 546-item peak; a fair repeated checked scalar splitter is
+1,066 bytes and 34 items. The table wins script bytes at larger batches but
+consumes most of the combined stack, so its 243-byte standalone ceiling must be
+reduced for preserved state.
+
 The u4 bit-plane adapter is a checked transpose boundary: it reuses the
 four-bit decomposition, groups one bit position across all input nibbles, and
 preserves unrelated main and altstack state. Its representative 16-nibble
