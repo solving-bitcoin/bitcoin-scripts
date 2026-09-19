@@ -1964,6 +1964,7 @@
       "tests": [
         "fields::ed25519::u5_balanced_table::tests",
         "fields::ed25519::bigint9::tests",
+        "fields::ed25519::u5_packed_grouped::tests",
         "examples/ed25519_packed_grouped_decode_probe.rs",
         "tests/primitive_metrics.rs"
       ],
@@ -2094,6 +2095,9 @@
             "temporary_powers_removed_before_return": true,
             "preserved_items_at_999_item_frontier": 937,
             "strict_combined_peak_at_preserved_frontier": 999,
+            "generator_max_preserved_items": 938,
+            "strict_combined_peak_at_generator_frontier": 1000,
+            "runtime_overflow_preserved_items": 939,
             "witness_fixture": "word0..6=0x80000000, word7=0x7ffffffe; minimal signed compressed-u32 encodings",
             "witness_serialization_boundary": "complete eight-item vector: one count byte, eight length bytes, seven five-byte words and one four-byte top word",
             "terminal_predicate_included": false
@@ -2144,6 +2148,9 @@
             "temporary_powers_removed_before_return": true,
             "preserved_items_at_999_item_frontier": 906,
             "strict_combined_peak_at_preserved_frontier": 999,
+            "generator_max_preserved_items": 907,
+            "strict_combined_peak_at_generator_frontier": 1000,
+            "runtime_overflow_preserved_items": 908,
             "witness_fixture": "word0..6=0x80000000, word7=0x7ffffffe; minimal signed compressed-u32 encodings",
             "witness_serialization_boundary": "complete eight-item vector: one count byte, eight length bytes, seven five-byte words and one four-byte top word",
             "terminal_predicate_included": false

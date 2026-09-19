@@ -128,15 +128,15 @@ fn main() {
         );
     }
     assert_eq!(maximum_peak, u5_packed_grouped::STACK_ITEMS as usize);
-    let mut maximum_frontier_words = [u32::MAX; 8];
-    maximum_frontier_words[7] = 0x7fff_fffe;
-    let mut maximum_frontier = vec![item(71); 937];
-    maximum_frontier.extend(witness(&maximum_frontier_words));
+    let mut headroom_frontier_words = [u32::MAX; 8];
+    headroom_frontier_words[7] = 0x7fff_fffe;
+    let mut headroom_frontier = vec![item(71); 937];
+    headroom_frontier.extend(witness(&headroom_frontier_words));
     let frontier = execute_raw_script_with_inputs_strict(
         u5_packed_grouped::decode(937)
             .compile_with_policy()
             .to_bytes(),
-        maximum_frontier,
+        headroom_frontier,
     );
     assert!(
         frontier.error.is_none(),
@@ -161,8 +161,8 @@ fn main() {
     println!("valid_vectors={valid_count}");
     println!("canonical_gap_vectors=19");
     println!("strict_rejected_alias_vectors=3");
-    println!("maximum_preserved_prefix_items=937");
-    println!("maximum_preserved_prefix_strict_peak=999");
+    println!("headroom_one_preserved_prefix_items=937");
+    println!("headroom_one_preserved_prefix_strict_peak=999");
     println!("maximum_serialized_eight_item_input_bytes=48");
     println!("long_scalar_leaf_executed=false");
     for (cutoff, compiled) in candidates.iter().take(8) {
@@ -235,13 +235,13 @@ fn main() {
                 .is_some()
         );
     }
-    let mut digit_frontier = vec![item(79); 906];
-    digit_frontier.extend(witness(&maximum_frontier_words));
+    let mut digit_headroom_frontier = vec![item(79); 906];
+    digit_headroom_frontier.extend(witness(&headroom_frontier_words));
     let digit_frontier = execute_raw_script_with_inputs_strict(
         u5_packed_grouped::decode_digits(906)
             .compile_with_policy()
             .to_bytes(),
-        digit_frontier,
+        digit_headroom_frontier,
     );
     assert!(
         digit_frontier.error.is_none(),
@@ -256,8 +256,8 @@ fn main() {
         "digit_decoder_stack_items={}",
         u5_packed_grouped::DIGIT_STACK_ITEMS
     );
-    println!("digit_decoder_maximum_preserved_prefix_items=906");
-    println!("digit_decoder_maximum_preserved_prefix_strict_peak=999");
+    println!("digit_decoder_headroom_one_preserved_prefix_items=906");
+    println!("digit_decoder_headroom_one_preserved_prefix_strict_peak=999");
     println!("digit_decoder_canonical_gap_rejections=19");
     println!("digit_decoder_auxiliary_hints_per_invocation=0");
     println!("digit_decoder_auxiliary_hints_for_47_invocations=0");
