@@ -1538,8 +1538,10 @@ concatenation of two hostile 32-byte nodes. Current Script can hash one stack
 item but has no enabled native byte concatenation/splitting boundary, so a
 compact adapter cannot bind separately supplied nodes to a 64-byte witness
 blob. The repository's mixed-hash path commits to nested SHA256/RIPEMD160
-outputs and is not TapBranch. A full u4 SHA256 circuit remains possible but is
-not a compact native primitive; this inspected result is tracked under OP-021.
+outputs and is not TapBranch. PR #17 provides a fixed-prefix u4 circuit for
+already ordered nibble-encoded nodes; its generated script is unoptimized and
+not a compact native primitive, and the fragment remains unclassified until a
+complete-spend validation. This inspected result is tracked under OP-021.
 ## NR-058: Constant-composition byte recovery is not yet a composable Script primitive
 
 The fixed-composition Winternitz verifier locally authenticates 49 digit slots,

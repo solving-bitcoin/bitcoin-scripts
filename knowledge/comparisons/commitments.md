@@ -5,6 +5,7 @@
 | Preimage length | `len(preimage)-offset` | 44 | 18–524 | 3 | Range coupled to item size |
 | Mixed hash path | 31 authenticated bits | 457 | 78 | 33 | Starting preimage must be independently bound; mixed-hash assumption |
 | Four-way mixed hash path | 16 authenticated base-4 digits / 31 bits | 438 | 61 | 19 | Tapscript `MINIMALIF` required; non-standard mixed-hash code |
+| TapBranch u4 hash | BIP341 tagged hash over two ordered nodes | <!-- metric:tapbranch_hash_u4 -->1106723<!-- /metric:tapbranch_hash_u4 --> | <!-- metric:tapbranch_hash_u4_witness -->161<!-- /metric:tapbranch_hash_u4_witness --> | <!-- metric:tapbranch_hash_u4_stack -->969<!-- /metric:tapbranch_hash_u4_stack --> | Unclassified; above standard transaction-weight policy |
 | Two-round mixed hash chain | 4-bit path → 3-bit path | 80 | 45 | 8 | Independently bind the start and checkpoint order |
 | Lamport 2-bit | Select one of four preimages | 96 | 11 | small | Strictly one-time |
 
@@ -29,3 +30,8 @@ cannot bind two hostile 32-byte nodes into the tagged `TapBranch` SHA256
 preimage without an enabled concatenation/splitting operation. See
 [NR-057](../negative-results/index.md#nr-057-native-taproot-merkle-branch-adapter-is-not-available)
 and [OP-021](../open-problems.md#op-021--taproot-merkle-path-verifier).
+
+The TapBranch row is a fixed-prefix u4 boundary measurement. Tapscript removes
+the legacy 10,000-byte and 201-opcode limits, but the measured script is above
+standard transaction-weight policy and has not been validated as a complete
+spend. Its node ordering is a caller precondition.

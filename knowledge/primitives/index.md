@@ -77,6 +77,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Mixed-hash path commitment](hash-path-integer.md)
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
+- [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
 ## Introspection
 
