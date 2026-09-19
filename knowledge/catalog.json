@@ -3930,6 +3930,7 @@
         "Messages limited to one 1,024-byte chunk",
         "No parent-node compression or multi-chunk tree API",
         "Only unkeyed 32-byte output is implemented",
+        "Keyed and derive-key modes are not implemented",
         "Local witness-input and peak-metric execution disables the stack-limit check; Bitcoin Core consensus and policy validation were not performed",
         "A wholly padded final second input group is ignored and not bound",
         "BLAKE3 XOF output-block counter is not implemented"
@@ -3939,7 +3940,8 @@
         "OP-003",
         "OP-013",
         "OP-023",
-        "OP-024"
+        "OP-024",
+        "OP-027"
       ]
     },
     {
@@ -4064,6 +4066,7 @@
       "limitations": [
         "Messages are limited to 32 bytes and the length is fixed when the script is generated",
         "Only unkeyed 32-byte output and its 128-bit prefix are implemented",
+        "Keyed and derive-key modes are not implemented",
         "The direct u4 layout uses up to 64 witness items and differs from the selected-limb API",
         "Bitcoin Core consensus and policy validation were not performed",
         "BLAKE3 XOF output-block counter is not implemented"
@@ -4072,7 +4075,8 @@
         "OP-001",
         "OP-003",
         "OP-013",
-        "OP-024"
+        "OP-024",
+        "OP-027"
       ]
     },
     {

@@ -915,3 +915,11 @@ digest. **Complete when:** a generation-time output length supports at least a
 64-byte XOF vector, matches the independent BLAKE3 implementation, records the
 additional output-block compression/routing/cleanup and witness shape, and
 passes the combined 1,000-item stack check for the documented composition.
+
+## OP-027 — BLAKE3 keyed-mode frontier
+
+Price a keyed BLAKE3 construction for the existing 32-byte input profile.
+**Complete when:** a deterministic key-and-message vector matches the
+independent BLAKE3 implementation, records the eight key words and
+`KEYED_HASH` flag handling, reports witness and combined-stack costs, and
+compares the result with the unkeyed profile under the same compilation policy.
