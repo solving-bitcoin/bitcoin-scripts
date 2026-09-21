@@ -2019,6 +2019,7 @@ fn metrics() -> Vec<Metric> {
     );
     let three_check_signature = pointlocks::three_check::sign(pointlock_secret).unwrap();
     let three_check_point_lock = pointlocks::three_check::point_lock(pointlock_public).unwrap();
+    let two_check_point_lock = pointlocks::two_check::point_lock(pointlock_public).unwrap();
     assert_eq!(three_check_signature.to_vec().len(), 60);
 
     let division_witness = vec![scriptnum(14), scriptnum(119)];
@@ -3897,6 +3898,16 @@ fn metrics() -> Vec<Metric> {
             value: script_len(three_check_point_lock),
         },
         Metric {
+            readme: "src/signatures/pointlocks/two_check/README.md",
+            key: "pointlock_two_check_script",
+            value: script_len(two_check_point_lock),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/two_check/README.md",
+            key: "pointlock_two_check_core_witness",
+            value: witness_size(&[vec![0x51]]) + witness_size(&[]),
+        },
+        Metric {
             readme: "src/signatures/schnorr/README.md",
             key: "secp256k1_schnorr_script",
             value: script_len(schnorr_script.clone()),
@@ -4120,6 +4131,149 @@ fn metrics() -> Vec<Metric> {
 #[ignore = "expensive full-repository metric regeneration; run explicitly with --ignored"]
 fn readme_metrics_are_current() {
     check_readme_metrics(metrics());
+    check_readme_metrics(committed_two_check_metrics());
+}
+
+fn committed_two_check_metrics() -> Vec<Metric> {
+    let secret = bitcoin::secp256k1::SecretKey::from_slice(&[7; 32]).unwrap();
+    let target = bitcoin::secp256k1::PublicKey::from_secret_key(
+        &bitcoin::secp256k1::Secp256k1::new(), &secret,
+    );
+    let signature = pointlocks::committed_two_check::sign(secret).unwrap();
+    let lock = pointlocks::committed_two_check::point_lock(
+        target, pointlocks::committed_two_check::signature_commitment(&signature),
+    ).unwrap();
+    let batch = script! {
+        for i in 0..5 {
+            { lock.clone() }
+            if i < 4 { OP_VERIFY }
+        }
+    };
+    vec![
+        Metric {
+            readme: "src/signatures/pointlocks/committed_two_check/README.md",
+            key: "pointlock_hash160_two_check_script",
+            value: script_len(lock),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/committed_two_check/README.md",
+            key: "pointlock_hash160_two_check_batch5_script",
+            value: script_len(batch),
+        },
+    ]
+}
+
+#[test]
+fn pointlock_metrics_are_current() {
+    check_readme_metrics(committed_two_check_metrics());
+    let sum_setup = pointlocks::sum_key::setup_from_nonce(
+        bitcoin::secp256k1::SecretKey::from_slice(&[7u8; 32]).unwrap(),
+    ).unwrap();
+    check_readme_metrics(vec![Metric {
+        readme: "src/signatures/pointlocks/sum_key/README.md",
+        key: "pointlock_sum_key_script",
+        value: script_len(pointlocks::sum_key::common_generator_lock(
+            sum_setup.verification_key,
+        ).unwrap()),
+    }]);
+    let secret = bitcoin::secp256k1::SecretKey::from_slice(&[7u8; 32]).unwrap();
+    let target = bitcoin::secp256k1::PublicKey::from_secret_key(
+        &bitcoin::secp256k1::Secp256k1::new(), &secret,
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/pointlocks/three_check/README.md",
+            key: "pointlock_three_check_script",
+            value: script_len(pointlocks::three_check::point_lock(target).unwrap()),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/two_check/README.md",
+            key: "pointlock_two_check_script",
+            value: script_len(pointlocks::two_check::point_lock(target).unwrap()),
+        },
+        Metric {
+            readme: "src/signatures/pointlocks/two_check/README.md",
+            key: "pointlock_two_check_core_witness",
+            // P2WSH OP_TRUE helper plus the empty legacy-input witness vector.
+            // The two transaction marker/flag bytes are excluded here.
+            value: witness_size(&[vec![0x51]]) + witness_size(&[]),
+        },
+    ]);
+}
+
+/// Sizes recomputed from complete Core-validated transactions. The dedicated
+/// pointlock_bare_publication_vectors binary checks artifact source provenance
+/// and native extraction; this test does not regenerate or rerun the experiment.
+#[test]
+fn pointlock_bare_publication_metrics_are_current() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let manifest: serde_json::Value = serde_json::from_slice(&fs::read(
+        root.join("research/pointlocks-2026-09-17/bare-publication-transactions.json"),
+    ).unwrap()).unwrap();
+    let decode = |value: &serde_json::Value| -> bitcoin::Transaction {
+        let raw: Vec<u8> = value["hex"].as_str().unwrap().as_bytes().chunks_exact(2)
+            .map(|p| u8::from_str_radix(std::str::from_utf8(p).unwrap(), 16).unwrap()).collect();
+        bitcoin::consensus::deserialize(&raw).unwrap()
+    };
+    let funding = decode(&manifest["funding"]);
+    let spending = decode(&manifest["cases"][0]["transaction"]);
+    let maximum = decode(&manifest["cases"].as_array().unwrap().iter()
+        .find(|case| case["name"] == "message-zero").unwrap()["transaction"]);
+    let readme = "src/signatures/pointlocks/sum_key/README.md";
+    check_readme_metrics(vec![
+        Metric { readme, key: "pointlock_bare_pool_script", value: funding.output[1].script_pubkey.len() },
+        Metric { readme, key: "pointlock_bare_publication_vbytes", value: funding.vsize() + spending.vsize() },
+        Metric { readme, key: "pointlock_bare_publication_max_vbytes", value: funding.vsize() + maximum.vsize() },
+    ]);
+}
+
+/// Check native pool artifacts and the explicitly separate publication estimate.
+#[test]
+fn pointlock_clamped_lookup_metrics_are_current() {
+    use bitcoin::hashes::{sha256, Hash};
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let read = |path: &str| -> serde_json::Value {
+        serde_json::from_slice(&fs::read(root.join(path)).unwrap()).unwrap()
+    };
+    let built_path = "research/pointlocks-2026-09-17/clamped-lookup-comparison.json";
+    let built = read(built_path);
+    let report = read("research/pointlocks-2026-09-17/clamped-lookup-core-check.json");
+    assert_eq!(report["all_expectations_met"], true);
+    assert_eq!(report["full_publication_validated"], false);
+    assert_eq!(sha256::Hash::hash(&fs::read(root.join(built_path)).unwrap()).to_string(), report["vectors_sha256"]);
+    for artifact in [&built, &report] {
+        for (path, expected) in artifact["source_sha256"].as_object().unwrap() {
+            assert_eq!(sha256::Hash::hash(&fs::read(root.join(path)).unwrap()).to_string(), expected.as_str().unwrap(), "{path}");
+        }
+    }
+    let native = report["results"].as_array().unwrap();
+    assert_eq!(native.len(), 78);
+    assert_eq!(native.iter().filter(|r|r["consensus"]["accepted"]==true).count(), 30);
+    assert_eq!(native.iter().map(|r|r["recovered"].as_array().unwrap().len()).sum::<usize>(), 282);
+    let mut metrics = vec![];
+    let mut script_total = 0usize;
+    for (n, count, key) in [(67, 10, "pointlock_clamped_pool_67_script"), (68, 38, "pointlock_clamped_pool_68_script")] {
+        let name = format!("{n}-12-true-first");
+        let fixture = built["cases"].as_array().unwrap().iter().find(|r|r["name"]==name).unwrap();
+        let checked = native.iter().find(|r|r["name"]==name).unwrap();
+        assert_eq!(checked["consensus"]["accepted"], true);
+        let bytes = fixture["script_hex"].as_str().unwrap().len()/2;
+        assert_eq!(checked["script_bytes"], bytes);
+        assert_eq!(checked["static_non_push_opcodes"], 192);
+        assert_eq!(checked["hint_items"], 12);
+        assert_eq!(checked["entry_items"], 36);
+        script_total += count*bytes;
+        metrics.push(Metric {readme:"src/signatures/pointlocks/sum_key/README.md",key,value:bytes});
+    }
+    // Independent stripped-byte accounting; witness totals include each empty
+    // bare-input vector. These are sizing shapes, not Core-mined publications.
+    let funding = 94+48*11+script_total+17;
+    let spending = 94+48*(43+1296)+(68+48+3)/4;
+    assert_eq!(built["mixed"]["sizes"]["funding_vbytes"],funding);
+    assert_eq!(built["mixed"]["sizes"]["spending_vbytes"],spending);
+    metrics.push(Metric {readme:"src/signatures/pointlocks/sum_key/README.md",
+        key:"pointlock_clamped_publication_estimate",value:funding+spending});
+    check_readme_metrics(metrics);
 }
 
 /// Exercise every Winternitz profile without the ignored repository-wide suite.

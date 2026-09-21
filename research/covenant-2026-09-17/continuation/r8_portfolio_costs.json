@@ -1,0 +1,103 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Host cost models only; no native script or Core execution.",
+  "exact_small_models": [
+    {
+      "portfolio_rows": 1,
+      "type_assignments": 2,
+      "reciprocal_of_mean_pair_mass": "128/5",
+      "mean_reciprocal_of_sum": "40",
+      "mean_queries_independent_cell_model": "40"
+    },
+    {
+      "portfolio_rows": 2,
+      "type_assignments": 4,
+      "reciprocal_of_mean_pair_mass": "64/5",
+      "mean_reciprocal_of_sum": "82/5",
+      "mean_queries_independent_cell_model": "5165632/311023"
+    },
+    {
+      "portfolio_rows": 3,
+      "type_assignments": 8,
+      "reciprocal_of_mean_pair_mass": "128/15",
+      "mean_reciprocal_of_sum": "10",
+      "mean_queries_independent_cell_model": "1190371030833664/115619819756833"
+    },
+    {
+      "portfolio_rows": 4,
+      "type_assignments": 16,
+      "reciprocal_of_mean_pair_mass": "32/5",
+      "mean_reciprocal_of_sum": "13043/1820",
+      "mean_queries_independent_cell_model": "30161537623949908040568832/4014271502045889193859035"
+    }
+  ],
+  "large_model": "Independent Poisson sparse width counts; common widths replaced by their mean; free classification; no memory, EC arithmetic, audit, or curve-independence claim.",
+  "results": [
+    {
+      "minimum_r_der_bytes": 24,
+      "assumed_point_sample_cost_in_digest_query_units": 1,
+      "point_sample_bits": 62.96586124497682,
+      "expected_query_surrogate_bits": 62.92837789415186,
+      "optimistic_expected_input_cost_bits": 63.9472413002518,
+      "quadrature_relative_difference": 9.56821133435426e-09
+    },
+    {
+      "minimum_r_der_bytes": 24,
+      "assumed_point_sample_cost_in_digest_query_units": 2,
+      "point_sample_bits": 62.47477062849448,
+      "expected_query_surrogate_bits": 63.43316749702898,
+      "optimistic_expected_input_cost_bits": 64.45411902173875,
+      "quadrature_relative_difference": 1.0158597962828253e-08
+    },
+    {
+      "minimum_r_der_bytes": 24,
+      "assumed_point_sample_cost_in_digest_query_units": 4,
+      "point_sample_bits": 61.98316386701418,
+      "expected_query_surrogate_bits": 63.939576237084275,
+      "optimistic_expected_input_cost_bits": 64.96153465797549,
+      "quadrature_relative_difference": 1.1105734776251097e-08
+    },
+    {
+      "minimum_r_der_bytes": 24,
+      "assumed_point_sample_cost_in_digest_query_units": 16,
+      "point_sample_bits": 60.99633805543101,
+      "expected_query_surrogate_bits": 64.95604041970047,
+      "optimistic_expected_input_cost_bits": 65.97632993315727,
+      "quadrature_relative_difference": 1.5257060947959644e-08
+    },
+    {
+      "minimum_r_der_bytes": 25,
+      "assumed_point_sample_cost_in_digest_query_units": 1,
+      "point_sample_bits": 63.00564555203442,
+      "expected_query_surrogate_bits": 63.00529332366911,
+      "optimistic_expected_input_cost_bits": 64.00546944860116,
+      "quadrature_relative_difference": 5.2760180668798284e-09
+    },
+    {
+      "minimum_r_der_bytes": 25,
+      "assumed_point_sample_cost_in_digest_query_units": 2,
+      "point_sample_bits": 62.50579112762923,
+      "expected_query_surrogate_bits": 63.50529354834093,
+      "optimistic_expected_input_cost_bits": 64.5055423594367,
+      "quadrature_relative_difference": 5.277090764366221e-09
+    },
+    {
+      "minimum_r_der_bytes": 25,
+      "assumed_point_sample_cost_in_digest_query_units": 4,
+      "point_sample_bits": 62.005996525415895,
+      "expected_query_surrogate_bits": 64.00529401808019,
+      "optimistic_expected_input_cost_bits": 65.00564531450799,
+      "quadrature_relative_difference": 5.278614878534427e-09
+    },
+    {
+      "minimum_r_der_bytes": 25,
+      "assumed_point_sample_cost_in_digest_query_units": 16,
+      "point_sample_bits": 61.006693402129976,
+      "expected_query_surrogate_bits": 65.00529715467933,
+      "optimistic_expected_input_cost_bits": 66.00599544731655,
+      "quadrature_relative_difference": 5.283808279799018e-09
+    }
+  ],
+  "all_expectations_met": true
+}

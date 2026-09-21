@@ -1,0 +1,14 @@
+--- a/src/validation.cpp
++++ b/src/validation.cpp
+@@ -1258,7 +1258,10 @@
+     const CTransaction& tx = *ws.m_ptx;
+     TxValidationState& state = ws.m_state;
+ 
+-    constexpr unsigned int scriptVerifyFlags = STANDARD_SCRIPT_VERIFY_FLAGS;
++    // Opt-in test-network policy: still run the active consensus script flags.
++    const unsigned int scriptVerifyFlags = m_pool.m_opts.require_standard
++        ? STANDARD_SCRIPT_VERIFY_FLAGS
++        : GetBlockScriptFlags(*m_active_chainstate.m_chain.Tip(), m_active_chainstate.m_chainman);
+ 
+     // Check input scripts and signatures.
+     // This is done last to help prevent CPU exhaustion denial-of-service attacks.

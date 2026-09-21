@@ -1,0 +1,78 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "os": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "source_sha256": "28e0cb4acd437f6967262b9a6b0c5b9d6720e225c34a6d6737549640e9984257",
+  "executable_sha256": "182effd9812f45d9ff4ceb30792e1e7ce50391f291626dac481410f64c7fae2b",
+  "scope": "Point-label generation, candidate/table generation, policy compilation and public checking for the entire115pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+  "serial": {
+    "workers": 1,
+    "samples": 5,
+    "command": [
+      "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_anchored_publication_probe",
+      "--benchmark",
+      "5",
+      "--workers",
+      "1"
+    ],
+    "summary": {
+      "generation_ms": {
+        "min": 291.80787499999997,
+        "median": 292.22875,
+        "max": 378.292334,
+        "first": 378.292334
+      },
+      "verification_ms": {
+        "min": 213.59783399999998,
+        "median": 213.719042,
+        "max": 213.96537500000002,
+        "first": 213.960791
+      },
+      "combined_ms": {
+        "min": 505.40570900000006,
+        "median": 505.926333,
+        "max": 592.2531250000001,
+        "first": 592.2531250000001
+      }
+    }
+  },
+  "parallel": {
+    "workers": 15,
+    "samples": 10,
+    "command": [
+      "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_anchored_publication_probe",
+      "--benchmark",
+      "10",
+      "--workers",
+      "15"
+    ],
+    "summary": {
+      "generation_ms": {
+        "min": 34.746875,
+        "median": 35.759042,
+        "max": 96.85475000000001,
+        "first": 96.85475000000001
+      },
+      "verification_ms": {
+        "min": 29.521375,
+        "median": 30.6565625,
+        "max": 31.644375000000004,
+        "first": 30.717417
+      },
+      "combined_ms": {
+        "min": 64.570083,
+        "median": 66.2314585,
+        "max": 127.572167,
+        "first": 127.572167
+      }
+    }
+  },
+  "parallel_transaction_bytes_identical_to_core_validated_fixture": true,
+  "parallel_fixture_generation_ms": 92.807291,
+  "parallel_fixture_verification_ms": 27.038125,
+  "opening_transaction_attempts": 1
+}

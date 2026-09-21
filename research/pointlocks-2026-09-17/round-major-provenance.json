@@ -1,0 +1,24 @@
+{
+  "scope": "New round-major size scan and small/full-pool Core validation; no fully signed publication, general extraction theorem or setup benchmark.",
+  "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "source_and_artifact_sha256": {
+    "examples/pointlock_anchored_round_major_probe.rs": "51c176534215508ddcfba0aa355fda92f1296dacb61f90f2ce6934c951f3f407",
+    "research/pointlocks-2026-09-17/round_major_core_check.py": "2f58cbc5d4fb0bf021b4eda29f8277450283be125736aec2d604bbeae90072f1",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "research/pointlocks-2026-09-17/anchored-round-major-size.json": "033d0b8c505721ac5ad0053ef3a8ca5e5f527079d39c32b54205c5153273c2b4",
+    "research/pointlocks-2026-09-17/round-major-core-check.json": "84ae0de9a9757d35bcab4150e943821454be1587b106db27cee3716fbe44a976",
+    "research/pointlocks-2026-09-17/round-major-full-pool-core-check.json": "5a96db6a19cc11a478240b8ee598d0cc2ddb5797335be2025b197a60d5ca4225",
+    "target/release/examples/pointlock_anchored_round_major_probe": "2100966605931362eb73e33ec00e723fddde4c55054208772646369efa787661"
+  },
+  "commands": [
+    "cargo test --locked --example pointlock_anchored_round_major_probe",
+    "cargo run --release --locked --example pointlock_anchored_round_major_probe",
+    "PYTHONDONTWRITEBYTECODE=1 python3 research/pointlocks-2026-09-17/round_major_core_check.py",
+    "PYTHONDONTWRITEBYTECODE=1 python3 research/pointlocks-2026-09-17/round_major_core_check.py --full-pool"
+  ],
+  "structural_tests_passed": 1,
+  "compiled_context_parameter_cases": 40,
+  "positive_native_cases": 18,
+  "negative_native_cases": 19
+}

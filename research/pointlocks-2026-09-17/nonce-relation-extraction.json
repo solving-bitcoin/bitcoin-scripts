@@ -1,0 +1,50 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "tests_run": 7,
+  "failures": 0,
+  "errors": 0,
+  "scope": "Offchain ECDSA affine-relation extraction; synthetic digest algebra, no new Bitcoin execution.",
+  "default_relations": [
+    {
+      "multiplier": "1",
+      "translation": "0"
+    },
+    {
+      "multiplier": "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+      "translation": "0"
+    },
+    {
+      "multiplier": "37718080363155996902926221483475020450927657555482586988616620542887997980018",
+      "translation": "0"
+    },
+    {
+      "multiplier": "78074008874160198520644763525212887401909906723592317393988542598630163514319",
+      "translation": "0"
+    },
+    {
+      "multiplier": "78074008874160198520644763525212887401909906723592317393988542598630163514318",
+      "translation": "0"
+    },
+    {
+      "multiplier": "37718080363155996902926221483475020450927657555482586988616620542887997980019",
+      "translation": "0"
+    }
+  ],
+  "signed_endomorphism_wrapper_cases": 12,
+  "translated_wrapper_cases": 8,
+  "anchor_only_relation_cases": 12,
+  "degenerate_relation_refused": true,
+  "unrelated_short_nonces_unresolved": true,
+  "incremental_onchain_bytes": 0,
+  "incremental_onchain_hint_items": 0,
+  "general_extraction_proved": false,
+  "sha256": {
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/pointlocks-2026-09-17/anchored_extraction.py": "4884237ccb725fa32209a46ee2da9a6b0a91cb3704f00ffe26db0e7ef5f3536d",
+    "research/pointlocks-2026-09-17/direct_context_extraction.py": "035cd82103e632ce4c700a18fc7792d18596c684cdd207c1c31241b3d7e02125",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/pointlocks-2026-09-17/publication_core_check.py": "58e91767cd038a63f8208a2ef15b5f146c11521c9676e34220aa4d457c85ca57",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

@@ -1,0 +1,1224 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Publicly checked two-scalar input labels for a binary Boolean gate.\n\nHost-only algebra experiment: deterministic public fixtures, no Bitcoin\nexecution, encrypted tables, ZKP, setup benchmark or full protocol claim.\nThe symbolic checks describe scalar-linear disclosure; curve commitments\nadd a discrete-log assumption, not information-theoretic secrecy.\n",
+  "tests_run": 9,
+  "failures": 0,
+  "errors": 0,
+  "public_curve_instances": 16,
+  "honest_curve_evaluations": 64,
+  "point_mutations_rejected": 10,
+  "malformed_public_cases_rejected": 11,
+  "malformed_openings_or_messages_rejected": 11,
+  "public_DLP_embedding_cases": 12,
+  "point_packing_range_counterexample": true,
+  "intended_truth_table_checked": true,
+  "disclosure_cases": [
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        0,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        0
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "truth": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "message": [
+        1,
+        1
+      ],
+      "selected_rank": 4,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "scalar_gate_screens": [
+    {
+      "modulus": 2,
+      "ambient_dimension": 3,
+      "projective_lines": 7,
+      "assignments_with_no_opposite_input_in_span": 168,
+      "assignments_with_hidden_linear_AND_zero_output": 0
+    },
+    {
+      "modulus": 3,
+      "ambient_dimension": 3,
+      "projective_lines": 13,
+      "assignments_with_no_opposite_input_in_span": 5616,
+      "assignments_with_hidden_linear_AND_zero_output": 0
+    }
+  ],
+  "per_gate": {
+    "secret_field_dimension": 6,
+    "public_point_count": 10,
+    "public_relation_count": 4,
+    "scalars_per_input_label": 2,
+    "selected_scalar_count": 4,
+    "output_scalar_count": 1,
+    "public_compressed_point_payload_bytes": 330,
+    "selected_scalar_payload_bytes": 128
+  },
+  "direct_scalar_linear_delivery": {
+    "rank_per_input_label": 2,
+    "minimum_independent_scalar_openings_per_label": 2,
+    "scope": "Independent honest masks; affine scalar recovery only, public constants quotiented out."
+  },
+  "one_layer_2048_bit_interface": {
+    "gates": 1024,
+    "scalar_openings": 4096,
+    "guarded_legacy_signature_push_floor_vbytes": 241664,
+    "scope": "This two-coordinate interface with one guarded legacy opening per scalar; signatures/pushes only, all other costs free. No native arbitrary-label wrapper supplied."
+  },
+  "native_scalar_binding_implemented": false,
+  "complete_verifier_implemented": false,
+  "bitcoin_execution": false,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "setup_benchmark": null,
+  "onchain_vbytes": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/vector_label_gate_probe.py": "497dae66c78b697dcfd4209359e649b0056e20dd7f08c9715ab5386335da2a6c",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

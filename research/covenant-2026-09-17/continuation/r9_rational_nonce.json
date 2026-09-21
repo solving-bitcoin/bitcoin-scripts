@@ -1,0 +1,424 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "duplicate_and_folding_checks": [
+    {
+      "numerator_cap": 15,
+      "denominator_count": 4,
+      "raw_fraction_count": 60,
+      "distinct_scalar_classes_up_to_sign": 39,
+      "duplicate_fractions_removed": 21,
+      "dyadic_numerator_sum": 312,
+      "same_size_dense_integer_numerator_sum": 780,
+      "folded_common_denominator": 8,
+      "folded_maximum_numerator": 120,
+      "folded_numerator_sum": 1408
+    },
+    {
+      "numerator_cap": 16,
+      "denominator_count": 4,
+      "raw_fraction_count": 64,
+      "distinct_scalar_classes_up_to_sign": 40,
+      "duplicate_fractions_removed": 24,
+      "dyadic_numerator_sum": 328,
+      "same_size_dense_integer_numerator_sum": 820,
+      "folded_common_denominator": 8,
+      "folded_maximum_numerator": 128,
+      "folded_numerator_sum": 1536
+    },
+    {
+      "numerator_cap": 32,
+      "denominator_count": 8,
+      "raw_fraction_count": 256,
+      "distinct_scalar_classes_up_to_sign": 144,
+      "duplicate_fractions_removed": 112,
+      "dyadic_numerator_sum": 2320,
+      "same_size_dense_integer_numerator_sum": 10440,
+      "folded_common_denominator": 128,
+      "folded_maximum_numerator": 4096,
+      "folded_numerator_sum": 100096
+    },
+    {
+      "numerator_cap": 60,
+      "denominator_count": 2,
+      "raw_fraction_count": 120,
+      "distinct_scalar_classes_up_to_sign": 90,
+      "duplicate_fractions_removed": 30,
+      "dyadic_numerator_sum": 2730,
+      "same_size_dense_integer_numerator_sum": 4095,
+      "folded_common_denominator": 2,
+      "folded_maximum_numerator": 120,
+      "folded_numerator_sum": 4560
+    }
+  ],
+  "curve_join": {
+    "scope": "Actual secp256k1 equations and deterministic hash-label digests; synthetic messages, not native transactions.",
+    "numerator_cap": 16,
+    "denominator_count": 4,
+    "digest_count": 128,
+    "public_signing_scalar": 7,
+    "retained_r_der_width_at_least": 32,
+    "complete_signature_item_bytes_if_serialized": 70,
+    "unique_original_digest_hashes": 128,
+    "tables_built": 4,
+    "total_grid_insertions": 512,
+    "total_modular_digest_doublings": 384,
+    "maximum_live_digest_records_in_streaming_layout": 128,
+    "verified_distinct_curve_signature_matches": 3,
+    "tables": [
+      {
+        "denominator": 1,
+        "distinct_nonce_points_generated": 16,
+        "new_digest_hashes": 128,
+        "modular_doublings_for_table_reuse": 0,
+        "point_increment_additions": 15,
+        "point_step_doublings": 0,
+        "base_scalar_multiplications": 0,
+        "original_grid_preimage_strategy": {
+          "nonempty_preimage_intervals": 33,
+          "bucket_lookups": 56,
+          "bucket_entry_reads": 56,
+          "interval_candidates": 22,
+          "on_demand_digest_transforms": 22,
+          "congruence_tests": 22
+        },
+        "digest_insertions": 128,
+        "retained_nonce_rows": 16,
+        "bucket_lookups": 56,
+        "bucket_entry_reads": 56,
+        "interval_candidates": 22,
+        "congruence_tests": 22,
+        "modular_windows": 33,
+        "wrapped_windows": 1,
+        "naive_pair_tests": 2048,
+        "distinct_hits": 0,
+        "occupied_buckets": 80,
+        "bucket_width": 904625697166532776746648320380374280100293470930272690489102837043110636675
+      },
+      {
+        "denominator": 2,
+        "distinct_nonce_points_generated": 8,
+        "new_digest_hashes": 0,
+        "modular_doublings_for_table_reuse": 128,
+        "point_increment_additions": 7,
+        "point_step_doublings": 1,
+        "base_scalar_multiplications": 1,
+        "original_grid_preimage_strategy": {
+          "nonempty_preimage_intervals": 28,
+          "bucket_lookups": 42,
+          "bucket_entry_reads": 42,
+          "interval_candidates": 12,
+          "on_demand_digest_transforms": 12,
+          "congruence_tests": 12
+        },
+        "digest_insertions": 128,
+        "retained_nonce_rows": 7,
+        "bucket_lookups": 30,
+        "bucket_entry_reads": 30,
+        "interval_candidates": 12,
+        "congruence_tests": 12,
+        "modular_windows": 14,
+        "wrapped_windows": 0,
+        "naive_pair_tests": 896,
+        "distinct_hits": 1,
+        "occupied_buckets": 82,
+        "bucket_width": 904625697166532776746648320380374280100293470930272690489102837043110636675
+      },
+      {
+        "denominator": 4,
+        "distinct_nonce_points_generated": 8,
+        "new_digest_hashes": 0,
+        "modular_doublings_for_table_reuse": 128,
+        "point_increment_additions": 7,
+        "point_step_doublings": 1,
+        "base_scalar_multiplications": 1,
+        "original_grid_preimage_strategy": {
+          "nonempty_preimage_intervals": 64,
+          "bucket_lookups": 68,
+          "bucket_entry_reads": 68,
+          "interval_candidates": 7,
+          "on_demand_digest_transforms": 7,
+          "congruence_tests": 7
+        },
+        "digest_insertions": 128,
+        "retained_nonce_rows": 8,
+        "bucket_lookups": 22,
+        "bucket_entry_reads": 19,
+        "interval_candidates": 7,
+        "congruence_tests": 7,
+        "modular_windows": 16,
+        "wrapped_windows": 0,
+        "naive_pair_tests": 1024,
+        "distinct_hits": 2,
+        "occupied_buckets": 80,
+        "bucket_width": 904625697166532776746648320380374280100293470930272690489102837043110636675
+      },
+      {
+        "denominator": 8,
+        "distinct_nonce_points_generated": 8,
+        "new_digest_hashes": 0,
+        "modular_doublings_for_table_reuse": 128,
+        "point_increment_additions": 7,
+        "point_step_doublings": 1,
+        "base_scalar_multiplications": 1,
+        "original_grid_preimage_strategy": {
+          "nonempty_preimage_intervals": 128,
+          "bucket_lookups": 152,
+          "bucket_entry_reads": 148,
+          "interval_candidates": 18,
+          "on_demand_digest_transforms": 18,
+          "congruence_tests": 18
+        },
+        "digest_insertions": 128,
+        "retained_nonce_rows": 8,
+        "bucket_lookups": 36,
+        "bucket_entry_reads": 30,
+        "interval_candidates": 18,
+        "congruence_tests": 18,
+        "modular_windows": 16,
+        "wrapped_windows": 0,
+        "naive_pair_tests": 1024,
+        "distinct_hits": 0,
+        "occupied_buckets": 78,
+        "bucket_width": 904625697166532776746648320380374280100293470930272690489102837043110636675
+      }
+    ]
+  },
+  "work_proxy": {
+    "scope": "Fixed expected-pair-count proxy lambda=1 only; NOT expected total work until a solution.",
+    "regimes": [
+      {
+        "regime": "unit-costs",
+        "assumed_costs": {
+          "hash": 1,
+          "point": 1,
+          "grid_insert": 1,
+          "transform": 1,
+          "candidate": 1
+        },
+        "best_denominator_count_among_1_to_8": 1,
+        "rows": [
+          {
+            "denominator_count": 1,
+            "digest_side_coefficient": 2,
+            "point_side_coefficient": 1.5,
+            "optimal_digest_to_point_count_ratio": 0.75,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 3.4641016151377544,
+            "cost_ratio_to_one_denominator_proxy": 1.0
+          },
+          {
+            "denominator_count": 2,
+            "digest_side_coefficient": 4,
+            "point_side_coefficient": 1.3333333333333333,
+            "optimal_digest_to_point_count_ratio": 0.3333333333333333,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 4.618802153517006,
+            "cost_ratio_to_one_denominator_proxy": 1.3333333333333333
+          },
+          {
+            "denominator_count": 3,
+            "digest_side_coefficient": 6,
+            "point_side_coefficient": 1.25,
+            "optimal_digest_to_point_count_ratio": 0.20833333333333334,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 5.477225575051661,
+            "cost_ratio_to_one_denominator_proxy": 1.5811388300841898
+          },
+          {
+            "denominator_count": 4,
+            "digest_side_coefficient": 8,
+            "point_side_coefficient": 1.2,
+            "optimal_digest_to_point_count_ratio": 0.15,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 6.196773353931867,
+            "cost_ratio_to_one_denominator_proxy": 1.788854381999832
+          },
+          {
+            "denominator_count": 5,
+            "digest_side_coefficient": 10,
+            "point_side_coefficient": 1.1666666666666667,
+            "optimal_digest_to_point_count_ratio": 0.11666666666666667,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 6.831300510639733,
+            "cost_ratio_to_one_denominator_proxy": 1.972026594366539
+          },
+          {
+            "denominator_count": 6,
+            "digest_side_coefficient": 12,
+            "point_side_coefficient": 1.1428571428571428,
+            "optimal_digest_to_point_count_ratio": 0.09523809523809523,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 7.406560798180411,
+            "cost_ratio_to_one_denominator_proxy": 2.138089935299395
+          },
+          {
+            "denominator_count": 7,
+            "digest_side_coefficient": 14,
+            "point_side_coefficient": 1.125,
+            "optimal_digest_to_point_count_ratio": 0.08035714285714286,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 7.937253933193772,
+            "cost_ratio_to_one_denominator_proxy": 2.2912878474779204
+          },
+          {
+            "denominator_count": 8,
+            "digest_side_coefficient": 16,
+            "point_side_coefficient": 1.1111111111111112,
+            "optimal_digest_to_point_count_ratio": 0.06944444444444445,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 8.432740427115679,
+            "cost_ratio_to_one_denominator_proxy": 2.4343224778007384
+          }
+        ]
+      },
+      {
+        "regime": "expensive-native-hash",
+        "assumed_costs": {
+          "hash": 64,
+          "point": 1,
+          "grid_insert": 1,
+          "transform": 1,
+          "candidate": 1
+        },
+        "best_denominator_count_among_1_to_8": 5,
+        "rows": [
+          {
+            "denominator_count": 1,
+            "digest_side_coefficient": 65,
+            "point_side_coefficient": 1.5,
+            "optimal_digest_to_point_count_ratio": 0.023076923076923078,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 19.748417658131498,
+            "cost_ratio_to_one_denominator_proxy": 1.0
+          },
+          {
+            "denominator_count": 2,
+            "digest_side_coefficient": 67,
+            "point_side_coefficient": 1.3333333333333333,
+            "optimal_digest_to_point_count_ratio": 0.01990049751243781,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.90326250501043,
+            "cost_ratio_to_one_denominator_proxy": 0.9572039052570336
+          },
+          {
+            "denominator_count": 3,
+            "digest_side_coefficient": 69,
+            "point_side_coefficient": 1.25,
+            "optimal_digest_to_point_count_ratio": 0.018115942028985508,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.57417562100671,
+            "cost_ratio_to_one_denominator_proxy": 0.9405399431259603
+          },
+          {
+            "denominator_count": 4,
+            "digest_side_coefficient": 71,
+            "point_side_coefficient": 1.2,
+            "optimal_digest_to_point_count_ratio": 0.016901408450704224,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.46076921474292,
+            "cost_ratio_to_one_denominator_proxy": 0.9347973865208192
+          },
+          {
+            "denominator_count": 5,
+            "digest_side_coefficient": 73,
+            "point_side_coefficient": 1.1666666666666667,
+            "optimal_digest_to_point_count_ratio": 0.015981735159817354,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.457157599876172,
+            "cost_ratio_to_one_denominator_proxy": 0.9346145052931042
+          },
+          {
+            "denominator_count": 6,
+            "digest_side_coefficient": 75,
+            "point_side_coefficient": 1.1428571428571428,
+            "optimal_digest_to_point_count_ratio": 0.015238095238095238,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.51640199545103,
+            "cost_ratio_to_one_denominator_proxy": 0.9376144618769909
+          },
+          {
+            "denominator_count": 7,
+            "digest_side_coefficient": 77,
+            "point_side_coefficient": 1.125,
+            "optimal_digest_to_point_count_ratio": 0.01461038961038961,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.614510468986285,
+            "cost_ratio_to_one_denominator_proxy": 0.942582377546673
+          },
+          {
+            "denominator_count": 8,
+            "digest_side_coefficient": 79,
+            "point_side_coefficient": 1.1111111111111112,
+            "optimal_digest_to_point_count_ratio": 0.014064697609001408,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 18.737959096740262,
+            "cost_ratio_to_one_denominator_proxy": 0.9488334418036184
+          }
+        ]
+      },
+      {
+        "regime": "expensive-point-and-hash",
+        "assumed_costs": {
+          "hash": 64,
+          "point": 16,
+          "grid_insert": 1,
+          "transform": 1,
+          "candidate": 1
+        },
+        "best_denominator_count_among_1_to_8": 1,
+        "rows": [
+          {
+            "denominator_count": 1,
+            "digest_side_coefficient": 65,
+            "point_side_coefficient": 16.5,
+            "optimal_digest_to_point_count_ratio": 0.25384615384615383,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 65.49809157525127,
+            "cost_ratio_to_one_denominator_proxy": 1.0
+          },
+          {
+            "denominator_count": 2,
+            "digest_side_coefficient": 67,
+            "point_side_coefficient": 16.333333333333332,
+            "optimal_digest_to_point_count_ratio": 0.24378109452736316,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 66.16141876753652,
+            "cost_ratio_to_one_denominator_proxy": 1.0101274277819705
+          },
+          {
+            "denominator_count": 3,
+            "digest_side_coefficient": 69,
+            "point_side_coefficient": 16.25,
+            "optimal_digest_to_point_count_ratio": 0.23550724637681159,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 66.97014260101288,
+            "cost_ratio_to_one_denominator_proxy": 1.02247471629109
+          },
+          {
+            "denominator_count": 4,
+            "digest_side_coefficient": 71,
+            "point_side_coefficient": 16.2,
+            "optimal_digest_to_point_count_ratio": 0.22816901408450704,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 67.82919725310038,
+            "cost_ratio_to_one_denominator_proxy": 1.0355904366338808
+          },
+          {
+            "denominator_count": 5,
+            "digest_side_coefficient": 73,
+            "point_side_coefficient": 16.166666666666668,
+            "optimal_digest_to_point_count_ratio": 0.2214611872146119,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 68.70710783220807,
+            "cost_ratio_to_one_denominator_proxy": 1.0489940421129667
+          },
+          {
+            "denominator_count": 6,
+            "digest_side_coefficient": 75,
+            "point_side_coefficient": 16.142857142857142,
+            "optimal_digest_to_point_count_ratio": 0.21523809523809523,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 69.59063976467772,
+            "cost_ratio_to_one_denominator_proxy": 1.0624834722813945
+          },
+          {
+            "denominator_count": 7,
+            "digest_side_coefficient": 77,
+            "point_side_coefficient": 16.125,
+            "optimal_digest_to_point_count_ratio": 0.20941558441558442,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 70.47339923687518,
+            "cost_ratio_to_one_denominator_proxy": 1.075961108819602
+          },
+          {
+            "denominator_count": 8,
+            "digest_side_coefficient": 79,
+            "point_side_coefficient": 16.11111111111111,
+            "optimal_digest_to_point_count_ratio": 0.2039381153305204,
+            "coefficient_multiplying_one_over_sqrt_pair_mass": 71.35202247386623,
+            "cost_ratio_to_one_denominator_proxy": 1.0893755948887356
+          }
+        ]
+      }
+    ]
+  },
+  "all_expectations_met": true
+}

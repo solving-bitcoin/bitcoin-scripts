@@ -1,0 +1,48 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "boundary": "Host serialization only; synthetic public data; no Script execution.",
+  "core_reference": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "ordinary_cross_format_cases": 2280,
+  "acp_prefix_contradictions": 1140,
+  "non_acp_self_dependent_prefix_checks": 1140,
+  "legacy_single_bug_cases_excluded": 24,
+  "legacy_preimages_with_exactly_four_trailing_bytes": 2280,
+  "count_boundaries": [
+    {
+      "inputs": 1,
+      "count_bytes": "01",
+      "self_dependent_txid_prefix_bytes": 31
+    },
+    {
+      "inputs": 2,
+      "count_bytes": "02",
+      "self_dependent_txid_prefix_bytes": 31
+    },
+    {
+      "inputs": 252,
+      "count_bytes": "fc",
+      "self_dependent_txid_prefix_bytes": 31
+    },
+    {
+      "inputs": 253,
+      "count_bytes": "fdfd00",
+      "self_dependent_txid_prefix_bytes": 29
+    },
+    {
+      "inputs": 1000,
+      "count_bytes": "fde803",
+      "self_dependent_txid_prefix_bytes": 29
+    }
+  ],
+  "hint_items": 0,
+  "witness_bytes": 0,
+  "script_metrics": "Not applicable: no complete script or witness exists.",
+  "ideal_hash_model": {
+    "necessary_event": "H(X) = CompactSize(len(X)/36) || X[:32-len(CompactSize(len(X)/36))]",
+    "event_bits": 256,
+    "union_bound": "Q / 2^256 for Q fresh ideal H256 queries",
+    "bound_at_Q_2pow64": "2^-192",
+    "scope": "Exact preimage overlap only; not distinct-preimage digest relations or SHA256 cryptanalysis."
+  }
+}

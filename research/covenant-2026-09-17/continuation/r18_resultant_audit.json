@@ -1,0 +1,502 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Independent host polynomial and finite-group audit; no Script or Core execution.",
+  "independence": "No construction imports. Euclidean resultants replace Sylvester determinants; polynomial coefficients use direct K composition; Frobenius gcd and curve enumeration are independently implemented.",
+  "secp256k1_cases": [
+    {
+      "exponent": 0,
+      "source_sign": -1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 97,
+      "direct_K_evaluations": 776,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 2,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 0,
+      "source_sign": -1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 98,
+      "direct_K_evaluations": 784,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 3,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 0,
+      "source_sign": 1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 98,
+      "direct_K_evaluations": 784,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 3,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 0,
+      "source_sign": 1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 104,
+      "direct_K_evaluations": 832,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 9,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 1,
+      "source_sign": -1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 96,
+      "direct_K_evaluations": 768,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 1,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 1,
+      "source_sign": -1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 95,
+      "direct_K_evaluations": 760,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 0,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 1,
+      "source_sign": 1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 96,
+      "direct_K_evaluations": 768,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 1,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 1,
+      "source_sign": 1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 99,
+      "direct_K_evaluations": 792,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 4,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 2,
+      "source_sign": -1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 96,
+      "direct_K_evaluations": 768,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 1,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 2,
+      "source_sign": -1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 96,
+      "direct_K_evaluations": 768,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 1,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 2,
+      "source_sign": 1,
+      "target_sign": -1,
+      "independent_Euclidean_resultants": 95,
+      "direct_K_evaluations": 760,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 0,
+      "exact_source_branch_roots": 0
+    },
+    {
+      "exponent": 2,
+      "source_sign": 1,
+      "target_sign": 1,
+      "independent_Euclidean_resultants": 99,
+      "direct_K_evaluations": 792,
+      "independent_Frobenius_gcd_matches": true,
+      "root_product_matches_gcd": true,
+      "field_roots": 4,
+      "exact_source_branch_roots": 0
+    }
+  ],
+  "toy_complete_cases": [
+    {
+      "p": 43,
+      "n": 31,
+      "generator": [
+        2,
+        12
+      ],
+      "beta": 6,
+      "lambda": 5,
+      "four_root_sets": 1,
+      "complete_affine_maps_tested": 720,
+      "nonzero_translation_three_root_matches": 0,
+      "necessary_K_equations_checked": 16,
+      "matches": [],
+      "all_nonzero_slope_translation_maps_tested": 3600,
+      "non_endomorphism_positive_controls": [
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            16
+          ],
+          "slope": 13,
+          "shift": 7,
+          "exponent": null,
+          "A": 16,
+          "B": 2,
+          "C": 7,
+          "D": 6,
+          "source_gap": -31,
+          "target_gap": 31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            16
+          ],
+          "slope": 18,
+          "shift": 24,
+          "exponent": null,
+          "A": 16,
+          "B": 2,
+          "C": 7,
+          "D": 6,
+          "source_gap": -31,
+          "target_gap": 31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            29
+          ],
+          "slope": 12,
+          "shift": 22,
+          "exponent": null,
+          "A": 2,
+          "B": 15,
+          "C": 9,
+          "D": 5,
+          "source_gap": 31,
+          "target_gap": -31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            29
+          ],
+          "slope": 19,
+          "shift": 9,
+          "exponent": null,
+          "A": 2,
+          "B": 15,
+          "C": 9,
+          "D": 5,
+          "source_gap": 31,
+          "target_gap": -31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            16,
+            29
+          ],
+          "slope": 12,
+          "shift": 9,
+          "exponent": null,
+          "A": 29,
+          "B": 16,
+          "C": 22,
+          "D": 26,
+          "source_gap": 31,
+          "target_gap": -31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            16,
+            29
+          ],
+          "slope": 19,
+          "shift": 22,
+          "exponent": null,
+          "A": 29,
+          "B": 16,
+          "C": 22,
+          "D": 26,
+          "source_gap": 31,
+          "target_gap": -31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            15,
+            16,
+            29
+          ],
+          "slope": 13,
+          "shift": 24,
+          "exponent": null,
+          "A": 15,
+          "B": 29,
+          "C": 24,
+          "D": 25,
+          "source_gap": -31,
+          "target_gap": 31
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            15,
+            16,
+            29
+          ],
+          "slope": 18,
+          "shift": 7,
+          "exponent": null,
+          "A": 15,
+          "B": 29,
+          "C": 24,
+          "D": 25,
+          "source_gap": -31,
+          "target_gap": 31
+        }
+      ]
+    },
+    {
+      "p": 79,
+      "n": 67,
+      "generator": [
+        1,
+        18
+      ],
+      "beta": 23,
+      "lambda": 29,
+      "four_root_sets": 2,
+      "complete_affine_maps_tested": 3168,
+      "nonzero_translation_three_root_matches": 0,
+      "necessary_K_equations_checked": 0,
+      "matches": [],
+      "all_nonzero_slope_translation_maps_tested": 34848,
+      "non_endomorphism_positive_controls": []
+    },
+    {
+      "p": 163,
+      "n": 139,
+      "generator": [
+        2,
+        34
+      ],
+      "beta": 58,
+      "lambda": 96,
+      "four_root_sets": 4,
+      "complete_affine_maps_tested": 13248,
+      "nonzero_translation_three_root_matches": 0,
+      "necessary_K_equations_checked": 16,
+      "matches": [],
+      "all_nonzero_slope_translation_maps_tested": 304704,
+      "non_endomorphism_positive_controls": [
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_triple": [
+            3,
+            58,
+            81
+          ],
+          "slope": 54,
+          "shift": 95,
+          "exponent": null,
+          "A": 81,
+          "B": 3,
+          "C": 39,
+          "D": 16,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_triple": [
+            3,
+            58,
+            81
+          ],
+          "slope": 85,
+          "shift": 44,
+          "exponent": null,
+          "A": 81,
+          "B": 3,
+          "C": 39,
+          "D": 16,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_triple": [
+            58,
+            81,
+            136
+          ],
+          "slope": 54,
+          "shift": 44,
+          "exponent": null,
+          "A": 58,
+          "B": 136,
+          "C": 100,
+          "D": 123,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_triple": [
+            58,
+            81,
+            136
+          ],
+          "slope": 85,
+          "shift": 95,
+          "exponent": null,
+          "A": 58,
+          "B": 136,
+          "C": 100,
+          "D": 123,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_triple": [
+            21,
+            30,
+            118
+          ],
+          "slope": 18,
+          "shift": 97,
+          "exponent": null,
+          "A": 21,
+          "B": 30,
+          "C": 65,
+          "D": 23,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_triple": [
+            21,
+            30,
+            118
+          ],
+          "slope": 121,
+          "shift": 42,
+          "exponent": null,
+          "A": 21,
+          "B": 30,
+          "C": 65,
+          "D": 23,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_triple": [
+            21,
+            109,
+            118
+          ],
+          "slope": 18,
+          "shift": 42,
+          "exponent": null,
+          "A": 118,
+          "B": 109,
+          "C": 74,
+          "D": 116,
+          "source_gap": -139,
+          "target_gap": -139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_triple": [
+            21,
+            109,
+            118
+          ],
+          "slope": 121,
+          "shift": 97,
+          "exponent": null,
+          "A": 118,
+          "B": 109,
+          "C": 74,
+          "D": 116,
+          "source_gap": -139,
+          "target_gap": -139
+        }
+      ]
+    },
+    {
+      "p": 211,
+      "n": 199,
+      "generator": [
+        3,
+        33
+      ],
+      "beta": 14,
+      "lambda": 106,
+      "four_root_sets": 2,
+      "complete_affine_maps_tested": 9504,
+      "nonzero_translation_three_root_matches": 0,
+      "necessary_K_equations_checked": 0,
+      "matches": [],
+      "all_nonzero_slope_translation_maps_tested": 313632,
+      "non_endomorphism_positive_controls": []
+    }
+  ],
+  "all_assertions_passed": true,
+  "no_arbitrary_slope_impossibility_claim": true
+}

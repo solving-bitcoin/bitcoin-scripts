@@ -1,0 +1,74 @@
+{
+  "question": "Do identical free ECDSA signatures and public keys force identical digests across CODESEPARATOR contexts?",
+  "answer": false,
+  "evidence": "differentially-validated",
+  "deployment_class": "unclassified",
+  "scope": "ECDSA equations compared with OpenSSL; synthetic unspent outpoint, no complete Bitcoin consensus execution.",
+  "openssl_version": "LibreSSL 3.3.6",
+  "vectors": [
+    {
+      "name": "allowed-output",
+      "script_pubkey": "6eadabac",
+      "script_codes": [
+        "6eadac",
+        "ac"
+      ],
+      "output_script": "00141111111111111111111111111111111111111111",
+      "digest_hex": [
+        "9445ff475017c14c5dcb47c141ad9f6ada88f793cb5f6f9cc56c41be1a22cc94",
+        "4a85bdb97cf98d43a99c1bd83d81f1efdaf10569880f9e93729423a0d799ab80"
+      ],
+      "same_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022024e020c6e98f1a045a1795f48215d6bd7fcbf91521a7e884a96c0f0ea144908a01",
+      "same_public_key": "02dce6ce810f724c27172e6cce942851c9b1207ed08e26f8475e41355c87baf0c9",
+      "known_private_scalar": "8e413bb94961bb72c3ac12d3b90d1093085d11777f0a2e2db48efa5106fb84a2",
+      "locally_verified": [
+        true,
+        true
+      ],
+      "openssl_verification": [
+        "Signature Verified Successfully",
+        "Signature Verified Successfully"
+      ],
+      "spending_transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006a473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022024e020c6e98f1a045a1795f48215d6bd7fcbf91521a7e884a96c0f0ea144908a012102dce6ce810f724c27172e6cce942851c9b1207ed08e26f8475e41355c87baf0c9ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+      "locking_script_bytes": 4,
+      "static_non_push_opcodes": 4,
+      "script_sig_bytes": 106,
+      "witness_bytes": 0,
+      "complete_input_stack_items": 2,
+      "hint_stack_items": 0,
+      "combined_stack_peak_by_inspection": 4
+    },
+    {
+      "name": "different-output",
+      "script_pubkey": "6eadabac",
+      "script_codes": [
+        "6eadac",
+        "ac"
+      ],
+      "output_script": "00142222222222222222222222222222222222222222",
+      "digest_hex": [
+        "3ce4eb85fa65b81259348c55bdddf5bb855b648a1f6af08918880e8c52a4b251",
+        "223ef1c2f1daffcb46da4911c6e29c7d41f41a0e82fdd099a169acb764c0c8c5"
+      ],
+      "same_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802200d52fce184455c23892d21a1fb7dac9f21b3a53dce368ff7bb8f30ea76f1f4c601",
+      "same_public_key": "030b2d92dd1849f5425b36411d63d1136855a0e04366110b699a5f887082069650",
+      "known_private_scalar": "6a09ddbcc380e016bb624e5db2117cea27dd597b3fbf004182c3b993d5eb02c1",
+      "locally_verified": [
+        true,
+        true
+      ],
+      "openssl_verification": [
+        "Signature Verified Successfully",
+        "Signature Verified Successfully"
+      ],
+      "spending_transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006a473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802200d52fce184455c23892d21a1fb7dac9f21b3a53dce368ff7bb8f30ea76f1f4c60121030b2d92dd1849f5425b36411d63d1136855a0e04366110b699a5f887082069650ffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+      "locking_script_bytes": 4,
+      "static_non_push_opcodes": 4,
+      "script_sig_bytes": 106,
+      "witness_bytes": 0,
+      "complete_input_stack_items": 2,
+      "hint_stack_items": 0,
+      "combined_stack_peak_by_inspection": 4
+    }
+  ]
+}

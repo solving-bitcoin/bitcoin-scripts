@@ -1,0 +1,361 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Share vector-label coordinates: a three-of-four algebraic binary gate.\n\nDeterministic host-only reference and exact subset-support screens. No native\npoint-lock wrapper, Bitcoin transaction, setup benchmark or full verifier.\n",
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "nonconstant_binary_truth_tables": 14,
+  "binary_gate_curve_evaluations": 56,
+  "larger_lookup_instances": 3,
+  "larger_lookup_curve_evaluations": 14,
+  "public_point_mutations_rejected": 6,
+  "malformed_point_encodings_rejected": 2,
+  "malformed_opening_cases_rejected": 9,
+  "intended_truth_table_checked": true,
+  "vector_wiring": [
+    {
+      "message": [
+        0,
+        0
+      ],
+      "missing_index": 0,
+      "selected_indices": [
+        1,
+        2,
+        3
+      ],
+      "selected_rank": 3,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "message": [
+        0,
+        1
+      ],
+      "missing_index": 1,
+      "selected_indices": [
+        0,
+        2,
+        3
+      ],
+      "selected_rank": 3,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "message": [
+        1,
+        0
+      ],
+      "missing_index": 2,
+      "selected_indices": [
+        0,
+        1,
+        3
+      ],
+      "selected_rank": 3,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "message": [
+        1,
+        1
+      ],
+      "missing_index": 3,
+      "selected_indices": [
+        0,
+        1,
+        2
+      ],
+      "selected_rank": 3,
+      "alternative_residual_ranks": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "support_screens": [
+    {
+      "n": 2,
+      "t": 1,
+      "subset_count": 2,
+      "support_pairs_examined": 3,
+      "valid_unordered_support_pairs": 1,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 3,
+      "t": 1,
+      "subset_count": 3,
+      "support_pairs_examined": 21,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 3,
+      "t": 2,
+      "subset_count": 3,
+      "support_pairs_examined": 21,
+      "valid_unordered_support_pairs": 3,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 4,
+      "t": 1,
+      "subset_count": 4,
+      "support_pairs_examined": 105,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 4,
+      "t": 2,
+      "subset_count": 6,
+      "support_pairs_examined": 105,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 4,
+      "t": 3,
+      "subset_count": 4,
+      "support_pairs_examined": 105,
+      "valid_unordered_support_pairs": 7,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 5,
+      "t": 1,
+      "subset_count": 5,
+      "support_pairs_examined": 465,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 5,
+      "t": 2,
+      "subset_count": 10,
+      "support_pairs_examined": 465,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 5,
+      "t": 3,
+      "subset_count": 10,
+      "support_pairs_examined": 465,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 5,
+      "t": 4,
+      "subset_count": 5,
+      "support_pairs_examined": 465,
+      "valid_unordered_support_pairs": 15,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 6,
+      "t": 1,
+      "subset_count": 6,
+      "support_pairs_examined": 1953,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 6,
+      "t": 2,
+      "subset_count": 15,
+      "support_pairs_examined": 1953,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 6,
+      "t": 3,
+      "subset_count": 20,
+      "support_pairs_examined": 1953,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 6,
+      "t": 4,
+      "subset_count": 15,
+      "support_pairs_examined": 1953,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 6,
+      "t": 5,
+      "subset_count": 6,
+      "support_pairs_examined": 1953,
+      "valid_unordered_support_pairs": 31,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 1,
+      "subset_count": 7,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 2,
+      "subset_count": 21,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 3,
+      "subset_count": 35,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 4,
+      "subset_count": 35,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 5,
+      "subset_count": 21,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 0,
+      "all_valid_pairs_partition_inventory": true
+    },
+    {
+      "n": 7,
+      "t": 6,
+      "subset_count": 7,
+      "support_pairs_examined": 8001,
+      "valid_unordered_support_pairs": 63,
+      "all_valid_pairs_partition_inventory": true
+    }
+  ],
+  "rank_two_coordinate_screen": {
+    "ambient_dimension": 4,
+    "assignments_examined": 50625,
+    "input_private_assignments_with_max_rank_two": 24,
+    "assignments_supporting_hidden_AND_zero_label": 0
+  },
+  "correlated_classifier_screens": [
+    {
+      "n": 4,
+      "t": 1,
+      "modulus": 5,
+      "hidden_dimension": 2,
+      "target_projective_lines": 6,
+      "subset_count": 4,
+      "maximum_inventory_target_coverage": 1,
+      "maximum_other_target_coverage": 0,
+      "other_target_coverage_bound": 0,
+      "two_hidden_output_labels_covering_all_subsets": 0
+    },
+    {
+      "n": 5,
+      "t": 2,
+      "modulus": 5,
+      "hidden_dimension": 3,
+      "target_projective_lines": 31,
+      "subset_count": 10,
+      "maximum_inventory_target_coverage": 4,
+      "maximum_other_target_coverage": 2,
+      "other_target_coverage_bound": 2,
+      "two_hidden_output_labels_covering_all_subsets": 0
+    },
+    {
+      "n": 6,
+      "t": 3,
+      "modulus": 7,
+      "hidden_dimension": 4,
+      "target_projective_lines": 400,
+      "subset_count": 20,
+      "maximum_inventory_target_coverage": 10,
+      "maximum_other_target_coverage": 5,
+      "other_target_coverage_bound": 7,
+      "two_hidden_output_labels_covering_all_subsets": 0
+    }
+  ],
+  "constructive_missing_subset_cases": 480,
+  "current_publication_scope": {
+    "n": 54,
+    "t": 5,
+    "pools": 95,
+    "radix": 3162510,
+    "radix_two_adic_valuation": 1,
+    "maximum_single_pool_difference_two_adic_valuation": 115,
+    "message_bits": 2048,
+    "single_pool_subset_change_always_changes_message": true,
+    "scope": "A nonzero rank delta has magnitude below radix; delta*radix^i cannot vanish modulo2^2048. Multi-pool aliases still exist."
+  },
+  "one_binary_gate": {
+    "secret_field_dimension": 4,
+    "raw_public_point_slots": 6,
+    "raw_public_point_payload_bytes": 198,
+    "scalars_per_input_vector": 2,
+    "distinct_selected_scalar_openings": 3,
+    "selected_scalar_payload_bytes": 96,
+    "public_output_sum_checks": 2
+  },
+  "direct_2048_bit_legacy_interface": {
+    "gates": 1024,
+    "scalar_openings": 3072,
+    "guarded_signature_push_floor_vbytes": 181248,
+    "previous_independent_row_gate_floor_vbytes": 241664,
+    "scope": "One layer of independent binary gates; direct scalar-linear recovery from guarded legacy scalar openings. All other costs free. No native wrapper supplied."
+  },
+  "five_of_54_linear_classifier": {
+    "n": 54,
+    "t": 5,
+    "nonconstant_hidden_binary_output_possible": false,
+    "subsets": 3162510,
+    "maximum_inventory_target_coverage": 292825,
+    "other_target_coverage_bound": 158125,
+    "evidence": "inspected",
+    "scope": "All five-subsets of scalar-linear labels, including correlations; every six candidate forms independent as required by full subset-label privacy. Fixed hidden output labels and scalar-linear recovery; nonlinear decoding excluded."
+  },
+  "bitcoin_execution": false,
+  "native_scalar_binding_implemented": false,
+  "complete_verifier_implemented": false,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "setup_benchmark": null,
+  "onchain_vbytes": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/shared_vector_gate_probe.py": "53013d9b63159ac5f0844bad1d2e3a61a6ed5b2488b9242dce3483e85d07af2c",
+    "research/pointlocks-2026-09-17/vector_label_gate_probe.py": "497dae66c78b697dcfd4209359e649b0056e20dd7f08c9715ab5386335da2a6c",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5",
+    "research/pointlocks-2026-09-17/round-major-message-benchmark.json": "407e6089d54bf54631a5b17e19634e665ce916beef49937536216b4a91941284"
+  }
+}

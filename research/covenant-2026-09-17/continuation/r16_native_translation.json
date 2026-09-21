@@ -1,0 +1,811 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Small-curve analogue with SHA256-derived transaction scalars and explicit projected source alpha. NOT secp256k1 and NOT a32-byte hash-output DER signature or Bitcoin consensus execution.",
+  "curve": {
+    "p": 163,
+    "n": 139,
+    "generator": [
+      2,
+      34
+    ],
+    "all_retained_public_group_points_by_scalar": [
+      null,
+      [
+        2,
+        34
+      ],
+      [
+        31,
+        28
+      ],
+      [
+        6,
+        68
+      ],
+      [
+        105,
+        150
+      ],
+      [
+        109,
+        162
+      ],
+      [
+        4,
+        87
+      ],
+      [
+        85,
+        130
+      ],
+      [
+        97,
+        80
+      ],
+      [
+        121,
+        128
+      ],
+      [
+        22,
+        68
+      ],
+      [
+        137,
+        144
+      ],
+      [
+        7,
+        137
+      ],
+      [
+        135,
+        95
+      ],
+      [
+        18,
+        42
+      ],
+      [
+        21,
+        38
+      ],
+      [
+        38,
+        130
+      ],
+      [
+        112,
+        53
+      ],
+      [
+        140,
+        37
+      ],
+      [
+        75,
+        53
+      ],
+      [
+        69,
+        87
+      ],
+      [
+        148,
+        50
+      ],
+      [
+        103,
+        109
+      ],
+      [
+        40,
+        33
+      ],
+      [
+        43,
+        40
+      ],
+      [
+        42,
+        147
+      ],
+      [
+        90,
+        76
+      ],
+      [
+        106,
+        109
+      ],
+      [
+        48,
+        30
+      ],
+      [
+        162,
+        150
+      ],
+      [
+        9,
+        128
+      ],
+      [
+        3,
+        69
+      ],
+      [
+        79,
+        42
+      ],
+      [
+        59,
+        13
+      ],
+      [
+        136,
+        84
+      ],
+      [
+        71,
+        40
+      ],
+      [
+        139,
+        110
+      ],
+      [
+        154,
+        147
+      ],
+      [
+        126,
+        84
+      ],
+      [
+        33,
+        35
+      ],
+      [
+        80,
+        137
+      ],
+      [
+        152,
+        119
+      ],
+      [
+        45,
+        34
+      ],
+      [
+        116,
+        129
+      ],
+      [
+        14,
+        119
+      ],
+      [
+        67,
+        144
+      ],
+      [
+        66,
+        121
+      ],
+      [
+        13,
+        30
+      ],
+      [
+        70,
+        50
+      ],
+      [
+        117,
+        54
+      ],
+      [
+        77,
+        38
+      ],
+      [
+        149,
+        69
+      ],
+      [
+        76,
+        26
+      ],
+      [
+        5,
+        28
+      ],
+      [
+        160,
+        119
+      ],
+      [
+        127,
+        135
+      ],
+      [
+        122,
+        19
+      ],
+      [
+        11,
+        69
+      ],
+      [
+        145,
+        80
+      ],
+      [
+        49,
+        123
+      ],
+      [
+        133,
+        37
+      ],
+      [
+        53,
+        37
+      ],
+      [
+        130,
+        16
+      ],
+      [
+        128,
+        162
+      ],
+      [
+        102,
+        30
+      ],
+      [
+        65,
+        125
+      ],
+      [
+        84,
+        83
+      ],
+      [
+        64,
+        84
+      ],
+      [
+        89,
+        1
+      ],
+      [
+        108,
+        113
+      ],
+      [
+        108,
+        50
+      ],
+      [
+        89,
+        162
+      ],
+      [
+        64,
+        79
+      ],
+      [
+        84,
+        80
+      ],
+      [
+        65,
+        38
+      ],
+      [
+        102,
+        133
+      ],
+      [
+        128,
+        1
+      ],
+      [
+        130,
+        147
+      ],
+      [
+        53,
+        126
+      ],
+      [
+        133,
+        126
+      ],
+      [
+        49,
+        40
+      ],
+      [
+        145,
+        83
+      ],
+      [
+        11,
+        94
+      ],
+      [
+        122,
+        144
+      ],
+      [
+        127,
+        28
+      ],
+      [
+        160,
+        44
+      ],
+      [
+        5,
+        135
+      ],
+      [
+        76,
+        137
+      ],
+      [
+        149,
+        94
+      ],
+      [
+        77,
+        125
+      ],
+      [
+        117,
+        109
+      ],
+      [
+        70,
+        113
+      ],
+      [
+        13,
+        133
+      ],
+      [
+        66,
+        42
+      ],
+      [
+        67,
+        19
+      ],
+      [
+        14,
+        44
+      ],
+      [
+        116,
+        34
+      ],
+      [
+        45,
+        129
+      ],
+      [
+        152,
+        44
+      ],
+      [
+        80,
+        26
+      ],
+      [
+        33,
+        128
+      ],
+      [
+        126,
+        79
+      ],
+      [
+        154,
+        16
+      ],
+      [
+        139,
+        53
+      ],
+      [
+        71,
+        123
+      ],
+      [
+        136,
+        79
+      ],
+      [
+        59,
+        150
+      ],
+      [
+        79,
+        121
+      ],
+      [
+        3,
+        94
+      ],
+      [
+        9,
+        35
+      ],
+      [
+        162,
+        13
+      ],
+      [
+        48,
+        133
+      ],
+      [
+        106,
+        54
+      ],
+      [
+        90,
+        87
+      ],
+      [
+        42,
+        16
+      ],
+      [
+        43,
+        123
+      ],
+      [
+        40,
+        130
+      ],
+      [
+        103,
+        54
+      ],
+      [
+        148,
+        113
+      ],
+      [
+        69,
+        76
+      ],
+      [
+        75,
+        110
+      ],
+      [
+        140,
+        126
+      ],
+      [
+        112,
+        110
+      ],
+      [
+        38,
+        33
+      ],
+      [
+        21,
+        125
+      ],
+      [
+        18,
+        121
+      ],
+      [
+        135,
+        68
+      ],
+      [
+        7,
+        26
+      ],
+      [
+        137,
+        19
+      ],
+      [
+        22,
+        95
+      ],
+      [
+        121,
+        35
+      ],
+      [
+        97,
+        83
+      ],
+      [
+        85,
+        33
+      ],
+      [
+        4,
+        76
+      ],
+      [
+        109,
+        1
+      ],
+      [
+        105,
+        13
+      ],
+      [
+        6,
+        95
+      ],
+      [
+        31,
+        135
+      ],
+      [
+        2,
+        129
+      ]
+    ]
+  },
+  "native_source_CONSTANT_C": 136,
+  "source_constant_256_bit_digest": "0100000000000000000000000000000000000000000000000000000000000000",
+  "funding_transaction": "020000000124242424242424242424242424242424242424242424242424242424242424240000000000feffffff021027000000000000015140420f000000000017a914022f463f59e5ad7e1d5181948d62504c8361f12d8700000000",
+  "funding_txid": "0a10bcc2f98e90cdc97d07eee2e144e9c59373cec8ed09400187bcfaebba850a",
+  "script": "74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551",
+  "source_alpha": {
+    "counter": 2515,
+    "hash_queries": 2516,
+    "SHA256_preimage": "723136207075626c696320736f75726365207363616c61722070726f6a656374696f6ed3090000",
+    "SHA256_output": "96535454adfb8c963800864d61dcd3182a6be0802c129ec2a4141b3f92bbc0ff",
+    "projection": "r=1+int(H[0:16])%(n-1), s=1+int(H[16:32])%((n-1)/2); DER(r,s)||03",
+    "signature": "300602010902010803",
+    "is_raw_32byte_hash_interpreted_as_DER": false
+  },
+  "vectors": [
+    {
+      "ri": 9,
+      "si": 8,
+      "rj": 6,
+      "sj": 10,
+      "z_source": 136,
+      "z_ALL": 134,
+      "source_mixed_nonce_scalars": [
+        109,
+        118
+      ],
+      "source_V_scalar": 44,
+      "source_V_point": [
+        14,
+        119
+      ],
+      "target_pair_nonce_scalar": 81,
+      "a": 121,
+      "b": 97,
+      "common_key_scalars": [
+        19,
+        20,
+        28
+      ],
+      "alpha": "300602010902010803",
+      "beta": "300602010602010a01",
+      "all_eliminated_scalar_equations_hold": true,
+      "locktime": 0,
+      "actual_ALL_preimage": "02000000020a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a0000000000feffffff0a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a010000004f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551feffffff01583e0f000000000016001411111111111111111111111111111111111111110000000001000000",
+      "actual_ALL_digest_256": "069fa3114d6d846dcbf605c4ee15e9338b1698a401696250bf89dc84e13d018f",
+      "script_sig": "0930060201090201080309300602010602010a012103000000000000000000000000000000000000000000000000000000000000004b21030000000000000000000000000000000000000000000000000000000000000045210200000000000000000000000000000000000000000000000000000000000000304c4f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551",
+      "script_sig_bytes": 203,
+      "data_items": 5,
+      "hint_items": 0,
+      "unlocking_push_items_including_redeemscript": 6,
+      "serialized_witness_bytes": 0,
+      "complete_synthetic_transaction": "02000000020a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a0000000000feffffff0a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a01000000cb0930060201090201080309300602010602010a012103000000000000000000000000000000000000000000000000000000000000004b21030000000000000000000000000000000000000000000000000000000000000045210200000000000000000000000000000000000000000000000000000000000000304c4f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551feffffff01583e0f0000000000160014111111111111111111111111111111111111111100000000",
+      "complete_synthetic_transaction_weight": 1304,
+      "metrics": {
+        "script_bytes": 79,
+        "non_push_opcodes": 50,
+        "combined_stack_peak": 8,
+        "actual_toy_ECDSA_checks": [
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 19,
+            "nonce_scalar": 21
+          },
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 20,
+            "nonce_scalar": 109
+          },
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 28,
+            "nonce_scalar": 118
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 134,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 19,
+            "nonce_scalar": 136
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 134,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 20,
+            "nonce_scalar": 81
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 134,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 28,
+            "nonce_scalar": 58
+          }
+        ]
+      }
+    },
+    {
+      "ri": 9,
+      "si": 8,
+      "rj": 6,
+      "sj": 10,
+      "z_source": 136,
+      "z_ALL": 1,
+      "source_mixed_nonce_scalars": [
+        21,
+        30
+      ],
+      "source_V_scalar": 95,
+      "source_V_point": [
+        14,
+        44
+      ],
+      "target_pair_nonce_scalar": 81,
+      "a": 121,
+      "b": 42,
+      "common_key_scalars": [
+        19,
+        27,
+        28
+      ],
+      "alpha": "300602010902010803",
+      "beta": "300602010602010a01",
+      "all_eliminated_scalar_equations_hold": true,
+      "locktime": 14,
+      "actual_ALL_preimage": "02000000020a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a0000000000feffffff0a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a010000004f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551feffffff01583e0f000000000016001422222222222222222222222222222222222222220e00000001000000",
+      "actual_ALL_digest_256": "954ba29b68b5e95831bd2f7d92bc9102892e0082e242fa348a34ea7bbf19014a",
+      "script_sig": "0930060201090201080309300602010602010a012103000000000000000000000000000000000000000000000000000000000000004b2103000000000000000000000000000000000000000000000000000000000000006a210200000000000000000000000000000000000000000000000000000000000000304c4f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551",
+      "script_sig_bytes": 203,
+      "data_items": 5,
+      "hint_items": 0,
+      "unlocking_push_items_including_redeemscript": 6,
+      "serialized_witness_bytes": 0,
+      "complete_synthetic_transaction": "02000000020a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a0000000000feffffff0a85baebfabc87014009edc8ce7393c5e944e1e2ee077dc9cd908ef9c2bc100a01000000cb0930060201090201080309300602010602010a012103000000000000000000000000000000000000000000000000000000000000004b2103000000000000000000000000000000000000000000000000000000000000006a210200000000000000000000000000000000000000000000000000000000000000304c4f74558800798201218875517982012188755279820121887500795279879169007953798791695179537987916954795379ad54795279ad54795179ad53795379ad53795279ad53795179ad6d6d7551feffffff01583e0f000000000016001422222222222222222222222222222222222222220e000000",
+      "complete_synthetic_transaction_weight": 1304,
+      "metrics": {
+        "script_bytes": 79,
+        "non_push_opcodes": 50,
+        "combined_stack_peak": 8,
+        "actual_toy_ECDSA_checks": [
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 19,
+            "nonce_scalar": 21
+          },
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 27,
+            "nonce_scalar": 30
+          },
+          {
+            "flag": 3,
+            "actual_digest_scalar": 136,
+            "r": 9,
+            "s": 8,
+            "public_key_scalar": 28,
+            "nonce_scalar": 118
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 1,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 19,
+            "nonce_scalar": 81
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 1,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 27,
+            "nonce_scalar": 58
+          },
+          {
+            "flag": 1,
+            "actual_digest_scalar": 1,
+            "r": 6,
+            "s": 10,
+            "public_key_scalar": 28,
+            "nonce_scalar": 3
+          }
+        ]
+      }
+    }
+  ],
+  "targeted_negative_checks": {
+    "duplicate_third_key_rejected": true,
+    "changed_recipient_and_locktime_with_complete_first_witness_rejected": true,
+    "incremented_source_s_rejected": true,
+    "incremented_source_s_individual_ECDSA_acceptances": [
+      false,
+      false,
+      false
+    ],
+    "source_s_mutation": [
+      8,
+      9
+    ]
+  },
+  "same_funding_and_source_alpha": true,
+  "distinct_actual_ALL_scalars": true,
+  "alternative_output_native_queries": 15,
+  "eliminated_relation": "rj(si V-CG)=-ri*z_ALL*G; for known v, rj=z_ALL*ri/(C-si*v)",
+  "unimplemented_secp_interval_test": {
+    "interval_length": "432420386565659656852420866390673177325",
+    "baby_table_entries": "20794720160792249932",
+    "giant_queries": "20794720160792249932",
+    "point_additions_before_extra_scalar_mults": "41589440321584499862",
+    "point_addition_count_log2": 65.17285107330441,
+    "point_addition_count_interpretation": "Complete or unsuccessful scan, not expected successful solve.",
+    "compressed_point_storage_bytes_alone": "686225765306144247756",
+    "uniform_located_solution_optimized_baby_entries": "14704087638572813826",
+    "uniform_located_solution_expected_additions_numerator": "12716694521533987622366343869785577945050436265845641567425",
+    "uniform_located_solution_expected_additions_denominator": "432420386565659656852420866390673177325",
+    "uniform_located_solution_expected_additions_log2": 64.67285107330443,
+    "not_executed": true,
+    "not_a_generic_lower_bound": true
+  },
+  "secp_log_obligations": [
+    "Computing v for a hash-chosen source root pair is not free.",
+    "When sj is recovered from a target root, its logarithm is not free either."
+  ],
+  "actual_Bitcoin_candidate_found": false,
+  "setup_below_2_64_established": false
+}

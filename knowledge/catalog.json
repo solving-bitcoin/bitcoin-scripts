@@ -3283,7 +3283,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-18",
       "knowledge_page": "knowledge/primitives/point-locks.md",
       "implementation": "src/signatures/pointlocks/mod.rs",
       "documentation": "src/signatures/pointlocks/README.md",
@@ -3299,7 +3299,7 @@
       "techniques": [
         "signature-size-constraint"
       ],
-      "security": "The intended nonce G/2 has a 21-byte DER r value, but Script only constrains total signature length. Use a conservative roughly 80-bit security estimate until the best generic forgery bound is reproduced; production signing also requires constant-time code.",
+      "security": "The intended nonce G/2 has a 21-byte DER r value, but Script only constrains total signature length. A native legacy SINGLE-constant counterexample constructs a malicious setup key and accepted exact60 signatures without using its scalar; extracting it is equivalent to a transparently lifted nonce point's DLP. Pairwise byte-distinct repetition does not repair that branch. This result does not apply to the anchored P2WSH candidate. The previous roughly 80-bit estimate is withdrawn; no established adaptive native-digest security level is claimed. Production signing also requires constant-time code.",
       "stack_contract": "... bitcoin_ecdsa_signature -> ... true; the complete predicate uses at most three main-stack items and no altstack.",
       "configurations": [
         {
@@ -3329,11 +3329,15 @@
         }
       ],
       "limitations": [
-        "Conservative roughly 80-bit security claim is reported rather than reproduced",
+        "No established adaptive native-digest security bound; the former roughly 80-bit estimate is withdrawn",
+        "Malicious setup on the legacy SINGLE-constant branch admits a Core-checked non-extracting witness under the lifted-point DLP assumption, even with pairwise-distinct repetitions. See research/pointlocks-2026-09-17/distinct-short-signatures.md",
+        "The separate 39,396-vB windowed P2WSH experiment is rejected for impractical setup cost (about 2^63.138 SHA256 compressions); production grinding and adaptive short-signature security also remain unvalidated. See knowledge/negative-results/windowed-pointlock-setup-cost.md",
         "The size predicate accepts any valid signature of at most 60 bytes, not only the G/2 nonce",
         "Research signing helpers use non-constant-time bigint arithmetic",
-        "Bitcoin Core consensus and relay-policy validation have not been performed",
-        "Tapscript OP_CHECKSIG does not use ECDSA"
+        "The new native counterexample validates this max60 predicate on legacy P2SH under Core consensus and policy; the historical metrics above and general P2WSH security retain their original evidence boundaries",
+        "Tapscript OP_CHECKSIG does not use ECDSA",
+        "The separate round-major anchored P2WSH research has a Core-policy-validated honest full256-byte publication at98,323 vB, with475 recovered scalars and89.63 ms median point-lock-only setup/public checking on15 Apple M5 Pro workers. General extraction, total garbled-label/public-setup binding and complete-goal setup remain open; this does not upgrade the single-key primitive above. See research/pointlocks-2026-09-17/round-major-publication.md",
+        "The offchain cross-key nonce graph adds exact extraction for full-rank components and replays475 native target openings without extra bytes. Eight focused tests include cases missed by per-key checks and a synthetic rank-deficient six-context control. Unrelated nonces and all-transcript extraction remain open; no primitive deployment upgrade follows. See research/pointlocks-2026-09-17/cross-key-nonce-extraction.md"
       ],
       "open_problems": [
         "OP-002",
@@ -3347,14 +3351,16 @@
       "class": "signature/point-lock",
       "summary": "Legacy point lock derived from T alone that reuses one signature across two scriptCode views and the related keys T and Q.",
       "status": "experimental",
-      "evidence": "locally-reproduced",
-      "execution": "unclassified",
-      "as_of": "2026-09-04",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-09-17",
       "knowledge_page": "knowledge/primitives/point-locks.md",
       "implementation": "src/signatures/pointlocks/three_check/mod.rs",
       "documentation": "src/signatures/pointlocks/three_check/README.md",
       "tests": [
-        "signatures::pointlocks::three_check::tests"
+        "signatures::pointlocks::three_check::tests",
+        "tests/pointlock_core_vectors.rs",
+        "research/pointlocks-2026-09-17/core_check.py"
       ],
       "references": [
         "bip-16",
@@ -3363,7 +3369,10 @@
         "bitcoin-core-interpreter",
         "bitcoin-scriptexec-locked",
         "rust-bitcoin-0.32.102",
-        "rust-secp256k1-0.29.1"
+        "rust-secp256k1-0.29.1",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-signatures-20260910"
       ],
       "techniques": [
         "signature-size-constraint",
@@ -3386,7 +3395,10 @@
             "representative_script_sig_bytes": 61,
             "hint_items": 0,
             "complete_input_items": 1,
-            "representative_target_secret": "07 repeated 32 times"
+            "representative_target_secret": "07 repeated 32 times",
+            "bitcoin_core_version": "30.3",
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "core_report": "research/pointlocks-2026-09-17/core_check.json"
           },
           "includes": "complete-leaf: policy-produced 79-byte bare legacy locking predicate with both compressed keys, size guard, two target-key checks, executed OP_CODESEPARATOR, companion-key check, and one representative 60-byte signature item whose minimally pushed scriptSig is 61 bytes; excludes transaction framing, funding output, payment authorization, refund branch, P2SH wrapper, and local-interpreter-only NOP padding",
           "script_bytes": 79,
@@ -3405,9 +3417,131 @@
       "limitations": [
         "Bare legacy outputs and P2SH spends using executed OP_CODESEPARATOR are non-standard under current relay policy",
         "P2WSH is incompatible because BIP143 fixes the required out-of-range SIGHASH_SINGLE digest; tapscript uses Schnorr rather than ECDSA",
-        "The rare 61-byte high-S completeness fallback is consensus-valid in legacy Script but non-standard and cannot be executed by the pinned local interpreter's low-S-only libsecp256k1 path",
+        "The rare 61-byte high-S completeness fallback is confirmed by pinned Core under legacy consensus but is non-standard and cannot be executed by the pinned local interpreter's low-S-only libsecp256k1 path",
         "The related-scriptCode reduced-sighash collision argument has not received independent cryptographic review or multi-instance analysis",
-        "A complete transaction has not been validated against a pinned Bitcoin Core revision",
+        "Research signing helpers use non-constant-time bigint arithmetic"
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
+      "id": "signature/point-lock-ecdsa-two-check",
+      "name": "Experimental two-check ECDSA point lock",
+      "class": "signature/point-lock",
+      "summary": "Conditional point-only legacy candidate using one signature and related keys T,Q in one scriptCode; public extraction is established on the SINGLE-constant branch only.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/two_check/mod.rs",
+      "documentation": "src/signatures/pointlocks/two_check/README.md",
+      "tests": [
+        "signatures::pointlocks::two_check::tests",
+        "tests/pointlock_core_vectors.rs",
+        "research/pointlocks-2026-09-17/core_check.py"
+      ],
+      "references": [
+        "bip-16",
+        "bip-66",
+        "bip-143",
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102",
+        "rust-secp256k1-0.29.1",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-signatures-20260910"
+      ],
+      "techniques": [
+        "signature-size-constraint",
+        "sighash-single-bug",
+        "related-key"
+      ],
+      "security": "The greater-than-57-byte guard and distinct related keys force r=r0*z/C. The constant digest C gives exact G/2 extraction. Ordinary native transcripts require an additional unproved resistance assumption covering arbitrary target selection. Known-nonce matching follows only when t is known; the approximately 2^128 independent-list estimate is neither a general lower bound nor an ECDLP reduction. Pre-spend hiding uses secp256k1 DLP.",
+      "stack_contract": "... bitcoin_ecdsa_signature -> ... true; one signature data item, zero hints, no altstack, and three combined stack items at peak. P2SH scriptSig has two pushes including the redeem script.",
+      "configurations": [
+        {
+          "id": "bare-legacy-revelation",
+          "label": "One-signature two-check bare legacy predicate",
+          "parameters": {
+            "target": "T=tG",
+            "companion": "Q=-(2*C/r0)G-T",
+            "nonce": "2^-1 mod secp256k1 group order",
+            "minimum_signature_item_bytes": 58,
+            "representative_signature_item_bytes": 60,
+            "representative_script_sig_bytes": 61,
+            "hint_items": 0,
+            "complete_input_items": 1,
+            "representative_target_secret": "07 repeated 32 times",
+            "bitcoin_core_version": "30.3",
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "core_report": "research/pointlocks-2026-09-17/core_check.json"
+          },
+          "includes": "complete-leaf: policy-produced 76-byte bare legacy predicate with both compressed keys, size guard, target and companion checks, and one representative 60-byte signature item whose minimal scriptSig is 61 bytes; zero hints; excludes transaction framing, funding output, helper input, payment authorization, refund branch, and P2SH wrapper; there is no legacy-input witness serialization",
+          "script_bytes": 76,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 3,
+          "executed_opcodes": 6,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 76,
+          "metric_keys": [
+            "pointlock_two_check_script"
+          ]
+        },
+        {
+          "id": "p2sh-representative-core",
+          "label": "Representative low-S P2SH spend with actual funded helper input",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "target": "T=tG",
+            "representative_target_secret": "07 repeated 32 times",
+            "representative_signature_item_bytes": 60,
+            "script_sig_bytes": 139,
+            "script_sig_push_items": 2,
+            "locked_input_data_items": 1,
+            "hint_items": 0,
+            "locked_input_witness_items": 0,
+            "helper_witness_items": 1,
+            "funding_p2sh_script_pubkey_bytes": 23,
+            "redeem_script_bytes": 76,
+            "helper_witness_script": "51",
+            "complete_transaction_base_bytes": 262,
+            "complete_transaction_total_bytes": 268,
+            "complete_transaction_weight": 1054,
+            "marker_flag_bytes": 2,
+            "bitcoin_core_version": "30.3",
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "core_report": "research/pointlocks-2026-09-17/core_check.json",
+            "fixture": "representative-two_check-p2sh"
+          },
+          "includes": "complete-transaction: actual funded two-input one-output P2SH spend; script_bytes counts the policy-produced 76-byte redeem predicate, with the 23-byte funding P2SH wrapper separately specified; 139-byte scriptSig has signature and redeem-script pushes; witness_bytes=4 counts both input witness vectors including the OP_TRUE P2WSH helper, not a point-lock witness; marker/flag, total bytes and weight are separately specified; executed_opcodes includes six predicate and two P2SH wrapper operations; zero hints; data coexist within each independently executed input; excludes independent payment authorization and refund branches",
+          "script_bytes": 76,
+          "witness_bytes": 4,
+          "witness_bytes_max": 4,
+          "max_stack_items": 3,
+          "executed_opcodes": 8,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 76,
+          "metric_keys": [
+            "pointlock_two_check_script",
+            "pointlock_two_check_core_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Ordinary-digest extraction is unresolved: the API verifies both equations and returns NonConstantDigest rather than inventing a scalar",
+        "Arbitrary target selection without knowledge of its scalar is not covered by the known-nonce matching interpretation; no established 128-bit cryptographic claim",
+        "Pinned-Core policy acceptance applies to the recorded representative low-S P2SH transaction, not every target or signature",
+        "Bare arbitrary outputs and the rare 61-byte high-S fallback are non-standard; undefined sighash flags can also be consensus-valid but non-standard",
+        "P2WSH lacks the required SINGLE constant, and tapscript does not perform ECDSA for these keys",
         "Research signing helpers use non-constant-time bigint arithmetic"
       ],
       "open_problems": [
@@ -7783,6 +7917,300 @@
         "OP-001",
         "OP-002",
         "OP-003"
+      ]
+    },
+    {
+      "id": "signature/point-lock-ecdsa-hash160-two-check",
+      "name": "HASH160-committed two-check ECDSA point lock",
+      "class": "signature/point-lock",
+      "summary": "Legacy two-check scalar-revelation predicate committed to the exact signature with HASH160; intended noninteractive BitVM3 proof-publication component.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-09-17",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/committed_two_check/mod.rs",
+      "documentation": "src/signatures/pointlocks/committed_two_check/README.md",
+      "tests": [
+        "signatures::pointlocks::committed_two_check::tests",
+        "pointlock_metrics_are_current"
+      ],
+      "references": [
+        "bip-16",
+        "bip-66",
+        "bip-143",
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102",
+        "rust-secp256k1-0.29.1",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-signatures-20260910"
+      ],
+      "techniques": [
+        "signature-size-constraint",
+        "sighash-single-bug",
+        "related-key"
+      ],
+      "security": "The length guard and related keys establish extraction on the SINGLE constant. Excluding non-extractable ordinary digests with a self-referential HASH160 commitment remains open; no concrete work factor or preimage-only reduction.",
+      "stack_contract": "... bitcoin_ecdsa_signature -> ... true; one signature data item, zero hints, no altstack, and three combined stack items at peak. P2SH scriptSig has two pushes including the redeem script.",
+      "configurations": [
+        {
+          "id": "legacy-1-locks",
+          "label": "1 HASH160-committed locks",
+          "parameters": {
+            "locks": 1,
+            "hint_items": 0,
+            "complete_input_items": 1,
+            "signature_bytes": 60,
+            "seeds": "07 through 0b repeated 32 times, first N seeds"
+          },
+          "includes": "complete-leaf: exact policy-produced legacy predicate; signature items coexist at entry, zero hints, no altstack; excludes scriptSig serialization, funding wrapper, transaction framing, authorization and refunds",
+          "script_bytes": 100,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 100,
+          "metric_keys": [
+            "pointlock_hash160_two_check_script"
+          ]
+        },
+        {
+          "id": "legacy-5-locks",
+          "label": "5 HASH160-committed locks",
+          "parameters": {
+            "locks": 5,
+            "hint_items": 0,
+            "complete_input_items": 5,
+            "signature_bytes": 60,
+            "seeds": "07 through 0b repeated 32 times, first N seeds"
+          },
+          "includes": "complete-leaf: exact policy-produced legacy predicate; signature items coexist at entry, zero hints, no altstack; excludes scriptSig serialization, funding wrapper, transaction framing, authorization and refunds",
+          "script_bytes": 500,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 100,
+          "metric_keys": [
+            "pointlock_hash160_two_check_batch5_script"
+          ]
+        }
+      ],
+      "limitations": [
+        "No Core validation for this committed variant.",
+        "Ordinary-digest security remains open.",
+        "Rare high-S fallback is nonstandard.",
+        "Legacy only; not P2WSH or tapscript.",
+        "Research signing is not constant-time."
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
+      ]
+    },
+    {
+      "id": "signature/point-lock-ecdsa-sum-key",
+      "name": "Sum-key ECDSA point lock",
+      "class": "signature/point-lock",
+      "summary": "Two ECDSA checks reveal the scalar of the sum of their distinct verification keys for every actual common digest; common-G setup supports noninteractive selectable label pools.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "policy-validated",
+      "as_of": "2026-09-19",
+      "knowledge_page": "knowledge/primitives/point-locks.md",
+      "implementation": "src/signatures/pointlocks/sum_key/mod.rs",
+      "documentation": "src/signatures/pointlocks/sum_key/README.md",
+      "tests": [
+        "signatures::pointlocks::sum_key::tests",
+        "pointlock_metrics_are_current",
+        "examples/pointlock_sum_probe.rs",
+        "research/pointlocks-2026-09-17/sum_key_core_check.json",
+        "examples/pointlock_publication_probe.rs",
+        "research/pointlocks-2026-09-17/publication_core_check.py",
+        "examples/pointlock_bare_publication_probe.rs",
+        "research/pointlocks-2026-09-17/bare_publication_core_check.py",
+        "tests/pointlock_bare_publication_vectors.rs",
+        "pointlock_bare_publication_metrics_are_current",
+        "research/pointlocks-2026-09-17/bare_nonstandard_mempool_check.py",
+        "examples/pointlock_hors_lookup_probe.rs",
+        "examples/pointlock_clamped_lookup_probe.rs",
+        "research/pointlocks-2026-09-17/clamped_lookup_core_check.py",
+        "pointlock_clamped_lookup_metrics_are_current"
+      ],
+      "references": [
+        "bip-16",
+        "bip-66",
+        "bip-143",
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102",
+        "rust-secp256k1-0.29.1",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-signatures-20260910",
+        "aikw-constant-online-rate-20140827",
+        "tinylabels-20250312"
+      ],
+      "techniques": [
+        "signature-size-constraint",
+        "sighash-single-bug",
+        "related-key"
+      ],
+      "security": "For distinct valid P,Q with nonzero sum and strict DER length >57, acceptance at the same actual digest z implies log_G(P+Q)=-2z/r. Common-G setup generates fresh targets; it does not wrap arbitrary pre-existing targets. Independent secret nonces and unique public targets are required. Hash-table pools add HASH160 key-binding assumptions.",
+      "stack_contract": "... bitcoin_ecdsa_signature -> ... true; one entry data item, zero hints, no altstack, combined stack peak three. Complete P2SH scriptSig has signature and redeem-script pushes.",
+      "configurations": [
+        {
+          "id": "legacy-common-g-single",
+          "label": "One common-generator sum lock",
+          "parameters": {
+            "hint_items": 0,
+            "complete_input_items": 1,
+            "signature_bytes": 72,
+            "nonce_seed": "07 repeated 32 times"
+          },
+          "includes": "complete-leaf: policy-produced standalone legacy scalar-revelation predicate; one signature data item at entry, zero hints, no altstack; excludes scriptSig pushes, funding output, transaction framing, authorization and refunds",
+          "script_bytes": 76,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 76,
+          "metric_keys": [
+            "pointlock_sum_key_script"
+          ]
+        },
+        {
+          "id": "bare-common-g-publication-79x7of48",
+          "label": "Complete bare-legacy publication of 256 bytes",
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated",
+          "parameters": {
+            "pools": 79,
+            "candidates_per_pool": 48,
+            "selected_per_pool": 7,
+            "payload_bytes": 256,
+            "hint_items": 553,
+            "hint_items_per_pool": 7,
+            "complete_input_items": 1659,
+            "complete_input_items_per_pool": 21,
+            "hint_coexistence": "All seven hints coexist with all 21 entry items within each of 79 independent input stacks.",
+            "per_pool_script_bytes": 1232,
+            "per_pool_stack_peak": 73,
+            "per_pool_executed_non_push_opcodes": 140,
+            "funding_vbytes": 98308,
+            "spending_vbytes": 63074,
+            "combined_vbytes": 161382,
+            "maximum_canonical_vbytes": 161560,
+            "canonical_signature_bytes": 71,
+            "script_sig_max_bytes_per_pool": 756,
+            "funding_witness_vector_bytes": 66,
+            "spending_witness_vector_bytes": 145,
+            "marker_flag_bytes_total": 4,
+            "final_main_stack_items_per_pool": 43,
+            "report": "research/pointlocks-2026-09-17/bare-publication-core-check.json",
+            "default_policy_accepted": false,
+            "complete_bitvm3_protocol": false,
+            "setup_time_ms": null,
+            "modified_policy_accepted": true,
+            "modified_policy_report": "research/pointlocks-2026-09-17/bare-nonstandard-patched.json",
+            "modified_policy_requirements": "Pinned Core policy patch plus acceptnonstdtxn=1 on isolated regtest; active consensus script flags retained; default-policy branch unchanged."
+          },
+          "includes": "complete-transaction: funding from an existing P2TR coin to one P2TR helper plus all 79 bare pool outputs, and spending that helper and every pool into one final P2TR output. Script bytes sum all 79 locking scripts; witness bytes sum both witness vectors excluding the four marker/flag bytes included in transaction weights. Each independent pool stack has 21 data items including seven hints, with combined main/alt peak 73. Excludes creation of the initial funding coin, change, refunds and application integration.",
+          "script_bytes": 97328,
+          "witness_bytes": 211,
+          "witness_bytes_max": 211,
+          "max_stack_items": 73,
+          "executed_opcodes": 11060,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 1232,
+          "metric_keys": [
+            "pointlock_bare_pool_script"
+          ]
+        },
+        {
+          "id": "bare-clamped-12of67-pool",
+          "label": "Table-first bare 12-of-67 Sum-Key pool",
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated",
+          "parameters": {
+            "candidates": 67,
+            "selected": 12,
+            "hint_items": 12,
+            "complete_input_items": 36,
+            "hint_coexistence": "All 12 hints coexist with all 36 entry items; no altstack. Each input has an independent stack.",
+            "signature_bytes": 71,
+            "canonical_script_sig_max_bytes": 1296,
+            "index_aliases": "Upper values clamp to the bottom remaining table entry; decode authenticated keys.",
+            "report": "research/pointlocks-2026-09-17/clamped-lookup-core-check.json",
+            "full_publication_validated": false
+          },
+          "includes": "complete-leaf: bare locking predicate including the shared key, candidate hashes, lookup, both ECDSA checks per opening and terminal true. Unused hashes remain. Witness bytes count this input's empty witness vector only; scriptSig and transaction framing are excluded. Core validates a complete individual-pool spend, not the mixed 256-byte publication.",
+          "script_bytes": 1778,
+          "witness_bytes": 1,
+          "witness_bytes_max": 1,
+          "max_stack_items": 105,
+          "executed_opcodes": 192,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "pointlock_clamped_pool_67_script"
+          ]
+        },
+        {
+          "id": "bare-clamped-12of68-pool",
+          "label": "Table-first bare 12-of-68 Sum-Key pool",
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated",
+          "parameters": {
+            "candidates": 68,
+            "selected": 12,
+            "hint_items": 12,
+            "complete_input_items": 36,
+            "hint_coexistence": "All 12 hints coexist with all 36 entry items; no altstack. Each input has an independent stack.",
+            "signature_bytes": 71,
+            "canonical_script_sig_max_bytes": 1296,
+            "index_aliases": "Upper values clamp to the bottom remaining table entry; decode authenticated keys.",
+            "report": "research/pointlocks-2026-09-17/clamped-lookup-core-check.json",
+            "full_publication_validated": false
+          },
+          "includes": "complete-leaf: bare locking predicate including the shared key, candidate hashes, lookup, both ECDSA checks per opening and terminal true. Unused hashes remain. Witness bytes count this input's empty witness vector only; scriptSig and transaction framing are excluded. Core validates a complete individual-pool spend, not the mixed 256-byte publication.",
+          "script_bytes": 1799,
+          "witness_bytes": 1,
+          "witness_bytes_max": 1,
+          "max_stack_items": 106,
+          "executed_opcodes": 192,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "pointlock_clamped_pool_68_script"
+          ]
+        }
+      ],
+      "limitations": [
+        "Common-G setup generates new target points rather than wrapping arbitrary pre-existing targets.",
+        "Honest pre-funding setup uses the legacy SIGHASH_SINGLE constant; P2WSH setup is not provided and tapscript is incompatible.",
+        "Core validation covers the recorded deterministic transactions, not a complete BitVM3 protocol.",
+        "Global constant-weight variable-subset encodings require an additional protocol-level acceptance rule.",
+        "Research setup arithmetic is not constant-time.",
+        "Offchain DDH batch-select does not directly compose with separately revealed common-shift scalar shares (NR-067). In that local ciphertext layout, any extra scalar-linear key disclosure outside the aggregate span exposes a label pair; free-XOR propagates the leak. Aggregate-only native binding and public ciphertext verification remain absent.",
+        "The 79-pool bare publication is consensus-validated at 161382 vB actual / 161560 vB canonical maximum, with default policy rejection. Native partial publication and surplus codewords are accepted; complete BitVM3 integration and full setup timing remain open."
+      ],
+      "open_problems": [
+        "OP-002",
+        "OP-003",
+        "OP-017"
       ]
     }
   ]

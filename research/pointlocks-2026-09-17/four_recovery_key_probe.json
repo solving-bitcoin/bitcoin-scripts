@@ -1,0 +1,86 @@
+{
+  "scope": "Four-root ECDSA extraction algebra, not a Script or transaction experiment.",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "cases": [
+    {
+      "seed": 0,
+      "attempts": 1,
+      "signature_hex": "3016021100d4e1935ec3b25aaadb2c0ce4f1d27f1a02010103",
+      "signature_bytes": 25,
+      "r": "d4e1935ec3b25aaadb2c0ce4f1d27f1a",
+      "keys": [
+        "023f6c3ac16e75af9fd2a4c116b624711d33c748ee306a7bed6f980667ce0b30c9",
+        "02cac33aa8ba5fc20576f37f839be06353321f51d83eef0dffdef524cb802045d1",
+        "02d9e088703e28abdb5884d85d78370abf514c2385ff98634a32ab1c0c5134f183",
+        "025445cd3df2efee503571288730e58d87dd96cd82e312f36211696ae8ffb90abc"
+      ],
+      "target": "0271a4b9bc7ca8841b29a0a3d815c64f0c7860aebd6804ffcaaa26d8dd23b9aa48",
+      "scalar_fixture": "22caed76d78368f262325c04276f5e0dabb44ca3f318fec0d26237710c488250"
+    },
+    {
+      "seed": 1,
+      "attempts": 7,
+      "signature_hex": "3016021100815710cbc25241cfc206ad737d85757b02010103",
+      "signature_bytes": 25,
+      "r": "815710cbc25241cfc206ad737d85757b",
+      "keys": [
+        "0203e2a00124dc042a8b0dab05f9c86cf4ef7e95dfe975f931f46ff2cab77e14e9",
+        "03137479384909b731c9cf2f877596f45cdbe38ec7f6be7fd682c3c8ceee763b91",
+        "021d52a87c463021e1041a3c79c93129cf4e4db58a1b4b4207e1e6e50078f44f56",
+        "02c9e8d3cb8bb59bc80fb6ced677f381829a71f5205737ed6c575c7b7846b4fd5e"
+      ],
+      "target": "03e36dbd3fcc85e2cd85107ae5ec79347ddfd0306449111b2332b800d29c74e32b",
+      "scalar_fixture": "6a5b922207a9623ebe4701a5f5c13fb0022d2c1e7109fb653edc6e83d934f4ec"
+    },
+    {
+      "seed": 2,
+      "attempts": 2,
+      "signature_hex": "30160211008b8f08f5994758328f2e5a1488d6bd9102010103",
+      "signature_bytes": 25,
+      "r": "8b8f08f5994758328f2e5a1488d6bd91",
+      "keys": [
+        "02e930240a0c548173a5cb525ca6be704da0be80e56e037a2c94d1d90eb96aec45",
+        "023f7a34cf5093bad7c8b62cd9d1b11efea2c43e7971a052d06ad9c2910a43e50d",
+        "020ac1ac96a1052bb3fb4b538400117529252d2ca608b755735f204d8c61fbde6a",
+        "038417c21a3d6c9a256245f4ba2927f49ec8bd275b3627d1e00e604fb4b8bb073f"
+      ],
+      "target": "02ecf9190ef85baf2aae9e2b4ebc07022c0ecab800bd41c1ad086c088dbb892a2d",
+      "scalar_fixture": "f79902f9b288b97115b0e626ae497ac85c3df5349f47d86e9854b40caf92cac9"
+    },
+    {
+      "seed": 3,
+      "attempts": 4,
+      "signature_hex": "30160211010bad40926b4075eeed37728bd175e6cc02010103",
+      "signature_bytes": 25,
+      "r": "10bad40926b4075eeed37728bd175e6cc",
+      "keys": [
+        "0330bdc40a95ab102bd45b68c61cf3a6e6bfd8b8c68db2406b124d014820d071bf",
+        "026cfea3b1ab78a042b9892906edeb9c81707a2763aa370d3516559975ebd8ce16",
+        "0280dc20ba624a271a7b4167c50ed9f8382ccbf4d7b38e2cb7e6c9db41a56bc5fc",
+        "02d60a10687b28294a20d08df5434917bd41c13ac048041ed8f8ee1c044df534b7"
+      ],
+      "target": "027d61d36bb6da2e9a29541ad48f46056b0945f91736584da0519952233aa6cc4d",
+      "scalar_fixture": "e7a1e796630b350354d0c82366b8c1465dfbd1d951ee4f0b9a81efd5431cd68e"
+    },
+    {
+      "seed": 4,
+      "attempts": 1,
+      "signature_hex": "30160211009a5eb123d6d52ff2497972d3d46437b302010103",
+      "signature_bytes": 25,
+      "r": "9a5eb123d6d52ff2497972d3d46437b3",
+      "keys": [
+        "03bb1f181416bd8384961c82ea81ad5c719c52ad95a42616f96c634ddf07e2c2d3",
+        "023e91daa67ce4cf23552973013523e2d229805224ed5111aba55590b5dda9a803",
+        "02bb75c5af50db776b0e92bf9fe98e63a006fba5fd23c5140a0014c0df98653b87",
+        "031b112ad80440907ba6bf469d21ee8ff4049ffeacee33ab38885ff84d40852877"
+      ],
+      "target": "035a80a7b7e4f1f86997b53f77ce44720f90673d11c894e7ea92ce1260faf569e0",
+      "scalar_fixture": "3f57d1f15e3f873314ceed221488c0dae538fdd1da99d6e578f2135ca41a439d"
+    }
+  ],
+  "small_r_interval_size": 432420386565659656852420866390673177326,
+  "interval_bits": 128.34570214660883,
+  "generic_interval_dlog_exponent": 64.17285107330441,
+  "caveat": "The DLP value is a square-root interval-search scale, not an executed attack or exact operation count. No native execution or transaction size is claimed."
+}

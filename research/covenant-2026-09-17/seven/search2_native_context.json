@@ -1,0 +1,68 @@
+{
+  "question": "Can legacy native preimage equality, subset deletion, or post-mining subset commitments distinguish predetermined outputs?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "boundary": "Host serializer only, synthetic public transactions; no Script execution or covenant claimed.",
+  "core_semantics_reference": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "all_assertions_passed": true,
+  "context_count_per_output_variant": 36864,
+  "input_count": 3,
+  "output_count": 2,
+  "full_sighash_bytes_tested": 256,
+  "script_templates": 6,
+  "subset_masks_per_template": 8,
+  "preimage_or_bug_equivalence_classes": 13441,
+  "equal_context_pairs_preserved_after_output_mutation": 242496,
+  "preimage_equality_partition_unchanged": true,
+  "semantic_equivalent_flags": [
+    {
+      "flag": 0,
+      "trailer": "00000000",
+      "digest": "e55e61e12f077e829dac88bd6f404d61ad48a6b7f4c8991a17047da33c11eb1c"
+    },
+    {
+      "flag": 1,
+      "trailer": "01000000",
+      "digest": "805e32d384540c3ebc3eabd468f4763d5a04e346919ead5b3cc2265f9ba6aff4"
+    },
+    {
+      "flag": 4,
+      "trailer": "04000000",
+      "digest": "5258bceae070633f9177edf173912596d72f9004b61b8224b61b46458c1ee918"
+    },
+    {
+      "flag": 33,
+      "trailer": "21000000",
+      "digest": "426d3ce7e121fb2713d87ab21b621011bccc625f465b44865410f62e4b92af0a"
+    },
+    {
+      "flag": 65,
+      "trailer": "41000000",
+      "digest": "ae3248040916998d31922bc386c2dad1ade3182ff472dfafbf9843caf1f60f78"
+    },
+    {
+      "flag": 97,
+      "trailer": "61000000",
+      "digest": "dd40b11b55933ae9c9907baa17a39deb3cdd4cdc4deaf5aa533a5b3d7a764acf"
+    }
+  ],
+  "find_and_delete_is_check_local": true,
+  "embedded_signature_push_is_not_deleted": true,
+  "funding_dependency": {
+    "script_code_in_both_spends": "ac",
+    "funding_txids": [
+      "e789562668dbd32d79e06bd35794baf4cdf5911c9906aada1f01d3897c059391",
+      "4c020c2e4cc1a848d8296736f31fd589349f320a61f88c8ec49cb5abc0e3bd8d"
+    ],
+    "spending_digests": [
+      "4f8769212236ccea86f4f193bb0eecd11445cadfa98318135b36356018d66dd8",
+      "c89b50b7fd1b13aea7685b4c37b91be73a0aa0bcec5d99e2a7fb5bf1305e5f85"
+    ]
+  },
+  "hint_items": 0,
+  "witness_bytes": 0,
+  "script_bytes": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "resource_note": "Not a complete locking script; Script metrics are inapplicable, not zero."
+}

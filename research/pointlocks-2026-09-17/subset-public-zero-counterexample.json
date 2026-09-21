@@ -1,0 +1,9 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Algebraic free-XOR label counterexample only; no Script execution or general garbling impossibility claim.",
+  "public_zero_labels": 50,
+  "released_one_labels": 1,
+  "all_one_labels_recovered": 50,
+  "all_expectations_met": true
+}

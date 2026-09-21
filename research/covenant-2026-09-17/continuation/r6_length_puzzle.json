@@ -1,0 +1,528 @@
+{
+  "scope": "Exact known-nonce DER-length probability, with optional isolated Core checks.\n\nRaw boundary fixture, not full Binohash, QSB or a covenant. All keys are public.\n",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "toy_exhaustive_checks": [
+    {
+      "order": 251,
+      "digest_domain": 256,
+      "low": 1,
+      "high": 8,
+      "accepted_count": 17
+    },
+    {
+      "order": 251,
+      "digest_domain": 256,
+      "low": 8,
+      "high": 64,
+      "accepted_count": 114
+    },
+    {
+      "order": 257,
+      "digest_domain": 512,
+      "low": 1,
+      "high": 8,
+      "accepted_count": 27
+    },
+    {
+      "order": 257,
+      "digest_domain": 512,
+      "low": 8,
+      "high": 128,
+      "accepted_count": 480
+    },
+    {
+      "order": 509,
+      "digest_domain": 512,
+      "low": 1,
+      "high": 128,
+      "accepted_count": 257
+    },
+    {
+      "order": 509,
+      "digest_domain": 512,
+      "low": 128,
+      "high": 254,
+      "accepted_count": 252
+    }
+  ],
+  "known_nonce_r": 86918276961810349294276103416548851884759982251107,
+  "public_key": "03f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4",
+  "cases": [
+    {
+      "signature_bytes": 59,
+      "s_der_bytes": 31,
+      "raw_digest_intervals": [
+        {
+          "sign": 1,
+          "s_raw_parity": 0,
+          "start": 441711766194596082395824375185729628956870974218904739530401550323154943,
+          "end": 113078212145816597093331040047546785012958969400039613319782796882727665662
+        },
+        {
+          "sign": 1,
+          "s_raw_parity": 1,
+          "start": 57896486330424292307867888328719139656047739010511671096042111972309403902112,
+          "end": 58009122830803914308878823544391500711431741108937491804622364367641808412831
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 0,
+          "start": 57782966406512281114692161464296407141405823170137412577982798773876353081504,
+          "end": 57895602906891903115703096679968768196789825268563233286563051169208757592223
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 1,
+          "start": 115679011025170378826477653968640361067824605309674864769285380344635433828673,
+          "end": 115791647525550000827488589184312722123208607408100685477865632739967838339392
+        }
+      ],
+      "accepted_digest_count": 450546001518488004043740862689444221536008393703282834321009581329618042880,
+      "probability": "255/65536",
+      "expected_query_bits": 8.005646563141141,
+      "zero_prefix_strategy_bits": 10
+    },
+    {
+      "signature_bytes": 58,
+      "s_der_bytes": 30,
+      "raw_digest_intervals": [
+        {
+          "sign": 1,
+          "s_raw_parity": 0,
+          "start": 1725436586697640946858688965569256363112777243042596638790631055949823,
+          "end": 441711766194596082395824375185729628956870974218904739530401550323154942
+        },
+        {
+          "sign": 1,
+          "s_raw_parity": 1,
+          "start": 57896046344094684409426439363032919495675145252314695233899220361390136696992,
+          "end": 57896486330424292307867888328719139656047739010511671096042111972309403902111
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 0,
+          "start": 57895602906891903115703096679968768196789825268563233286563051169208757592224,
+          "end": 57896042893221511014144545645654988357162419026760209148705942780128024797343
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 1,
+          "start": 115791647525550000827488589184312722123208607408100685477865632739967838339393,
+          "end": 115792087511879608725930038149998942283581201166297661340008524350887105544512
+        }
+      ],
+      "accepted_digest_count": 1759945318431593765795862744880641490375032787903448571566443677068820480,
+      "probability": "255/16777216",
+      "expected_query_bits": 16.00564656314114,
+      "zero_prefix_strategy_bits": 18
+    },
+    {
+      "signature_bytes": 55,
+      "s_der_bytes": 27,
+      "raw_digest_intervals": [
+        {
+          "sign": 1,
+          "s_raw_parity": 0,
+          "start": 102844034832575377634685573909834406561420991602098741459288063,
+          "end": 26328072917139296674479506920917608079723773850137277813577744382
+        },
+        {
+          "sign": 1,
+          "s_raw_parity": 1,
+          "start": 57896044618658200555820325079721588611992691973944013612294183669500540035232,
+          "end": 57896044618684425784702631801018433433339699747617175965152718848572658491551
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 0,
+          "start": 57896044618631769638868353207669474419497864531457728417452444292945503002784,
+          "end": 57896044618657994867750659928966319240844872305130890770310979472017621459103
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 1,
+          "start": 115792089237289867350653845712013428345916646670995180608755025863704583749953,
+          "end": 115792089237316092579536152433310273167263654444668342961613561042776702206272
+        }
+      ],
+      "accepted_digest_count": 104900915529226885187379285388031094692649411434140716288473825280,
+      "probability": "255/281474976710656",
+      "expected_query_bits": 40.00564656314114,
+      "zero_prefix_strategy_bits": 42
+    },
+    {
+      "signature_bytes": 54,
+      "s_der_bytes": 26,
+      "raw_digest_intervals": [
+        {
+          "sign": 1,
+          "s_raw_parity": 0,
+          "start": 401734511064747568885490523085290650630550748445698208825343,
+          "end": 102844034832575377634685573909834406561420991602098741459288062
+        },
+        {
+          "sign": 1,
+          "s_raw_parity": 1,
+          "start": 57896044618658098113520003569091522811909305224828102821853330016457289572512,
+          "end": 57896044618658200555820325079721588611992691973944013612294183669500540035231
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 0,
+          "start": 57896044618657994867750659928966319240844872305130890770310979472017621459104,
+          "end": 57896044618658097310050981439596385040928259054246801560751833125060871921823
+        },
+        {
+          "sign": -1,
+          "s_raw_parity": 1,
+          "start": 115792089237316092579536152433310273167263654444668342961613561042776702206273,
+          "end": 115792089237316195021836473943940338967347041193784253752054414695819952668992
+        }
+      ],
+      "accepted_digest_count": 409769201286042520263200333546996463643161763414612173001850880,
+      "probability": "255/72057594037927936",
+      "expected_query_bits": 48.00564656314114,
+      "zero_prefix_strategy_bits": 50
+    }
+  ],
+  "all_expectations_met": true,
+  "core": {
+    "bitcoin_core": {
+      "version": "30.3",
+      "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+      "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+      "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+      "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+      "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+      "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+    },
+    "redeemscript": "82013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4ac",
+    "redeemscript_bytes": 39,
+    "locking_script_bytes": 23,
+    "results": [
+      {
+        "name": "accepted-digest-window-0",
+        "signing_sighash": "0018803655f590ca8cc5650472fa4eb6e1de408c3c500bba166fd729a51fb89a",
+        "actual_spend_sighash": "0018803655f590ca8cc5650472fa4eb6e1de408c3c500bba166fd729a51fb89a",
+        "locktime_nonce": 888,
+        "leading_zero_bits": 11,
+        "signature": "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f31006cabeb2195198aca08e5f49d6dc3bc811878a017742cdfae534a3f713601",
+        "signature_bytes": 59,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 100,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": 3,
+        "p2sh_additional_opcodes_if_success": 2,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501600000000643b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f31006cabeb2195198aca08e5f49d6dc3bc811878a017742cdfae534a3f7136012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f0000000000160014111111111111111111111111111111111111111178030000",
+          "txid": "6f1efa45d7adc8966fef8b3b224a4cb2fae90a7bf826d48d9a87ae3e262d5acd",
+          "weight": 728,
+          "total_bytes": 182,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "6f1efa45d7adc8966fef8b3b224a4cb2fae90a7bf826d48d9a87ae3e262d5acd",
+          "wtxid": "6f1efa45d7adc8966fef8b3b224a4cb2fae90a7bf826d48d9a87ae3e262d5acd",
+          "allowed": true,
+          "vsize": 182,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00054945,
+            "effective-includes": [
+              "6f1efa45d7adc8966fef8b3b224a4cb2fae90a7bf826d48d9a87ae3e262d5acd"
+            ]
+          }
+        },
+        "consensus": {
+          "accepted": true,
+          "block_height": 103,
+          "block_hash": "087593937b854abfe299bd1bb1c04f03ae51821b9a10c1054bdb684d63a185a0"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "policy-validated",
+        "window": {
+          "sign": 1,
+          "s_raw_parity": 0,
+          "start": 441711766194596082395824375185729628956870974218904739530401550323154943,
+          "end": 113078212145816597093331040047546785012958969400039613319782796882727665662
+        },
+        "candidates_tried": 889
+      },
+      {
+        "name": "accepted-digest-window-1",
+        "signing_sighash": "8026da0f484b10373b9457069918b73eee419a0c2bcc2a359ac2c84c00788055",
+        "actual_spend_sighash": "8026da0f484b10373b9457069918b73eee419a0c2bcc2a359ac2c84c00788055",
+        "locktime_nonce": 82,
+        "leading_zero_bits": 0,
+        "signature": "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f4db41e9096206e7728ae0d32316e7f21d45731a84fb42f75b3320b30babf6b01",
+        "signature_bytes": 59,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 100,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": 3,
+        "p2sh_additional_opcodes_if_success": 2,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501601000000643b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f4db41e9096206e7728ae0d32316e7f21d45731a84fb42f75b3320b30babf6b012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f0000000000160014111111111111111111111111111111111111111152000000",
+          "txid": "05241c2ec7cb89af0a9cf0f6ed073eb61214a9eb89bc31594d86af508515b521",
+          "weight": 728,
+          "total_bytes": 182,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "05241c2ec7cb89af0a9cf0f6ed073eb61214a9eb89bc31594d86af508515b521",
+          "wtxid": "05241c2ec7cb89af0a9cf0f6ed073eb61214a9eb89bc31594d86af508515b521",
+          "allowed": true,
+          "vsize": 182,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00054945,
+            "effective-includes": [
+              "05241c2ec7cb89af0a9cf0f6ed073eb61214a9eb89bc31594d86af508515b521"
+            ]
+          }
+        },
+        "consensus": {
+          "accepted": true,
+          "block_height": 104,
+          "block_hash": "77f2925992a169a50d688b6e96c430bcea465f260cafde74a2abcb34e63a7121"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "policy-validated",
+        "window": {
+          "sign": 1,
+          "s_raw_parity": 1,
+          "start": 57896486330424292307867888328719139656047739010511671096042111972309403902112,
+          "end": 58009122830803914308878823544391500711431741108937491804622364367641808412831
+        },
+        "candidates_tried": 83
+      },
+      {
+        "name": "accepted-digest-window-2",
+        "signing_sighash": "7ff2ba69d2fdd2188c52c833034cb21811cee5dc486b0a4b6d4424d712c86eb8",
+        "actual_spend_sighash": "7ff2ba69d2fdd2188c52c833034cb21811cee5dc486b0a4b6d4424d712c86eb8",
+        "locktime_nonce": 5098,
+        "leading_zero_bits": 1,
+        "signature": "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f1a8b2c5a045bcee75a6f99f9669bce9711112e1e728ba4e54a14deaaa563cf01",
+        "signature_bytes": 59,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 100,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": 3,
+        "p2sh_additional_opcodes_if_success": 2,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501602000000643b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f1a8b2c5a045bcee75a6f99f9669bce9711112e1e728ba4e54a14deaaa563cf012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f00000000001600141111111111111111111111111111111111111111ea130000",
+          "txid": "e5af897e9a55d45788056a028a225663233615a0f4fb26e1e8ff89b9058ffd33",
+          "weight": 728,
+          "total_bytes": 182,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "e5af897e9a55d45788056a028a225663233615a0f4fb26e1e8ff89b9058ffd33",
+          "wtxid": "e5af897e9a55d45788056a028a225663233615a0f4fb26e1e8ff89b9058ffd33",
+          "allowed": true,
+          "vsize": 182,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00054945,
+            "effective-includes": [
+              "e5af897e9a55d45788056a028a225663233615a0f4fb26e1e8ff89b9058ffd33"
+            ]
+          }
+        },
+        "consensus": {
+          "accepted": true,
+          "block_height": 105,
+          "block_hash": "6c265a2755658b67aa15cd3826c0247efdea88c65b0d28d4f18dbaa426254a73"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "policy-validated",
+        "window": {
+          "sign": -1,
+          "s_raw_parity": 0,
+          "start": 57782966406512281114692161464296407141405823170137412577982798773876353081504,
+          "end": 57895602906891903115703096679968768196789825268563233286563051169208757592223
+        },
+        "candidates_tried": 5099
+      },
+      {
+        "name": "accepted-digest-window-3",
+        "signing_sighash": "ffd1b7b57a2f087dc1113b46aa3603b365f7759bab245a5a1ea69eeb9cf59486",
+        "actual_spend_sighash": "ffd1b7b57a2f087dc1113b46aa3603b365f7759bab245a5a1ea69eeb9cf59486",
+        "locktime_nonce": 607,
+        "leading_zero_bits": 0,
+        "signature": "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f5c90950ba1ef047ddd8972ab93f896a96ece9608488bc342577f426681597401",
+        "signature_bytes": 59,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 100,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": 3,
+        "p2sh_additional_opcodes_if_success": 2,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501603000000643b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f5c90950ba1ef047ddd8972ab93f896a96ece9608488bc342577f4266815974012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f000000000016001411111111111111111111111111111111111111115f020000",
+          "txid": "3df2c3b5d3c0de7f3ee5271a1b7bc949bcbfa5fe0c56942d938a8421a0883332",
+          "weight": 728,
+          "total_bytes": 182,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "3df2c3b5d3c0de7f3ee5271a1b7bc949bcbfa5fe0c56942d938a8421a0883332",
+          "wtxid": "3df2c3b5d3c0de7f3ee5271a1b7bc949bcbfa5fe0c56942d938a8421a0883332",
+          "allowed": true,
+          "vsize": 182,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00054945,
+            "effective-includes": [
+              "3df2c3b5d3c0de7f3ee5271a1b7bc949bcbfa5fe0c56942d938a8421a0883332"
+            ]
+          }
+        },
+        "consensus": {
+          "accepted": true,
+          "block_height": 106,
+          "block_hash": "4625e4c7c516fbdf32a4a6637267f291783610643c2082d2edd322e16ba4b971"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "policy-validated",
+        "window": {
+          "sign": -1,
+          "s_raw_parity": 1,
+          "start": 115679011025170378826477653968640361067824605309674864769285380344635433828673,
+          "end": 115791647525550000827488589184312722123208607408100685477865632739967838339392
+        },
+        "candidates_tried": 608
+      },
+      {
+        "name": "wrong-length-60",
+        "signing_sighash": "1354f3e8ff5ba1c6e219f94dec226851d923d2a71b5db3f480d3da9c242e0253",
+        "actual_spend_sighash": "1354f3e8ff5ba1c6e219f94dec226851d923d2a71b5db3f480d3da9c242e0253",
+        "locktime_nonce": 0,
+        "leading_zero_bits": 3,
+        "signature": "303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022026a9e7d1feb7438dc433f29bd844d0a3b247a54e36bb67e901a7b538485c04a801",
+        "signature_bytes": 60,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 101,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": null,
+        "p2sh_additional_opcodes_if_success": null,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501604000000653c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022026a9e7d1feb7438dc433f29bd844d0a3b247a54e36bb67e901a7b538485c04a8012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+          "txid": "c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511",
+          "weight": 732,
+          "total_bytes": 183,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511",
+          "wtxid": "c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511",
+          "allowed": false,
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511 (wtxid c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "consensus": {
+          "accepted": false,
+          "rpc_code": -25,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511 (wtxid c9a672174aa63f3fe67a61d5377309c996b99e90c3fdfc9373db9d7533b9e511), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "consensus-incompatible"
+      },
+      {
+        "name": "same-signature-changed-output",
+        "signing_sighash": "ffefb8f1483f36e0900dd8c64beb8d2230aa25c0833b6c066fcc24e9dfc8a612",
+        "actual_spend_sighash": "a259612c51a7c519e76429005caef6d557d647b9a5de31bd2aed122ef1926270",
+        "locktime_nonce": 30,
+        "leading_zero_bits": 0,
+        "signature": "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f208e1d6f81923edfe44e736828e5b914096e4c581a686aa00c7345e0db365c01",
+        "signature_bytes": 59,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 100,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": null,
+        "p2sh_additional_opcodes_if_success": null,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a2188501604000000643b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f208e1d6f81923edfe44e736828e5b914096e4c581a686aa00c7345e0db365c012782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f000000000016001422222222222222222222222222222222222222221e000000",
+          "txid": "e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979",
+          "weight": 728,
+          "total_bytes": 182,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979",
+          "wtxid": "e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979",
+          "allowed": false,
+          "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+          "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 0 of e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979 (wtxid e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "consensus": {
+          "accepted": false,
+          "rpc_code": -25,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 0 of e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979 (wtxid e58b20f7f8d4e3e68e67b41f16aba26275932cff7d8a67d9829caa0eb613a979), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "consensus-incompatible"
+      },
+      {
+        "name": "empty-signature",
+        "signing_sighash": "ffefb8f1483f36e0900dd8c64beb8d2230aa25c0833b6c066fcc24e9dfc8a612",
+        "actual_spend_sighash": "ffefb8f1483f36e0900dd8c64beb8d2230aa25c0833b6c066fcc24e9dfc8a612",
+        "locktime_nonce": 30,
+        "leading_zero_bits": 0,
+        "signature": "",
+        "signature_bytes": 0,
+        "input_data_items": 1,
+        "hint_items": 0,
+        "script_sig_push_items": 2,
+        "script_sig_bytes": 41,
+        "combined_stack_peak_by_inspection": 3,
+        "executed_non_push_opcodes_redeem_if_success": null,
+        "p2sh_additional_opcodes_if_success": null,
+        "transaction": {
+          "hex": "020000000122c55a0b67fa86692361fa6dd490f26c14d0f9af69aaf2447fbf889a218850160400000029002782013b882103f8f1e55f7349f7ab27c078a916ec02e055164fc7e69fc23e402fa9809acfd4f4acffffffff01301b0f000000000016001411111111111111111111111111111111111111111e000000",
+          "txid": "f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3",
+          "weight": 492,
+          "total_bytes": 123,
+          "witness_bytes": 0
+        },
+        "policy": {
+          "txid": "f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3",
+          "wtxid": "f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3",
+          "allowed": false,
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3 (wtxid f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "consensus": {
+          "accepted": false,
+          "rpc_code": -25,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3 (wtxid f76446a36421a27f9ce46ef10569508724dae88f0459893146388efdf38ba2a3), spending 165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522:4"
+        },
+        "evidence": "differentially-validated",
+        "deployment_class": "consensus-incompatible"
+      }
+    ],
+    "funding": {
+      "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0640420f000000000017a91438c1b3ad68ff880f503b12e880ce113662ff1b8d8740420f000000000017a91438c1b3ad68ff880f503b12e880ce113662ff1b8d8740420f000000000017a91438c1b3ad68ff880f503b12e880ce113662ff1b8d8740420f000000000017a91438c1b3ad68ff880f503b12e880ce113662ff1b8d8740420f000000000017a91438c1b3ad68ff880f503b12e880ce113662ff1b8d87b07fb929010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+      "txid": "165088219a88bf7f44f2aa69aff9d0146cf290d46dfa61236986fa670b5ac522",
+      "wtxid": "3036a31bf86347c4d3f09e0b91b421477f248cbf8a8a6e50439b77af39d1e2f9",
+      "weight": 1021,
+      "vsize": 256,
+      "base_bytes": 254,
+      "total_bytes": 259,
+      "witness_bytes": 3
+    },
+    "all_expectations_met": true
+  }
+}

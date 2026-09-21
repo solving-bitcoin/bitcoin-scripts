@@ -1,0 +1,112 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "exhaustive toy random-oracle accounting; no Script metrics",
+  "selected_query_attack": {
+    "native_gate_probability": "1/2",
+    "queries": 4,
+    "transaction_candidates": 3,
+    "fixed_trace_accepting_fraction": "1/4",
+    "targeted_query_success": "7/8",
+    "uniform_independent_query_success": "169/512",
+    "scope": "one native gate; no separate QSB pin or other digest rounds"
+  },
+  "pinning_checks": [
+    {
+      "m": 1,
+      "rounds": 1,
+      "samples": 2,
+      "success_per_pinned_transaction": "1/2",
+      "expected_native_queries": "6",
+      "formula": "6"
+    },
+    {
+      "m": 1,
+      "rounds": 2,
+      "samples": 4,
+      "success_per_pinned_transaction": "1/4",
+      "expected_native_queries": "14",
+      "formula": "14"
+    },
+    {
+      "m": 2,
+      "rounds": 1,
+      "samples": 4,
+      "success_per_pinned_transaction": "3/4",
+      "expected_native_queries": "14/3",
+      "formula": "14/3"
+    },
+    {
+      "m": 2,
+      "rounds": 2,
+      "samples": 16,
+      "success_per_pinned_transaction": "9/16",
+      "expected_native_queries": "74/9",
+      "formula": "74/9"
+    },
+    {
+      "m": 3,
+      "rounds": 1,
+      "samples": 8,
+      "success_per_pinned_transaction": "7/8",
+      "expected_native_queries": "30/7",
+      "formula": "30/7"
+    },
+    {
+      "m": 3,
+      "rounds": 2,
+      "samples": 64,
+      "success_per_pinned_transaction": "49/64",
+      "expected_native_queries": "338/49",
+      "formula": "338/49"
+    },
+    {
+      "m": 4,
+      "rounds": 1,
+      "samples": 16,
+      "success_per_pinned_transaction": "15/16",
+      "expected_native_queries": "62/15",
+      "formula": "62/15"
+    },
+    {
+      "m": 4,
+      "rounds": 2,
+      "samples": 256,
+      "success_per_pinned_transaction": "225/256",
+      "expected_native_queries": "1442/225",
+      "formula": "1442/225"
+    }
+  ],
+  "sha256_der_estimates": [
+    {
+      "log2_eligible_candidates_per_round": 0,
+      "single_round_success_per_pinned_tx": 2.1156985668610573e-14,
+      "log2_pin_plus_one_round_queries": 90.85171846722834,
+      "log2_pin_plus_two_round_queries": 136.27757770084247
+    },
+    {
+      "log2_eligible_candidates_per_round": 20,
+      "single_round_success_per_pinned_tx": 2.2184707158368614e-08,
+      "log2_pin_plus_one_round_queries": 70.85171851523694,
+      "log2_pin_plus_two_round_queries": 96.27757776485396
+    },
+    {
+      "log2_eligible_candidates_per_round": 40,
+      "single_round_success_per_pinned_tx": 0.022993869122061875,
+      "log2_pin_plus_one_round_queries": 50.9012636770749,
+      "log2_pin_plus_two_round_queries": 56.34461606284071
+    },
+    {
+      "log2_eligible_candidates_per_round": 45.4258592336,
+      "single_round_success_per_pinned_tx": 0.6321205588249534,
+      "log2_pin_plus_one_round_queries": 46.7943352191459,
+      "log2_pin_plus_two_round_queries": 47.77200118007285
+    },
+    {
+      "log2_eligible_candidates_per_round": 50,
+      "single_round_success_per_pinned_tx": 0.9999999999548327,
+      "log2_pin_plus_one_round_queries": 46.42585923364673,
+      "log2_pin_plus_two_round_queries": 47.01082173440047
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "n": 8,
+  "t": 4,
+  "public_scalar_equations": 56,
+  "unknowns": 40,
+  "rank": 40,
+  "recovered_point_scalars": 8,
+  "recovered_polynomial_coefficients": 32,
+  "all_secrets_recovered_from_public_equations": true,
+  "scope": "Specific publicly chosen affine-mask construction over the secp256k1 scalar field. No curve attack or universal impossibility claim.",
+  "source_sha256": "2736318282de526ae8e4ac4eb280ac0049b87800b2f170c0cb6e53545a30e7ed"
+}

@@ -1,0 +1,31 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "A publicly point-checked AND gate and its incompatible message-label access.\n\nThis scalar-field experiment is inspired by privacy-free formula garbling.\nIt is not an implementation of that paper's XOR-string garbling, nor Bitcoin\nScript. All seeds are deterministic public fixtures. No ZKP or counterparty.\n",
+  "tests_run": 4,
+  "failures": 0,
+  "errors": 0,
+  "public_instances": 16,
+  "honest_input_evaluations": 64,
+  "alternate_complete_input_recoveries": 32,
+  "distinct_point_recoveries": 16,
+  "altered_public_relations_or_encodings_rejected": 13,
+  "algebraic_gate_correctness": true,
+  "required_message_label_privacy": false,
+  "contradicts_source_output_authenticity": false,
+  "bitcoin_execution": false,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "setup_benchmark": null,
+  "onchain_vbytes": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/public_algebraic_gate_probe.py": "171fd5712618c6d115796037a6083105f6fffdde73390c374d2e667e341ad371",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

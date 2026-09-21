@@ -1,0 +1,21 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "tests_run": 2,
+  "equal_digest_signed_glv_cases": 8,
+  "identity_negation_degenerate_signature_bytes": [
+    40,
+    72
+  ],
+  "scope": "Same-digest anchor/short-check extraction for signed GLV nonce relations.\n\nAssigned algebraic digests only, not Bitcoin hash preimages or an all-nonce\nproof. The independent native selector report tests actual BIP143 contexts.\n",
+  "native_execution": false,
+  "general_extraction_proved": false,
+  "sha256": {
+    "research/pointlocks-2026-09-17/shared_context_algebra.py": "33dc6551eff91f8b82094e0d48b7f304a6b5f0d338157062374040e98d4c65c1",
+    "research/pointlocks-2026-09-17/anchored_extraction.py": "4884237ccb725fa32209a46ee2da9a6b0a91cb3704f00ffe26db0e7ef5f3536d",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/pointlocks-2026-09-17/publication_core_check.py": "58e91767cd038a63f8208a2ef15b5f146c11521c9676e34220aa4d457c85ca57",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

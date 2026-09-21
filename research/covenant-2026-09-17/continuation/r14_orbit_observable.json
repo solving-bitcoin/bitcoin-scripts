@@ -1,0 +1,117 @@
+{
+  "question": "Can three short hash-derived ECDSA signatures supply a variable orbit h?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "conditions": "one genuine three-point secp256k1 endomorphism orbit; all r nonzero and <=2^191-1",
+  "coordinate_enumeration": {
+    "gauss_basis": [
+      [
+        "-303414439467246543595250775667605759171",
+        "-64502973549206556628585045361533709078"
+      ],
+      [
+        "64502973549206556628585045361533709078",
+        "-367917413016453100223835821029139468249"
+      ]
+    ],
+    "gauss_steps": 52,
+    "determinant": "115792089237316195423570985008687907853269984665640564039457584007908834671663",
+    "inverse_coefficient_bounds": [
+      [
+        -1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ]
+    ],
+    "coefficient_pairs_inspected": [
+      {
+        "coefficients": [
+          -1,
+          -1
+        ],
+        "x": "238911465918039986966665730306072050093",
+        "y": "432420386565659656852420866390673177327",
+        "inside_box": false
+      },
+      {
+        "coefficients": [
+          -1,
+          0
+        ],
+        "x": "303414439467246543595250775667605759171",
+        "y": "64502973549206556628585045361533709078",
+        "inside_box": true
+      }
+    ],
+    "box_coordinate_pairs": [
+      [
+        "303414439467246543595250775667605759171",
+        "64502973549206556628585045361533709078"
+      ]
+    ],
+    "h1_candidate_x": [
+      "303414439467246543595250775667605759171",
+      "64502973549206556628585045361533709078",
+      "115792089237316195423570985008687907852902067252624110939233748186879695203414"
+    ],
+    "h1_liftable": false,
+    "h2_unique_coordinate_orbit": [
+      "115792089237316195423570985008687907852966570226173317495862333232241228912492",
+      "115792089237316195423570985008687907853205481692091357482828998962547300962585",
+      "367917413016453100223835821029139468249"
+    ],
+    "h2_r": [
+      "129005947098413113257170090723067418155",
+      "367917413016453100223835821029139468248",
+      "367917413016453100223835821029139468249"
+    ],
+    "r_bit_lengths": [
+      127,
+      129,
+      129
+    ],
+    "h2_even_y": "35085563014384515484801437571718011237280068686083617725305748081673745334778",
+    "nonzero_y": true,
+    "oriented_point_orbits_up_to_rotation": 2,
+    "x_lifts_per_r": [
+      2,
+      1,
+      1
+    ],
+    "hash_der_sets": [
+      {
+        "r": "129005947098413113257170090723067418155",
+        "r_integer_bytes": 16,
+        "s_integer_bytes": 9,
+        "smallest_s": "9223372036854775808",
+        "largest_s": "2361183241434822606847",
+        "all_flag_string_count": "602101726565879764746240"
+      },
+      {
+        "r": "367917413016453100223835821029139468248",
+        "r_integer_bytes": 17,
+        "s_integer_bytes": 8,
+        "smallest_s": "36028797018963968",
+        "largest_s": "9223372036854775807",
+        "all_flag_string_count": "2351959869397967831040"
+      },
+      {
+        "r": "367917413016453100223835821029139468249",
+        "r_integer_bytes": 17,
+        "s_integer_bytes": 8,
+        "smallest_s": "36028797018963968",
+        "largest_s": "9223372036854775807",
+        "all_flag_string_count": "2351959869397967831040"
+      }
+    ],
+    "total_32byte_strings_with_one_of_these_r": "606805646304675700408320",
+    "uniform_SHA256_probability": "32895/6277101735386680763835789423207666416102355444464034512896",
+    "uniform_SHA256_probability_log2": -176.9944193077179,
+    "at_most_2_64_fresh_queries_success_upper_bound": "32895/340282366920938463463374607431768211456",
+    "at_most_2_64_queries_bound_log2": -112.99441930771789
+  },
+  "scope": "Complete exact coordinate enumeration; SHA256 query estimates additionally assume a fresh ideal uniform oracle. No native orbit verifier, nonce logarithm, hash preimage or complete covenant."
+}

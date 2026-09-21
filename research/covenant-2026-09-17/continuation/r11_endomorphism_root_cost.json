@@ -1,0 +1,1062 @@
+{
+  "question": "Does cheap free-signature endomorphism recovery also supply a hash-derived reference root?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Finite fixed-endomorphism target accounting, not a general search bound.\n\nHost-only exact small-curve enumeration and explicitly idealized query models.\nNo native hash-derived signature or complete covenant is constructed.\n",
+  "all_assertions_passed": true,
+  "toy_curve": {
+    "p": 211,
+    "n": 199,
+    "generator": [
+      3,
+      33
+    ],
+    "betas": [
+      14,
+      196
+    ],
+    "lambdas": [
+      106,
+      92
+    ],
+    "strip_cases": [
+      {
+        "r_maximum": 1,
+        "target_count": 0,
+        "integer_support_bound": 4
+      },
+      {
+        "r_maximum": 2,
+        "target_count": 2,
+        "integer_support_bound": 8
+      },
+      {
+        "r_maximum": 3,
+        "target_count": 6,
+        "integer_support_bound": 12
+      },
+      {
+        "r_maximum": 4,
+        "target_count": 7,
+        "integer_support_bound": 16
+      },
+      {
+        "r_maximum": 5,
+        "target_count": 7,
+        "integer_support_bound": 20
+      },
+      {
+        "r_maximum": 6,
+        "target_count": 7,
+        "integer_support_bound": 24
+      },
+      {
+        "r_maximum": 7,
+        "target_count": 10,
+        "integer_support_bound": 28
+      },
+      {
+        "r_maximum": 8,
+        "target_count": 12,
+        "integer_support_bound": 32
+      },
+      {
+        "r_maximum": 9,
+        "target_count": 13,
+        "integer_support_bound": 36
+      },
+      {
+        "r_maximum": 10,
+        "target_count": 14,
+        "integer_support_bound": 40
+      },
+      {
+        "r_maximum": 11,
+        "target_count": 16,
+        "integer_support_bound": 44
+      },
+      {
+        "r_maximum": 12,
+        "target_count": 17,
+        "integer_support_bound": 46
+      },
+      {
+        "r_maximum": 13,
+        "target_count": 17,
+        "integer_support_bound": 48
+      },
+      {
+        "r_maximum": 14,
+        "target_count": 17,
+        "integer_support_bound": 50
+      },
+      {
+        "r_maximum": 15,
+        "target_count": 18,
+        "integer_support_bound": 52
+      },
+      {
+        "r_maximum": 16,
+        "target_count": 18,
+        "integer_support_bound": 54
+      },
+      {
+        "r_maximum": 17,
+        "target_count": 18,
+        "integer_support_bound": 56
+      },
+      {
+        "r_maximum": 18,
+        "target_count": 18,
+        "integer_support_bound": 58
+      },
+      {
+        "r_maximum": 19,
+        "target_count": 20,
+        "integer_support_bound": 60
+      },
+      {
+        "r_maximum": 20,
+        "target_count": 20,
+        "integer_support_bound": 62
+      },
+      {
+        "r_maximum": 21,
+        "target_count": 20,
+        "integer_support_bound": 64
+      },
+      {
+        "r_maximum": 22,
+        "target_count": 22,
+        "integer_support_bound": 66
+      },
+      {
+        "r_maximum": 23,
+        "target_count": 22,
+        "integer_support_bound": 68
+      },
+      {
+        "r_maximum": 24,
+        "target_count": 22,
+        "integer_support_bound": 70
+      },
+      {
+        "r_maximum": 25,
+        "target_count": 22,
+        "integer_support_bound": 72
+      },
+      {
+        "r_maximum": 26,
+        "target_count": 24,
+        "integer_support_bound": 74
+      },
+      {
+        "r_maximum": 27,
+        "target_count": 24,
+        "integer_support_bound": 76
+      },
+      {
+        "r_maximum": 28,
+        "target_count": 24,
+        "integer_support_bound": 78
+      },
+      {
+        "r_maximum": 29,
+        "target_count": 24,
+        "integer_support_bound": 80
+      },
+      {
+        "r_maximum": 30,
+        "target_count": 24,
+        "integer_support_bound": 82
+      },
+      {
+        "r_maximum": 31,
+        "target_count": 26,
+        "integer_support_bound": 84
+      },
+      {
+        "r_maximum": 32,
+        "target_count": 28,
+        "integer_support_bound": 86
+      },
+      {
+        "r_maximum": 33,
+        "target_count": 28,
+        "integer_support_bound": 88
+      },
+      {
+        "r_maximum": 34,
+        "target_count": 30,
+        "integer_support_bound": 90
+      },
+      {
+        "r_maximum": 35,
+        "target_count": 31,
+        "integer_support_bound": 92
+      },
+      {
+        "r_maximum": 36,
+        "target_count": 31,
+        "integer_support_bound": 94
+      },
+      {
+        "r_maximum": 37,
+        "target_count": 33,
+        "integer_support_bound": 96
+      },
+      {
+        "r_maximum": 38,
+        "target_count": 34,
+        "integer_support_bound": 98
+      },
+      {
+        "r_maximum": 39,
+        "target_count": 34,
+        "integer_support_bound": 100
+      },
+      {
+        "r_maximum": 40,
+        "target_count": 34,
+        "integer_support_bound": 102
+      },
+      {
+        "r_maximum": 41,
+        "target_count": 34,
+        "integer_support_bound": 104
+      },
+      {
+        "r_maximum": 42,
+        "target_count": 35,
+        "integer_support_bound": 106
+      },
+      {
+        "r_maximum": 43,
+        "target_count": 35,
+        "integer_support_bound": 108
+      },
+      {
+        "r_maximum": 44,
+        "target_count": 35,
+        "integer_support_bound": 110
+      },
+      {
+        "r_maximum": 45,
+        "target_count": 35,
+        "integer_support_bound": 112
+      },
+      {
+        "r_maximum": 46,
+        "target_count": 35,
+        "integer_support_bound": 114
+      },
+      {
+        "r_maximum": 47,
+        "target_count": 35,
+        "integer_support_bound": 116
+      },
+      {
+        "r_maximum": 48,
+        "target_count": 35,
+        "integer_support_bound": 118
+      },
+      {
+        "r_maximum": 49,
+        "target_count": 35,
+        "integer_support_bound": 120
+      },
+      {
+        "r_maximum": 50,
+        "target_count": 37,
+        "integer_support_bound": 122
+      },
+      {
+        "r_maximum": 51,
+        "target_count": 38,
+        "integer_support_bound": 124
+      },
+      {
+        "r_maximum": 52,
+        "target_count": 38,
+        "integer_support_bound": 126
+      },
+      {
+        "r_maximum": 53,
+        "target_count": 38,
+        "integer_support_bound": 128
+      },
+      {
+        "r_maximum": 54,
+        "target_count": 40,
+        "integer_support_bound": 130
+      },
+      {
+        "r_maximum": 55,
+        "target_count": 41,
+        "integer_support_bound": 132
+      },
+      {
+        "r_maximum": 56,
+        "target_count": 42,
+        "integer_support_bound": 134
+      },
+      {
+        "r_maximum": 57,
+        "target_count": 42,
+        "integer_support_bound": 136
+      },
+      {
+        "r_maximum": 58,
+        "target_count": 42,
+        "integer_support_bound": 138
+      },
+      {
+        "r_maximum": 59,
+        "target_count": 44,
+        "integer_support_bound": 140
+      },
+      {
+        "r_maximum": 60,
+        "target_count": 45,
+        "integer_support_bound": 142
+      },
+      {
+        "r_maximum": 61,
+        "target_count": 47,
+        "integer_support_bound": 144
+      },
+      {
+        "r_maximum": 62,
+        "target_count": 47,
+        "integer_support_bound": 146
+      },
+      {
+        "r_maximum": 63,
+        "target_count": 49,
+        "integer_support_bound": 148
+      },
+      {
+        "r_maximum": 64,
+        "target_count": 49,
+        "integer_support_bound": 150
+      },
+      {
+        "r_maximum": 65,
+        "target_count": 50,
+        "integer_support_bound": 152
+      },
+      {
+        "r_maximum": 66,
+        "target_count": 52,
+        "integer_support_bound": 154
+      },
+      {
+        "r_maximum": 67,
+        "target_count": 53,
+        "integer_support_bound": 156
+      },
+      {
+        "r_maximum": 68,
+        "target_count": 54,
+        "integer_support_bound": 158
+      },
+      {
+        "r_maximum": 69,
+        "target_count": 54,
+        "integer_support_bound": 160
+      },
+      {
+        "r_maximum": 70,
+        "target_count": 54,
+        "integer_support_bound": 162
+      },
+      {
+        "r_maximum": 71,
+        "target_count": 56,
+        "integer_support_bound": 164
+      },
+      {
+        "r_maximum": 72,
+        "target_count": 56,
+        "integer_support_bound": 166
+      },
+      {
+        "r_maximum": 73,
+        "target_count": 57,
+        "integer_support_bound": 168
+      },
+      {
+        "r_maximum": 74,
+        "target_count": 57,
+        "integer_support_bound": 170
+      },
+      {
+        "r_maximum": 75,
+        "target_count": 58,
+        "integer_support_bound": 172
+      },
+      {
+        "r_maximum": 76,
+        "target_count": 59,
+        "integer_support_bound": 174
+      },
+      {
+        "r_maximum": 77,
+        "target_count": 59,
+        "integer_support_bound": 176
+      },
+      {
+        "r_maximum": 78,
+        "target_count": 60,
+        "integer_support_bound": 178
+      },
+      {
+        "r_maximum": 79,
+        "target_count": 61,
+        "integer_support_bound": 180
+      },
+      {
+        "r_maximum": 80,
+        "target_count": 62,
+        "integer_support_bound": 182
+      },
+      {
+        "r_maximum": 81,
+        "target_count": 63,
+        "integer_support_bound": 184
+      },
+      {
+        "r_maximum": 82,
+        "target_count": 63,
+        "integer_support_bound": 186
+      },
+      {
+        "r_maximum": 83,
+        "target_count": 63,
+        "integer_support_bound": 188
+      },
+      {
+        "r_maximum": 84,
+        "target_count": 63,
+        "integer_support_bound": 190
+      },
+      {
+        "r_maximum": 85,
+        "target_count": 63,
+        "integer_support_bound": 192
+      },
+      {
+        "r_maximum": 86,
+        "target_count": 64,
+        "integer_support_bound": 194
+      },
+      {
+        "r_maximum": 87,
+        "target_count": 64,
+        "integer_support_bound": 196
+      },
+      {
+        "r_maximum": 88,
+        "target_count": 64,
+        "integer_support_bound": 198
+      },
+      {
+        "r_maximum": 89,
+        "target_count": 66,
+        "integer_support_bound": 200
+      },
+      {
+        "r_maximum": 90,
+        "target_count": 66,
+        "integer_support_bound": 202
+      },
+      {
+        "r_maximum": 91,
+        "target_count": 66,
+        "integer_support_bound": 204
+      },
+      {
+        "r_maximum": 92,
+        "target_count": 68,
+        "integer_support_bound": 206
+      },
+      {
+        "r_maximum": 93,
+        "target_count": 68,
+        "integer_support_bound": 208
+      },
+      {
+        "r_maximum": 94,
+        "target_count": 70,
+        "integer_support_bound": 210
+      },
+      {
+        "r_maximum": 95,
+        "target_count": 70,
+        "integer_support_bound": 212
+      },
+      {
+        "r_maximum": 96,
+        "target_count": 70,
+        "integer_support_bound": 214
+      },
+      {
+        "r_maximum": 97,
+        "target_count": 72,
+        "integer_support_bound": 216
+      },
+      {
+        "r_maximum": 98,
+        "target_count": 73,
+        "integer_support_bound": 218
+      },
+      {
+        "r_maximum": 99,
+        "target_count": 73,
+        "integer_support_bound": 220
+      },
+      {
+        "r_maximum": 100,
+        "target_count": 73,
+        "integer_support_bound": 222
+      },
+      {
+        "r_maximum": 101,
+        "target_count": 73,
+        "integer_support_bound": 224
+      },
+      {
+        "r_maximum": 102,
+        "target_count": 73,
+        "integer_support_bound": 226
+      },
+      {
+        "r_maximum": 103,
+        "target_count": 74,
+        "integer_support_bound": 228
+      },
+      {
+        "r_maximum": 104,
+        "target_count": 75,
+        "integer_support_bound": 230
+      },
+      {
+        "r_maximum": 105,
+        "target_count": 75,
+        "integer_support_bound": 232
+      },
+      {
+        "r_maximum": 106,
+        "target_count": 77,
+        "integer_support_bound": 234
+      },
+      {
+        "r_maximum": 107,
+        "target_count": 77,
+        "integer_support_bound": 236
+      },
+      {
+        "r_maximum": 108,
+        "target_count": 78,
+        "integer_support_bound": 238
+      },
+      {
+        "r_maximum": 109,
+        "target_count": 78,
+        "integer_support_bound": 240
+      },
+      {
+        "r_maximum": 110,
+        "target_count": 79,
+        "integer_support_bound": 242
+      },
+      {
+        "r_maximum": 111,
+        "target_count": 79,
+        "integer_support_bound": 244
+      },
+      {
+        "r_maximum": 112,
+        "target_count": 79,
+        "integer_support_bound": 246
+      },
+      {
+        "r_maximum": 113,
+        "target_count": 79,
+        "integer_support_bound": 248
+      },
+      {
+        "r_maximum": 114,
+        "target_count": 80,
+        "integer_support_bound": 250
+      },
+      {
+        "r_maximum": 115,
+        "target_count": 80,
+        "integer_support_bound": 252
+      },
+      {
+        "r_maximum": 116,
+        "target_count": 82,
+        "integer_support_bound": 254
+      },
+      {
+        "r_maximum": 117,
+        "target_count": 82,
+        "integer_support_bound": 256
+      },
+      {
+        "r_maximum": 118,
+        "target_count": 83,
+        "integer_support_bound": 258
+      },
+      {
+        "r_maximum": 119,
+        "target_count": 84,
+        "integer_support_bound": 260
+      },
+      {
+        "r_maximum": 120,
+        "target_count": 84,
+        "integer_support_bound": 262
+      },
+      {
+        "r_maximum": 121,
+        "target_count": 84,
+        "integer_support_bound": 264
+      },
+      {
+        "r_maximum": 122,
+        "target_count": 84,
+        "integer_support_bound": 266
+      },
+      {
+        "r_maximum": 123,
+        "target_count": 86,
+        "integer_support_bound": 268
+      },
+      {
+        "r_maximum": 124,
+        "target_count": 86,
+        "integer_support_bound": 270
+      },
+      {
+        "r_maximum": 125,
+        "target_count": 86,
+        "integer_support_bound": 272
+      },
+      {
+        "r_maximum": 126,
+        "target_count": 86,
+        "integer_support_bound": 274
+      },
+      {
+        "r_maximum": 127,
+        "target_count": 86,
+        "integer_support_bound": 276
+      },
+      {
+        "r_maximum": 128,
+        "target_count": 87,
+        "integer_support_bound": 278
+      },
+      {
+        "r_maximum": 129,
+        "target_count": 87,
+        "integer_support_bound": 280
+      },
+      {
+        "r_maximum": 130,
+        "target_count": 87,
+        "integer_support_bound": 282
+      },
+      {
+        "r_maximum": 131,
+        "target_count": 87,
+        "integer_support_bound": 284
+      },
+      {
+        "r_maximum": 132,
+        "target_count": 87,
+        "integer_support_bound": 286
+      },
+      {
+        "r_maximum": 133,
+        "target_count": 87,
+        "integer_support_bound": 288
+      },
+      {
+        "r_maximum": 134,
+        "target_count": 87,
+        "integer_support_bound": 290
+      },
+      {
+        "r_maximum": 135,
+        "target_count": 88,
+        "integer_support_bound": 292
+      },
+      {
+        "r_maximum": 136,
+        "target_count": 88,
+        "integer_support_bound": 294
+      },
+      {
+        "r_maximum": 137,
+        "target_count": 89,
+        "integer_support_bound": 296
+      },
+      {
+        "r_maximum": 138,
+        "target_count": 89,
+        "integer_support_bound": 298
+      },
+      {
+        "r_maximum": 139,
+        "target_count": 89,
+        "integer_support_bound": 300
+      },
+      {
+        "r_maximum": 140,
+        "target_count": 90,
+        "integer_support_bound": 302
+      },
+      {
+        "r_maximum": 141,
+        "target_count": 90,
+        "integer_support_bound": 304
+      },
+      {
+        "r_maximum": 142,
+        "target_count": 91,
+        "integer_support_bound": 306
+      },
+      {
+        "r_maximum": 143,
+        "target_count": 92,
+        "integer_support_bound": 308
+      },
+      {
+        "r_maximum": 144,
+        "target_count": 92,
+        "integer_support_bound": 310
+      },
+      {
+        "r_maximum": 145,
+        "target_count": 92,
+        "integer_support_bound": 312
+      },
+      {
+        "r_maximum": 146,
+        "target_count": 92,
+        "integer_support_bound": 314
+      },
+      {
+        "r_maximum": 147,
+        "target_count": 93,
+        "integer_support_bound": 316
+      },
+      {
+        "r_maximum": 148,
+        "target_count": 93,
+        "integer_support_bound": 318
+      },
+      {
+        "r_maximum": 149,
+        "target_count": 95,
+        "integer_support_bound": 320
+      },
+      {
+        "r_maximum": 150,
+        "target_count": 95,
+        "integer_support_bound": 322
+      },
+      {
+        "r_maximum": 151,
+        "target_count": 97,
+        "integer_support_bound": 324
+      },
+      {
+        "r_maximum": 152,
+        "target_count": 97,
+        "integer_support_bound": 326
+      },
+      {
+        "r_maximum": 153,
+        "target_count": 99,
+        "integer_support_bound": 328
+      },
+      {
+        "r_maximum": 154,
+        "target_count": 99,
+        "integer_support_bound": 330
+      },
+      {
+        "r_maximum": 155,
+        "target_count": 99,
+        "integer_support_bound": 332
+      },
+      {
+        "r_maximum": 156,
+        "target_count": 99,
+        "integer_support_bound": 334
+      },
+      {
+        "r_maximum": 157,
+        "target_count": 99,
+        "integer_support_bound": 336
+      },
+      {
+        "r_maximum": 158,
+        "target_count": 99,
+        "integer_support_bound": 338
+      },
+      {
+        "r_maximum": 159,
+        "target_count": 100,
+        "integer_support_bound": 340
+      },
+      {
+        "r_maximum": 160,
+        "target_count": 100,
+        "integer_support_bound": 342
+      },
+      {
+        "r_maximum": 161,
+        "target_count": 100,
+        "integer_support_bound": 344
+      },
+      {
+        "r_maximum": 162,
+        "target_count": 100,
+        "integer_support_bound": 346
+      },
+      {
+        "r_maximum": 163,
+        "target_count": 100,
+        "integer_support_bound": 348
+      },
+      {
+        "r_maximum": 164,
+        "target_count": 100,
+        "integer_support_bound": 350
+      },
+      {
+        "r_maximum": 165,
+        "target_count": 100,
+        "integer_support_bound": 352
+      },
+      {
+        "r_maximum": 166,
+        "target_count": 102,
+        "integer_support_bound": 354
+      },
+      {
+        "r_maximum": 167,
+        "target_count": 102,
+        "integer_support_bound": 356
+      },
+      {
+        "r_maximum": 168,
+        "target_count": 102,
+        "integer_support_bound": 358
+      },
+      {
+        "r_maximum": 169,
+        "target_count": 102,
+        "integer_support_bound": 360
+      },
+      {
+        "r_maximum": 170,
+        "target_count": 104,
+        "integer_support_bound": 362
+      },
+      {
+        "r_maximum": 171,
+        "target_count": 106,
+        "integer_support_bound": 364
+      },
+      {
+        "r_maximum": 172,
+        "target_count": 106,
+        "integer_support_bound": 366
+      },
+      {
+        "r_maximum": 173,
+        "target_count": 106,
+        "integer_support_bound": 368
+      },
+      {
+        "r_maximum": 174,
+        "target_count": 106,
+        "integer_support_bound": 370
+      },
+      {
+        "r_maximum": 175,
+        "target_count": 107,
+        "integer_support_bound": 372
+      },
+      {
+        "r_maximum": 176,
+        "target_count": 107,
+        "integer_support_bound": 374
+      },
+      {
+        "r_maximum": 177,
+        "target_count": 107,
+        "integer_support_bound": 376
+      },
+      {
+        "r_maximum": 178,
+        "target_count": 108,
+        "integer_support_bound": 378
+      },
+      {
+        "r_maximum": 179,
+        "target_count": 108,
+        "integer_support_bound": 380
+      },
+      {
+        "r_maximum": 180,
+        "target_count": 109,
+        "integer_support_bound": 382
+      },
+      {
+        "r_maximum": 181,
+        "target_count": 109,
+        "integer_support_bound": 384
+      },
+      {
+        "r_maximum": 182,
+        "target_count": 109,
+        "integer_support_bound": 386
+      },
+      {
+        "r_maximum": 183,
+        "target_count": 109,
+        "integer_support_bound": 388
+      },
+      {
+        "r_maximum": 184,
+        "target_count": 109,
+        "integer_support_bound": 390
+      },
+      {
+        "r_maximum": 185,
+        "target_count": 109,
+        "integer_support_bound": 392
+      },
+      {
+        "r_maximum": 186,
+        "target_count": 109,
+        "integer_support_bound": 394
+      },
+      {
+        "r_maximum": 187,
+        "target_count": 110,
+        "integer_support_bound": 396
+      },
+      {
+        "r_maximum": 188,
+        "target_count": 110,
+        "integer_support_bound": 398
+      },
+      {
+        "r_maximum": 189,
+        "target_count": 110,
+        "integer_support_bound": 400
+      },
+      {
+        "r_maximum": 190,
+        "target_count": 112,
+        "integer_support_bound": 402
+      },
+      {
+        "r_maximum": 191,
+        "target_count": 113,
+        "integer_support_bound": 404
+      },
+      {
+        "r_maximum": 192,
+        "target_count": 113,
+        "integer_support_bound": 406
+      },
+      {
+        "r_maximum": 193,
+        "target_count": 115,
+        "integer_support_bound": 408
+      },
+      {
+        "r_maximum": 194,
+        "target_count": 115,
+        "integer_support_bound": 410
+      },
+      {
+        "r_maximum": 195,
+        "target_count": 115,
+        "integer_support_bound": 412
+      },
+      {
+        "r_maximum": 196,
+        "target_count": 115,
+        "integer_support_bound": 414
+      },
+      {
+        "r_maximum": 197,
+        "target_count": 115,
+        "integer_support_bound": 416
+      },
+      {
+        "r_maximum": 198,
+        "target_count": 115,
+        "integer_support_bound": 418
+      }
+    ]
+  },
+  "finite_oracle_toy": {
+    "outcomes": 50944,
+    "selected_r": [
+      2,
+      3,
+      4,
+      7
+    ],
+    "valid_root_fraction": "1/4",
+    "root_queries": 2,
+    "native_queries": 1,
+    "success": "183/25472",
+    "expected_pairs": "3/398",
+    "union_bound": "2/199"
+  },
+  "adaptive_allocation_counterexample": {
+    "total_queries": 3,
+    "root_validity_probability": "1/4",
+    "native_match_probability": "1/8",
+    "exhaustive_outcomes": 1024,
+    "success": "21/256",
+    "invalid_fixed_cap_bound": "1/16"
+  },
+  "exact_der_limits": {
+    "32_byte_signature_r_maximum": "3138550867693340381917894711603833208051177722232017256447",
+    "20_byte_signature_r_maximum": "39614081257132168796771975167",
+    "two_endomorphism_target_support_bound_32": "6277101735386680764700630196338985729807197177245380867544",
+    "two_endomorphism_target_support_bound_20": "158456325028528675187087900668",
+    "uniform_scalar_support_32_log2": -64.0,
+    "uniform_scalar_support_20_log2": -159.0
+  },
+  "fixed_catalogue_iid_model": {
+    "total_fresh_queries": "18446744073709551616",
+    "root_syntax_probability": "780555/36893488147419103232",
+    "targets_per_valid_root_upper_bound": 4,
+    "max_digest_representations_per_scalar": 2,
+    "fixed_equal_query_caps_bound_log2": -172.42585923361415,
+    "adaptive_total_budget_bound_log2": -171.42585923361415,
+    "uniform_scalar_approximation_bound_log2": -173.42585923361415,
+    "assumptions": [
+      "The catalogue is the two fixed nonidentity endomorphisms.",
+      "Root outputs and fresh native digests use independent ideal-oracle domains.",
+      "Setup and both query lists are counted; no free precomputed root/native list.",
+      "A real hash-query overlap or new adaptive scalar-map construction needs separate analysis."
+    ],
+    "not_claimed": "No bound on all covenant constructions, all nonce maps, or actual SHA cryptanalysis."
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "scope": "Check every raw ECDSA sighash byte in the actual cap60/five-context script.\n\nKnown-G/2 honest openings only, not a non-extracting attack. Each competing\nspend is block-validated and mined, then its block is invalidated on this\ndisposable network-disabled regtest chain to restore the same test outputs.\n",
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "evidence": "differentially-validated",
+  "deployment_class": "consensus-validated",
+  "extraction_attack": false,
+  "cases": [
+    {
+      "flag": 1,
+      "transaction": {
+        "hex": "020000000001021acb374bb013fc9af30db7164d57a02801e34bef5efb2e8d819e261ed11684320000000000ffffffff1acb374bb013fc9af30db7164d57a02801e34bef5efb2e8d819e261ed11684320100000000ffffffff0130e602000000000022512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798010151073c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035c2357da0e911e403ec15cb716ffd6077bcb6b22010d0eb614e10e7b0090c19013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022031bb9e842f63fa079d18a215751c59ac5c5a2cb1e4323b146d411048f8f3354a013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022010fd3ccc106cd4fcc647dd0756fb18375b32e41a57ced82ab9ebce89d9ce2858013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022075c7a38b4a8b9f2d3a42c7881700e8fa5dee1197a8c586c52bebce2392adf0f5013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302204c8f4dbb936ebe6fddc311b593771a0607fc3fcc894dd065c4f7dc07ef3fcbd901410421c69f6e9daf6a1c6e0186948dda92653a003ec9205eb7f03353281bbee2cc0656e9c1a920d2f6157ae937422d86d1e79a292c734abdbdb6a11898bd4d557b305528302502206f4e2b1f45fc4732cf8234d1585bbe85c2318cb8733f0354c3cdbae05d9c38020201010178ad7c82013c8878abad7c82013c8878abad7c82013c8878abad7c82013c8878abad7c82013c8878abad755100000000",
+        "txid": "fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6",
+        "weight": 1003,
+        "vbytes": 251
+      },
+      "attempts": 1,
+      "key_encoding": "uncompressed",
+      "signature_flags": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "key_bytes": 65,
+      "serialized_witness_bytes": 458,
+      "extracted_target": "949bb33a7799b8936b9a44f0376af3b457c8ef2d4b808aa6d34db4939295c60a",
+      "policy": {
+        "txid": "fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6",
+        "wtxid": "8ae0a36720b1ec021aabc23554efc55ef19ac187d39d3bdf46cca5db8c3ba8df",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using non-compressed keys in segwit)",
+        "reject-details": "mempool-script-verify-flag-failed (Using non-compressed keys in segwit), input 1 of fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6 (wtxid 8ae0a36720b1ec021aabc23554efc55ef19ac187d39d3bdf46cca5db8c3ba8df), spending 328416d11e269e818d2efb5eef4be30128a0574d16b70df39afc13b04b37cb1a:1"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "41fb57a0d33824289fb4753581d48f47a533f29a72b03f50f809408ee85b2487"
+      }
+    },
+    {
+      "flag": 1,
+      "transaction": {
+        "hex": "020000000001021acb374bb013fc9af30db7164d57a02801e34bef5efb2e8d819e261ed11684320000000000ffffffff1acb374bb013fc9af30db7164d57a02801e34bef5efb2e8d819e261ed11684320100000000ffffffff0130e602000000000022512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798010151073c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035c2357da0e911e403ec15cb716ffd6077bcb6b22010d0eb614e10e7b0090c19013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022031bb9e842f63fa079d18a215751c59ac5c5a2cb1e4323b146d411048f8f3354a013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022010fd3ccc106cd4fcc647dd0756fb18375b32e41a57ced82ab9ebce89d9ce2858013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022075c7a38b4a8b9f2d3a42c7881700e8fa5dee1197a8c586c52bebce2392adf0f5013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302204c8f4dbb936ebe6fddc311b593771a0607fc3fcc894dd065c4f7dc07ef3fcbd901410621c69f6e9daf6a1c6e0186948dda92653a003ec9205eb7f03353281bbee2cc0656e9c1a920d2f6157ae937422d86d1e79a292c734abdbdb6a11898bd4d557b305528302502206f4e2b1f45fc4732cf8234d1585bbe85c2318cb8733f0354c3cdbae05d9c38020201010178ad7c82013c8878abad7c82013c8878abad7c82013c8878abad7c82013c8878abad7c82013c8878abad755100000000",
+        "txid": "fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6",
+        "weight": 1003,
+        "vbytes": 251
+      },
+      "attempts": 1,
+      "key_encoding": "hybrid",
+      "signature_flags": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "key_bytes": 65,
+      "serialized_witness_bytes": 458,
+      "extracted_target": "949bb33a7799b8936b9a44f0376af3b457c8ef2d4b808aa6d34db4939295c60a",
+      "policy": {
+        "txid": "fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6",
+        "wtxid": "c33108e85354ab2e672fb49f0c7d6e29c4e08ff4685759f1ef89191740aad903",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 1 of fca8f791eecb428a8f1a8d6c6c0566dbf7bbdd00c4b57632aa98a465ed2395e6 (wtxid c33108e85354ab2e672fb49f0c7d6e29c4e08ff4685759f1ef89191740aad903), spending 328416d11e269e818d2efb5eef4be30128a0574d16b70df39afc13b04b37cb1a:1"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "55af6a8234666d07a18b6ff21a88890e14fb92e21e98e8a11f86a36ecc1d80e4"
+      }
+    }
+  ],
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "test_fixture_funding": {
+    "txid": "328416d11e269e818d2efb5eef4be30128a0574d16b70df39afc13b04b37cb1a",
+    "wtxid": "2400c85030d21266bef87199d7292f32c74211dac07a97a1811531a542c99597",
+    "weight": 725,
+    "vsize": 182,
+    "size": 185,
+    "inputs": 1,
+    "outputs": 3,
+    "policy": {
+      "txid": "328416d11e269e818d2efb5eef4be30128a0574d16b70df39afc13b04b37cb1a",
+      "wtxid": "2400c85030d21266bef87199d7292f32c74211dac07a97a1811531a542c99597",
+      "allowed": true,
+      "vsize": 182,
+      "fees": {
+        "base": 0.0001,
+        "effective-feerate": 0.00054945,
+        "effective-includes": [
+          "2400c85030d21266bef87199d7292f32c74211dac07a97a1811531a542c99597"
+        ]
+      }
+    },
+    "block_hash": "0631e4863fe87bea0ae21eda04cd657cd1258b68025271a0ee27aa675f3e4c9f",
+    "block_height": 102,
+    "consensus_accepted": true,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff03a0860100000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260a0860100000000002200206c11420bee0d23928e21dd877aff46c5b83b2da632cdddbb60b8a7da92704e73b0bd022a010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000"
+  },
+  "summary": {
+    "consensus_accepted": 2,
+    "policy_accepted": 0,
+    "policy_rejected": 2,
+    "script_bytes": 85,
+    "hint_items": 0,
+    "entry_items": 6,
+    "complete_witness_items": 7,
+    "signatures_per_spend": 6,
+    "combined_stack_peak_static_trace": 8
+  },
+  "all_expectations_met": true
+}

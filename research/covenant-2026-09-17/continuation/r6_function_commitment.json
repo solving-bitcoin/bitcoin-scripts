@@ -1,0 +1,102 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Host finite-field algebra and raw fragment interpreter only; no Core or full Script covenant.",
+  "field_prime": 17,
+  "honest_lookup_proofs_and_wrong_claim_rejections": 96,
+  "false_lookup": {
+    "dimensions": 3,
+    "query": [
+      1,
+      0,
+      1
+    ],
+    "actual": 14,
+    "claimed": 15,
+    "challenge_domain": "F17 minus {0,1}, independently in each coordinate",
+    "total_challenge_vectors": 3375,
+    "unbound_final_oracle_accepts": 3375,
+    "same_forged_rounds_with_authentic_final_oracle_accepts": 191
+  },
+  "bit_root_cases": 267,
+  "legacy_noncanonical_bit_cases": 3,
+  "root_fragments": [
+    {
+      "bits": 1,
+      "raw_script_hex": "820121887c63a8516b67a6006b68a8",
+      "raw_script_bytes": 15,
+      "static_non_push_opcodes": 11,
+      "executed_non_push_opcodes_including_control": 9,
+      "combined_stack_peak": 4,
+      "entry_data_items": 2,
+      "auxiliary_hint_items": 0,
+      "input_push_bytes": 35,
+      "stack_vector_serialized_bytes_if_witness_encoded": 37,
+      "retained_normalized_bit_items_on_alt_stack": 1
+    },
+    {
+      "bits": 3,
+      "raw_script_hex": "820121887c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b68a8",
+      "raw_script_bytes": 35,
+      "static_non_push_opcodes": 27,
+      "executed_non_push_opcodes_including_control": 21,
+      "combined_stack_peak": 6,
+      "entry_data_items": 4,
+      "auxiliary_hint_items": 0,
+      "input_push_bytes": 37,
+      "stack_vector_serialized_bytes_if_witness_encoded": 41,
+      "retained_normalized_bit_items_on_alt_stack": 3
+    },
+    {
+      "bits": 8,
+      "raw_script_hex": "820121887c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b68a8",
+      "raw_script_bytes": 85,
+      "static_non_push_opcodes": 67,
+      "executed_non_push_opcodes_including_control": 51,
+      "combined_stack_peak": 11,
+      "entry_data_items": 9,
+      "auxiliary_hint_items": 0,
+      "input_push_bytes": 42,
+      "stack_vector_serialized_bytes_if_witness_encoded": 51,
+      "retained_normalized_bit_items_on_alt_stack": 8
+    },
+    {
+      "bits": 15,
+      "raw_script_hex": "820121887c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b687c63a8516b67a6006b68a8",
+      "raw_script_bytes": 155,
+      "static_non_push_opcodes": 123,
+      "executed_non_push_opcodes_including_control": 93,
+      "combined_stack_peak": 18,
+      "entry_data_items": 16,
+      "auxiliary_hint_items": 0,
+      "input_push_bytes": 49,
+      "stack_vector_serialized_bytes_if_witness_encoded": 57,
+      "retained_normalized_bit_items_on_alt_stack": 15
+    }
+  ],
+  "optimistic_sumcheck_cost": {
+    "dimensions": 77,
+    "degree_per_variable": 2,
+    "coefficient_items": 231,
+    "round_check_arithmetic_comparison_steps": 4,
+    "horner_arithmetic_steps": 4,
+    "total_granted_field_operations_and_comparisons": 616,
+    "caveat": "Counts one field ADD/MUL/equality per step, ignores routing, field reduction, challenges, commitments and final oracle; not actual opcode measurement."
+  },
+  "sources": [
+    {
+      "url": "https://people.cs.georgetown.edu/jthaler/ProofsArgsAndZK.pdf",
+      "document_version": "July 18, 2023",
+      "sections": [
+        "3.5",
+        "4.1",
+        "4.6",
+        "7.3"
+      ]
+    },
+    {
+      "url": "https://arxiv.org/abs/1304.3812v1",
+      "document_version": "v1"
+    }
+  ]
+}

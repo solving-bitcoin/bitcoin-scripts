@@ -1,0 +1,473 @@
+{
+  "question": "Can signed ECDSA graphs or exhaustive recovery keys yield native digest relations without erasure?",
+  "result": "Two cycles add constraints; four recovery keys force scalar digest equality. No output bridge.",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "openssl_version": "LibreSSL 3.3.6",
+  "four_root_gate": {
+    "evidence": "differentially-validated",
+    "deployment_class": "unclassified",
+    "scope": "Public ECDSA equations and OpenSSL, no Script or Bitcoin transaction execution.",
+    "digest_scalar": "6d7fcc4524b1a938b84aaa2778d2f9de5eb6b714f74d649c8e30c416a9e2342b",
+    "r": 2,
+    "s": 1,
+    "der_signature": "3006020102020101",
+    "all_signature": "300602010202010101",
+    "nonce_roots": [
+      [
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        "66fbe727b2ba09e09f5a98d70a5efce8424c5fa425bbda1c511f860657b8535e"
+      ],
+      [
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        "990418d84d45f61f60a56728f5a10317bdb3a05bda4425e3aee079f8a847a8d1"
+      ],
+      [
+        "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364143",
+        "36b1aa62eb77c1973025cbcbea9740eed8eacdab8772268b395064453269d1d3"
+      ],
+      [
+        "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364143",
+        "c94e559d14883e68cfda34341568bf1127153254788dd974c6af9bb9cd962a5c"
+      ]
+    ],
+    "public_keys": [
+      "030c9dba31bf389973fb39149b15fe131de8faeb6d9cfdfb392fa42c4a2f054721",
+      "02714753620d0e863952015a1e7ebcf3604f96b6691b9e3516082d94e0c9affe7a",
+      "0214d5cc14460320c90aa823ebcf4535befea6e2cdb3d479c5f7bb0f615af0336f",
+      "02425a6982e5ee02022b8def973b49bc6fcf31acae031322a4db3d5dd7576742cd"
+    ],
+    "openssl_checks": [
+      {
+        "key_index": 0,
+        "same_digest": true,
+        "changed_digest": false
+      },
+      {
+        "key_index": 1,
+        "same_digest": true,
+        "changed_digest": false
+      },
+      {
+        "key_index": 2,
+        "same_digest": true,
+        "changed_digest": false
+      },
+      {
+        "key_index": 3,
+        "same_digest": true,
+        "changed_digest": false
+      }
+    ],
+    "two_key_opposite_nonce_counterexample_indices": [
+      0,
+      2
+    ],
+    "search_trials": 0,
+    "known_secret_material": "None: roots are lifted public x coordinates; no discarded keys/nonces.",
+    "native_condition": "Reusing all four distinct keys and this signature in another context forces z'=z mod n.",
+    "constant_signature_version_entry_key_items": 4,
+    "incremental_hint_items": 0,
+    "script_and_witness_metrics": "Not measured: no compiled Script instance is claimed."
+  },
+  "signed_figure_eight": {
+    "vertices": 7,
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        0,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        0
+      ]
+    ],
+    "patterns_checked": 256,
+    "cycle_sign_counts": {
+      "+1,+1": 64,
+      "+1,-1": 64,
+      "-1,+1": 64,
+      "-1,-1": 64
+    },
+    "r": "00000000000000000000003b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63",
+    "public_nonce_scalar": "7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a1",
+    "public_key_scalars": [
+      "22e596df5c2a7ac1955522906e5fd729eda47b0dd93a6374701232e9e2452d95",
+      "809cd4bc946752858dacfd77e1b816dce7a0a173e521cc7898672f90befdc017",
+      "9ba2e161030d1a70a18dc6e35778b3ca0976b7a80641d9621e548513551590a5",
+      "0bce1114903ea8969d82afff48ed460c1320645861c1884344b0a5d0e14dd6b5",
+      "559b8dff43ec5eb97b4e835ea40062d7507cc1a55e52aadbaeec11e8514f6fbd",
+      "0f4750c7db0023aa3caf9ab77ace110fe9f65ef39bca2e0d1cc4057e586bfca0",
+      "4e720e827eacd158dbd34b9a183fa68f4347d8a9089af030d135c1f9b8d283b2"
+    ],
+    "one_arbitrary_digest_tuple_satisfiable_patterns": 0,
+    "warning": "Constructed digests satisfy algebra by design; they are not Bitcoin sighashes.",
+    "representative_equation_fixtures": {
+      "+1,+1": {
+        "signs": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "coefficient_rank": 6,
+        "independent_scalar_conditions": 2,
+        "anchored_conditions": 2,
+        "cycle_offsets": [
+          "0000000000000000000000000000000000000000000000000000000000000000",
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "checks": [
+          {
+            "left_digest_scalar": "283f1fea56be11bea77525be6765a92dec2989042338b3e6c29789fbcee4539f",
+            "right_digest_scalar": "eff1125b01497a339d605f08083ac37b1c7cbd941223da9c1da46fc79ea0d11d",
+            "s": "500aae5e69452e2909f7d429e301f513d3f7f955a7ae681f722039b68fcbd4bb",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "3ecd4aefa116af70a750e02545a594828c7337653c583edd7c41fe8907b3476c",
+            "right_digest_scalar": "a9d76af6aded8e048aecbb7d41eb10fd302fdef4224be2de4e8264aded83b887",
+            "s": "123ce0785720675ce227299ba22868de916c362154a02f2210d24a39cdd8fd66",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "ff36919213519a89ae07cf0fb5fc2581f6c98098123405c2a6521bd50b5b69f2",
+            "right_digest_scalar": "342f1a7098df62a6759ddeacb80e38f2bff73f7249782627b5904dcc07f63427",
+            "s": "4304d250de177f98d7a2af3f75b56e169c0f637d7ad82b50ff60a604c6ade105",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "72c7b0b6915fd280a13bf0b8a69f051ac6ba419921ee06033f94a5318da939d8",
+            "right_digest_scalar": "f02977ab23d4792c9501a627af7b20833c09aeb0107692ae31c55afbfdf6890a",
+            "s": "3fca012330e7a0b2d1212ca8ad28f9981119751b8384b533ac6909bcfe2254da",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "bfe55e2b1ecda7d1df00d549c0a7f07e175bce9ec55d6ef91c480e692a408531",
+            "right_digest_scalar": "94b99dfba86b62706b4febdebfce0ee95b4508d1dbfe13cb665cd0977851dc90",
+            "s": "20be31dcd92602029ae07513307d667238424b0712ad92367e918f68a949b2d8",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "1319edc647690843b5031c522709e8294fb05fb9f6ae4715cfc3c508d264a80e",
+            "right_digest_scalar": "eed3bd3913e7257e70dabe5c44d80504339295d353dcb0125adb60537e35ea5f",
+            "s": "1d7ed17217214da92e46d5f9fef518f0dbc7d5bdf75699071131d6d82da58b15",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "c39c180c8d0ad1ca37373a57efeaaa90cf0a513d8ee96763789643b71ab5d3a2",
+            "right_digest_scalar": "6024b4ac54d1c4b6bd2a1e83302e26c9c99cba4d271da8fa5e0c40cb7ff18cb8",
+            "s": "73ee1bcb24d9f511a18dde02a8cfcdd7a4d85ee9813d2a64d5bc1010f4a5b88f",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "6722daee5c5b992d5bc89bc96d304b7f4457c137d82b42a4ece6dda876f47063",
+            "right_digest_scalar": "0f4f42f1f169d9d3bd0ba38bc77c981688fe4f4f8563b91981ef01f1a5747e0a",
+            "s": "7e1597b0cc12620121352770dd2be8bc20607027cbf04281cc6114c1ed8ac15c",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          }
+        ]
+      },
+      "+1,-1": {
+        "signs": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          1
+        ],
+        "coefficient_rank": 7,
+        "independent_scalar_conditions": 1,
+        "anchored_conditions": 2,
+        "cycle_offsets": [
+          "0000000000000000000000000000000000000000000000000000000000000000",
+          "45cb2dbeb854f5832aaa4520dcbfae53db48f61bb274c6e8e02465d3c48a5b2a"
+        ],
+        "checks": [
+          {
+            "left_digest_scalar": "283f1fea56be11bea77525be6765a92dec2989042338b3e6c29789fbcee4539f",
+            "right_digest_scalar": "eff1125b01497a339d605f08083ac37b1c7cbd941223da9c1da46fc79ea0d11d",
+            "s": "500aae5e69452e2909f7d429e301f513d3f7f955a7ae681f722039b68fcbd4bb",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "3ecd4aefa116af70a750e02545a594828c7337653c583edd7c41fe8907b3476c",
+            "right_digest_scalar": "a9d76af6aded8e048aecbb7d41eb10fd302fdef4224be2de4e8264aded83b887",
+            "s": "123ce0785720675ce227299ba22868de916c362154a02f2210d24a39cdd8fd66",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "ff36919213519a89ae07cf0fb5fc2581f6c98098123405c2a6521bd50b5b69f2",
+            "right_digest_scalar": "342f1a7098df62a6759ddeacb80e38f2bff73f7249782627b5904dcc07f63427",
+            "s": "4304d250de177f98d7a2af3f75b56e169c0f637d7ad82b50ff60a604c6ade105",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "72c7b0b6915fd280a13bf0b8a69f051ac6ba419921ee06033f94a5318da939d8",
+            "right_digest_scalar": "f02977ab23d4792c9501a627af7b20833c09aeb0107692ae31c55afbfdf6890a",
+            "s": "3fca012330e7a0b2d1212ca8ad28f9981119751b8384b533ac6909bcfe2254da",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "bfe55e2b1ecda7d1df00d549c0a7f07e175bce9ec55d6ef91c480e692a408531",
+            "right_digest_scalar": "94b99dfba86b62706b4febdebfce0ee95b4508d1dbfe13cb665cd0977851dc90",
+            "s": "20be31dcd92602029ae07513307d667238424b0712ad92367e918f68a949b2d8",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "1319edc647690843b5031c522709e8294fb05fb9f6ae4715cfc3c508d264a80e",
+            "right_digest_scalar": "eed3bd3913e7257e70dabe5c44d80504339295d353dcb0125adb60537e35ea5f",
+            "s": "1d7ed17217214da92e46d5f9fef518f0dbc7d5bdf75699071131d6d82da58b15",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "c39c180c8d0ad1ca37373a57efeaaa90cf0a513d8ee96763789643b71ab5d3a2",
+            "right_digest_scalar": "6024b4ac54d1c4b6bd2a1e83302e26c9c99cba4d271da8fa5e0c40cb7ff18cb8",
+            "s": "73ee1bcb24d9f511a18dde02a8cfcdd7a4d85ee9813d2a64d5bc1010f4a5b88f",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "6722daee5c5b992d5bc89bc96d304b7f4457c137d82b42a4ece6dda876f47063",
+            "right_digest_scalar": "9139ab41255777d29bd67c1aea50af59234cbc0e68bc16d375604bbc881ffdef",
+            "s": "7e1597b0cc12620121352770dd2be8bc20607027cbf04281cc6114c1ed8ac15c",
+            "relative_sign": 1,
+            "left_valid": true,
+            "right_valid": true
+          }
+        ]
+      },
+      "-1,+1": {
+        "signs": [
+          -1,
+          -1,
+          -1,
+          1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "coefficient_rank": 7,
+        "independent_scalar_conditions": 1,
+        "anchored_conditions": 2,
+        "cycle_offsets": [
+          "45cb2dbeb854f5832aaa4520dcbfae53db48f61bb274c6e8e02465d3c48a5b2a",
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "checks": [
+          {
+            "left_digest_scalar": "283f1fea56be11bea77525be6765a92dec2989042338b3e6c29789fbcee4539f",
+            "right_digest_scalar": "eff1125b01497a339d605f08083ac37b1c7cbd941223da9c1da46fc79ea0d11d",
+            "s": "500aae5e69452e2909f7d429e301f513d3f7f955a7ae681f722039b68fcbd4bb",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "3ecd4aefa116af70a750e02545a594828c7337653c583edd7c41fe8907b3476c",
+            "right_digest_scalar": "a9d76af6aded8e048aecbb7d41eb10fd302fdef4224be2de4e8264aded83b887",
+            "s": "123ce0785720675ce227299ba22868de916c362154a02f2210d24a39cdd8fd66",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "ff36919213519a89ae07cf0fb5fc2581f6c98098123405c2a6521bd50b5b69f2",
+            "right_digest_scalar": "342f1a7098df62a6759ddeacb80e38f2bff73f7249782627b5904dcc07f63427",
+            "s": "4304d250de177f98d7a2af3f75b56e169c0f637d7ad82b50ff60a604c6ade105",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "72c7b0b6915fd280a13bf0b8a69f051ac6ba419921ee06033f94a5318da939d8",
+            "right_digest_scalar": "b05f7687f2ecd879c3e0797f025226eb2af039948cf1dd7a855c513effd43430",
+            "s": "3fca012330e7a0b2d1212ca8ad28f9981119751b8384b533ac6909bcfe2254da",
+            "relative_sign": 1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "bfe55e2b1ecda7d1df00d549c0a7f07e175bce9ec55d6ef91c480e692a408531",
+            "right_digest_scalar": "94b99dfba86b62706b4febdebfce0ee95b4508d1dbfe13cb665cd0977851dc90",
+            "s": "20be31dcd92602029ae07513307d667238424b0712ad92367e918f68a949b2d8",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "1319edc647690843b5031c522709e8294fb05fb9f6ae4715cfc3c508d264a80e",
+            "right_digest_scalar": "eed3bd3913e7257e70dabe5c44d80504339295d353dcb0125adb60537e35ea5f",
+            "s": "1d7ed17217214da92e46d5f9fef518f0dbc7d5bdf75699071131d6d82da58b15",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "c39c180c8d0ad1ca37373a57efeaaa90cf0a513d8ee96763789643b71ab5d3a2",
+            "right_digest_scalar": "6024b4ac54d1c4b6bd2a1e83302e26c9c99cba4d271da8fa5e0c40cb7ff18cb8",
+            "s": "73ee1bcb24d9f511a18dde02a8cfcdd7a4d85ee9813d2a64d5bc1010f4a5b88f",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "6722daee5c5b992d5bc89bc96d304b7f4457c137d82b42a4ece6dda876f47063",
+            "right_digest_scalar": "0f4f42f1f169d9d3bd0ba38bc77c981688fe4f4f8563b91981ef01f1a5747e0a",
+            "s": "7e1597b0cc12620121352770dd2be8bc20607027cbf04281cc6114c1ed8ac15c",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          }
+        ]
+      },
+      "-1,-1": {
+        "signs": [
+          -1,
+          -1,
+          -1,
+          1,
+          -1,
+          -1,
+          -1,
+          1
+        ],
+        "coefficient_rank": 7,
+        "independent_scalar_conditions": 1,
+        "anchored_conditions": 2,
+        "cycle_offsets": [
+          "45cb2dbeb854f5832aaa4520dcbfae53db48f61bb274c6e8e02465d3c48a5b2a",
+          "45cb2dbeb854f5832aaa4520dcbfae53db48f61bb274c6e8e02465d3c48a5b2a"
+        ],
+        "checks": [
+          {
+            "left_digest_scalar": "283f1fea56be11bea77525be6765a92dec2989042338b3e6c29789fbcee4539f",
+            "right_digest_scalar": "eff1125b01497a339d605f08083ac37b1c7cbd941223da9c1da46fc79ea0d11d",
+            "s": "500aae5e69452e2909f7d429e301f513d3f7f955a7ae681f722039b68fcbd4bb",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "3ecd4aefa116af70a750e02545a594828c7337653c583edd7c41fe8907b3476c",
+            "right_digest_scalar": "a9d76af6aded8e048aecbb7d41eb10fd302fdef4224be2de4e8264aded83b887",
+            "s": "123ce0785720675ce227299ba22868de916c362154a02f2210d24a39cdd8fd66",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "ff36919213519a89ae07cf0fb5fc2581f6c98098123405c2a6521bd50b5b69f2",
+            "right_digest_scalar": "342f1a7098df62a6759ddeacb80e38f2bff73f7249782627b5904dcc07f63427",
+            "s": "4304d250de177f98d7a2af3f75b56e169c0f637d7ad82b50ff60a604c6ade105",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "72c7b0b6915fd280a13bf0b8a69f051ac6ba419921ee06033f94a5318da939d8",
+            "right_digest_scalar": "b05f7687f2ecd879c3e0797f025226eb2af039948cf1dd7a855c513effd43430",
+            "s": "3fca012330e7a0b2d1212ca8ad28f9981119751b8384b533ac6909bcfe2254da",
+            "relative_sign": 1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "bfe55e2b1ecda7d1df00d549c0a7f07e175bce9ec55d6ef91c480e692a408531",
+            "right_digest_scalar": "94b99dfba86b62706b4febdebfce0ee95b4508d1dbfe13cb665cd0977851dc90",
+            "s": "20be31dcd92602029ae07513307d667238424b0712ad92367e918f68a949b2d8",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "1319edc647690843b5031c522709e8294fb05fb9f6ae4715cfc3c508d264a80e",
+            "right_digest_scalar": "eed3bd3913e7257e70dabe5c44d80504339295d353dcb0125adb60537e35ea5f",
+            "s": "1d7ed17217214da92e46d5f9fef518f0dbc7d5bdf75699071131d6d82da58b15",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "c39c180c8d0ad1ca37373a57efeaaa90cf0a513d8ee96763789643b71ab5d3a2",
+            "right_digest_scalar": "6024b4ac54d1c4b6bd2a1e83302e26c9c99cba4d271da8fa5e0c40cb7ff18cb8",
+            "s": "73ee1bcb24d9f511a18dde02a8cfcdd7a4d85ee9813d2a64d5bc1010f4a5b88f",
+            "relative_sign": -1,
+            "left_valid": true,
+            "right_valid": true
+          },
+          {
+            "left_digest_scalar": "6722daee5c5b992d5bc89bc96d304b7f4457c137d82b42a4ece6dda876f47063",
+            "right_digest_scalar": "9139ab41255777d29bd67c1aea50af59234cbc0e68bc16d375604bbc881ffdef",
+            "s": "7e1597b0cc12620121352770dd2be8bc20607027cbf04281cc6114c1ed8ac15c",
+            "relative_sign": 1,
+            "left_valid": true,
+            "right_valid": true
+          }
+        ]
+      }
+    }
+  },
+  "all_expectations_met": true
+}

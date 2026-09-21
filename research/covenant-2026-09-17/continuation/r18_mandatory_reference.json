@@ -1,0 +1,251 @@
+{
+  "question": "Can exact native sighash reuse or ANYONECANPAY pairing force a separate verifier input?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Host serialization and opcode-boundary deletion; no signatures, Script execution, funded transaction or Core acceptance claimed.",
+  "primary_sources": [
+    "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp",
+    "https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0143.mediawiki"
+  ],
+  "current_check_opcode_survives_deletion": [
+    {
+      "executing_opcode": "0xac",
+      "signature": "",
+      "active_suffix": "0000acab010000",
+      "processed_code": "ac0100",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xac",
+      "signature": "300602010102010103",
+      "active_suffix": "0930060201010201010309300602010102010103acab0a0930060201010201010309300602010102010103",
+      "processed_code": "ac0a09300602010102010103",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xac",
+      "signature": "ac",
+      "active_suffix": "01ac01acacab0201ac01ac",
+      "processed_code": "ac0201ac",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xac",
+      "signature": "adaeafab",
+      "active_suffix": "04adaeafab04adaeafabacab0504adaeafab04adaeafab",
+      "processed_code": "ac0504adaeafab",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xac",
+      "signature": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "active_suffix": "49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748acab4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "processed_code": "ac4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xad",
+      "signature": "",
+      "active_suffix": "0000adab010000",
+      "processed_code": "ad0100",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xad",
+      "signature": "300602010102010103",
+      "active_suffix": "0930060201010201010309300602010102010103adab0a0930060201010201010309300602010102010103",
+      "processed_code": "ad0a09300602010102010103",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xad",
+      "signature": "ac",
+      "active_suffix": "01ac01acadab0201ac01ac",
+      "processed_code": "ad0201ac",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xad",
+      "signature": "adaeafab",
+      "active_suffix": "04adaeafab04adaeafabadab0504adaeafab04adaeafab",
+      "processed_code": "ad0504adaeafab",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xad",
+      "signature": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "active_suffix": "49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748adab4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "processed_code": "ad4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xae",
+      "signature": "",
+      "active_suffix": "0000aeab010000",
+      "processed_code": "ae0100",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xae",
+      "signature": "300602010102010103",
+      "active_suffix": "0930060201010201010309300602010102010103aeab0a0930060201010201010309300602010102010103",
+      "processed_code": "ae0a09300602010102010103",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xae",
+      "signature": "ac",
+      "active_suffix": "01ac01acaeab0201ac01ac",
+      "processed_code": "ae0201ac",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xae",
+      "signature": "adaeafab",
+      "active_suffix": "04adaeafab04adaeafabaeab0504adaeafab04adaeafab",
+      "processed_code": "ae0504adaeafab",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xae",
+      "signature": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "active_suffix": "49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748aeab4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "processed_code": "ae4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xaf",
+      "signature": "",
+      "active_suffix": "0000afab010000",
+      "processed_code": "af0100",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xaf",
+      "signature": "300602010102010103",
+      "active_suffix": "0930060201010201010309300602010102010103afab0a0930060201010201010309300602010102010103",
+      "processed_code": "af0a09300602010102010103",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xaf",
+      "signature": "ac",
+      "active_suffix": "01ac01acafab0201ac01ac",
+      "processed_code": "af0201ac",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xaf",
+      "signature": "adaeafab",
+      "active_suffix": "04adaeafab04adaeafabafab0504adaeafab04adaeafab",
+      "processed_code": "af0504adaeafab",
+      "executing_opcode_survives": true
+    },
+    {
+      "executing_opcode": "0xaf",
+      "signature": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "active_suffix": "49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748afab4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f40414243444546474849000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "processed_code": "af4a49000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748",
+      "executing_opcode_survives": true
+    }
+  ],
+  "cross_input_preimage_families": [
+    {
+      "family": "legacy",
+      "input_positions": 3,
+      "full_flag_bytes": 256,
+      "nonempty_code_variants": 8,
+      "ordinary_contexts": 6080,
+      "constant_SINGLE_contexts": 64,
+      "distinct_ordinary_preimages": 6080,
+      "ordinary_preimages_shared_across_input_positions": 0
+    },
+    {
+      "family": "bip143",
+      "input_positions": 3,
+      "full_flag_bytes": 256,
+      "nonempty_code_variants": 8,
+      "ordinary_contexts": 6144,
+      "constant_SINGLE_contexts": 0,
+      "distinct_ordinary_preimages": 6144,
+      "ordinary_preimages_shared_across_input_positions": 0
+    }
+  ],
+  "abstract_empty_code_control": {
+    "preimages_equal": true,
+    "preimage": "020000000301010101010101010101010101010101010101010101010101010101010101010000000000fdffffff02020202020202020202020202020202020202020202020202020202020202020100000000fcffffff03030303030303030303030303030303030303030303030303030303030303030200000000fbffffff02f82a0000000000001600141111111111111111111111111111111111111111f92a00000000000016001412121212121212121212121212121212121212120700000001000000",
+    "realisable_as_current_legacy_signature_check": false
+  },
+  "out_of_range_SINGLE_control": {
+    "input_positions": [
+      1,
+      2
+    ],
+    "shared_digest_bytes": "0100000000000000000000000000000000000000000000000000000000000000",
+    "output_binding": false
+  },
+  "ANYONECANPAY_other_input_controls": [
+    {
+      "family": "legacy",
+      "flag": "0x81",
+      "original_preimage": "020000000102020202020202020202020202020202020202020202020202020202020202020100000001acfcffffff02f82a0000000000001600141111111111111111111111111111111111111111f92a00000000000016001412121212121212121212121212121212121212120700000081000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    },
+    {
+      "family": "legacy",
+      "flag": "0x82",
+      "original_preimage": "020000000102020202020202020202020202020202020202020202020202020202020202020100000001acfcffffff000700000082000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    },
+    {
+      "family": "legacy",
+      "flag": "0x83",
+      "original_preimage": "020000000102020202020202020202020202020202020202020202020202020202020202020100000001acfcffffff02ffffffffffffffff00f92a00000000000016001412121212121212121212121212121212121212120700000083000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    },
+    {
+      "family": "bip143",
+      "flag": "0x81",
+      "original_preimage": "020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002020202020202020202020202020202020202020202020202020202020202020100000001ac50c3000000000000fcffffffcd5ed4d34bdfcf01993b8cefc37ea36d36553b8964af18add53ee915a31b49020700000081000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    },
+    {
+      "family": "bip143",
+      "flag": "0x82",
+      "original_preimage": "020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002020202020202020202020202020202020202020202020202020202020202020100000001ac50c3000000000000fcffffff00000000000000000000000000000000000000000000000000000000000000000700000082000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    },
+    {
+      "family": "bip143",
+      "flag": "0x83",
+      "original_preimage": "020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002020202020202020202020202020202020202020202020202020202020202020100000001ac50c3000000000000fcffffff17bf516f0ba86e100f57ac9f731a52bad5d789ae72eaaae068b3cf3e34dad4ea0700000083000000",
+      "changed_other_outpoint_preserves_preimage": true,
+      "removed_trailing_input_preserves_preimage": true
+    }
+  ],
+  "SINGLE_ANYONECANPAY_pair_permutation": {
+    "bip143_same_preimage": true,
+    "bip143_preimage": "020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002020202020202020202020202020202020202020202020202020202020202020100000001ac50c3000000000000fcffffff17bf516f0ba86e100f57ac9f731a52bad5d789ae72eaaae068b3cf3e34dad4ea0700000083000000",
+    "legacy_same_preimage": false,
+    "legacy_before": "020000000102020202020202020202020202020202020202020202020202020202020202020100000001acfcffffff02ffffffffffffffff00f92a00000000000016001412121212121212121212121212121212121212120700000083000000",
+    "legacy_after": "020000000102020202020202020202020202020202020202020202020202020202020202020100000001acfcffffff01f92a00000000000016001412121212121212121212121212121212121212120700000083000000"
+  },
+  "hint_items": 0,
+  "witness_bytes": 0,
+  "script_bytes": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "resource_note": "Serializer-only boundary; Script metrics inapplicable, not zero. No witness hints or transaction witnesses are supplied.",
+  "construction_found": false,
+  "limitations": [
+    "Does not exclude hash collisions or scalar / curve relations between distinct preimages.",
+    "Does not compare different signature-hash families.",
+    "Does not prove a general mandatory-reference impossibility."
+  ],
+  "all_assertions_passed": true
+}

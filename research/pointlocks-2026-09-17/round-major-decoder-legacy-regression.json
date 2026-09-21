@@ -1,0 +1,41 @@
+{
+  "scope": "One focused compatibility run for the unchanged 4-of-50 profile after shared decoder changes. Timings are not a fresh historical benchmark.",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "command": [
+    "cargo",
+    "run",
+    "--release",
+    "--locked",
+    "--example",
+    "pointlock_total_message_probe",
+    "--",
+    "--workers",
+    "15",
+    "--samples",
+    "1",
+    "--native-recovery",
+    "/Users/robinlinus/projects/bitcoin-lab/research/pointlocks-2026-09-17/anchored_publication_core_check.json"
+  ],
+  "unchanged_sample_fields": {
+    "mixed_radix_and_gates": 472482,
+    "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+    "mixed_radix_garbled_payload_bytes": 30370000,
+    "mixed_radix_xor_gates": 1764286,
+    "rank_garbled_payload_bytes": 35712560
+  },
+  "native_composition_identical": true,
+  "boundary_checks_identical": true,
+  "public_setup_verification_present": false,
+  "source_sha256": {
+    "examples/pointlock_total_message_probe.rs": "5fa84c131b1e8d95f63e342db3311018f02467667e78c1bd88a02bc5f44c75b4",
+    "examples/pointlock_complement_translation_probe.rs": "26d63c20c459b7379b86ed98ac023e5b96fa4d370a199770b81dc2ee3af31fe4",
+    "examples/pointlock_membership_decoder.rs": "6f5e7c13d692be6bd203ce9e5f78c3c8ce306fbb1e3f2d44c46a494c50821383",
+    "examples/pointlock_decoders/composed.rs": "f4ef28c429a2f5a4b3704a1f7d6a8bd2678dfd0cf3083992ce1f9a9a5afd1263",
+    "examples/pointlock_decoders/mixed_radix.rs": "4f70193e3acffc52f2db2d31f360664593afb6b962c64fcd8e9c40410bc1a847",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "research/pointlocks-2026-09-17/total-message-decoder-benchmark.json": "5c8898f74f290be75bce1faa4beb650e95b6bd0d4af3c75b5c10e394a30136ad",
+    "research/pointlocks-2026-09-17/anchored_publication_core_check.json": "03a59ef98a078ee305a1793064124514baee96368b2ea63f4cb6841671d34392",
+    "target/release/examples/pointlock_total_message_probe": "301e5677c3725f413b2224aa53eb448756b2dec61a8abe59b20d6a34cc78f47d"
+  }
+}

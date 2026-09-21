@@ -3,6 +3,260 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-077: Correlated quadratic labels retain the missing-three boundary
+
+The [correlated subset theorem](correlated-quadratic-subset-labels.md)
+extends NR-075 beyond independent candidates. Full t-subset scalar privacy
+forces every t+1 candidate forms to be independent; the product of two hidden
+quadratic label components then meets a minimum-degree obstruction whenever
+N-t>=4. Forty-four exact field ranks and 34 curve views corroborate the
+argument and its positive missing-three boundary. Restricted alphabets and
+additional nonlinear metadata remain outside this result.
+
+## NR-076: Explicit DH-quartet tables exceed the full-message budget
+
+The [native quartet layout](explicit-dh-quartet-tables.md) closes a scalar
+delivery gap with a four-check nonce-point lock. Its explicit candidate-key
+pushes alone cost 139,264 legacy vB for 2,048 bits; even an idealized flat
+HASH160 table plus selected keys costs 120,832 vB before signatures or
+transactions. Core reproduces the small native openings, not a complete
+sub-100k publication. Shared tables and different interfaces remain outside
+these restricted bounds.
+
+## NR-075: Quadratic DH labels escape linear sharing, but not the full high-rate pool
+
+The [DH label boundary](quadratic-dh-subset-labels.md) includes a positive
+one-of-four selector delivering two implicit secret point labels from one
+scalar opening. Its correlated version publicly rejects exact label aliases.
+For independent-coordinate quadratic labels, however, leaving four or more
+scalars unopened prevents a total two-hidden-label classifier. This excludes
+a direct 5-of-54 replacement in that model. Public garbling binding and native
+delivery are separate obligations; the later NR-076 wrapper supplies small
+native openings but no sub-100k transaction.
+
+## NR-074: Relative-log labels do not compress linear scalar openings
+
+The [ratio-label boundary](ratio-label-reconstruction.md) covers labels a/b
+whose point endpoints are public affine forms in the setup scalars. Recovery
+from linear openings requires both forms, except for publicly recognizable
+constant ratios. A separate exact reduction extracts an embedded DLP from
+any nonconstant returned ratio. Nine tests include 654,476 finite-field cases
+and twelve curve embeddings. Different native openings and nonlinear public
+metadata remain outside this result.
+
+## NR-073: Full subset alphabets resist even correlated linear classification
+
+The [subset-classification theorem](linear-subset-classification.md) rules
+out a total two-hidden-label linear decoder for all t-subsets when N>=t+2,
+including correlated scalar forms and vector outputs. Required subset privacy
+forces every t+1 candidate forms to be independent. A separate coverage bound
+limits one protected linear label to at most 5/54 of the current pool's choices.
+An N-1-of-N construction reaches the boundary and reduces the binary gate
+opening to three scalars, but its direct legacy interface still needs at least
+181,248 vB in signature pushes for one independent layer on 2,048 bits.
+
+## NR-072: Single-scalar linear AND labels force disclosure or a public output
+
+The [linear gate boundary](scalar-label-linear-gates.md) shows that keeping
+each opposite input scalar outside the selected pair's span forces the AND
+zero-output label to be public. A two-scalar vector-label construction escapes
+that premise and has a real public point check, but its direct legacy wrapper
+already costs at least 241,664 vB in signature pushes for 2,048 input bits.
+Unchecked scalar packing does not repair the delivery cost. These are scoped
+interface results, not an impossibility theorem for algebraic point locks.
+
+## NR-071: Distinct anchors extract exactly but prescribe the opening nonce
+
+The [two-target anchor follow-up](two-target-anchor-opening.md) gives an
+exact two-label extraction equation instead of the same-target public sum.
+Its native digests, however, prescribe the signature nonce's x-coordinate;
+ordinary signing cannot freely choose that nonce. Eight tests and 31
+synthetic curve cases reproduce the equations, not Bitcoin hash preimages.
+An efficient native opening algorithm remains absent.
+
+## NR-070: ALL authorization does not require all publication pools
+
+The [native participation test](pointlock-pool-participation.md) spends the
+first, middle or last pool of the exact 95-pool instance alone, and the helper
+with one pool. Core accepts all four partial spends while 94 pools remain
+unspent; stale-signature controls fail. This confirms that re-signable ALL
+authorization does not enforce the complete input set. It is a composition
+gap, not a failure to extract the five deliberately opened point scalars.
+
+## NR-069: Publicly checked scalar gates can reveal another message's labels
+
+The [algebraic AND experiment](public-algebraic-gate-labels.md) has a valid
+public point-only correctness check, yet a 01 or 10 opening gives all labels
+for 00. Public affine offsets and six distinct commitments do not fix this.
+All 64 honest evaluations and 32 alternative-label recoveries pass. The
+alternative has the same output, so this does not contradict privacy-free
+garbling's output-authenticity guarantee. It rejects this use as the complete
+one-message label interface, not all algebraic garbling.
+
+## NR-068: Dual dynamic anchors allow a public opening without the target scalar
+
+The [native counterexample](dual-anchor-public-opening.md) derives two
+recovery keys and a passing long signature from public T and the actual
+BIP143 digest. Sum-key extraction returns a scalar that was already public.
+Core mines both positive variants while rejecting seven malformed controls;
+high-S makes the positives non-standard, not consensus-invalid. This rules
+out that replacement for the repeated short checks, not the current cap60
+candidate or the exact sum-key primitive.
+
+## NR-067: Separately revealed shares break a DDH batch-select wrapper
+
+The [common-shift wrapper](ddh-batch-select-share-disclosure.md) makes every
+t-of-n sum equal the compressed key, but two revealed shares expose a scalar
+key difference. Public matrix cells then yield both labels of a selected bit;
+free-XOR exposes every alternative. All70 four-subsets of eight candidates
+reproduce the failure. This does not attack an aggregate-only interface or
+exclude nonlinear replacements.
+The [generalization](../../research/pointlocks-2026-09-17/ddh-linear-leakage.md)
+shows that every nonredundant scalar-linear disclosure of the same key vector
+has a corresponding two-label recovery, with47 exact secp256k1 cases. Known
+affine relations between row bases also expose their diagonal masks.
+The [masked extension](../../research/pointlocks-2026-09-17/ddh-masked-audit.md)
+needs only an informative row action, even with its scalar hidden. Separately,
+unbound mask points make the tested statement-only-challenge audit accept a
+false table. Proper proof protocols are outside that counterexample.
+
+## NR-066: Scalar-linear threshold complements cannot hide all alternative labels
+
+The [span obstruction](linear-complement-labels.md) rules out direct
+scalar-linear complement delivery for n>=t+2 when every t-subset must recover
+unselected zero-labels, hide selected zero-labels, and hide unselected point
+scalars. The n=t+1 boundary is tight. This does not exclude the existing
+PRF-encrypted bridge or nonlinear alternatives.
+
+The separate direct-binary-label bound on the same page forces k independent
+openings for k authenticated message bits in the scalar-linear full-cube
+model. Correlating the masks cannot evade it without allowing a bit flip;
+the guarded legacy wrapper then costs at least 120,832 vB in signature pushes
+for 2,048 bits before all other costs.
+
+## NR-065: Direct six-context repetition fits but permits staged sighash searches
+
+The [direct-key experiment](direct-context-staged-grinding.md) validates an
+honest 98,706-vB publication with six checks per label. Removing the anchor
+allows separate ACP|NONE, ACP|SINGLE, SINGLE and ALL search stages preserving
+earlier conditions. Native hash tests reproduce that dependency. No general
+extraction guarantee follows from the extra check or successful Core execution.
+
+## NR-064: Valid point openings do not certify an encrypted garbled-label translation
+
+The [translation experiment](subset-translation-binding.md) obtains all 2,070
+binary rank labels from the existing native fixture's 460 scalars and measures
+1.590 s for full table generation plus opened-table audit. That audit needs
+every secret. Wrong encrypted labels preserve valid public points; publishing
+label hashes catches them only at opening. Publishing all zero labels under
+one free-XOR offset instead leaks every one label after a single revelation.
+Neither shortcut closes the malicious-setup requirement.
+The threshold-complement follow-up reduces generation/opened-audit to72.64 ms
+with actual per-pool garbled decoding, but retains the ciphertext-binding gap.
+A proposed affine-mask check exposes every secret in a full-rank linear system.
+The [WOTS translation audit](../../research/pointlocks-2026-09-17/wots-translation-boundary.md)
+reproduces a different sharing access structure but retains the same public
+table-binding obligation. Its valid WOTS opening does not reject a malformed
+offchain ciphertext; this does not break the cited protocol with its own audit.
+
+
+## NR-063: Added anchored rounds exceed the measured budget; four-root extraction weakens hiding
+
+The [follow-up](anchored-rounds-and-four-roots.md) confirms all256 sighash bytes
+under anchored-script consensus, but only six under policy. The original scan's
+best six-round layout costs 111,372 vB; a later typed-selector scan lowers
+this to 105,039 vB, still above the goal when creation is included. Its small Core
+fixtures validate selection only. An explicit-table bound excludes d>=11 even
+with free execution and framing. A four-key alternative has exact extraction,
+but its cheap setup admits an interval-DLP search near2^64.17 group operations.
+These scoped results leave the full sub100k goal open.
+The later [round-major layout](../../research/pointlocks-2026-09-17/round-major-contexts.md)
+fits six contexts in a 98,334-vB serialization estimate, with native full-pool
+validation. Its [full native publication](../../research/pointlocks-2026-09-17/round-major-publication.md)
+now costs98,323 vB with real signatures. These results supersede the earlier
+layout's size obstacle, not the open general extraction and public setup
+requirements.
+The [cross-key nonce follow-up](../../research/pointlocks-2026-09-17/cross-key-nonce-extraction.md)
+adds exact extraction from nondegenerate cycles, but a synthetic three-key,
+six-context control has rank eight in nine variables despite ten cycles.
+It rules out cycle-count-only reasoning, not the native cap60 construction.
+The [fixed-orbit follow-up](../../research/pointlocks-2026-09-17/orbit-key-sharing.md)
+avoids the inverse-r label but bounds ideal key reuse at 116,700 vB for its
+four-check, 40-byte-opening profile. Overlapping openings also reveal the base
+ratio; this bound and disclosure condition concern that fixed-orbit family.
+The [graph/privacy refinement](../../research/pointlocks-2026-09-17/orbit-private-sharing-bound.md)
+excludes even its hypothetical two-key, 40-byte-opening packets: 110,865 vB
+from graph counting, or 116,643 vB with no unselected scalar disclosure.
+
+## NR-062: Repeated short-signature checks miss both the amplification and size requirements
+
+The [repeated-check experiment](repeated-short-pointlocks.md) measures 130,182 vB
+for its best sampled three-check layout and 176,685 vB for four checks, before
+splitting oversized spending transactions. Sighash flags remain unrestricted,
+so the assumed common-digest amplification is also unestablished. These are
+placeholder-signature serialization results and Legacy layout checks, not
+native P2WSH point-lock validation or a universal size lower bound.
+The [native byte-distinct follow-up](../../research/pointlocks-2026-09-17/distinct-short-signatures.md)
+also shows that16 exact60 encodings can supply only one equation on the
+legacy SINGLE-constant branch. Core accepts up to eight at once with all-pairs
+inequality enforced; the two standard low-S flags pass policy. This also gives
+a malicious-setup counterexample for the existing single max60 predicate,
+without extending the result to the anchored P2WSH design.
+
+## NR-061: Windowed point locks have impractical setup cost
+
+The [39,396-vB windowed candidate](windowed-pointlock-setup-cost.md) is rejected
+because its expected `2^63.138` SHA256 compressions are impractical, and its
+short-signature extraction assumption is unproved. The inexpensive 59-byte-cap
+Core fixture validates honest execution only. Loosening the size cap is not
+an established repair. The search continues to require practical setup and
+no setup ZKP; a byte total below 100,000 is insufficient on its own.
+
+## NR-060: Explicit legacy point-table accounting exceeds 100,000 vbytes
+
+The [representation-specific bound](explicit-point-table-size-floor.md)
+is at least 111,574 vB for arbitrary 256-byte data, even granting every
+sum-key signature the ideal 58-byte minimum and omitting all verification
+and transaction overhead. It covers mixed subset encodings with separately
+stored independent candidate commitments, not witness-discounted or implicit
+constructions. The conditional windowed small-R candidate changes the
+primitive and is outside this bound.
+
+## NR-059: Variable point-lock subsets permit third-party revelation erasure
+
+The [variable-subset publication analysis](variable-pointlock-subset-malleation.md)
+shows why a global constant-weight decoder does not by itself secure optional
+local revelations. A third party can omit an optional signature/key opening
+while reusing an authorization signature that does not commit to other inputs'
+scriptSigs. Bitcoin can accept the altered transaction even though the proof
+decoder rejects its smaller total. Fixed local cardinalities avoid this
+downward mutation. A smaller variable scheme needs an additional binding rule
+and a protocol argument, not just an entropy calculation.
+
+## NR-058: Two-check point-lock extraction needs an additional native-transcript assumption
+
+The [two-check ECDSA candidate](two-check-point-lock-extraction.md) proves
+`r=r0*z/C`, but that invariant yields the known G/2 nonce only at `z=C`.
+A synthetic ordinary-digest signature satisfies both checks and fails that
+extractor; no matching real transaction was found. The known-nonce matching
+interpretation covers adversaries knowing the target scalar, while arbitrary
+point selection requires a stronger unproved transcript assumption. The
+76-byte predicate's three-byte saving and smaller stack therefore do not
+inherit the 79-byte construction's extraction guarantee. See OP-017.
+
+## NR-057: Secretless covenant shortcuts still lack an output binding
+
+The [exact-output covenant investigation](secretless-covenant-search.md)
+reproduces a free-ECDSA-pair counterexample against Bitcoin Core, verifies a
+cheaper DER-only gate, and bounds two direct bridge-search families. Identical
+free signatures need not imply identical digests; a DER parser alone accepts
+different recipients; two symmetric direct hash paths and the idealized
+160-bit ColliderScript cross-collision exceed the stated work budget.
+A follow-up native pair fixes its first nonce and fits 199 opcodes; its
+output-reference bridge remains missing. Precise assumptions and explicit
+hint/data metrics are in the linked reports.
+No general covenant impossibility claim follows. See OP-021.
+
 ## NR-049: Signature opcodes still diverge after resource repairs
 
 The [funded signature experiment](../tapscript-signature-validation.md) records

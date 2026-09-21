@@ -5,9 +5,11 @@
 | Construction | Script family | Script bytes | Revelation data | Setup / security boundary |
 | --- | --- | ---: | ---: | --- |
 | Schnorr adaptor signature | Tapscript | 34 for the ordinary x-only-key/checksig leaf | 66 for a default 64-byte signature | Interactive adaptor transcript; discrete-log/adaptor security |
-| ECDSA `G/2` small-R | Legacy, P2SH, or P2WSH | 40 | 62 representative and maximum | Non-interactive; conservatively about 80-bit security, not locally established |
+| ECDSA `G/2` small-R | Legacy, P2SH, or P2WSH | 40 | 62 representative and maximum | Non-interactive; adaptive total-length security remains unproved |
 | Three-check ECDSA | Bare legacy or P2SH | 79 | 60-byte representative signature; 61-byte bare scriptSig | `T` alone; DLP hiding and related-scriptCode reduced-sighash collision resistance |
+| Two-check ECDSA candidate | Bare legacy or P2SH | 76 | 60-byte representative signature; 61-byte bare or 139-byte P2SH scriptSig | `T` alone; conditional constant-digest extraction; stronger arbitrary-target ordinary-transcript assumption remains unproved |
 | Committed ECDSA | Legacy or P2SH only | 71 | 73 representative, at most 74 for low-S | Off-chain ZK proof of the SHA-256/DER-r relation; SHA-256 binding |
+| Sum-key ECDSA | Legacy or P2SH setup | 76 | 72-byte representative signature; 151-byte P2SH scriptSig | Noninteractive algebraic setup; extracts the sum scalar at every common digest; common-G setup generates fresh labels |
 
 All rows are complete success predicates but exclude refund branches and
 wrapper/control-block costs. The first row is only the ordinary on-chain
@@ -19,6 +21,280 @@ not witness serialization; its size guard eliminates the `r+n` coordinate
 case rather than enforcing a small nonce. See the
 [point-lock page](../primitives/point-locks.md) for extraction equations and
 evidence qualifications.
+
+The experimental two-check row removes the separator and reduces the combined
+stack peak from five to three, using one signature and zero hint items. Both
+legacy rows use scriptSig sizes, not witness-vector proxies. The two-check
+invariant is `r=r0*z/C`; only `z=C` gives the proved public extractor.
+Ordinary native transcripts require an additional resistance assumption,
+including targets whose scalar is unknown to the adversary. An independent-
+list estimate near `2^128` is not an established security bound. The
+[extraction boundary](../negative-results/two-check-point-lock-extraction.md)
+prevents treating the three-byte saving as an equivalent security result.
+
+The [pinned-Core comparison](../../research/pointlocks-2026-09-17/CORE.md)
+reproduces 18 expected outcomes for the two-/three-check variants, including
+high-S and undefined-flag positives. The representative low-S two-check P2SH
+transaction is `policy-validated` at 1,054 WU including its helper input;
+the remaining positive fixtures are `consensus-validated` with policy
+rejection. This execution evidence does not resolve the two-check assumption.
+
+The [sum-key construction](../../src/signatures/pointlocks/sum_key/README.md)
+instead locks `T=P+Q`, giving unconditional algebraic extraction
+`t=-2z/r` for every accepted common digest under its explicit length and
+distinct-key conditions. Sharing `Q=G` removes per-candidate companion keys
+and signature commitments. Its single-lock, multisig-pool, and lookup-pool
+fixtures have pinned Core validation. Direct embedded-key multisig pools
+avoid an additional public-key hash commitment; smaller HASH160 lookup pools
+require collision binding for adversarial setup. See the
+[publication comparison](../../research/pointlocks-2026-09-17/encoding-optimization.md)
+for complete creation-plus-spending costs, including the distinction between
+fixed subsets and variable subsets with a protocol-enforced global weight.
+
+## Complete publication research
+
+The [anchored P2WSH prototype](../../research/pointlocks-2026-09-17/anchored-codesep.md)
+has a96,176-vB fully signed, policy-accepted honest fixture and practical
+point-lock-only setup. It does not establish general extraction or garbling
+integration. The [round-count analysis](../../research/pointlocks-2026-09-17/anchored-rounds-limits.md)
+confirms all256 consensus hash-type bytes and records111,372 vB for the best
+sampled six-round layout. The existing185,146-vB sum-key fixture remains the
+reference with an exact per-lock extraction theorem, subject to its documented
+application-integration boundary.
+
+With nonstandard bare outputs, the
+[complete sum-key publication](../../research/pointlocks-2026-09-17/bare-publication.md)
+measures **161,382 vB** for 79 seven-of-48 pools, or **161,560 vB canonical
+maximum**. It preserves exact per-lock extraction and has native Core block
+validation, but default relay policy rejects it. Its application still needs
+to handle accepted partial spends and surplus codewords. This is a
+`consensus-validated` comparison to the `policy-validated` P2SH baseline.
+
+The [Binohash HORS lookup follow-up](../../research/pointlocks-2026-09-17/hors-lookup-comparison.md)
+finds a **153,125-vB maximum estimate** for 58 ten-of-57 bare pools, compared
+with the validated 161,560-vB maximum above. Its pool scripts pass local legacy
+tests, but the complete publication is not Core-validated and setup timing is
+unmeasured. Direct witness-record lookup is slightly larger at 153,687 vB.
+These new rows are `locally-reproduced`, `unclassified`.
+
+The [table-first selector](../../research/pointlocks-2026-09-17/clamped-lookup.md)
+reduces the mixed publication estimate further to **151,176 vB**, using 48
+12-selection pools. Core validates the constituent pool scripts and rejects
+malformed controls (78 cases); full independent publication/decoding and setup
+timing remain pending. This is an estimated total, not a new complete native
+publication measurement.
+
+The [affine-nonce extraction follow-up](../../research/pointlocks-2026-09-17/nonce-relation-extraction.md)
+extends the anchored/direct extractors to nondegenerate known nonce relations,
+with signed GLV relations checked by default. Its 18 focused test methods add
+offchain correctness evidence, not new native size measurements or an
+all-transcript extraction guarantee.
+
+The [cross-key graph extension](../../research/pointlocks-2026-09-17/cross-key-nonce-extraction.md)
+recovers additional two- and three-key transcripts through nondegenerate
+cycles, with no extra onchain cost. Eight tests and a replay of all 475
+historical native openings pass. Its rank-deficient six-context control uses
+synthetic digests, not a native cap60 counterexample; unrelated nonce graphs
+and general extraction remain unresolved.
+
+The [public scalar-gate experiment](../../research/pointlocks-2026-09-17/public-algebraic-gate.md)
+separately rejects an algebraically checked privacy-free AND gadget as the
+complete message-label interface. It evaluates correctly but allows 01 or
+10 to recover 00's committed labels. Six distinct points do not fix the
+public affine translation. This is an offchain composition result, not a
+native point-lock counterexample or a change in the size comparison.
+
+The [two-coordinate extension](../../research/pointlocks-2026-09-17/vector-label-gates.md)
+has a public correctness check and a one-opening discrete-log argument at
+the single-gate boundary. Its direct 2,048-bit legacy delivery needs 4,096
+scalar openings and at least 241,664 vB of signature pushes alone. This is a
+scoped interface cost, not a complete transaction or a bound on all garbling.
+
+The [shared-coordinate gate](../../research/pointlocks-2026-09-17/shared-vector-gates.md)
+needs three scalar openings instead of four, lowering that restricted legacy
+floor to 181,248 vB. This reaches the linear gate's minimum worst-case rank,
+but does not fit the target. A separate proof excludes linear binary-label
+lookup for the full 5-of-54 alphabet even with scalar correlations; nonlinear
+translation and other native interfaces remain outside that result.
+
+The [ratio-label analysis](../../research/pointlocks-2026-09-17/ratio-labels.md)
+does not lower those opening counts: a hidden relative logarithm between
+fixed affine point forms requires both forms in the disclosed span. Its
+654,476 finite-field cases and twelve curve embeddings add an offchain
+boundary result, not a new size or setup measurement (NR-074).
+
+The [DH quartet experiment](../../research/pointlocks-2026-09-17/dh-quartet-labels.md)
+selects two binary group-valued labels from one scalar opening. At the abstract
+interface this halves the direct two-bit scalar count, but its 60,416-vB
+signature-push floor for 2,048 bits excludes every script and transaction cost.
+The labels require a different verifier interface; neither complete onchain
+size nor public garbling binding is established. Its correlated setup checker
+excludes exact point-label aliases, not every weak choice of setup secrets.
+
+The [fixed-digest nonce adapter](../../research/pointlocks-2026-09-17/fixed-digest-nonce.md)
+adds Core-validated scalar delivery for those four correlated targets. It
+shares a known key across three contexts and uses one derived key per target:
+86 bytes standalone, 199 bytes for a quartet, four ECDSA checks per opening.
+The 23 successful and eight rejected Core cases have independent Rust hash
+and extraction checks. An explicit 1,024-quartet layout already costs
+139,264 vB in candidate-key pushes, excluding every other cost. Full setup
+and public garbling binding remain unresolved; these are legacy nonstandard
+fixtures, not a replacement for the sub-100k P2WSH candidate.
+
+The [correlated quadratic follow-up](../../research/pointlocks-2026-09-17/correlated-quadratic-labels.md)
+shows that replacing independent input scalars by private linear correlations
+does not extend the full-subset quadratic interface beyond N-t=3. At 5-of-54,
+the corresponding leading-form degree sum must be at least 50. This is a
+scoped algebraic reconstruction obstruction, with 44 exact field ranks and
+34 curve controls, not a new transaction size or a bound on every garbling
+scheme (NR-077).
+
+The [typed-selector follow-up](../../research/pointlocks-2026-09-17/typed-selector-layout.md)
+reduces the five-context placeholder serialization to 94,120 vB and the
+six-context estimate to 105,039 vB with all authorization and transaction costs
+included. Core validates 24 positive and 14 negative small selection cases;
+these are not full-size native publications or a repair of general extraction.
+
+The [shared-anchor-context follow-up](../../research/pointlocks-2026-09-17/shared-anchor-context.md)
+lowers those five/six-context estimates to 94,005/103,345 vB, with separate
+six-context small Core fixtures passing 24 positive and 14 negative cases.
+Including the anchor nonce in the extractor covers additional exact affine
+cases, while unrelated nonces and public garbling binding remain open.
+
+The [round-major arrangement](../../research/pointlocks-2026-09-17/round-major-contexts.md)
+now fits six anchored contexts in 98,334 vB of complete placeholder
+serialization, using 95 five-of-54 pools. Its five-context row is 90,114 vB.
+Small and full-pool Core fixtures pass 18 positive and 19 negative cases.
+The [full native follow-up](../../research/pointlocks-2026-09-17/round-major-publication.md)
+is Core-accepted and mined at98,323 vB with475 scalar extractions and a256-byte
+roundtrip. Its point-lock-only setup/public checking takes89.63 ms median,
+154.47 ms on the first parallel sample. An adequate repetition count, public
+garbling binding and complete setup timing remain unestablished.
+
+The [95-pool message decoder](../../research/pointlocks-2026-09-17/round-major-message-decoder.md)
+extends that exact native instance through all 2,048 message labels, including
+surplus codewords under a modulo rule. Generation takes 364.16 ms median;
+generation plus an audit with all secrets takes 733.29 ms. No onchain bytes
+are added. Public setup verification and the full BitVM3 verifier are excluded,
+and target derivation overlaps the native setup measurement above.
+
+Its [native participation test](../../research/pointlocks-2026-09-17/pool-participation.md)
+accepts four partial one-pool spends while 94 pools remain unspent. Complete
+publication needs additional protocol binding or proven safe-abort handling;
+these smaller partial spends do not satisfy the 256-byte comparison objective.
+
+The [dual-anchor replacement](../../research/pointlocks-2026-09-17/dual-anchor-sum-collapse.md)
+fails even with actual native hashing: a public high-S opening passes Core
+consensus without a target scalar. The sum-key theorem still holds, but its
+extracted key sum is public and differs from the intended target (NR-068).
+
+The [distinct-target repair](../../research/pointlocks-2026-09-17/two-target-anchors.md)
+extracts a prebound label exactly, but has no efficient native opening
+algorithm: its digests prescribe the nonce x-coordinate. Synthetic curve
+fixtures supply no native byte-cost or setup-performance claim (NR-071).
+
+The [direct-key six-context variant](../../research/pointlocks-2026-09-17/direct-context.md)
+has a policy-validated 98,706-vB honest publication, but dropping the anchor
+allows staged sighash searches preserving earlier conditions. Its additional
+check is not a demonstrated strengthening; see
+[NR-065](../negative-results/direct-context-staged-grinding.md).
+
+The [subset-label translation](../../research/pointlocks-2026-09-17/subset-translation.md)
+adds no onchain data to the honest anchored fixture and connects its extracted
+scalars to binary rank labels. The measured 1.590-s table setup/audit requires
+disclosing every secret for the audit, covers one translation instance, and
+excludes VSS/garbled copies. It is not public setup verification; see
+[NR-064](../negative-results/subset-translation-binding.md).
+
+The [threshold-complement follow-up](../../research/pointlocks-2026-09-17/complement-translation.md)
+reduces translation to 4.51 MB of encrypted shares plus 35.71 MB of per-pool
+garbled decoder payload. Actual decoder evaluation connects the cached 460
+scalar openings to the original message. Complete generation and an audit
+with all secrets take 72.64 ms median. The audit is not public verification;
+malicious ciphertext/garbling binding, multi-copy setup and full point-lock
+soundness remain unresolved. No new onchain bytes or Core result are claimed.
+
+The [total garbled message decoder](../../research/pointlocks-2026-09-17/total-message-decoder.md)
+extends that boundary through all 2,048 message bits and defines surplus
+codewords modulo 2^2048. Complete translation/decoder generation is 341.82 ms
+median; the all-secrets audit is 348.66 ms, with a combined median of 701.05 ms.
+This is one offchain instance, without a public setup check or the full BitVM3
+verifier. It changes neither the native byte count nor the extraction status.
+
+The [fixed four-root orbit follow-up](../../research/pointlocks-2026-09-17/four-root-orbit.md)
+provides a different full-scalar commitment and a fixed-set hash-query analysis,
+but its explicit legacy key representation remains above131,600 vB even with
+signatures and framing free. It is algebra/size evidence, not a native result.
+The [sharing extension](../../research/pointlocks-2026-09-17/orbit-key-sharing.md)
+leaves a 116,700-vB lower bound even with ideal reuse for the four-check,
+40-byte-opening profile. Its two-opening disclosure condition also restricts
+safe shared alphabets. Different implicit representations remain outside the
+bound.
+Its [two-key refinement](../../research/pointlocks-2026-09-17/orbit-private-sharing-bound.md)
+costs at least 110,865 vB with 40-byte openings; including the known privacy
+condition gives 116,643 vB. These are restricted lower bounds, not actual
+transactions or a claim that two checks suffice for extraction.
+The [scalar-linear complement bound](../../research/pointlocks-2026-09-17/complement-linear-obstruction.md)
+also rules out that specific direct-linear setup repair for4-of-50 delivery.
+
+The [direct binary-label rank bound](../../research/pointlocks-2026-09-17/binary-linear-label-rank.md)
+shows why correlated masks alone cannot reduce the final binary interface
+below one field opening per bit under public linear decoding. Its restricted
+legacy sum-key consequence is at least 120,832 vB for signature pushes alone.
+This is not a bound on nonlinear garbled translation or all point-lock designs.
+
+The [DDH batch-select follow-up](../../research/pointlocks-2026-09-17/ddh-batch-select.md)
+measures a512-byte raw opening for a full2048-bit label vector, with695.61 ms
+generation and890.47 ms all-secrets audit at its eight-block setting. This is
+offchain compression, not an onchain size or public setup result. Its natural
+additive wrapper over individually revealed point scalars exposes all free-XOR
+alternatives (NR-067); aggregate-only native binding is still required.
+The [independent follow-up](../../research/pointlocks-2026-09-17/ddh-linear-leakage.md)
+extends the failure to every nonredundant scalar-linear disclosure of its key
+vector. No transaction-size or setup-timing improvement is implied.
+The [masked-audit follow-up](../../research/pointlocks-2026-09-17/ddh-masked-audit.md)
+extends this restriction to informative row actions and rejects an unbound
+fixed-challenge certificate. These scoped results do not reject proper DLEQ
+proofs or all masked encodings.
+
+The [arithmetic-garbling source review](../../research/pointlocks-2026-09-17/arithmetic-garbling-interface.md)
+records Argo MAC and Duty-Free Bits as potential translation components.
+Two focused upstream correctness tests pass, but their interface still
+requires selected input labels. No new Bitcoin byte cost or full setup
+benchmark is established.
+
+The [WOTS translation comparison](../../research/pointlocks-2026-09-17/wots-translation-boundary.md)
+reproduces the newer paper's checksum-controlled access mechanism for a small
+instance. Its source-reported508-bit protocol measurements and local table-row
+counts are not comparable complete2048-bit point-lock costs. Public malicious
+table verification and a native algebraic extraction interface remain absent.
+
+The [native byte-distinct follow-up](../../research/pointlocks-2026-09-17/distinct-short-signatures.md)
+checks a different proposed shortcut: replacing separate contexts by several
+different signature encodings. On the legacy SINGLE constant,16 exact60
+encodings can repeat one equation under a maliciously selected key. Core
+accepts the existing max60 predicate and all-pairs-distinct batches up to
+eight; the scalar remains equivalent to the lifted nonce point's DLP. This
+does not extend to the anchored P2WSH design or exact sum-key extraction.
+
+**The windowed profiles below are rejected for impractical setup.** Their
+smaller byte counts do not meet the task when obtaining them requires
+approximately `2^63.138` SHA256 compressions and an unproved extraction
+assumption. See [NR-061](../negative-results/windowed-pointlock-setup-cost.md).
+
+The new [windowed publication comparison](../../research/pointlocks-2026-09-17/windowed-publication.md)
+uses a different small-R predicate and hidden scalar offsets to obtain
+P2WSH discount: **39,396 vB** with direct-key batched multisig, or **38,767 vB**
+with HASH160 lookup, including creation and spending for arbitrary 256-byte
+data. These production-profile sizes use placeholder 53-byte signatures.
+They exchange the sum-key lock's exact extraction theorem for an unproved
+short-signature assumption and substantial expected setup work. They are
+not equivalent-security improvements to the 185,146-vB validated sum-key
+publication. Reduced-work fixtures are explicitly separate evidence.
+
+The [compressed-proof alternative](../../research/pointlocks-2026-09-17/conditional-proof-compression.md)
+has a 92,706-vB Core-validated synthetic 128-byte publication, conditional on
+the application's original 256-byte proof allowing lossless point compression.
 
 ## Secp256k1 Schnorr
 
@@ -395,3 +671,21 @@ See the [constant-sum primitive](../primitives/winternitz-constant-sum20.md)
 for exact code capacity, public API, proof scope, hash alternatives,
 independent Python reproduction, and [NR-041](../negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries)
 for the restricted radix search and rejected zero-fixture-only improvements.
+
+
+## HASH160-committed two-check extension
+
+The [implementation](../../src/signatures/pointlocks/committed_two_check/README.md)
+adds a signature commitment to the two-check predicate: 100 bytes per lock,
+five locks in a 500-byte P2SH redeem script. These are fixed-point AND predicates, not selectable BitVM3 digit slots.
+A direct binary 256-byte encoding needs 2,048 choices between pairs of points
+(4,096 candidate locks); complete proof-publication integration remains open.
+Small selectable and threshold subsets are implemented as research probes; see
+the [subset analysis](../../research/pointlocks-2026-09-17/hors-subsets.md) and
+[CHECKMULTISIG comparison](../../research/pointlocks-2026-09-17/multisig-probe.md).
+The 187-fixed-point, 38-output example is not a 256-byte proof encoding.
+One/five locks consume one/five signature data items, zero hints, and peak at
+three/seven combined stack items. Sizes and default-options legacy interpreter
+execution are `locally-reproduced`; deployment remains `unclassified` pending
+Core validation. The commitment introduces a self-reference for ordinary
+transaction digests, but no complete hardness argument is established (OP-017).

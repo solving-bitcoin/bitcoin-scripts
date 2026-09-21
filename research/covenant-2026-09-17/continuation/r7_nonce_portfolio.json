@@ -1,0 +1,393 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "slope_capacity": {
+    "order": 509,
+    "offsets": [
+      1,
+      38,
+      75,
+      112,
+      149,
+      186,
+      223,
+      260
+    ],
+    "exhaustively_evaluated_digests_per_configuration": 509,
+    "results": [
+      {
+        "name": "common-slope",
+        "slopes": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "distinct_length_vectors": 24,
+        "support_bits": 4.584962500721156,
+        "entropy_bits": 4.021738641398408,
+        "maximum_cell_size": 42
+      },
+      {
+        "name": "different-small-slopes",
+        "slopes": [
+          2,
+          3,
+          5,
+          7,
+          11,
+          13,
+          17,
+          19
+        ],
+        "distinct_length_vectors": 120,
+        "support_bits": 6.906890595608519,
+        "entropy_bits": 6.625728217067585,
+        "maximum_cell_size": 11
+      },
+      {
+        "name": "different-wide-slopes",
+        "slopes": [
+          1,
+          257,
+          409,
+          123,
+          163,
+          245,
+          301,
+          501
+        ],
+        "distinct_length_vectors": 238,
+        "support_bits": 7.894817763307944,
+        "entropy_bits": 7.714770153734863,
+        "maximum_cell_size": 5
+      }
+    ]
+  },
+  "cost_models": {
+    "signature_bytes": 55,
+    "signing_strategy": "LOW_S only",
+    "fixed_length_strata": [
+      {
+        "r_der_bytes": 16,
+        "s_der_bytes": 32,
+        "ideal_nonce_type_probability": "882690465950920696850184375967416320/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "115339776388732929035197660848497720712785728401474745929326031953987250831682/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 129.00564656314114,
+        "single_nonce_message_bits": 0.005646563141142063,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 129.00564656314114
+      },
+      {
+        "r_der_bytes": 17,
+        "s_der_bytes": 31,
+        "ideal_nonce_type_probability": "225968759283435698393647200247658577920/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "450546001518488004043740862689444221536008393703282834321009581329618042880/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 121.00564656314114,
+        "single_nonce_message_bits": 8.005646563141141,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 121.00564656314114
+      },
+      {
+        "r_der_bytes": 18,
+        "s_der_bytes": 30,
+        "ideal_nonce_type_probability": "57848002376559538788773683263400595947520/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "1759945318431593765795862744880641490375032787903448571566443677068820480/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 113.00564656314114,
+        "single_nonce_message_bits": 16.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 113.00564656314114
+      },
+      {
+        "r_der_bytes": 19,
+        "s_der_bytes": 29,
+        "ideal_nonce_type_probability": "14809088608399241929926062915430552562565120/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "6874786400123413147640088847190005821777471827747845982681420613550080/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 105.00564656314114,
+        "single_nonce_message_bits": 24.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 105.00564656314114
+      },
+      {
+        "r_der_bytes": 20,
+        "s_der_bytes": 28,
+        "ideal_nonce_type_probability": "3791126683750205934061072106350221456016670720/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "26854634375482082607969097059335960241318249327140023369849299271680/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 97.00564656314114,
+        "single_nonce_message_bits": 32.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 97.00564656314114
+      },
+      {
+        "r_der_bytes": 21,
+        "s_der_bytes": 27,
+        "ideal_nonce_type_probability": "970528431040052719119634459225656692740267704320/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "104900915529226885187379285388031094692649411434140716288473825280/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 89.00564656314114,
+        "single_nonce_message_bits": 40.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 89.00564656314114
+      },
+      {
+        "r_der_bytes": 22,
+        "s_der_bytes": 26,
+        "ideal_nonce_type_probability": "248455278346253496094626421561768113341508532305920/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "409769201286042520263200333546996463643161763414612173001850880/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 81.00564656314114,
+        "single_nonce_message_bits": 48.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 81.0056465633091
+      },
+      {
+        "r_der_bytes": 23,
+        "s_der_bytes": 25,
+        "ideal_nonce_type_probability": "63604551256640895000224363919812637015426184270315520/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "1600660942523603594778126302917954936106100638338328800788480/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 73.00564656314114,
+        "single_nonce_message_bits": 56.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 73.00565756998881
+      },
+      {
+        "r_der_bytes": 24,
+        "s_der_bytes": 24,
+        "ideal_nonce_type_probability": "16282765121700069120057437163472035075949103173200773120/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "6252581806732826542102055870773261469164455618509096878080/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 65.00564656314114,
+        "single_nonce_message_bits": 64.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 1,
+        "setup_plus_digest_lower_bound_bits": 65.5906090638623
+      },
+      {
+        "r_der_bytes": 25,
+        "s_der_bytes": 23,
+        "ideal_nonce_type_probability": "4168387871155217694734703913848840979442970412339397918720/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "24424147682550103680086155745208052613923654759801159680/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 57.00564656314114,
+        "single_nonce_message_bits": 72.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 181,
+        "setup_plus_digest_lower_bound_bits": 65.50564657137254
+      },
+      {
+        "r_der_bytes": 26,
+        "s_der_bytes": 22,
+        "ideal_nonce_type_probability": "1067107295015735729852084201945303290737400425558885867192320/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "95406826884961342500336545879718955523139276405473280/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 49.00564656314114,
+        "single_nonce_message_bits": 80.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 46341,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314198
+      },
+      {
+        "r_der_bytes": 27,
+        "s_der_bytes": 21,
+        "ideal_nonce_type_probability": "273179467524028346842133555697997642428774508943074782001233920/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "372682917519380244141939632342652170012262798458880/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 41.00564656314114,
+        "single_nonce_message_bits": 88.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 11863283,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 28,
+        "s_der_bytes": 20,
+        "ideal_nonce_type_probability": "69933943686151256791586190258687396461766274289427144192315883520/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "1455792646560079078679451688838485039110401556480/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 33.00564656314114,
+        "single_nonce_message_bits": 96.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 3037000500,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 29,
+        "s_der_bytes": 19,
+        "ideal_nonce_type_probability": "17903089583654721738646064706223973494212166218093348913232866181120/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "5686690025625308901091608159525332184025006080/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 25.00564656314114,
+        "single_nonce_message_bits": 104.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 777472127994,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 30,
+        "s_der_bytes": 18,
+        "ideal_nonce_type_probability": "4583190933415608765093392564793337214518314551831897321787613742366720/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "22213632912598862894889094373145828843847680/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 17.00564656314114,
+        "single_nonce_message_bits": 112.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 199032864766430,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 31,
+        "s_der_bytes": 17,
+        "ideal_nonce_type_probability": "1173296878954395843863908496587094326916688525268965714377629118045880320/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "86772003564839308183160524895100893921280/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 9.005646563141141,
+        "single_nonce_message_bits": 120.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 50952413380206181,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 32,
+        "s_der_bytes": 16,
+        "ideal_nonce_type_probability": "300364001012325336029160575126296147690672262468855222880673054219745361920/603083798111021851164432213586916186733528980620181793659401891362073757783",
+        "message_probability": "338953138925153547590470800371487866880/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 1.005646563141142,
+        "single_nonce_message_bits": 128.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 13043817825332782212,
+        "setup_plus_digest_lower_bound_bits": 65.50564656314114
+      },
+      {
+        "r_der_bytes": 33,
+        "s_der_bytes": 15,
+        "ideal_nonce_type_probability": "57896044618658097711785492504343953926202571946254622362876371137561596674369/115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "message_probability": "1324035698926381045275276563951124480/115792089237316195423570985008687907852837564279074904382605163141518161494337",
+        "single_nonce_setup_bits": 1.0,
+        "single_nonce_message_bits": 136.00564656314114,
+        "best_integer_portfolio_size_for_relaxed_bound": 209109902610249160129,
+        "setup_plus_digest_lower_bound_bits": 69.50282328157057
+      }
+    ],
+    "mixed_length_ideal_pair_probability": "1731157708614247948941893937505356109618778445119479983729809398570614751207057493153011646898483420415174849331200/69832332968451026560281380198988781913433458857364073547588161963845234388727997595427812816576388415013748917822033550503323304277449747063052264174871",
+    "mixed_length_ideal_pair_work_bits": 124.92349752178727,
+    "mixed_sample_only_models": [
+      {
+        "sample_only_total_bits": 63.0,
+        "point_samples": 4.611686018427388e+18,
+        "digest_samples": 4.611686018427388e+18,
+        "independent_row_success_probability": 0.24125731752317015,
+        "naive_pair_tests_bits": 124.0
+      },
+      {
+        "sample_only_total_bits": 63.7,
+        "point_samples": 7.4917060394204e+18,
+        "digest_samples": 7.4917060394204e+18,
+        "independent_row_success_probability": 0.5146851304425903,
+        "naive_pair_tests_bits": 125.4
+      },
+      {
+        "sample_only_total_bits": 64.0,
+        "point_samples": 9.223372036854776e+18,
+        "digest_samples": 9.223372036854776e+18,
+        "independent_row_success_probability": 0.6641976222804716,
+        "naive_pair_tests_bits": 126.0
+      },
+      {
+        "sample_only_total_bits": 65.0,
+        "point_samples": 1.8446744073709552e+19,
+        "digest_samples": 1.8446744073709552e+19,
+        "independent_row_success_probability": 0.9862380882360481,
+        "naive_pair_tests_bits": 128.0
+      }
+    ],
+    "toy_independent_row_exhaustive_outcomes": 1024,
+    "toy_independent_row_exact_success": "855/1024"
+  },
+  "native_shape": {
+    "scope": "Synthetic unspent fixed outpoint; host ECDSA equations only, no Core execution.",
+    "raw_script": "82014688210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ac",
+    "raw_script_bytes": 39,
+    "raw_static_non_push_opcodes": 3,
+    "signature_input_data_items": 1,
+    "hint_items": 0,
+    "combined_stack_peak_by_inspection": 3,
+    "witness_bytes": 0,
+    "public_signing_scalar": 1,
+    "incremental_point_steps": 4057,
+    "preprocessed_nonce_count": 8,
+    "nonce_portfolio": [
+      {
+        "k": 246,
+        "r": "0x136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc0080"
+      },
+      {
+        "k": 1158,
+        "r": "0x41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe3"
+      },
+      {
+        "k": 1436,
+        "r": "0x6b79e81a8d7ca333f61c7da39f571621d23acfd3d41483cda9a38f6a27e7a0"
+      },
+      {
+        "k": 1661,
+        "r": "0x6afb444b4bd89f2e21b54ac49b9ec3af810b9773c76eaf4f3a5f1c7a29b201"
+      },
+      {
+        "k": 1690,
+        "r": "0x17690101ba303ffadaf839d0dc8097f7e447a85de484363c64c4ab5b29b2c0"
+      },
+      {
+        "k": 1700,
+        "r": "0x2aed802c80b631bb69082868ef7b4331ed4951270a44ed9333051c67245d56"
+      },
+      {
+        "k": 2176,
+        "r": "0x615adc1f7169d6ec14075b848ade3150a76fe98ab4cb4fc9a51a6e6c530d9e"
+      },
+      {
+        "k": 4057,
+        "r": "0x616e16a7e3819170e33f4fbf428fcc41e68ccb5b059bfe4036751bba5ee319"
+      }
+    ],
+    "output_variants": [
+      {
+        "output_script": "00141111111111111111111111111111111111111111",
+        "sighash": "96ece647015ea7b940cb9e76f76a5f23435c0a0327fe8e51e9d6a7ae6e3a7904",
+        "signatures": [
+          {
+            "known_nonce_scalar": 246,
+            "r": "0x136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc0080",
+            "s": "0x2b17ef06c9c93183e50a4ca27a8b23cb9d74f677161f1609b8f50ae38bef27c9",
+            "signature": "3043021f136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc008002202b17ef06c9c93183e50a4ca27a8b23cb9d74f677161f1609b8f50ae38bef27c901",
+            "signature_bytes": 70,
+            "script_sig_bytes": 111,
+            "transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006f463043021f136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc008002202b17ef06c9c93183e50a4ca27a8b23cb9d74f677161f1609b8f50ae38bef27c9012782014688210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798acffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+            "transaction_weight_by_serialization": 772
+          },
+          {
+            "known_nonce_scalar": 1158,
+            "r": "0x41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe3",
+            "s": "0x21ec4ee9b6c72be46fdafe6949ed0831ae8641616dc8c3eb9b3271d45d77808",
+            "signature": "3043021f41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe30220021ec4ee9b6c72be46fdafe6949ed0831ae8641616dc8c3eb9b3271d45d7780801",
+            "signature_bytes": 70,
+            "script_sig_bytes": 111,
+            "transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006f463043021f41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe30220021ec4ee9b6c72be46fdafe6949ed0831ae8641616dc8c3eb9b3271d45d77808012782014688210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798acffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+            "transaction_weight_by_serialization": 772
+          }
+        ]
+      },
+      {
+        "output_script": "00142222222222222222222222222222222222222222",
+        "sighash": "dc3c859d4b3f32511eb434e927afd34b363207516aa1c6eddffe9448cedd8aac",
+        "signatures": [
+          {
+            "known_nonce_scalar": 246,
+            "r": "0x136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc0080",
+            "s": "0x5ed8215ee48ae1dcc5f594de5f4a565065cbaaa8c7017a04950efce266c57cc8",
+            "signature": "3043021f136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc008002205ed8215ee48ae1dcc5f594de5f4a565065cbaaa8c7017a04950efce266c57cc801",
+            "signature_bytes": 70,
+            "script_sig_bytes": 111,
+            "transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006f463043021f136933174bc388a74ebd6746e13afe0eef5d66580c8e23d33464c342dc008002205ed8215ee48ae1dcc5f594de5f4a565065cbaaa8c7017a04950efce266c57cc8012782014688210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798acffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+            "transaction_weight_by_serialization": 772
+          },
+          {
+            "known_nonce_scalar": 1158,
+            "r": "0x41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe3",
+            "s": "0x4fff3992efefbcb35adb9f3aafa1f82ebf15541bf2721a123cf4049ca8964e34",
+            "signature": "3043021f41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe302204fff3992efefbcb35adb9f3aafa1f82ebf15541bf2721a123cf4049ca8964e3401",
+            "signature_bytes": 70,
+            "script_sig_bytes": 111,
+            "transaction_hex": "02000000014242424242424242424242424242424242424242424242424242424242424242000000006f463043021f41e90c0b3060fbdebe0e8d4ef8d1f3e3b2edcc181633505826f3c82c862fe302204fff3992efefbcb35adb9f3aafa1f82ebf15541bf2721a123cf4049ca8964e34012782014688210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798acffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+            "transaction_weight_by_serialization": 772
+          }
+        ]
+      }
+    ]
+  },
+  "all_expectations_met": true
+}

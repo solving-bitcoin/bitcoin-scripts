@@ -1,0 +1,40 @@
+{
+  "build_profile": "release",
+  "candidates": 5750,
+  "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "pools": 115,
+  "samples": [
+    {
+      "combined_ms": 592.2531250000001,
+      "generation_ms": 378.292334,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 213.960791
+    },
+    {
+      "combined_ms": 505.926333,
+      "generation_ms": 292.22875,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 213.697583
+    },
+    {
+      "combined_ms": 505.655917,
+      "generation_ms": 291.936875,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 213.719042
+    },
+    {
+      "combined_ms": 505.40570900000006,
+      "generation_ms": 291.80787499999997,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 213.59783399999998
+    },
+    {
+      "combined_ms": 506.277,
+      "generation_ms": 292.311625,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 213.96537500000002
+    }
+  ],
+  "scope": "Point-label generation, candidate/table generation, policy compilation and public checking for the entire115pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+  "workers": 1
+}

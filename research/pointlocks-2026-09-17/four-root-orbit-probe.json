@@ -1,0 +1,174 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "A fixed four-root orbit binds a full scalar, but explicit legacy tables exceed 100k.\n\nCurve algebra and representation bound only. No generated Script or Core run.\nAll scalars are public deterministic fixtures. The nonconstant-digest bound\nexplicitly models the native hash as a random oracle.\n",
+  "source_sha256": "aa62a49b9e97998aba45f7b83678ae3f1d4e79f824833dedf3c45718054d8785",
+  "r0": 2,
+  "bases": [
+    "020000000000000000000000000000000000000000000000000000000000000002",
+    "02fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364143",
+    "030000000000000000000000000000000000000000000000000000000000000002",
+    "03fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364143"
+  ],
+  "roots_log_assumption": "No known discrete logarithms relative to G; fixed public x=2 and x=n+2 lifts. No proof of DLP hardness.",
+  "order_four_scalar": "8f52b651807a8b13549be5bd4c5db0dbe4779cc31afbd9d61915afdbdcba81c9",
+  "order_four_does_not_stabilize_orbit": true,
+  "orbit_scalar_unique_up_to_sign_argument": "A scalar stabilizer permutes four nonzero points freely, hence has order dividing four. Order four is explicitly excluded; only +/-1 remain.",
+  "cases": [
+    {
+      "seed": 0,
+      "scalar_fixture": "2875472f8596de50b54645b0a603c980d02243361c5e2bc70ef64ced3d0d3d2f",
+      "signature_hex": "302502010202202875472f8596de50b54645b0a603c980d02243361c5e2bc70ef64ced3d0d3d2f03",
+      "signature_bytes": 40,
+      "high_s_signature_bytes": 41,
+      "keys": [
+        "0282197da5a63440803e6f8cd2222c1ec57c112bdd4b5637646d3bf422442c6e1c",
+        "0365e6945d361beefcc9f658c4b4a1a78d025e4644baaf27bd03d9ec1678a70968",
+        "03b53075e2590f440692595122812d02fc748674474cc305b196210436a2fed4ba",
+        "03c6394ed223c3efd1188b5ffd6a2d032401aa53ae837f3570d7d231a9e987d6d9"
+      ],
+      "orbit_commitment": [
+        "023a35f97fa08c9dbbcf30ec32a202e81a91bc9dc87c802be8d97d3426183c53ac",
+        "02d7e09927f518e4baae2de80b190965ba5eec177d559034015fcb6873b87310f6",
+        "033a35f97fa08c9dbbcf30ec32a202e81a91bc9dc87c802be8d97d3426183c53ac",
+        "03d7e09927f518e4baae2de80b190965ba5eec177d559034015fcb6873b87310f6"
+      ],
+      "extracted": true
+    },
+    {
+      "seed": 1,
+      "scalar_fixture": "75649179a9044e06a9fc8200febe651252175e9c898c06e24554eb5ac01079b2",
+      "signature_hex": "3025020102022075649179a9044e06a9fc8200febe651252175e9c898c06e24554eb5ac01079b203",
+      "signature_bytes": 40,
+      "high_s_signature_bytes": 41,
+      "keys": [
+        "0223ea2900f51313769f4c0c241bfc8946bf9c8a5f77af226dc9d9dbbe56f9b893",
+        "025eed7c0054942f2b4323adf89b11587e9089c30b2259247f66eea5edc2c1bffc",
+        "026ff8bd11c40e012abd4d434b6e1302fcac6e61104c0ace5378edaf260991067c",
+        "03945ba6fe41e2b0f9d723bb19328819daabb39298876125fefc38171b84fb1c35"
+      ],
+      "orbit_commitment": [
+        "022d1cb8f4d81912b402800d0ba9b62b3b4202fd71c51162c12d3ac2b2d6196488",
+        "02c863a3f1219983d947e5bbca3e4eb3b1a57095a01b96f4b6d201afa9c8a1e263",
+        "032d1cb8f4d81912b402800d0ba9b62b3b4202fd71c51162c12d3ac2b2d6196488",
+        "03c863a3f1219983d947e5bbca3e4eb3b1a57095a01b96f4b6d201afa9c8a1e263"
+      ],
+      "extracted": true
+    },
+    {
+      "seed": 2,
+      "scalar_fixture": "60445aacc24dc6efed22c4eb25259b85ba36c02fb0ede5174351dea0a739f6e0",
+      "signature_hex": "3025020102022060445aacc24dc6efed22c4eb25259b85ba36c02fb0ede5174351dea0a739f6e003",
+      "signature_bytes": 40,
+      "high_s_signature_bytes": 41,
+      "keys": [
+        "0275035aa6ecb8daa649ea1cc0b13d856b7a675ced3f025ac9c5803ccefa6c7244",
+        "02831f753d5fe206dc2230a858c4639890a7e801be8699bd9c904547b2bd6185a5",
+        "03121d8478095627fd3da7fda6092168f6c36ed7e1fc08021dbced9ecd047b02c7",
+        "03effe3d20a984ac24510328dee873a998ccf559094c3196120a3dde9072eb74ba"
+      ],
+      "orbit_commitment": [
+        "023e89e0b0f057dd8d151c1cd305625dd2f6510300408c782b427cb339cf2d0ea9",
+        "02ed9e7557ce63976233f57943d9a691cb9433e6dd19993bc0e8348c2a53100b9e",
+        "033e89e0b0f057dd8d151c1cd305625dd2f6510300408c782b427cb339cf2d0ea9",
+        "03ed9e7557ce63976233f57943d9a691cb9433e6dd19993bc0e8348c2a53100b9e"
+      ],
+      "extracted": true
+    },
+    {
+      "seed": 3,
+      "scalar_fixture": "114d8a90a313ba99fb27b7b3d5e76b7e4ffce8f32f44840ebac871f14c6749ac",
+      "signature_hex": "30250201020220114d8a90a313ba99fb27b7b3d5e76b7e4ffce8f32f44840ebac871f14c6749ac03",
+      "signature_bytes": 40,
+      "high_s_signature_bytes": 41,
+      "keys": [
+        "0277593e4806f201bef37190c3f7f8b0a9cc8d9b028e0528db0197950a823b2a82",
+        "02e049c27ebdddce93ae990094d774572e02a3ce7d975cdf8d23f685bcc8498323",
+        "03c46ecabbfd8341e535e5a91bbd529ced5c3dfcc39af401b61864d57398372208",
+        "03f220bfda8f462022a8497ef9bf339ac437bc9ddfeea9b0535451546c5799824d"
+      ],
+      "orbit_commitment": [
+        "021adaf9eb5d348fd11633d8d4cc17bdf8a33bc50f48b2c94c71ce4560891bcc58",
+        "02df3164d978059b285fff642bba3b7a345d5afa7bb05d0f27fdfd063ff44f4035",
+        "031adaf9eb5d348fd11633d8d4cc17bdf8a33bc50f48b2c94c71ce4560891bcc58",
+        "03df3164d978059b285fff642bba3b7a345d5afa7bb05d0f27fdfd063ff44f4035"
+      ],
+      "extracted": true
+    },
+    {
+      "seed": 4,
+      "scalar_fixture": "48a7de7b23eadaf0dc70af3b18bca62bd4d1d7eb73587cd007c9bb3bab057faf",
+      "signature_hex": "3025020102022048a7de7b23eadaf0dc70af3b18bca62bd4d1d7eb73587cd007c9bb3bab057faf03",
+      "signature_bytes": 40,
+      "high_s_signature_bytes": 41,
+      "keys": [
+        "0201b8ebb67645a5d1cc0d0edeca7e1d92ee29c8c2210af5a9cf8ce445d7e15dad",
+        "02073dd8e10af63edcaac4b4fedcebc163c3c9c3c1c4748087947b27a9ea30be85",
+        "02fb11694735420ef1b94d851d00d6c2fb8f7a8a67d588e4ab8633e39416b3cdf9",
+        "037b1e52b0a2332a6b1be23d29e8218c5eef9c9e0bf75be4643a52449ef622f142"
+      ],
+      "orbit_commitment": [
+        "027fcaf62cac8b90e8dc22e85929922130fc245f4f0950a4627874b27db2cdccd8",
+        "02b9017c85d2343d4daaba32e8e0cb6c3862bf360609d885941c00c073bfead8fe",
+        "037fcaf62cac8b90e8dc22e85929922130fc245f4f0950a4627874b27db2cdccd8",
+        "03b9017c85d2343d4daaba32e8e0cb6c3862bf360609d885941c00c073bfead8fe"
+      ],
+      "extracted": true
+    }
+  ],
+  "synthetic_nonconstant_digest": {
+    "r": 4,
+    "digest": "0200000000000000000000000000000000000000000000000000000000000000",
+    "signature_hex": "300602010402011101",
+    "all_four_checks_valid": true,
+    "fixed_public_key_sum_valid": true,
+    "reference_orbit_extraction_succeeds": false,
+    "native_hash_realized": false
+  },
+  "nonconstant_hash_bound": {
+    "allowed_r_count": 432420386565659656852420866390673177325,
+    "log2_failure_per_distinct_hash_query_upper_bound": -126.65429785339117,
+    "model": "Native nonconstant sighash outputs modeled as uniform 256-bit random-oracle values. Adaptive setup cannot change the fixed r0/C target set. q distinct queries give at most q*2*(p-n-1)/2^256; raw flags/targets do not create free queries.",
+    "not_a_proof_about_actual_sha256": true
+  },
+  "representation_bounds": [
+    {
+      "representation": "raw-packet-payload-only",
+      "candidate_bytes": 20,
+      "selected_key_bytes": 132,
+      "bytes_per_bit_lower_bound": 64.25792729059232,
+      "legacy_vbytes_lower_bound": 131600.23509113307,
+      "integral_vbytes_lower_bound": 131601
+    },
+    {
+      "representation": "hypothetical-single-packet-hash",
+      "candidate_bytes": 21,
+      "selected_key_bytes": 136,
+      "bytes_per_bit_lower_bound": 66.7585960974096,
+      "legacy_vbytes_lower_bound": 136721.60480749485,
+      "integral_vbytes_lower_bound": 136722
+    },
+    {
+      "representation": "four-separate-key-hashes",
+      "candidate_bytes": 84,
+      "selected_key_bytes": 136,
+      "bytes_per_bit_lower_bound": 140.82668604750646,
+      "legacy_vbytes_lower_bound": 288413.0530252932,
+      "integral_vbytes_lower_bound": 288414
+    },
+    {
+      "representation": "four-embedded-keys",
+      "candidate_bytes": 136,
+      "selected_key_bytes": 0,
+      "bytes_per_bit_lower_bound": 136.0,
+      "legacy_vbytes_lower_bound": 278528.0,
+      "integral_vbytes_lower_bound": 278528
+    }
+  ],
+  "caveats": [
+    "Unordered four-point orbit commitment, not scalar extraction relative to the standard G point.",
+    "No Script, transaction, native policy/consensus result or setup benchmark.",
+    "Bounds cover explicit independent candidate tables and subset messages, not every algebraic or shared representation.",
+    "Full garbled-label setup binding and the original sub100k goal remain unresolved."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Exact scalar-domain partition; no Bitcoin Script execution.",
+  "results": [
+    {
+      "offset_keys": 1,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 64,
+      "distinct_length_vectors": 33,
+      "max_information_bits": 5.044394119358453,
+      "general_bound_bits": 6.0
+    },
+    {
+      "offset_keys": 2,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 128,
+      "distinct_length_vectors": 65,
+      "max_information_bits": 6.022367813028454,
+      "general_bound_bits": 7.0
+    },
+    {
+      "offset_keys": 4,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 256,
+      "distinct_length_vectors": 129,
+      "max_information_bits": 7.011227255423254,
+      "general_bound_bits": 8.0
+    },
+    {
+      "offset_keys": 8,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 512,
+      "distinct_length_vectors": 257,
+      "max_information_bits": 8.005624549193879,
+      "general_bound_bits": 9.0
+    },
+    {
+      "offset_keys": 16,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 1024,
+      "distinct_length_vectors": 513,
+      "max_information_bits": 9.002815015607053,
+      "general_bound_bits": 10.0
+    },
+    {
+      "offset_keys": 32,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 2048,
+      "distinct_length_vectors": 1025,
+      "max_information_bits": 10.001408194392809,
+      "general_bound_bits": 11.0
+    },
+    {
+      "offset_keys": 64,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 4096,
+      "distinct_length_vectors": 2049,
+      "max_information_bits": 11.000704269011246,
+      "general_bound_bits": 12.0
+    },
+    {
+      "offset_keys": 128,
+      "scalar_domain_size": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+      "intervals": 8192,
+      "distinct_length_vectors": 4097,
+      "max_information_bits": 12.0003521774803,
+      "general_bound_bits": 13.0
+    }
+  ]
+}

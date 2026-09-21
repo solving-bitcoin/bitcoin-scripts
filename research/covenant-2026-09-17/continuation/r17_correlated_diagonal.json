@@ -1,0 +1,103 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "question": "Can correlated alpha=actual native ALL hash share three keys at constant C without an independent-answer assumption?",
+  "constant_C": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+  "group_order": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+  "delta": "432420386565659656852420866390673177326",
+  "byte_layout": "alpha=DER(r,s)||flag, 32 bytes; z=int_big_endian(alpha)=Z0+256*s; Z0=D+2^(8*(sbytes+3))*r",
+  "positive_canonical_layout_checks": 918,
+  "necessary_center_equation": "rho*(C-s*v)=r*(Z0+256*s)",
+  "linear_s_equation": "s*(256*r+rho*v)=C*rho-r*Z0 (mod n)",
+  "exceptional_full_s_condition": [
+    "rho=r*Z0/C mod n",
+    "v=-256*C/Z0 mod n"
+  ],
+  "public_point_predicate": "Z0*V+256*C*G=O; no discrete logarithm required to check this predicate",
+  "conditional_complete_family": {
+    "required_fixed_q": "q nonzero; the three points ((rho/r)*U+256*G)/q for source U in (A,-A,B) must be distinct recovery roots at r=rho",
+    "target_s": "q*s mod n, optionally normalized to LOW_S by negation",
+    "finite_keys": "exclude any s yielding an infinity common key",
+    "raw_hash_and_third_key_geometry_obtained": false
+  },
+  "scalar_lemma_exhaustion": [
+    {
+      "prime_modulus": 5,
+      "constant_C": 2,
+      "configurations": 400,
+      "all_s_configurations": 16,
+      "one_s_configurations": 320,
+      "no_s_configurations": 64,
+      "all_solution_sets_agree": true
+    },
+    {
+      "prime_modulus": 7,
+      "constant_C": 2,
+      "configurations": 1764,
+      "all_s_configurations": 36,
+      "one_s_configurations": 1512,
+      "no_s_configurations": 216,
+      "all_solution_sets_agree": true
+    },
+    {
+      "prime_modulus": 11,
+      "constant_C": 2,
+      "configurations": 12100,
+      "all_s_configurations": 100,
+      "one_s_configurations": 11000,
+      "no_s_configurations": 1000,
+      "all_solution_sets_agree": true
+    }
+  ],
+  "exceptional_small_r_scan": {
+    "complete_candidate_pairs": 8388352,
+    "r_min": 1,
+    "r_max": 32767,
+    "rows": [
+      {
+        "r_der_bytes": 1,
+        "s_der_bytes": 24,
+        "r_min": 1,
+        "r_max": 127,
+        "flags_per_r": 256,
+        "candidate_pairs": 32512,
+        "rho_below_delta": [],
+        "constant_SINGLE_flag_hits": [],
+        "minimum_rho": "1933598188297558555576330274508899579463425275833219477927667105355884042",
+        "minimum_rho_log2": 240.13011085836058,
+        "minimum_at": {
+          "r": 53,
+          "flag": 191
+        },
+        "all_s_in_entire_canonical_interval_excluded_for_exceptional_family": true
+      },
+      {
+        "r_der_bytes": 2,
+        "s_der_bytes": 23,
+        "r_min": 128,
+        "r_max": 32767,
+        "flags_per_r": 256,
+        "candidate_pairs": 8355840,
+        "rho_below_delta": [],
+        "constant_SINGLE_flag_hits": [],
+        "minimum_rho": "48616115907964443529669217985014616672673266894669894666659921183632463",
+        "minimum_rho_log2": 234.81640127871205,
+        "minimum_at": {
+          "r": 25761,
+          "flag": 157
+        },
+        "all_s_in_entire_canonical_interval_excluded_for_exceptional_family": true
+      }
+    ],
+    "scope": "Only exceptional full-s families satisfying rho=r*Z0/C. Does not exclude ordinary one-s solutions, larger r, other source constants, or general covenants."
+  },
+  "all_flags_exceptional_raw_format_mass_upper_bound": "88519191233640796298980838791020172182854025/401734511064747568885490523085290650630550748445698208825344",
+  "all_flags_exceptional_raw_format_mass_upper_bound_log2": -52.01110165000303,
+  "format_bound_scope": "Only the exceptional all-s branch; grants every midpoint and skips small-rho/third-key tests. Deterministic accepted-string counting, not point-log randomness or a bound for the ordinary branch.",
+  "native_hash_preimages_obtained": 0,
+  "positive_secp256k1_diagonal_witnesses": 0,
+  "script_metrics": "Not applicable: no new script or witness.",
+  "no_hash_projection": true,
+  "no_chosen_hash_outputs_assumed": true,
+  "general_impossibility_claim": false
+}

@@ -1,0 +1,159 @@
+{
+  "scope": "Fixed-orbit key-sharing algebra and restricted legacy size lower bounds.\n\nActual r0=2 roots test ECDSA/commitment fixtures. Separate known-ratio bases\ntest the sharing implication only; they are NOT ECDSA recovery root sets.\nNo Script, native transaction, setup benchmark, or general impossibility claim.\n",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "tests_run": 5,
+  "actual_ecdsa_equations_checked": 64,
+  "actual_root_scalar_fixtures": 8,
+  "actual_root_fixture_shared_points": 0,
+  "actual_roots": [
+    "030000000000000000000000000000000000000000000000000000000000000002",
+    "03fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364143"
+  ],
+  "synthetic_known_ratio_controls": 8,
+  "synthetic_adjacent_pair_disclosure_cases": 3,
+  "synthetic_unselected_labels_recovered_per_case": 2,
+  "synthetic_bases_are_ecdsa_root_sets": false,
+  "actual_root_ratio_computed": false,
+  "representation_bounds": [
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 132,
+      "rate_lower": "64.257927290592328259326426000453114857444439512563277434099842408576638071381556841658426",
+      "rate_upper": "64.257927290592328259326426000453114857444439512563277434100464709482122657766157077349398",
+      "lower_bound_2048_bits_vbytes": 131601,
+      "supplied_keys": 4,
+      "signature_bytes": 0,
+      "all_other_costs_granted_free": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 99,
+      "rate_lower": "54.9589548528187341459160639696488404060498856287137241685968435648945856625427743039345045",
+      "rate_upper": "54.958954852818734145916063969648840406049885628713724168597465865800070248927374539625476",
+      "lower_bound_2048_bits_vbytes": 112556,
+      "supplied_keys": 3,
+      "signature_bytes": 0,
+      "all_other_costs_granted_free": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 139,
+      "rate_lower": "66.1605145394241922125468502483558371782489336696278649292267674045086066103309898877922155",
+      "rate_upper": "66.160514539424192212546850248355837178248933669627864929227389705414091196715590123483187",
+      "lower_bound_2048_bits_vbytes": 135497,
+      "supplied_keys": 3,
+      "signature_bytes": 40,
+      "all_other_costs_granted_free": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 66,
+      "rate_lower": "44.9413271042737325295840712068012479718364469347076036282251151872509553316231233782489370",
+      "rate_upper": "44.9413271042737325295840712068012479718364469347076036282257374881564399180077236139399086",
+      "lower_bound_2048_bits_vbytes": 92040,
+      "supplied_keys": 2,
+      "signature_bytes": 0,
+      "all_other_costs_granted_free": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 106,
+      "rate_lower": "56.982231126125436005035920621491577872675229802552280495944668804583372470822988942871584",
+      "rate_upper": "56.9822311261254360050359206214915778726752298025522804959452911054888570572075891785625555",
+      "lower_bound_2048_bits_vbytes": 116700,
+      "supplied_keys": 2,
+      "signature_bytes": 40,
+      "all_other_costs_granted_free": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 73,
+      "rate_lower": "47.1427812018418482379086885185578931160334319243549008928901631698574411641031115387726902",
+      "rate_upper": "47.1427812018418482379086885185578931160334319243549008928907854707629257504877117744636618",
+      "lower_bound_2048_bits_vbytes": 96549,
+      "supplied_keys": 1,
+      "signature_bytes": 40,
+      "all_other_costs_granted_free": true
+    }
+  ],
+  "ideal_key_sharing_bounds": [
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 106.0,
+      "rate_lower": "56.982231126125436005035920621491577872675229802552280495944668804583372470822988942871584",
+      "rate_upper": "56.9822311261254360050359206214915778726752298025522804959452911054888570572075891785625555",
+      "lower_bound_2048_bits_vbytes": 116700,
+      "checked_keys_per_label": 4,
+      "signature_bytes": 40,
+      "maximum_label_owners_per_key": 2,
+      "all_other_costs_granted_free": true,
+      "fractional_key_count_relaxation": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 89.5,
+      "rate_lower": "52.1619485684939187352486615378854223318942700335426169208956441381612298218032227841273575",
+      "rate_upper": "52.161948568493918735248661537885422331894270033542616920896266439066714408187823019818329",
+      "lower_bound_2048_bits_vbytes": 106828,
+      "checked_keys_per_label": 3,
+      "signature_bytes": 40,
+      "maximum_label_owners_per_key": 2,
+      "all_other_costs_granted_free": true,
+      "fractional_key_count_relaxation": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 73.0,
+      "rate_lower": "47.1427812018418482379086885185578931160334319243549008928901631698574411641031115387726902",
+      "rate_upper": "47.1427812018418482379086885185578931160334319243549008928907854707629257504877117744636618",
+      "lower_bound_2048_bits_vbytes": 96549,
+      "checked_keys_per_label": 2,
+      "signature_bytes": 40,
+      "maximum_label_owners_per_key": 2,
+      "all_other_costs_granted_free": true,
+      "fractional_key_count_relaxation": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 79.0,
+      "rate_lower": "48.9938051450337676819183943362127786363896047028511086185289870290773056944985878626246086",
+      "rate_upper": "48.9938051450337676819183943362127786363896047028511086185296093299827902808831880983155802",
+      "lower_bound_2048_bits_vbytes": 100340,
+      "checked_keys_per_label": 4,
+      "signature_bytes": 13,
+      "maximum_label_owners_per_key": 2,
+      "all_other_costs_granted_free": true,
+      "fractional_key_count_relaxation": true
+    },
+    {
+      "candidate_bytes": 20,
+      "selected_extra_bytes": 78.0,
+      "rate_lower": "48.6874677281955631309342035976308679872291814834503249094629970071867201823644594718970380",
+      "rate_upper": "48.6874677281955631309342035976308679872291814834503249094636193080922047687490597075880096",
+      "lower_bound_2048_bits_vbytes": 99712,
+      "checked_keys_per_label": 4,
+      "signature_bytes": 12,
+      "maximum_label_owners_per_key": 2,
+      "all_other_costs_granted_free": true,
+      "fractional_key_count_relaxation": true
+    }
+  ],
+  "embedded_all_keys_free_opening_lower_bound_vbytes": 135168,
+  "native_execution": false,
+  "setup_benchmark": false,
+  "new_script_bytes": null,
+  "new_witness_bytes": null,
+  "new_hint_items": null,
+  "new_stack_peak": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/orbit_key_sharing_probe.py": "0df3892c9c3e07018667c3019ec9abcded0a7a9712430e863beab58cec0d8de7",
+    "research/pointlocks-2026-09-17/four_root_orbit_probe.py": "aa62a49b9e97998aba45f7b83678ae3f1d4e79f824833dedf3c45718054d8785",
+    "research/pointlocks-2026-09-17/four_recovery_key_probe.py": "f53d5733f958d900e0a404ddf3ff04f95eb2b8caa746ec1b666191c1d06a3a8e",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/pointlocks-2026-09-17/anchored_extraction.py": "4884237ccb725fa32209a46ee2da9a6b0a91cb3704f00ffe26db0e7ef5f3536d",
+    "research/pointlocks-2026-09-17/publication_core_check.py": "58e91767cd038a63f8208a2ef15b5f146c11521c9676e34220aa4d457c85ca57",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

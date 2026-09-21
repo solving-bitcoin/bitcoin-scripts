@@ -1,0 +1,53 @@
+{
+  "authentication": "public-label-hash-256",
+  "bits_per_pool": 18,
+  "build_profile": "release",
+  "deployment": "unclassified",
+  "evidence": "locally-reproduced",
+  "label_commitment_bytes": 132480,
+  "n": 50,
+  "native_recovery_check": {
+    "binary_input_labels_recovered": 2070,
+    "payload_matches_core_report": true,
+    "pools": 115,
+    "publication_vbytes": 96176,
+    "scalars_from_core_report": 460,
+    "scope": "Uses scalar extraction records from the existing Core report; no new Core run and no full garbled verifier evaluation."
+  },
+  "native_recovery_report_sha256": "03a59ef98a078ee305a1793064124514baee96368b2ea63f4cb6841671d34392",
+  "pools": 115,
+  "row_bytes": 288,
+  "rows_per_pool": 230300,
+  "rows_total": 26484500,
+  "samples": [
+    {
+      "generation_plus_opened_audit_ms": 1656.1372929999998,
+      "opened_table_audit_ms": 809.620292,
+      "preparation_ms": 12.937417,
+      "selected_opening_check_ms": 10.49475,
+      "table_digest_blake3": "8e50d450ec8fff25b7e81d3ff24efa13b585c8c636a5b37c41f4b0a77ae4ad2e",
+      "table_generation_ms": 833.579584
+    },
+    {
+      "generation_plus_opened_audit_ms": 1589.580249,
+      "opened_table_audit_ms": 784.152333,
+      "preparation_ms": 10.619083,
+      "selected_opening_check_ms": 10.539916,
+      "table_digest_blake3": "8e50d450ec8fff25b7e81d3ff24efa13b585c8c636a5b37c41f4b0a77ae4ad2e",
+      "table_generation_ms": 794.808833
+    },
+    {
+      "generation_plus_opened_audit_ms": 1585.216834,
+      "opened_table_audit_ms": 783.30475,
+      "preparation_ms": 10.490667,
+      "selected_opening_check_ms": 10.655917,
+      "table_digest_blake3": "8e50d450ec8fff25b7e81d3ff24efa13b585c8c636a5b37c41f4b0a77ae4ad2e",
+      "table_generation_ms": 791.421417
+    }
+  ],
+  "scope": "All selected pool tables retained in RAM. Includes allocation, writes and worker startup. Opened audit requires every scalar and both labels; no public setup verification, VSS, garbled verifier, message-decoder circuit, point-lock scripts/transactions, process startup or compilation.",
+  "security_status": "Conditional translation only; not a solution to point-lock extraction or malicious setup. Deterministic public secrets are fixtures.",
+  "t": 4,
+  "table_bytes": 7627536000,
+  "workers": 15
+}

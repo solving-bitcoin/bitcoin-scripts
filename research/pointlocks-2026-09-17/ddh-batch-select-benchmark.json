@@ -1,0 +1,452 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Offchain DDH batch-select for all 2048 bits. No native binding or public ciphertext/setup verification.",
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "memory_bytes": 25769803776,
+    "os": "macOS-26.6.1-arm64-arm-64bit",
+    "hardware_values_supplied_explicitly": true
+  },
+  "provenance": {
+    "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330",
+    "runner_sha256": "e713f3d5e1750777d93ff44eba9d9683d38edd5f353b85ad9045921833be8d0f",
+    "executable_sha256": "f30162d4f3d569105bdd6ae284cfd74a157b1d0dbdf651e64cad5c703b32c8b6",
+    "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "test_decoder_sha256": "3b59c3e421c9797ac0a512729e9570081de4687ad0fab71aa11b88eb97d7dd74"
+  },
+  "configurations": [
+    {
+      "block_width": 16,
+      "blocks": 128,
+      "compressed_scalar_keys": 128,
+      "context_initialization_ms": 0.212291,
+      "deployment": "unclassified",
+      "evidence": "locally-reproduced",
+      "exclusions": [
+        "public malicious-setup verification",
+        "Bitcoin binding of kG=K0+sum(y_i*K_i)",
+        "garbling of the BitVM3 verifier",
+        "transaction generation and validation",
+        "wire and file framing"
+      ],
+      "label_hash_bytes": 131072,
+      "message_bits": 2048,
+      "provenance": {
+        "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+        "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+      },
+      "public_fingerprint": "45677c2ea72f69a06981cb0bbba161cc3d6e5d5974cad938a4afc48195a65959",
+      "public_group_element_bytes": 1288320,
+      "public_group_elements": 39040,
+      "public_payload_bytes": 1419392,
+      "public_setup_verification_ms": null,
+      "public_test_fixture_secrets": true,
+      "raw_opening_bytes": 4352,
+      "samples": [
+        {
+          "all_secrets_audit_ms": 43.066167,
+          "generation_ms": 49.062083,
+          "generation_plus_all_secrets_audit_ms": 92.12825000000001,
+          "opening_four_messages_ms": 23.572833000000003
+        },
+        {
+          "all_secrets_audit_ms": 42.143083,
+          "generation_ms": 35.235292,
+          "generation_plus_all_secrets_audit_ms": 77.378375,
+          "opening_four_messages_ms": 24.427083
+        },
+        {
+          "all_secrets_audit_ms": 42.251833000000005,
+          "generation_ms": 38.108875,
+          "generation_plus_all_secrets_audit_ms": 80.360708,
+          "opening_four_messages_ms": 24.108833
+        },
+        {
+          "all_secrets_audit_ms": 42.392042,
+          "generation_ms": 35.303542,
+          "generation_plus_all_secrets_audit_ms": 77.695584,
+          "opening_four_messages_ms": 23.865542
+        },
+        {
+          "all_secrets_audit_ms": 42.459541,
+          "generation_ms": 37.506541999999996,
+          "generation_plus_all_secrets_audit_ms": 79.966083,
+          "opening_four_messages_ms": 25.138375
+        }
+      ],
+      "scope": "Offchain batch-select only. No Bitcoin Script, transaction, native extraction, public setup check or complete garbled verifier.",
+      "workers": 15,
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_ddh_batch_select_probe",
+        "--width",
+        "16",
+        "--workers",
+        "15",
+        "--samples",
+        "5"
+      ],
+      "summary": {
+        "all_secrets_audit_ms": {
+          "min": 42.143083,
+          "median": 42.392042,
+          "max": 43.066167,
+          "first": 43.066167
+        },
+        "generation_ms": {
+          "min": 35.235292,
+          "median": 37.506541999999996,
+          "max": 49.062083,
+          "first": 49.062083
+        },
+        "generation_plus_all_secrets_audit_ms": {
+          "min": 77.378375,
+          "median": 79.966083,
+          "max": 92.12825000000001,
+          "first": 92.12825000000001
+        },
+        "opening_four_messages_ms": {
+          "min": 23.572833000000003,
+          "median": 24.108833,
+          "max": 25.138375,
+          "first": 23.572833000000003
+        }
+      },
+      "first_generation_plus_audit_and_context_ms": 92.340541
+    },
+    {
+      "block_width": 32,
+      "blocks": 64,
+      "compressed_scalar_keys": 64,
+      "context_initialization_ms": 0.025417000000000002,
+      "deployment": "unclassified",
+      "evidence": "locally-reproduced",
+      "exclusions": [
+        "public malicious-setup verification",
+        "Bitcoin binding of kG=K0+sum(y_i*K_i)",
+        "garbling of the BitVM3 verifier",
+        "transaction generation and validation",
+        "wire and file framing"
+      ],
+      "label_hash_bytes": 131072,
+      "message_bits": 2048,
+      "provenance": {
+        "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+        "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+      },
+      "public_fingerprint": "d76592be440f2c156b74fb4386861759f6eeffeebf1b3e41491213e23a8d581a",
+      "public_group_element_bytes": 2367552,
+      "public_group_elements": 71744,
+      "public_payload_bytes": 2498624,
+      "public_setup_verification_ms": null,
+      "public_test_fixture_secrets": true,
+      "raw_opening_bytes": 2304,
+      "samples": [
+        {
+          "all_secrets_audit_ms": 81.593166,
+          "generation_ms": 65.161209,
+          "generation_plus_all_secrets_audit_ms": 146.75437499999998,
+          "opening_four_messages_ms": 35.022417
+        },
+        {
+          "all_secrets_audit_ms": 83.268917,
+          "generation_ms": 68.579125,
+          "generation_plus_all_secrets_audit_ms": 151.84804200000002,
+          "opening_four_messages_ms": 36.089499999999994
+        },
+        {
+          "all_secrets_audit_ms": 81.046,
+          "generation_ms": 65.176833,
+          "generation_plus_all_secrets_audit_ms": 146.222833,
+          "opening_four_messages_ms": 34.489332999999995
+        },
+        {
+          "all_secrets_audit_ms": 80.931875,
+          "generation_ms": 65.08274999999999,
+          "generation_plus_all_secrets_audit_ms": 146.014625,
+          "opening_four_messages_ms": 34.749792
+        },
+        {
+          "all_secrets_audit_ms": 79.99737499999999,
+          "generation_ms": 69.953084,
+          "generation_plus_all_secrets_audit_ms": 149.950459,
+          "opening_four_messages_ms": 33.850542
+        }
+      ],
+      "scope": "Offchain batch-select only. No Bitcoin Script, transaction, native extraction, public setup check or complete garbled verifier.",
+      "workers": 15,
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_ddh_batch_select_probe",
+        "--width",
+        "32",
+        "--workers",
+        "15",
+        "--samples",
+        "5"
+      ],
+      "summary": {
+        "all_secrets_audit_ms": {
+          "min": 79.99737499999999,
+          "median": 81.046,
+          "max": 83.268917,
+          "first": 81.593166
+        },
+        "generation_ms": {
+          "min": 65.08274999999999,
+          "median": 65.176833,
+          "max": 69.953084,
+          "first": 65.161209
+        },
+        "generation_plus_all_secrets_audit_ms": {
+          "min": 146.014625,
+          "median": 146.75437499999998,
+          "max": 151.84804200000002,
+          "first": 146.75437499999998
+        },
+        "opening_four_messages_ms": {
+          "min": 33.850542,
+          "median": 34.749792,
+          "max": 36.089499999999994,
+          "first": 35.022417
+        }
+      },
+      "first_generation_plus_audit_and_context_ms": 146.779792
+    },
+    {
+      "block_width": 128,
+      "blocks": 16,
+      "compressed_scalar_keys": 16,
+      "context_initialization_ms": 0.02525,
+      "deployment": "unclassified",
+      "evidence": "locally-reproduced",
+      "exclusions": [
+        "public malicious-setup verification",
+        "Bitcoin binding of kG=K0+sum(y_i*K_i)",
+        "garbling of the BitVM3 verifier",
+        "transaction generation and validation",
+        "wire and file framing"
+      ],
+      "label_hash_bytes": 131072,
+      "message_bits": 2048,
+      "provenance": {
+        "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+        "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+      },
+      "public_fingerprint": "3d0d05227834aa6643b303ae67c3f615ec1eaf11872d805c770dcd0071b7719f",
+      "public_group_element_bytes": 8854032,
+      "public_group_elements": 268304,
+      "public_payload_bytes": 8985104,
+      "public_setup_verification_ms": null,
+      "public_test_fixture_secrets": true,
+      "raw_opening_bytes": 768,
+      "samples": [
+        {
+          "all_secrets_audit_ms": 428.413541,
+          "generation_ms": 330.566167,
+          "generation_plus_all_secrets_audit_ms": 758.9797080000001,
+          "opening_four_messages_ms": 138.54925
+        },
+        {
+          "all_secrets_audit_ms": 428.87745900000004,
+          "generation_ms": 333.899875,
+          "generation_plus_all_secrets_audit_ms": 762.7773340000001,
+          "opening_four_messages_ms": 134.532667
+        },
+        {
+          "all_secrets_audit_ms": 432.789708,
+          "generation_ms": 335.609875,
+          "generation_plus_all_secrets_audit_ms": 768.399583,
+          "opening_four_messages_ms": 138.250834
+        },
+        {
+          "all_secrets_audit_ms": 423.760333,
+          "generation_ms": 332.73083399999996,
+          "generation_plus_all_secrets_audit_ms": 756.4911669999999,
+          "opening_four_messages_ms": 137.296708
+        },
+        {
+          "all_secrets_audit_ms": 434.92258400000003,
+          "generation_ms": 329.94825,
+          "generation_plus_all_secrets_audit_ms": 764.8708340000001,
+          "opening_four_messages_ms": 138.31845900000002
+        }
+      ],
+      "scope": "Offchain batch-select only. No Bitcoin Script, transaction, native extraction, public setup check or complete garbled verifier.",
+      "workers": 15,
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_ddh_batch_select_probe",
+        "--width",
+        "128",
+        "--workers",
+        "15",
+        "--samples",
+        "5"
+      ],
+      "summary": {
+        "all_secrets_audit_ms": {
+          "min": 423.760333,
+          "median": 428.87745900000004,
+          "max": 434.92258400000003,
+          "first": 428.413541
+        },
+        "generation_ms": {
+          "min": 329.94825,
+          "median": 332.73083399999996,
+          "max": 335.609875,
+          "first": 330.566167
+        },
+        "generation_plus_all_secrets_audit_ms": {
+          "min": 756.4911669999999,
+          "median": 762.7773340000001,
+          "max": 768.399583,
+          "first": 758.9797080000001
+        },
+        "opening_four_messages_ms": {
+          "min": 134.532667,
+          "median": 138.250834,
+          "max": 138.54925,
+          "first": 138.54925
+        }
+      },
+      "first_generation_plus_audit_and_context_ms": 759.0049580000001
+    },
+    {
+      "block_width": 256,
+      "blocks": 8,
+      "compressed_scalar_keys": 8,
+      "context_initialization_ms": 0.025666,
+      "deployment": "unclassified",
+      "evidence": "locally-reproduced",
+      "exclusions": [
+        "public malicious-setup verification",
+        "Bitcoin binding of kG=K0+sum(y_i*K_i)",
+        "garbling of the BitVM3 verifier",
+        "transaction generation and validation",
+        "wire and file framing"
+      ],
+      "label_hash_bytes": 131072,
+      "message_bits": 2048,
+      "provenance": {
+        "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+        "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+      },
+      "public_fingerprint": "d4d1b43d23214698e9c657f513155c47f040edbf97596d69ac435ea3f54b4f98",
+      "public_group_element_bytes": 17504520,
+      "public_group_elements": 530440,
+      "public_payload_bytes": 17635592,
+      "public_setup_verification_ms": null,
+      "public_test_fixture_secrets": true,
+      "raw_opening_bytes": 512,
+      "samples": [
+        {
+          "all_secrets_audit_ms": 890.0310420000001,
+          "generation_ms": 696.565875,
+          "generation_plus_all_secrets_audit_ms": 1586.596917,
+          "opening_four_messages_ms": 269.55924999999996
+        },
+        {
+          "all_secrets_audit_ms": 893.426333,
+          "generation_ms": 693.0807500000001,
+          "generation_plus_all_secrets_audit_ms": 1586.507083,
+          "opening_four_messages_ms": 272.279167
+        },
+        {
+          "all_secrets_audit_ms": 885.256041,
+          "generation_ms": 695.613459,
+          "generation_plus_all_secrets_audit_ms": 1580.8695,
+          "opening_four_messages_ms": 271.239958
+        },
+        {
+          "all_secrets_audit_ms": 890.46775,
+          "generation_ms": 688.95925,
+          "generation_plus_all_secrets_audit_ms": 1579.4270000000001,
+          "opening_four_messages_ms": 268.269209
+        },
+        {
+          "all_secrets_audit_ms": 897.799334,
+          "generation_ms": 697.1965839999999,
+          "generation_plus_all_secrets_audit_ms": 1594.995918,
+          "opening_four_messages_ms": 273.337667
+        }
+      ],
+      "scope": "Offchain batch-select only. No Bitcoin Script, transaction, native extraction, public setup check or complete garbled verifier.",
+      "workers": 15,
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_ddh_batch_select_probe",
+        "--width",
+        "256",
+        "--workers",
+        "15",
+        "--samples",
+        "5"
+      ],
+      "summary": {
+        "all_secrets_audit_ms": {
+          "min": 885.256041,
+          "median": 890.46775,
+          "max": 897.799334,
+          "first": 890.0310420000001
+        },
+        "generation_ms": {
+          "min": 688.95925,
+          "median": 695.613459,
+          "max": 697.1965839999999,
+          "first": 696.565875
+        },
+        "generation_plus_all_secrets_audit_ms": {
+          "min": 1579.4270000000001,
+          "median": 1586.507083,
+          "max": 1594.995918,
+          "first": 1586.596917
+        },
+        "opening_four_messages_ms": {
+          "min": 268.269209,
+          "median": 271.239958,
+          "max": 273.337667,
+          "first": 269.55924999999996
+        }
+      },
+      "first_generation_plus_audit_and_context_ms": 1586.622583
+    }
+  ],
+  "serial_control": {
+    "block_width": 32,
+    "blocks": 64,
+    "compressed_scalar_keys": 64,
+    "context_initialization_ms": 0.029834,
+    "deployment": "unclassified",
+    "evidence": "locally-reproduced",
+    "exclusions": [
+      "public malicious-setup verification",
+      "Bitcoin binding of kG=K0+sum(y_i*K_i)",
+      "garbling of the BitVM3 verifier",
+      "transaction generation and validation",
+      "wire and file framing"
+    ],
+    "label_hash_bytes": 131072,
+    "message_bits": 2048,
+    "provenance": {
+      "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+      "source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+    },
+    "public_fingerprint": "d76592be440f2c156b74fb4386861759f6eeffeebf1b3e41491213e23a8d581a",
+    "public_group_element_bytes": 2367552,
+    "public_group_elements": 71744,
+    "public_payload_bytes": 2498624,
+    "public_setup_verification_ms": null,
+    "public_test_fixture_secrets": true,
+    "raw_opening_bytes": 2304,
+    "samples": [
+      {
+        "all_secrets_audit_ms": 774.003584,
+        "generation_ms": 611.893625,
+        "generation_plus_all_secrets_audit_ms": 1385.8972090000002,
+        "opening_four_messages_ms": 355.47
+      }
+    ],
+    "scope": "Offchain batch-select only. No Bitcoin Script, transaction, native extraction, public setup check or complete garbled verifier.",
+    "workers": 1
+  },
+  "serial_parallel_public_bytes_fingerprint_equal": true
+}

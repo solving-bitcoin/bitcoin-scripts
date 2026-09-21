@@ -1,0 +1,11 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Independent small-domain/stack audit of the R10 packed-seed frontier.\n\nOnly the observable arithmetic/hash layout is executed. Native ECDSA/pin\nchecks remain unmined. This is not Bitcoin Core or a consensus result.\n",
+  "independent_explicit_language_cases": 10,
+  "independent_observable_layout_cases": 60,
+  "wrong_affine_output_rejections": 60,
+  "n37_root_candidates": 3950290178259288060,
+  "n37_primitive_hash_calls": 7472541466041201060,
+  "all_assertions_passed": true
+}

@@ -1,0 +1,169 @@
+{
+  "build_profile": "release",
+  "deployment": "unclassified",
+  "encrypted_share_bytes": 4508000,
+  "encrypted_share_count": 281750,
+  "evidence": "locally-reproduced",
+  "label_commitment_bytes": 368000,
+  "n": 50,
+  "native_recovery_check": {
+    "garbled_rank_output_labels": 2185,
+    "membership_wire_labels": 5750,
+    "one_labels": 460,
+    "payload_matches": true,
+    "publication_vbytes": 98706,
+    "scalar_openings": 460,
+    "scope": "Cached Core extraction records and actual garbled per-pool membership-to-rank evaluation; no new Core run or complete garbled verifier.",
+    "zero_labels": 5290
+  },
+  "native_recovery_report_sha256": "8f7b81205c45aa3ed529543f2d058c99417d206a4123c5b7c85f38bfb8ea6ac9",
+  "one_label_per_membership_wire": true,
+  "pools": 115,
+  "public_setup_verification_ms": null,
+  "samples": [
+    {
+      "decoder_and_gates": 555795,
+      "decoder_digest_blake3": "10cc9f1cb4ff9e24592a03285dc3cdda10b472210973e649a20cb383fdde3cf7",
+      "decoder_garbled_bytes": 35712560,
+      "decoder_generation_ms": 29.776083,
+      "decoder_xor_gates": 672520,
+      "generation_ms": 49.667958,
+      "generation_plus_opened_audit_ms": 86.801041,
+      "opened_audit_ms": 37.133083,
+      "preparation_ms": 18.637332999999998,
+      "selected_opening_check_ms": 133.789,
+      "table_digest_blake3": "7e4933ad80eeb789fd87eacb92edbc6ef911e49798f6a2cd0180d4a6d1c4c93e",
+      "table_generation_ms": 1.254542
+    },
+    {
+      "decoder_and_gates": 555795,
+      "decoder_digest_blake3": "10cc9f1cb4ff9e24592a03285dc3cdda10b472210973e649a20cb383fdde3cf7",
+      "decoder_garbled_bytes": 35712560,
+      "decoder_generation_ms": 27.001583,
+      "decoder_xor_gates": 672520,
+      "generation_ms": 39.418082,
+      "generation_plus_opened_audit_ms": 72.63554099999999,
+      "opened_audit_ms": 33.217459,
+      "preparation_ms": 11.445583000000001,
+      "selected_opening_check_ms": 134.05658300000002,
+      "table_digest_blake3": "7e4933ad80eeb789fd87eacb92edbc6ef911e49798f6a2cd0180d4a6d1c4c93e",
+      "table_generation_ms": 0.970916
+    },
+    {
+      "decoder_and_gates": 555795,
+      "decoder_digest_blake3": "10cc9f1cb4ff9e24592a03285dc3cdda10b472210973e649a20cb383fdde3cf7",
+      "decoder_garbled_bytes": 35712560,
+      "decoder_generation_ms": 26.585874999999998,
+      "decoder_xor_gates": 672520,
+      "generation_ms": 38.950334,
+      "generation_plus_opened_audit_ms": 72.02925099999999,
+      "opened_audit_ms": 33.078917,
+      "preparation_ms": 11.403042000000001,
+      "selected_opening_check_ms": 133.23250000000002,
+      "table_digest_blake3": "7e4933ad80eeb789fd87eacb92edbc6ef911e49798f6a2cd0180d4a6d1c4c93e",
+      "table_generation_ms": 0.961417
+    },
+    {
+      "decoder_and_gates": 555795,
+      "decoder_digest_blake3": "10cc9f1cb4ff9e24592a03285dc3cdda10b472210973e649a20cb383fdde3cf7",
+      "decoder_garbled_bytes": 35712560,
+      "decoder_generation_ms": 28.604999999999997,
+      "decoder_xor_gates": 672520,
+      "generation_ms": 42.644458,
+      "generation_plus_opened_audit_ms": 75.885666,
+      "opened_audit_ms": 33.241208,
+      "preparation_ms": 12.917833,
+      "selected_opening_check_ms": 132.90474999999998,
+      "table_digest_blake3": "7e4933ad80eeb789fd87eacb92edbc6ef911e49798f6a2cd0180d4a6d1c4c93e",
+      "table_generation_ms": 1.121625
+    },
+    {
+      "decoder_and_gates": 555795,
+      "decoder_digest_blake3": "10cc9f1cb4ff9e24592a03285dc3cdda10b472210973e649a20cb383fdde3cf7",
+      "decoder_garbled_bytes": 35712560,
+      "decoder_generation_ms": 26.20425,
+      "decoder_xor_gates": 672520,
+      "generation_ms": 38.802166,
+      "generation_plus_opened_audit_ms": 70.77175,
+      "opened_audit_ms": 31.969584,
+      "preparation_ms": 11.6215,
+      "selected_opening_check_ms": 133.487,
+      "table_digest_blake3": "7e4933ad80eeb789fd87eacb92edbc6ef911e49798f6a2cd0180d4a6d1c4c93e",
+      "table_generation_ms": 0.9764160000000001
+    }
+  ],
+  "scope": "Complete threshold-complement tables retained in RAM, all target scalar/point generation, label commitments, coefficients, field preparation and worker startup. Opened audit has every secret. Includes garbled per-pool membership-to-rank decoders. Excludes public setup verification (missing), complete mixed-radix decoder/garbled verifier, multiple cut-and-choose instances, point-lock scripts/transactions, process startup and compilation.",
+  "security_status": "Conditional honest-setup label delivery only; encrypted-share binding under malicious setup remains missing. No new point-lock extraction claim.",
+  "t": 4,
+  "target_point_bytes": 189750,
+  "workers": 15,
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "os": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "hardware_source": "Same-host anchored-setup-summary.json; current OS and logical CPU count checked.",
+  "command": [
+    "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_complement_translation_probe",
+    "--pools",
+    "115",
+    "--workers",
+    "15",
+    "--samples",
+    "5",
+    "--native-recovery",
+    "/Users/robinlinus/projects/bitcoin-lab/research/pointlocks-2026-09-17/direct_context_core_check.json"
+  ],
+  "sha256": {
+    "examples/pointlock_complement_translation_probe.rs": "d114851a4d570117f4341400c413e442914ecae5c7d009013621e0ba5e09e1ef",
+    "examples/pointlock_membership_decoder.rs": "3b59c3e421c9797ac0a512729e9570081de4687ad0fab71aa11b88eb97d7dd74",
+    "research/pointlocks-2026-09-17/complement_translation_benchmark.py": "26ea15fc9ae6c5a7f38109e194ed132c362c33fc146631fea60869bf82938ad5",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "target/release/examples/pointlock_complement_translation_probe": "2342398b44260bbe0a888c340f9fdf193fe9cdbe5f7e8eba4f2e0d6b023e8b9c",
+    "research/pointlocks-2026-09-17/direct_context_core_check.json": "8f7b81205c45aa3ed529543f2d058c99417d206a4123c5b7c85f38bfb8ea6ac9"
+  },
+  "summary": {
+    "preparation_ms": {
+      "first": 18.637332999999998,
+      "median": 11.6215,
+      "min": 11.403042000000001,
+      "max": 18.637332999999998
+    },
+    "table_generation_ms": {
+      "first": 1.254542,
+      "median": 0.9764160000000001,
+      "min": 0.961417,
+      "max": 1.254542
+    },
+    "decoder_generation_ms": {
+      "first": 29.776083,
+      "median": 27.001583,
+      "min": 26.20425,
+      "max": 29.776083
+    },
+    "generation_ms": {
+      "first": 49.667958,
+      "median": 39.418082,
+      "min": 38.802166,
+      "max": 49.667958
+    },
+    "opened_audit_ms": {
+      "first": 37.133083,
+      "median": 33.217459,
+      "min": 31.969584,
+      "max": 37.133083
+    },
+    "generation_plus_opened_audit_ms": {
+      "first": 86.801041,
+      "median": 72.63554099999999,
+      "min": 70.77175,
+      "max": 86.801041
+    },
+    "selected_opening_check_ms": {
+      "first": 133.789,
+      "median": 133.487,
+      "min": 132.90474999999998,
+      "max": 134.05658300000002
+    }
+  }
+}

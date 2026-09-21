@@ -1,0 +1,39 @@
+{
+  "as_of": "2026-09-17",
+  "sources": [
+    {
+      "name": "ColliderScript",
+      "path": "/private/tmp/colliderscript-2024-1802-research.pdf",
+      "url": "https://eprint.iacr.org/2024/1802",
+      "version": "2024-11-15",
+      "sha256": "a0cdb8da2ce389bb1bd24b396ae18706e4419cc6da15f978cb386061b8bd05e4",
+      "bytes": 1033866
+    },
+    {
+      "name": "ColliderVM",
+      "path": "/private/tmp/collidervm-2025-591-research.pdf",
+      "url": "https://eprint.iacr.org/2025/591",
+      "version": "2025-04-10",
+      "sha256": "b4446dbd12fb17d4be3644f95bfc235d09994645bca36df0b2268f3f3e65b18a",
+      "bytes": 590917
+    },
+    {
+      "name": "Binohash",
+      "path": "/private/tmp/robinlinus-pages-migration/binohash.pdf",
+      "url": "https://robinlinus.com/binohash.pdf",
+      "version": "local inspected copy, mutable URL",
+      "sha256": "1be2b63034a86db1f9f4a35c7963248d307583723079ff25284a9fc4affee94a",
+      "bytes": 862193
+    },
+    {
+      "name": "QSB local TeX",
+      "path": "/private/tmp/qsb-paper.tex",
+      "url": "https://raw.githubusercontent.com/avihu28/Quantum-Safe-Bitcoin-Transactions/main/paper/QSB.tex",
+      "version": "local inspected copy, mutable URL",
+      "sha256": "10e57297cc4fdb9f08e721bd7b7634a4bac778cd5a17ad7c4f87cc7a98cad083",
+      "bytes": 88664
+    }
+  ],
+  "qsb_immutable_source_read_via_web": "https://raw.githubusercontent.com/avihu28/Quantum-Safe-Bitcoin-Transactions/2c9172051d5c150ef0a994ca6b988a08a3ef9e85/paper/QSB.tex",
+  "note": "Local-copy fingerprints are not asserted to match newer mutable URL responses."
+}

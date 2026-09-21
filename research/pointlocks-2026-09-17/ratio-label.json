@@ -1,0 +1,77 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Exact ratio-label recovery from linear openings; host-only research.\n\nAffine forms have their constant coefficient first. The modulus must be an\nodd prime. Public metadata is limited to known affine combinations of the\ncommitted hidden scalars. No Bitcoin execution or setup benchmark is claimed.\n",
+  "tests_run": 9,
+  "failures": 0,
+  "errors": 0,
+  "exhaustive_screens": [
+    {
+      "modulus": 3,
+      "hidden_dimension": 2,
+      "affine_forms": 27,
+      "disclosure_matrices": 5,
+      "comparisons": 13851,
+      "classification_counts": {
+        "invalid_base": 2943,
+        "public_constant": 1530,
+        "reconstructible": 4866,
+        "underdetermined": 4512
+      }
+    },
+    {
+      "modulus": 5,
+      "hidden_dimension": 2,
+      "affine_forms": 125,
+      "disclosure_matrices": 5,
+      "comparisons": 640625,
+      "classification_counts": {
+        "invalid_base": 87625,
+        "public_constant": 38100,
+        "reconstructible": 320020,
+        "underdetermined": 194880
+      }
+    }
+  ],
+  "curve_reduction": {
+    "curve": "secp256k1",
+    "profiles": 3,
+    "instances": 12,
+    "challenge_logs_recovered": 12,
+    "changed_labels_rejected": 12,
+    "unknown_challenge_scalar_used_by_embedding": false
+  },
+  "public_constant_exception": {
+    "numerator": "x",
+    "denominator": "y",
+    "opening": "x-y=0",
+    "scalar": 1,
+    "public_check": "X == Y",
+    "requires_opening_for_public_check": false
+  },
+  "five_of_54_independent_coordinate_ratio": {
+    "n": 54,
+    "t": 5,
+    "all_subsets": 3162510,
+    "subsets_containing_both_coordinates": 22100,
+    "required_scalar_forms": 2
+  },
+  "no_general_nonlinear_impossibility_claim": true,
+  "bitcoin_execution": false,
+  "complete_verifier_implemented": false,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "setup_benchmark": null,
+  "onchain_vbytes": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/ratio_label_probe.py": "6f02f1036385d3316edf116e4e69aa7e4942fe9545993e3761d188fdc7edcdbd",
+    "research/pointlocks-2026-09-17/vector_label_gate_probe.py": "497dae66c78b697dcfd4209359e649b0056e20dd7f08c9715ab5386335da2a6c",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

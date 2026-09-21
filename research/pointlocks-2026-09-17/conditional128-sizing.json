@@ -1,0 +1,73 @@
+{
+  "payload_bits": 1024,
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "method": "Exact integer dynamic programming maximizing product of binomial radices at every total pair weight; all mixtures of recorded fixed common-G HASH160 lookup pools.",
+  "pair_weight": 370524,
+  "result": {
+    "layouts": {
+      "common-g-hash-lookup-3-of-14": 2,
+      "common-g-hash-lookup-3-of-15": 1,
+      "common-g-hash-lookup-4-of-17": 89
+    },
+    "bits": 1024.1356933948657,
+    "capacity_sufficient": true,
+    "pools": 92,
+    "candidates": 1556,
+    "revelations": 365,
+    "funding_weight": 12220,
+    "funding_vbytes": 3055,
+    "single_assert_weight": 359192,
+    "single_assert_vbytes": 89798,
+    "two_tx_vbytes": 92853,
+    "funding_within_weight": true,
+    "assert_chunks": [
+      {
+        "pools": 92,
+        "weight": 359192,
+        "vbytes": 89798,
+        "sigops_cost": 2920
+      }
+    ],
+    "chunked_total_vbytes": 92853
+  },
+  "scope": "Conditional 128-byte capacity. Does not satisfy arbitrary 256-byte publication.",
+  "source_metrics_sha256": "9e3ccc99d825aa388c781073b88c7cd13291320cc9d35848c5ef80798d5dedf4",
+  "layouts": [
+    {
+      "name": "common-g-hash-lookup-3-of-14",
+      "n": 14,
+      "t": 3,
+      "script": 410,
+      "scriptsig": 734,
+      "source": "sum-lookup-vectors.json",
+      "evidence": "locally-reproduced",
+      "static_sigops": 6,
+      "count": 2
+    },
+    {
+      "name": "common-g-hash-lookup-3-of-15",
+      "n": 15,
+      "t": 3,
+      "script": 434,
+      "scriptsig": 758,
+      "source": "sum-lookup-vectors.json",
+      "evidence": "locally-reproduced",
+      "static_sigops": 6,
+      "count": 1
+    },
+    {
+      "name": "common-g-hash-lookup-4-of-17",
+      "n": 17,
+      "t": 4,
+      "script": 505,
+      "scriptsig": 938,
+      "source": "sum-lookup-vectors.json",
+      "evidence": "locally-reproduced",
+      "static_sigops": 8,
+      "count": 89
+    }
+  ],
+  "codec_roundtrips": 11,
+  "worst_case_serialization_checked": true
+}

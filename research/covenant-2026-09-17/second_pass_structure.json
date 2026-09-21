@@ -1,0 +1,355 @@
+{
+  "question": "Can extra scriptSig execution or SINGLE-bug-required inputs carry authenticated extra verification?",
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "scope": "Complete isolated Core regtest transactions. No covenant or new PoW search.",
+  "locking_script_hex": "61616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad6951",
+  "locking_script_bytes": 236,
+  "locking_script_static_non_push_opcodes": 201,
+  "script_sig_computation_hex": "519191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191",
+  "script_sig_computation_non_push_opcodes": 200,
+  "single_bug_digest_bytes": "0100000000000000000000000000000000000000000000000000000000000000",
+  "single_bug_ecdsa_z_hex": "0100000000000000000000000000000000000000000000000000000000000000",
+  "single_bug_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802207abe667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+  "single_bug_script_hex": "473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802207abe667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ac",
+  "hint_items": 0,
+  "results": [
+    {
+      "name": "bare-401-ops-split-executions",
+      "transaction": {
+        "hex": "0200000001a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c400000000fd1101519191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802203d7ecbbd921b8ec6208a0f7413c9150f16dbebd149e47aca5d562c45d2d472f001ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "d7d0df67f234ae70bacf9c1250c7c961174119bf92dc623ca89224ac4939a610",
+        "total_bytes": 357,
+        "weight": 1428,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "55abb5204dd4de864e95680116312e73e60919c4efa23de04107ae2652b4cf49"
+      },
+      "policy": {
+        "txid": "d7d0df67f234ae70bacf9c1250c7c961174119bf92dc623ca89224ac4939a610",
+        "wtxid": "d7d0df67f234ae70bacf9c1250c7c961174119bf92dc623ca89224ac4939a610",
+        "allowed": false,
+        "reject-reason": "scriptsig-not-pushonly",
+        "reject-details": "scriptsig-not-pushonly"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        273
+      ],
+      "hint_items": 0,
+      "native_all_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802203d7ecbbd921b8ec6208a0f7413c9150f16dbebd149e47aca5d562c45d2d472f001",
+      "native_all_digest": "c3c0653e983ed319cae9acde45420a06ceeecbdccb5ef22cc33609778c129c99",
+      "executed_non_push_opcodes": 401,
+      "entry_items_to_fixed_script": 2,
+      "combined_stack_peak_by_inspection": 3
+    },
+    {
+      "name": "bare-computation-replaced-by-push",
+      "transaction": {
+        "hex": "0200000001a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c4000000004951473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802203d7ecbbd921b8ec6208a0f7413c9150f16dbebd149e47aca5d562c45d2d472f001ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "3badd1db466b509954eb75e2166d07cfd2c485c3c0631536035f0d4942e164c3",
+        "total_bytes": 155,
+        "weight": 620,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4ec05ce4106959851314b9ded5fd85e409f4d8a6aecd609e3b6663ba9fd1d2a2"
+      },
+      "policy": {
+        "txid": "3badd1db466b509954eb75e2166d07cfd2c485c3c0631536035f0d4942e164c3",
+        "wtxid": "3badd1db466b509954eb75e2166d07cfd2c485c3c0631536035f0d4942e164c3",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        73
+      ],
+      "hint_items": 0,
+      "native_all_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802203d7ecbbd921b8ec6208a0f7413c9150f16dbebd149e47aca5d562c45d2d472f001",
+      "native_all_digest": "c3c0653e983ed319cae9acde45420a06ceeecbdccb5ef22cc33609778c129c99",
+      "executed_non_push_opcodes": 201,
+      "entry_items_to_fixed_script": 2,
+      "combined_stack_peak_by_inspection": 3
+    },
+    {
+      "name": "bare-other-output-public-key-owner-resigns",
+      "transaction": {
+        "hex": "0200000001a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c4000000004951473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802200fa333795b670dae86188931efb6503d983d6bacf06b43e271971bbb8fc1682001ffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+        "txid": "1f0d8354c0e53f62236d2344782e2c7b122090aed3f6704660d238d95d6cd1a3",
+        "total_bytes": 155,
+        "weight": 620,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "74799a8df07338575890739e17cdffb1fede608296717d4c53900f43e45e4aac"
+      },
+      "policy": {
+        "txid": "1f0d8354c0e53f62236d2344782e2c7b122090aed3f6704660d238d95d6cd1a3",
+        "wtxid": "1f0d8354c0e53f62236d2344782e2c7b122090aed3f6704660d238d95d6cd1a3",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        73
+      ],
+      "hint_items": 0,
+      "native_all_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802200fa333795b670dae86188931efb6503d983d6bacf06b43e271971bbb8fc1682001",
+      "native_all_digest": "769e6607aabc36a52447143841c2a4ba1fd5745e910f337ff448c176297cc189",
+      "executed_non_push_opcodes": 201,
+      "entry_items_to_fixed_script": 2,
+      "combined_stack_peak_by_inspection": 3
+    },
+    {
+      "name": "p2sh-nonpush-script-sig-rejected",
+      "transaction": {
+        "hex": "0200000001a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c401000000fdff01519191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191919191473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802204225f0e408ed0d31dd7dd75fd1c4897beadaf9023d8d437015a4500c70887bd5014cec61616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad6951ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "7a7380f95f591c4967208301453d53218e29effb50341cfaeb91ec913462962b",
+        "total_bytes": 595,
+        "weight": 2380,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Only push operators allowed in signatures), input 0 of 7a7380f95f591c4967208301453d53218e29effb50341cfaeb91ec913462962b (wtxid 7a7380f95f591c4967208301453d53218e29effb50341cfaeb91ec913462962b), spending c4997a289013fcb9935117aa3f6775980b3d8bc52088ca4473bf2de8c340b1a0:1"
+      },
+      "policy": {
+        "txid": "7a7380f95f591c4967208301453d53218e29effb50341cfaeb91ec913462962b",
+        "wtxid": "7a7380f95f591c4967208301453d53218e29effb50341cfaeb91ec913462962b",
+        "allowed": false,
+        "reject-reason": "scriptsig-not-pushonly",
+        "reject-details": "scriptsig-not-pushonly"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible",
+      "script_sig_bytes": [
+        511
+      ],
+      "hint_items": 0,
+      "complete_script_sig_stack_items_if_executed": 3,
+      "combined_stack_peak_by_inspection": 4
+    },
+    {
+      "name": "p2sh-push-only-endstack-accepted",
+      "transaction": {
+        "hex": "0200000001a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c401000000fd370151473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802204225f0e408ed0d31dd7dd75fd1c4897beadaf9023d8d437015a4500c70887bd5014cec61616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad6951ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "e7196ee25e0b93413f8e5859f77a3cd2af8b217331d3648be5782e3264abd2fc",
+        "total_bytes": 395,
+        "weight": 1580,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "766313ed2742feed033ca77e9874d2d3ea5169be4fc5c9c48eb509909dd9c8fe"
+      },
+      "policy": {
+        "txid": "e7196ee25e0b93413f8e5859f77a3cd2af8b217331d3648be5782e3264abd2fc",
+        "wtxid": "e7196ee25e0b93413f8e5859f77a3cd2af8b217331d3648be5782e3264abd2fc",
+        "allowed": true,
+        "vsize": 395,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00025316,
+          "effective-includes": [
+            "e7196ee25e0b93413f8e5859f77a3cd2af8b217331d3648be5782e3264abd2fc"
+          ]
+        }
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        311
+      ],
+      "hint_items": 0,
+      "executed_non_push_opcodes": 203,
+      "entry_items_to_redeem_script": 2,
+      "combined_stack_peak_by_inspection": 4
+    },
+    {
+      "name": "single-bug-other-input-A",
+      "transaction": {
+        "hex": "0200000002a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40300000000ffffffffa0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40200000000ffffffff01705d1e0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "33e4cf28c22cce47bdc34616b43507685dd19039e8fc07d49be3ed1264d70835",
+        "total_bytes": 123,
+        "weight": 492,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "2ee2aad7203a2bda161578b4b32fcb2d7104fabff66d19babcc3e588d7a828d1"
+      },
+      "policy": {
+        "txid": "33e4cf28c22cce47bdc34616b43507685dd19039e8fc07d49be3ed1264d70835",
+        "wtxid": "33e4cf28c22cce47bdc34616b43507685dd19039e8fc07d49be3ed1264d70835",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        0,
+        0
+      ],
+      "hint_items": 0,
+      "executed_non_push_opcodes": 1,
+      "combined_stack_peak_by_inspection": 2
+    },
+    {
+      "name": "single-bug-other-input-B-different-program",
+      "transaction": {
+        "hex": "0200000002a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40400000000ffffffffa0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40200000000ffffffff01705d1e0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "58a507698b15652930390350c83c1d8895caea352590ac838a5f9e366efe95ef",
+        "total_bytes": 123,
+        "weight": 492,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "004040bcd40b1978d9cb2f2bc39949fcd4026a0038223d1f96025c4bfb47064e"
+      },
+      "policy": {
+        "txid": "58a507698b15652930390350c83c1d8895caea352590ac838a5f9e366efe95ef",
+        "wtxid": "58a507698b15652930390350c83c1d8895caea352590ac838a5f9e366efe95ef",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        0,
+        0
+      ],
+      "hint_items": 0,
+      "executed_non_push_opcodes": 2,
+      "combined_stack_peak_by_inspection": 2
+    },
+    {
+      "name": "single-bug-other-recipient",
+      "transaction": {
+        "hex": "0200000002a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40400000000ffffffffa0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40200000000ffffffff01705d1e0000000000160014222222222222222222222222222222222222222200000000",
+        "txid": "0843e2770126a47e14632209d310ca909fc0cf6cd3476ecd2a7a30c26324736e",
+        "total_bytes": 123,
+        "weight": 492,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4dfc1fa44311857714de0b8156f26b6ee8fe02d793fa0c0bd883d0e0032b2f5c"
+      },
+      "policy": {
+        "txid": "0843e2770126a47e14632209d310ca909fc0cf6cd3476ecd2a7a30c26324736e",
+        "wtxid": "0843e2770126a47e14632209d310ca909fc0cf6cd3476ecd2a7a30c26324736e",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "script_sig_bytes": [
+        0,
+        0
+      ],
+      "hint_items": 0,
+      "executed_non_push_opcodes": 2,
+      "combined_stack_peak_by_inspection": 2
+    },
+    {
+      "name": "single-bug-target-at-index-zero-rejected",
+      "transaction": {
+        "hex": "0200000002a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40200000000ffffffffa0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40300000000ffffffff01705d1e0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "875e54397fdfa5bce1136b361ec55e7605a2cb9defd7689c6e9164d44a615780",
+        "total_bytes": 123,
+        "weight": 492,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 0 of 875e54397fdfa5bce1136b361ec55e7605a2cb9defd7689c6e9164d44a615780 (wtxid 875e54397fdfa5bce1136b361ec55e7605a2cb9defd7689c6e9164d44a615780), spending c4997a289013fcb9935117aa3f6775980b3d8bc52088ca4473bf2de8c340b1a0:2"
+      },
+      "policy": {
+        "txid": "875e54397fdfa5bce1136b361ec55e7605a2cb9defd7689c6e9164d44a615780",
+        "wtxid": "875e54397fdfa5bce1136b361ec55e7605a2cb9defd7689c6e9164d44a615780",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible",
+      "script_sig_bytes": [
+        0,
+        0
+      ],
+      "hint_items": 0,
+      "combined_stack_peak_by_inspection": 2
+    },
+    {
+      "name": "single-bug-two-outputs-rejected",
+      "transaction": {
+        "hex": "0200000002a0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40300000000ffffffffa0b140c3e82dbf7344ca8820c58b3d0b9875673faa175193b9fc1390287a99c40200000000ffffffff02301b0f0000000000160014111111111111111111111111111111111111111140420f0000000000160014222222222222222222222222222222222222222200000000",
+        "txid": "ada878c2d4ff59944ef4977c053473afdda5c9282ab5818a6b6d9b350d6b8b28",
+        "total_bytes": 154,
+        "weight": 616,
+        "witness_bytes": 0
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 1 of ada878c2d4ff59944ef4977c053473afdda5c9282ab5818a6b6d9b350d6b8b28 (wtxid ada878c2d4ff59944ef4977c053473afdda5c9282ab5818a6b6d9b350d6b8b28), spending c4997a289013fcb9935117aa3f6775980b3d8bc52088ca4473bf2de8c340b1a0:2"
+      },
+      "policy": {
+        "txid": "ada878c2d4ff59944ef4977c053473afdda5c9282ab5818a6b6d9b350d6b8b28",
+        "wtxid": "ada878c2d4ff59944ef4977c053473afdda5c9282ab5818a6b6d9b350d6b8b28",
+        "allowed": false,
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "reject-details": "bad-txns-nonstandard-inputs"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible",
+      "script_sig_bytes": [
+        0,
+        0
+      ],
+      "hint_items": 0,
+      "combined_stack_peak_by_inspection": 2
+    }
+  ],
+  "funding": {
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0640420f0000000000ec61616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad695140420f000000000017a914f353017b7cdf9086655bc40a6e08db920253a6678740420f00000000006b473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802207abe667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ac40420f0000000000015140420f000000000003527551b07fb929010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "txid": "c4997a289013fcb9935117aa3f6775980b3d8bc52088ca4473bf2de8c340b1a0",
+    "wtxid": "949581bd0e9f2ab8a546bc906d2afbcb40c7d9c135a10e17dee596ff7c53fe24",
+    "weight": 2041,
+    "vsize": 511,
+    "base_bytes": 509,
+    "total_bytes": 514,
+    "witness_bytes": 3
+  },
+  "all_expectations_met": true
+}

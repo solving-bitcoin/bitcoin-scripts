@@ -1,0 +1,197 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "host polynomial and public group equations; no Bitcoin Script execution",
+  "rng": "none; deterministic SHA256 domain-separated rows",
+  "toy": {
+    "prime": 257,
+    "rows": [
+      230,
+      74,
+      43,
+      76,
+      155,
+      240,
+      205,
+      148,
+      186,
+      188,
+      176,
+      94,
+      186,
+      167,
+      216,
+      36
+    ],
+    "reference_coefficients": [
+      230,
+      213,
+      243,
+      34,
+      241,
+      23,
+      75,
+      3,
+      88,
+      139,
+      140,
+      177,
+      170,
+      6,
+      255,
+      93
+    ],
+    "reference_degree": 15,
+    "honest_checks": 4112,
+    "unbound_quotient_false_accepts": 4096,
+    "fixed_forgery": {
+      "x": 7,
+      "false_y": 149,
+      "coefficients": [
+        20,
+        170,
+        144,
+        123,
+        139,
+        207,
+        154,
+        251,
+        121,
+        86,
+        200,
+        84,
+        238,
+        174,
+        83
+      ],
+      "accepted_challenges": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "eligible_challenges": 256
+    }
+  },
+  "public_tau": {
+    "curve": "secp256k1",
+    "tau": 73,
+    "false_openings": 12,
+    "uses_commitment_discrete_log_for_forgery": false,
+    "cases": [
+      {
+        "x": 0,
+        "false_y": "8",
+        "witness_compressed": "033abd42e96c2231a0da3dce771873e04c252bee8bc536fca6371f409ff2693fc2"
+      },
+      {
+        "x": 0,
+        "false_y": "9",
+        "witness_compressed": "0387dc26bbad1ef4e8fbc51a5575103d61eddb32d4df46b69067cd1982250cf644"
+      },
+      {
+        "x": 0,
+        "false_y": "4294967303",
+        "witness_compressed": "03121a23aff01c74cfcffd2d3069d9507b5202624bda6ff847baac12877098613f"
+      },
+      {
+        "x": 1,
+        "false_y": "40",
+        "witness_compressed": "0254969eec801757a52632ba715e45087caeec6de75e0db8d792d3632a31a245e9"
+      },
+      {
+        "x": 1,
+        "false_y": "41",
+        "witness_compressed": "03ae58f13a8307252ddfb50a4f293c6db6e5cd78de12bcbc5dee3e69d2ca3ee2e5"
+      },
+      {
+        "x": 1,
+        "false_y": "4294967335",
+        "witness_compressed": "03d4ce1bee96e854938923e86f85e4b10c866501bf691c1775254f1faed6e2a64b"
+      },
+      {
+        "x": 17,
+        "false_y": "1609160",
+        "witness_compressed": "03b70aac08086b0e7bd05ba86df238f70288c1ec5b320b092e9f04dcc3dca3bd1f"
+      },
+      {
+        "x": 17,
+        "false_y": "1609161",
+        "witness_compressed": "029999ef22ce760c69ab0b8d24fe63b4608b4094fbf5d697cb68de1d7c11fd0d4a"
+      },
+      {
+        "x": 17,
+        "false_y": "4296576455",
+        "witness_compressed": "03e5724fb903daba3ce68444a82d1efc946b9eeb038c37868eb36c7de9f362400a"
+      },
+      {
+        "x": 74,
+        "false_y": "571415132",
+        "witness_compressed": "02b4f15c54afa0138ff12aa02c371e6baa15f82dbb0187cff5f92d9614836f3d81"
+      },
+      {
+        "x": 74,
+        "false_y": "571415133",
+        "witness_compressed": "02b33928fc77ae770d7ea83e98e293c643bf8ae113b1f7e1feef1ba4af0a3ea432"
+      },
+      {
+        "x": 74,
+        "false_y": "4866382427",
+        "witness_compressed": "022bedfe9d3f089a0d8e1ca38883d4b87442f8b475d2453e23638e3caa4d87f27a"
+      }
+    ]
+  },
+  "direct_r6_root_only": [
+    {
+      "rows": 16,
+      "quotient_coefficients": 15,
+      "field_encoding_bits": 9,
+      "selector_data_items": 135,
+      "auxiliary_hint_items": 0,
+      "entry_data_items": 136,
+      "combined_stack_peak": 138,
+      "raw_fragment_bytes": 1355,
+      "static_non_push_opcodes": 1083,
+      "excludes": "F authentication, arithmetic, native gates, input pushes, cleanup"
+    },
+    {
+      "rows": 4294967296,
+      "quotient_coefficients": 4294967295,
+      "field_encoding_bits": 33,
+      "selector_data_items": 141733920735,
+      "auxiliary_hint_items": 0,
+      "entry_data_items": 141733920736,
+      "combined_stack_peak": 141733920738,
+      "raw_fragment_bytes": 1417339207355,
+      "static_non_push_opcodes": 1133871365883,
+      "excludes": "F authentication, arithmetic, native gates, input pushes, cleanup"
+    },
+    {
+      "rows": 151115727451828646838272,
+      "quotient_coefficients": 151115727451828646838271,
+      "field_encoding_bits": 78,
+      "selector_data_items": 11787026741242634453385138,
+      "auxiliary_hint_items": 0,
+      "entry_data_items": 11787026741242634453385139,
+      "combined_stack_peak": 11787026741242634453385141,
+      "raw_fragment_bytes": 117870267412426344533851385,
+      "static_non_push_opcodes": 94296213929941075627081107,
+      "excludes": "F authentication, arithmetic, native gates, input pushes, cleanup"
+    }
+  ],
+  "ordinary_uniform_challenge_only": {
+    "bound": "(N-1)/(p-1), when r excludes x",
+    "not_a_QSB_or_Binohash_attack_lower_bound": true
+  }
+}

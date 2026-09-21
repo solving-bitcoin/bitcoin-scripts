@@ -1,0 +1,108 @@
+{
+  "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "binary": "/private/tmp/bitcoin-core-nonstandard-build/core-build/bin/bitcoind",
+  "binary_sha256": "bbdcd614adfd818090da23882247d9e26a9c05eb65c8805084ca8e4def02ad28",
+  "source_archives": [
+    {
+      "name": "core",
+      "url": "https://codeload.github.com/bitcoin/bitcoin/tar.gz/49faec4f87f5cd19c88db01a82e5c68b087c8227",
+      "sha256": "f0dd7dcb92fe08e39c3cd74981d579b5113c54c90a124956d6e264c3a419e051"
+    },
+    {
+      "name": "boost",
+      "url": "https://github.com/boostorg/boost/releases/download/boost-1.88.0/boost-1.88.0-cmake.tar.gz",
+      "sha256": "dcea50f40ba1ecfc448fdf886c0165cf3e525fef2c9e3e080b9804e8117b9694"
+    },
+    {
+      "name": "libevent",
+      "url": "https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz",
+      "sha256": "92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb"
+    }
+  ],
+  "commands": [
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "-S",
+      "/private/tmp/bitcoin-core-nonstandard-build/boost-1.88.0",
+      "-B",
+      "/private/tmp/bitcoin-core-nonstandard-build/boost-build",
+      "-G",
+      "Ninja",
+      "-DBOOST_INCLUDE_LIBRARIES=multi_index;signals2",
+      "-DBUILD_TESTING=OFF",
+      "-DBOOST_ENABLE_MPI=OFF",
+      "-DBOOST_ENABLE_PYTHON=OFF",
+      "-DCMAKE_INSTALL_PREFIX=/private/tmp/bitcoin-core-nonstandard-build/prefix"
+    ],
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "--build",
+      "/private/tmp/bitcoin-core-nonstandard-build/boost-build",
+      "--target",
+      "install",
+      "-j",
+      "8"
+    ],
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "-S",
+      "/private/tmp/bitcoin-core-nonstandard-build/libevent-2.1.12-stable",
+      "-B",
+      "/private/tmp/bitcoin-core-nonstandard-build/libevent-build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DEVENT__DISABLE_BENCHMARK=ON",
+      "-DEVENT__DISABLE_OPENSSL=ON",
+      "-DEVENT__DISABLE_SAMPLES=ON",
+      "-DEVENT__DISABLE_REGRESS=ON",
+      "-DEVENT__DISABLE_TESTS=ON",
+      "-DEVENT__LIBRARY_TYPE=STATIC",
+      "-DCMAKE_INSTALL_PREFIX=/private/tmp/bitcoin-core-nonstandard-build/prefix"
+    ],
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "--build",
+      "/private/tmp/bitcoin-core-nonstandard-build/libevent-build",
+      "--target",
+      "install",
+      "-j",
+      "8"
+    ],
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "-S",
+      "/private/tmp/bitcoin-core-nonstandard-build/bitcoin-49faec4f87f5cd19c88db01a82e5c68b087c8227",
+      "-B",
+      "/private/tmp/bitcoin-core-nonstandard-build/core-build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_PREFIX_PATH=/private/tmp/bitcoin-core-nonstandard-build/prefix",
+      "-DENABLE_WALLET=OFF",
+      "-DENABLE_IPC=OFF",
+      "-DBUILD_TESTS=OFF",
+      "-DBUILD_GUI=OFF",
+      "-DBUILD_CLI=OFF",
+      "-DBUILD_TX=OFF",
+      "-DBUILD_UTIL=OFF",
+      "-DBUILD_BENCH=OFF",
+      "-DWITH_ZMQ=OFF",
+      "-DWITH_USDT=OFF"
+    ],
+    [
+      "/private/tmp/bitcoin-core-nonstandard-tools/bin/cmake",
+      "--build",
+      "/private/tmp/bitcoin-core-nonstandard-build/core-build",
+      "--target",
+      "bitcoind",
+      "-j",
+      "8"
+    ]
+  ],
+  "patch_sha256": "acf159df18bcb3395db7a21382c869c6c8908a422c5d9bfcdad885c5a9c1f988",
+  "validation_cpp_sha256": "47a001d0259680d68ee4b4767277ad975bab3768a07ab5f649f57f1295341667",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+  "cmake": "cmake version 4.4.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+}

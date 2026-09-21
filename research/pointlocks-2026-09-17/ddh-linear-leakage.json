@@ -1,0 +1,1256 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Scoped algebraic leakage tests for the local DDH batch-select interface.\n\nPublic deterministic fixtures, no Bitcoin Script or setup benchmark. The\nextractor receives the public table, one opening, and the declared extra\nlinear disclosure; no hidden coefficients or row randomizers.\n",
+  "coefficient_criterion": {
+    "prime": 5,
+    "bits": 3,
+    "checked_vectors": 5000
+  },
+  "secp256k1_nonproportional_cases": [
+    {
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        0
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        0,
+        1,
+        1
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        0
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        0,
+        1
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        0
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "0",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "1",
+        "0",
+        "0"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "1",
+        "0"
+      ],
+      "recovery": {
+        "row": 1,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "0",
+        "0",
+        "0",
+        "1"
+      ],
+      "recovery": {
+        "row": 2,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    },
+    {
+      "bits": [
+        1,
+        1,
+        1
+      ],
+      "coefficients": [
+        "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "0",
+        "2",
+        "115792089237316195423570985008687907852837564279074904382605163141518161494334"
+      ],
+      "recovery": {
+        "row": 0,
+        "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      "all_alternative_labels_recovered": true
+    }
+  ],
+  "proportional_controls": 33,
+  "wrong_disclosure_controls": 8,
+  "public_row_relation": {
+    "equation": "R2=7G+3R0+5R1",
+    "cases": [
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "ce4282e86bb58e41cf86bfdd2e91d5c1",
+            "7b7ebbe0e4337da71ba2917a75bb2962",
+            "7aacb68e6d8a92912fb6479c064764c0"
+          ]
+        }
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "ce4282e86bb58e41cf86bfdd2e91d5c1",
+            "7b7ebbe0e4337da71ba2917a75bb2962",
+            "33fbca69a6542c44a92cc8e042da5eff"
+          ]
+        }
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "ce4282e86bb58e41cf86bfdd2e91d5c1",
+            "3229c7072fedc3729d381e063126135d",
+            "7aacb68e6d8a92912fb6479c064764c0"
+          ]
+        }
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "ce4282e86bb58e41cf86bfdd2e91d5c1",
+            "3229c7072fedc3729d381e063126135d",
+            "33fbca69a6542c44a92cc8e042da5eff"
+          ]
+        }
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "8715fe0fa06b3094491c30a16a0ceffe",
+            "7b7ebbe0e4337da71ba2917a75bb2962",
+            "7aacb68e6d8a92912fb6479c064764c0"
+          ]
+        }
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "8715fe0fa06b3094491c30a16a0ceffe",
+            "7b7ebbe0e4337da71ba2917a75bb2962",
+            "33fbca69a6542c44a92cc8e042da5eff"
+          ]
+        }
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "8715fe0fa06b3094491c30a16a0ceffe",
+            "3229c7072fedc3729d381e063126135d",
+            "7aacb68e6d8a92912fb6479c064764c0"
+          ]
+        }
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "recovery": {
+          "row": 2,
+          "delta": "49577ce7cbdebed5869a8f7c449d3a3f",
+          "alternatives": [
+            "8715fe0fa06b3094491c30a16a0ceffe",
+            "3229c7072fedc3729d381e063126135d",
+            "33fbca69a6542c44a92cc8e042da5eff"
+          ]
+        }
+      }
+    ]
+  },
+  "honest_row_generation": {
+    "method": "Public domain-separated SHA256 hash-and-lift with independently hashed parity; 256-counter bound.",
+    "discrete_logarithms_not_generated": true,
+    "bases": [
+      {
+        "x": "5f9e0ea294601c8c692c0333667b12a6585ebe40c3a43730a45b710d1a3f8b49",
+        "y": "d459a1f0f2685762053699e0822e832aa3ee414502afda1bbe7db3c085172c4b"
+      },
+      {
+        "x": "b93a31e150c12ce73abd1a4eb7297c2f7bebe1acc8ffacf5b91c2f7627995b8c",
+        "y": "27bdad1133201b8b6031f74c1a8177267c843fc42e23ea164f2a9a0188adb768"
+      },
+      {
+        "x": "6d33dd19bdf87b2af03405d9d85eae406084759107fa097255ead7c09eac49bd",
+        "y": "9f478081ade9b6c575ea3c5ad03453ac512ca4c6c21bc08fdce81f962e0cef05"
+      }
+    ],
+    "caveat": "The deliberate affine-row control is outside this fixed transparent-row profile. No theorem about the discrete-log hardness of the derived points is claimed."
+  },
+  "source_sha256": "53a7b3de911fd4d402e06c9f6974b8347a890de7b5815ff4b413563e160f14a1",
+  "curve_helper_sha256": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5",
+  "existing_ddh_source_sha256": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330",
+  "caveats": [
+    "Applies to the displayed local ciphertext layout, not all DDH batch-select schemes.",
+    "Rank-one boundary only means this extraction does not apply; it is not a full security proof.",
+    "No Bitcoin predicate, transaction, native extraction, or public setup verification supplied.",
+    "No change to prior benchmark sources or reported timings."
+  ]
+}

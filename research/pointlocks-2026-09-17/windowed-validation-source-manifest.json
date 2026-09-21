@@ -1,0 +1,12 @@
+{
+  "scope": "Exact source and artifact hashes following identical source regeneration of the complete Core-validated batch256 fixture.",
+  "default_profile_regression": "The 256-byte legacy sum-key builder separately reproduced all fields of its previously validated artifact before windowed work.",
+  "files": {
+    "examples/pointlock_windowed_native_probe.rs": "17dae66045a73310fd91ee6f7b232b79967eaa190688ffa5c33efca52923759d",
+    "examples/pointlock_windowed_size_probe.rs": "fefe8d8d5b561b8317078c81989725173dea69759f35aea3e53112a602281b41",
+    "research/pointlocks-2026-09-17/windowed_native_core_check.py": "80fa36cf2837d8b629c9a2f5154c5da544ede69b85831c79655e6e06a29151fb",
+    "research/pointlocks-2026-09-17/windowedbatch256-native-transactions.json": "bd1770a2fd9ed576ae8eb872a77bf8d51775c288b17c070a1b77f31ba5f53ad7",
+    "research/pointlocks-2026-09-17/windowedbatch256_native_core_check.json": "62abe505a7d4db6de58cef4944a57ae6130dc9429c754da88dcbde7b08c63fd8"
+  },
+  "exact_batch256_regeneration": true
+}

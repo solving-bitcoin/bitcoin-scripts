@@ -1,0 +1,450 @@
+{
+  "scope": "Reduced-work cap59 P2WSH functionality only; no production cap53 grind.",
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "production_work_executed": false,
+  "evidence": "differentially-validated",
+  "deployment_class": "policy-validated",
+  "negative_cases": [
+    {
+      "name": "oversized-valid-signature",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "3a064cfe3418e8a4960947b4c2a62e7db571e8ddd1181e55aa894d35b080fb3d",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 3a064cfe3418e8a4960947b4c2a62e7db571e8ddd1181e55aa894d35b080fb3d), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 3a064cfe3418e8a4960947b4c2a62e7db571e8ddd1181e55aa894d35b080fb3d), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "uncommitted-key",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "644275e355cdc327f36449f1534b3e3a59b90290949d8b8941ac5a3ca6ab030e",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 644275e355cdc327f36449f1534b3e3a59b90290949d8b8941ac5a3ca6ab030e), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 644275e355cdc327f36449f1534b3e3a59b90290949d8b8941ac5a3ca6ab030e), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "duplicate-selection",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "a5b17154572f41b504025196ac07e66fa43406c6e236283874b62a2cb415816f",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid a5b17154572f41b504025196ac07e66fa43406c6e236283874b62a2cb415816f), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid a5b17154572f41b504025196ac07e66fa43406c6e236283874b62a2cb415816f), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "missing-opening",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "ed26e62959a0c9aca4687f4d029a78a3850db38b98c23bb6c0c03649f7d0ba6e",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid ed26e62959a0c9aca4687f4d029a78a3850db38b98c23bb6c0c03649f7d0ba6e), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid ed26e62959a0c9aca4687f4d029a78a3850db38b98c23bb6c0c03649f7d0ba6e), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "malformed-signature",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "5c2d298e39afa60c6b9c7ab4c8c8695f2c8c8400954665414c96a44d03d2a145",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 5c2d298e39afa60c6b9c7ab4c8c8695f2c8c8400954665414c96a44d03d2a145), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 5c2d298e39afa60c6b9c7ab4c8c8695f2c8c8400954665414c96a44d03d2a145), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "wrong-sighash-flag",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "9fe0feed157b20165763ba740a361d76a8b91a982128dd81627d721568719924",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 9fe0feed157b20165763ba740a361d76a8b91a982128dd81627d721568719924), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 9fe0feed157b20165763ba740a361d76a8b91a982128dd81627d721568719924), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-zero",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "c40f0509a7f81eec8311511543028a78a687a2d2a1256b4e3c4471cebfe3d30a",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid c40f0509a7f81eec8311511543028a78a687a2d2a1256b4e3c4471cebfe3d30a), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid c40f0509a7f81eec8311511543028a78a687a2d2a1256b4e3c4471cebfe3d30a), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-one",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "6e42b9740cdf2ef776a86ea96092cbbd488738321e9f62a96b1386458ad16947",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 6e42b9740cdf2ef776a86ea96092cbbd488738321e9f62a96b1386458ad16947), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 6e42b9740cdf2ef776a86ea96092cbbd488738321e9f62a96b1386458ad16947), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-negative",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "85c1f656298e7b30670cce716f70f01f015178ba210311cc79f88c8dd031e4e2",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 85c1f656298e7b30670cce716f70f01f015178ba210311cc79f88c8dd031e4e2), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 85c1f656298e7b30670cce716f70f01f015178ba210311cc79f88c8dd031e4e2), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-too-large",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "08a4a192e8ad84d474512fa37bf4617dd9556e9eb602d36652fcd374aeb2c382",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 08a4a192e8ad84d474512fa37bf4617dd9556e9eb602d36652fcd374aeb2c382), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 08a4a192e8ad84d474512fa37bf4617dd9556e9eb602d36652fcd374aeb2c382), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-zero-hash-alias",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "b90e8488ac36d78794f03f66356cf0f1d2b7458b42aedbf5f690b4a77cc04c2b",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid b90e8488ac36d78794f03f66356cf0f1d2b7458b42aedbf5f690b4a77cc04c2b), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid b90e8488ac36d78794f03f66356cf0f1d2b7458b42aedbf5f690b4a77cc04c2b), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "depth-one-hash-alias",
+      "policy": {
+        "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+        "wtxid": "593b5e4ca0525892c2926e3c90e5b73fee95eb36271f6a02df0eda606a802133",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 593b5e4ca0525892c2926e3c90e5b73fee95eb36271f6a02df0eda606a802133), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24 (wtxid 593b5e4ca0525892c2926e3c90e5b73fee95eb36271f6a02df0eda606a802133), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    },
+    {
+      "name": "changed-native-digest",
+      "policy": {
+        "txid": "20736b11c260c17d65721fffac5e605989e535b84bc5ec85072a9bbe01794554",
+        "wtxid": "03dda961043eda6a9083d46c91435f2bc32d1e0f622b251d277d3f0a485cd9ea",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 1 of 20736b11c260c17d65721fffac5e605989e535b84bc5ec85072a9bbe01794554 (wtxid 03dda961043eda6a9083d46c91435f2bc32d1e0f622b251d277d3f0a485cd9ea), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of 20736b11c260c17d65721fffac5e605989e535b84bc5ec85072a9bbe01794554 (wtxid 03dda961043eda6a9083d46c91435f2bc32d1e0f622b251d277d3f0a485cd9ea), spending c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17:1"
+      }
+    }
+  ],
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "excluded_test_setup_grant": {
+    "txid": "c907ed5b0e2983443cb53a088e4cee56c8c8560b922d6fa3c7560b10e8ffb826",
+    "wtxid": "c40eee49cd93395cb254adff8f0a3759594e4fb4ae255f50d95c9a2a35790aaa",
+    "weight": 553,
+    "vsize": 139,
+    "size": 142,
+    "inputs": 1,
+    "outputs": 2,
+    "policy": {
+      "txid": "c907ed5b0e2983443cb53a088e4cee56c8c8560b922d6fa3c7560b10e8ffb826",
+      "wtxid": "c40eee49cd93395cb254adff8f0a3759594e4fb4ae255f50d95c9a2a35790aaa",
+      "allowed": true,
+      "vsize": 139,
+      "fees": {
+        "base": 0.0001,
+        "effective-feerate": 0.00071942,
+        "effective-includes": [
+          "c40eee49cd93395cb254adff8f0a3759594e4fb4ae255f50d95c9a2a35790aaa"
+        ]
+      }
+    },
+    "block_hash": "41317321c0e36125d86bbb70a6c51811678abf08996f06997e4d2b09d05b3f3f",
+    "block_height": 102,
+    "consensus_accepted": true,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0200e1f5050000000022512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798f0e90f24010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000"
+  },
+  "rust_generation_stderr": "warning: use of deprecated method `bitcoin::Witness::tapscript`: use `taproot_leaf_script` and check leaf version, if applicable\n   --> src/support/execution.rs:260:48\n    |\n260 |     let script = tx.input[input_index].witness.tapscript().unwrap();\n    |                                                ^^^^^^^^^\n    |\n    = note: `#[warn(deprecated)]` on by default\n\nwarning: `bitcoin-lab` (lib) generated 1 warning\n   Compiling bitcoin-lab v0.1.0 (/Users/robinlinus/projects/bitcoin-lab)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.32s\n     Running `target/debug/examples/pointlock_windowed_native_probe --funding-txid c907ed5b0e2983443cb53a088e4cee56c8c8560b922d6fa3c7560b10e8ffb826 --funding-vout 0 --funding-amount 100000000`\n",
+  "funding": {
+    "txid": "c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17",
+    "wtxid": "ee94dd0fbb4a2d631f61124c2eaa63c06db5032fd9f700db97606b2b625a7d1e",
+    "weight": 788,
+    "vsize": 197,
+    "size": 248,
+    "inputs": 1,
+    "outputs": 3,
+    "policy": {
+      "txid": "c43db55b5ccb2d5dea57766b519b25bbf67de0c8914ca39515d06750ebed0b17",
+      "wtxid": "ee94dd0fbb4a2d631f61124c2eaa63c06db5032fd9f700db97606b2b625a7d1e",
+      "allowed": true,
+      "vsize": 197,
+      "fees": {
+        "base": 0.0005,
+        "effective-feerate": 0.00253807,
+        "effective-includes": [
+          "ee94dd0fbb4a2d631f61124c2eaa63c06db5032fd9f700db97606b2b625a7d1e"
+        ]
+      }
+    },
+    "block_hash": "33b113575157597efff3f41565185ac90df2fd28f74e6e05ad75e1e22d909e0c",
+    "block_height": 103,
+    "consensus_accepted": true,
+    "hex": "0200000000010126b8ffe8100b56c7a36f2d920b56c8c856ee4c8e083ab53c4483290e5bed07c90000000000ffffffff037010f2050000000022512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798a0860100000000002200201f38d8b4ab1429fa91535ad3309720cd9f6f04020f76dc6a45b8a62679cadeeaa086010000000000220020f4ef29617560ee4cc196d8cbd188e04f1d15a6acec3e948f9029e50b195dc6720140fadda1bf4dc4ba9e2ae9ab57c2df742c78767a0e5eb723ae4c64070e463f46ab206c880efdc2e5577053a8b4a1bfe8de6d7552154c48667062da6b4ac658b28c00000000"
+  },
+  "spending": {
+    "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+    "wtxid": "ef5a54510ddbe77926da223c0ec6a5377f4cd7b0a5735faa7338778041c71590",
+    "weight": 1950,
+    "vsize": 488,
+    "size": 1308,
+    "inputs": 3,
+    "outputs": 3,
+    "policy": {
+      "txid": "d5e5485eb8dfa9d9d968bb2362759f25f60b0002dd6baba3e42f901a58ac0a24",
+      "wtxid": "ef5a54510ddbe77926da223c0ec6a5377f4cd7b0a5735faa7338778041c71590",
+      "allowed": true,
+      "vsize": 488,
+      "fees": {
+        "base": 0.0002,
+        "effective-feerate": 0.00040983,
+        "effective-includes": [
+          "ef5a54510ddbe77926da223c0ec6a5377f4cd7b0a5735faa7338778041c71590"
+        ]
+      }
+    },
+    "block_hash": "30afff1c0eb03cde04c5180308318dd0bbea0337ecbde5b1d927329279c729db",
+    "block_height": 104,
+    "consensus_accepted": true,
+    "hex": "02000000000103170bedeb5067d01595a34c91c8e07df6bb259b516b7657ea5d2dcb5c5bb53dc40000000000ffffffff170bedeb5067d01595a34c91c8e07df6bb259b516b7657ea5d2dcb5c5bb53dc40100000000ffffffff170bedeb5067d01595a34c91c8e07df6bb259b516b7657ea5d2dcb5c5bb53dc40200000000ffffffff0390cff4050000000022512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179800000000000000000a6a08050500000000000000000000000000000a6a08900100000000000001401c92d872554b6f5705d1a0cfa9628d8cdd44cd1b7f5bb6f06dd9580f6e96787dba994e5201fb82121b6d77d4a7d1a5f1f2c23c1c8132e07b12003bd41c2d42350a3b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcf056648fc8f27b53148fba89d5da459e811724afd96e4b918321033a37d86c163130480a28dafa1373b2123c90ea0a8bee2ace49823996621a5d7c01093b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcf9f77e64e9fd9a19224fca10d73a6c762114b2bd65df6d0d832103f27cf0426813da19a81e124a8484e5de618d93059abf675faf0d5ef94ce7f24e01063b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afd01f54a59c1589ff025c76904aed1263f3b126ed2e66aa4fa8321028d8e8aece664a94ae3fdbf83af9db17ee26b3d07b4065942edaa5800485abb7c0102df6b6b6b6b6b6b6b6b6b14d756a7be7f45f5ddafc51321cb5994d2e88a837a14fbb369d464c531aa2d4acab69e559bd0ce97169d14cdc18b4f2c24b8ed510983c52a8236e60d70d9f414a1bfeaaa6a7a37a80f20436f369f4614ec0771ce14ed840c288b636a9bca3782a31edc157b5f3c325214037dc5fe3376c7b8677ac85bfb908290f00e7097148987df47b110d83c3b4df4ee2df523d65e11a23e1454ab26983f94900bbd97e621ae2d32626abbe3cb6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad756d6d510a3b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78c85b97496ece1ed01db96210f5e9884372b265a226bad81a83210392c195d333a57780e1fac46918fea786abb0cbd731aa95b0c20b0dcb8f6c216801083b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78d9f45cf319c5f112aacc8f4ae4a2c37abd7377f53f8f872e832103f43627c3263e3b483e87c111a68746963a0420493311c8e1ba6be05b23304f7901073b303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78bce310c6469551ea6dabe116e337602c18452a8413e5b6f68321031dff464b92670c35623f7b27f116faf2571880896d1d75ab687b5cfdecd1989c0104df6b6b6b6b6b6b6b6b6b148b67e64298b51855c25b3c9850c4feea09e19480143fca04dca60474bd22902b8c305e809bb5522829148ff99f2c13117f6b8c2b279b9093cf95fbf7589914e71e9c72512556d1b6f8b151ab6335d780198896144b1b0ec3cd3939de6c4b008836750e32e1f9595f142bb12506def89f35cf739131d5ce69437d346677144077b4efe66c2e4d53e5e26d833d7d8fb62c9cb314663bd2353e78068cc64d0170778e74d9561db87e6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad756d6d5100000000"
+  },
+  "recovery": {
+    "extracted_points": 6,
+    "all_candidate_signatures_checked": 16,
+    "extractions": [
+      {
+        "pool": 0,
+        "index": 0,
+        "scalar_hex": "40ee1d52822b5ca1d65a4eea88455095f72dd077c72621e4a14d62dd3781bd6b",
+        "target_point": "033a37d86c163130480a28dafa1373b2123c90ea0a8bee2ace49823996621a5d7c"
+      },
+      {
+        "pool": 0,
+        "index": 3,
+        "scalar_hex": "46000e43d3f526d53dc66fb2e7b68c02a0527ac8abf31db83c5cbdb3eb9869d2",
+        "target_point": "03f27cf0426813da19a81e124a8484e5de618d93059abf675faf0d5ef94ce7f24e"
+      },
+      {
+        "pool": 0,
+        "index": 7,
+        "scalar_hex": "c3510bc947fbe617bc0567c9ba3fd175a83dabccac6040f3ea908ad408c00da3",
+        "target_point": "028d8e8aece664a94ae3fdbf83af9db17ee26b3d07b4065942edaa5800485abb7c"
+      },
+      {
+        "pool": 1,
+        "index": 1,
+        "scalar_hex": "c798debb57650f3899f882a02e563be68afa26ba403909947b560b89dae352f4",
+        "target_point": "0392c195d333a57780e1fac46918fea786abb0cbd731aa95b0c20b0dcb8f6c2168"
+      },
+      {
+        "pool": 1,
+        "index": 2,
+        "scalar_hex": "64a1f38e9b1931771203a4ba967e1877f63129819f59ffbdd8bfc6229a3d884e",
+        "target_point": "03f43627c3263e3b483e87c111a68746963a0420493311c8e1ba6be05b23304f79"
+      },
+      {
+        "pool": 1,
+        "index": 5,
+        "scalar_hex": "21382c207da5a942abc786b549679154ae494c0301a451f705ce66b6e2844fbe",
+        "target_point": "031dff464b92670c35623f7b27f116faf2571880896d1d75ab687b5cfdecd1989c"
+      }
+    ]
+  },
+  "pools": [
+    {
+      "all_signature_hex": [
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcf056648fc8f27b53148fba89d5da459e811724afd96e4b9183",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afccae6f6f760e4dfbdb39bbbac9a9c68fc0def9e27686e79b683",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcccbf6636c2ad84c6da9687d7f7bba4c12a533c72999a9db283",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcf9f77e64e9fd9a19224fca10d73a6c762114b2bd65df6d0d83",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afce08490cf39258be75be672706b6b22cbbfe82cf377f9d12383",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcf87269b91cb2b65f9359cb08cb7c65cc78dac45399ff80d683",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afcedff45f02585e9d896ff3faa790090b3374c6fd4afa5fb2683",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f3171f1432d2afd01f54a59c1589ff025c76904aed1263f3b126ed2e66aa4fa83"
+      ],
+      "cap": 59,
+      "combined_stack_peak": 18,
+      "complete_witness_items": 10,
+      "entry_data_items": 9,
+      "hash_trials": 1286,
+      "hint_items": 3,
+      "input_index": 1,
+      "keys_hex": [
+        "033a37d86c163130480a28dafa1373b2123c90ea0a8bee2ace49823996621a5d7c",
+        "0364c0261aa9a7753f3ec332723553ca9e5b312da0adff583c1119171d5d67af6f",
+        "02aea9e62ded6bf5fb5264727ab6adaf1023f6e0818ad2925037283cd0f02d396e",
+        "03f27cf0426813da19a81e124a8484e5de618d93059abf675faf0d5ef94ce7f24e",
+        "02bd97a049a92dbef3b69c29e52948aa422b3c062553c81d1659cf877815a0cf45",
+        "02e64d63e66e771197b694c07a12bf2eb686d87d9bb7696caf194b4cfe00c858eb",
+        "02db81af6e71440ad9b53bbf57aeceee027ae66661f43cc63ee40cac18c54ae59b",
+        "028d8e8aece664a94ae3fdbf83af9db17ee26b3d07b4065942edaa5800485abb7c"
+      ],
+      "n": 8,
+      "native_digest_hex": "ae3b7b44fb7ec957fbab2fe83ef4a15e3007d9647ba062aa31ae8c737ea97b77",
+      "negative_low_s_band": true,
+      "nonce": 1285,
+      "pool": 0,
+      "script_bytes": 223,
+      "script_hex": "6b6b6b6b6b6b6b6b6b14d756a7be7f45f5ddafc51321cb5994d2e88a837a14fbb369d464c531aa2d4acab69e559bd0ce97169d14cdc18b4f2c24b8ed510983c52a8236e60d70d9f414a1bfeaaa6a7a37a80f20436f369f4614ec0771ce14ed840c288b636a9bca3782a31edc157b5f3c325214037dc5fe3376c7b8677ac85bfb908290f00e7097148987df47b110d83c3b4df4ee2df523d65e11a23e1454ab26983f94900bbd97e621ae2d32626abbe3cb6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad756d6d51",
+      "selected": [
+        0,
+        3,
+        7
+      ],
+      "selected_secret_hex": [
+        "40ee1d52822b5ca1d65a4eea88455095f72dd077c72621e4a14d62dd3781bd6b",
+        "46000e43d3f526d53dc66fb2e7b68c02a0527ac8abf31db83c5cbdb3eb9869d2",
+        "c3510bc947fbe617bc0567c9ba3fd175a83dabccac6040f3ea908ad408c00da3"
+      ],
+      "serialized_witness_bytes": 513,
+      "t": 3
+    },
+    {
+      "all_signature_hex": [
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78b8f93d5abd428d060f82ade135252e0b0fcf706f9aa7076283",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78c85b97496ece1ed01db96210f5e9884372b265a226bad81a83",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78d9f45cf319c5f112aacc8f4ae4a2c37abd7377f53f8f872e83",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78b8185ab6078e912d37ca713009a1f4efe281098139044dc883",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78d8835bfcbd727c6346b643d50a7495dc759a55599abb4a1a83",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78bce310c6469551ea6dabe116e337602c18452a8413e5b6f683",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78d68be000f5c6a91104958cdbafff233bc68a39b5ce70e7e683",
+        "303802153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63021f056ad7d244dd78c6ea0668eecb0d722738325f2448c7f740d15ede1a5e0dc383"
+      ],
+      "cap": 59,
+      "combined_stack_peak": 18,
+      "complete_witness_items": 10,
+      "entry_data_items": 9,
+      "hash_trials": 401,
+      "hint_items": 3,
+      "input_index": 2,
+      "keys_hex": [
+        "02f867c6413157a05cad08fefd704a629a6fb8f0c7cd8e468ee11e46eb2f909198",
+        "0392c195d333a57780e1fac46918fea786abb0cbd731aa95b0c20b0dcb8f6c2168",
+        "03f43627c3263e3b483e87c111a68746963a0420493311c8e1ba6be05b23304f79",
+        "02c06e41727adec6dbb0563dc9ec349b1c47ba54efa245fb8adbc930f5a11f9222",
+        "03eb53b271f1c8f415b435c30f92a1d97e034ed6c86c3abec1d81d8dec5c5ed606",
+        "031dff464b92670c35623f7b27f116faf2571880896d1d75ab687b5cfdecd1989c",
+        "02077d06024c07af957264f0ed1e2941b1545ece064d7ee044efd7788fa5e5b74b",
+        "0349a1049e60209b6b6194746a29f6220d97a335bd596b0d65f7e9e707b0ac7075"
+      ],
+      "n": 8,
+      "native_digest_hex": "c60aff4c912de4654eb075295c22bfea255003c76661d0197865bc0a7f0657e5",
+      "negative_low_s_band": true,
+      "nonce": 400,
+      "pool": 1,
+      "script_bytes": 223,
+      "script_hex": "6b6b6b6b6b6b6b6b6b148b67e64298b51855c25b3c9850c4feea09e19480143fca04dca60474bd22902b8c305e809bb5522829148ff99f2c13117f6b8c2b279b9093cf95fbf7589914e71e9c72512556d1b6f8b151ab6335d780198896144b1b0ec3cd3939de6c4b008836750e32e1f9595f142bb12506def89f35cf739131d5ce69437d346677144077b4efe66c2e4d53e5e26d833d7d8fb62c9cb314663bd2353e78068cc64d0170778e74d9561db87e6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad6c6c6c7a78a9887882013b8875ad756d6d51",
+      "selected": [
+        1,
+        2,
+        5
+      ],
+      "selected_secret_hex": [
+        "c798debb57650f3899f882a02e563be68afa26ba403909947b560b89dae352f4",
+        "64a1f38e9b1931771203a4ba967e1877f63129819f59ffbdd8bfc6229a3d884e",
+        "21382c207da5a942abc786b549679154ae494c0301a451f705ce66b6e2844fbe"
+      ],
+      "serialized_witness_bytes": 513,
+      "t": 3
+    }
+  ],
+  "combined_vbytes": 685,
+  "all_expectations_met": true
+}

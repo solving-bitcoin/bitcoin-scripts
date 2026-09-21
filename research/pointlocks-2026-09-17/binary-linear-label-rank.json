@@ -1,0 +1,172 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Reproduce the direct scalar-linear binary-label rank boundary.\n\nSmall exact rational vector examples and one secp256k1 commitment/KDF fixture.\nNo Script, Bitcoin execution, field-library tests, or full garbling is run.\n",
+  "exact_vector_field": "rationals; theorem is over any field",
+  "tight_examples": [
+    {
+      "bits": 1,
+      "messages": 2,
+      "opposite_label_checks": 2,
+      "selected_rank": 1,
+      "secret_dimension": 2
+    },
+    {
+      "bits": 2,
+      "messages": 4,
+      "opposite_label_checks": 8,
+      "selected_rank": 2,
+      "secret_dimension": 3
+    },
+    {
+      "bits": 3,
+      "messages": 8,
+      "opposite_label_checks": 24,
+      "selected_rank": 3,
+      "secret_dimension": 4
+    },
+    {
+      "bits": 4,
+      "messages": 16,
+      "opposite_label_checks": 64,
+      "selected_rank": 4,
+      "secret_dimension": 5
+    },
+    {
+      "bits": 5,
+      "messages": 32,
+      "opposite_label_checks": 160,
+      "selected_rank": 5,
+      "secret_dimension": 6
+    },
+    {
+      "bits": 6,
+      "messages": 64,
+      "opposite_label_checks": 384,
+      "selected_rank": 6,
+      "secret_dimension": 7
+    },
+    {
+      "bits": 7,
+      "messages": 128,
+      "opposite_label_checks": 896,
+      "selected_rank": 7,
+      "secret_dimension": 8
+    },
+    {
+      "bits": 8,
+      "messages": 256,
+      "opposite_label_checks": 2048,
+      "selected_rank": 8,
+      "secret_dimension": 9
+    }
+  ],
+  "dependent_examples": [
+    {
+      "bits": 2,
+      "dependent_assignment": "00",
+      "opened_message": "01",
+      "alternative_message": "00",
+      "dependent_selected_rank": 1,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 3,
+      "dependent_assignment": "000",
+      "opened_message": "001",
+      "alternative_message": "000",
+      "dependent_selected_rank": 2,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 4,
+      "dependent_assignment": "0000",
+      "opened_message": "0001",
+      "alternative_message": "0000",
+      "dependent_selected_rank": 3,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 5,
+      "dependent_assignment": "00000",
+      "opened_message": "00001",
+      "alternative_message": "00000",
+      "dependent_selected_rank": 4,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 6,
+      "dependent_assignment": "000000",
+      "opened_message": "000001",
+      "alternative_message": "000000",
+      "dependent_selected_rank": 5,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 7,
+      "dependent_assignment": "0000000",
+      "opened_message": "0000001",
+      "alternative_message": "0000000",
+      "dependent_selected_rank": 6,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    },
+    {
+      "bits": 8,
+      "dependent_assignment": "00000000",
+      "opened_message": "00000001",
+      "alternative_message": "00000000",
+      "dependent_selected_rank": 7,
+      "opposite_label_recovered": true,
+      "common_offset_required": false
+    }
+  ],
+  "messages_checked": 510,
+  "opposite_label_checks": 3586,
+  "commitment_fixture": {
+    "opened_message": "001",
+    "alternative_message": "000",
+    "public_label_points": [
+      [
+        "0297ec8a061edb32a5464a55fda3be73366a1f7b9ffd9a447f9c586d4913be8d4b",
+        "031c73a0720dc7e2e00759654de0951306f75d6b4ca12a4da32d9edffc9bdd2ee1"
+      ],
+      [
+        "026e233d5b1b9b16f8554f3f994450a6265bca620b4d82b6c5f5564a4711014f6a",
+        "02d8249f55ea04824a2ddfef2240688b1e8ec75f20aadaa628c197d5e974ecd24a"
+      ],
+      [
+        "02cdc7cbaca08515b60ccaf8dc134d55ae6f236aae28006c3e63d89d1c784e4387",
+        "0333f98e83f34bb3a324eccd3d432cf928d2c1479e481f113bfe5eed063fa55b97"
+      ]
+    ],
+    "opening_scalars": [
+      "29c3b789bbaa8af83e6879de4459146219093a8deeba9224b6712afe7ce7e7b3",
+      "e2241bccb09311afd53f4560e1a81c65df31f8659e52fed23da677bffa33ccf9",
+      "38a0a620a0e7817c1e67127dc47439b5669d329b6de5c11a7edb9269f1651d46"
+    ],
+    "recovered_opposite_scalar": "0be7d3566c3d9ca813a7bf3f260130c93d8c560cddc4f0bb34454431a6e5736b",
+    "recovered_opposite_label": "bfab1d2f5cc9b001faa4324e4a52151f",
+    "all_six_labels_recovered": true,
+    "scope": "Public scalar-linear point commitments and post-recovery KDF; no native spend or garbled circuit."
+  },
+  "restricted_legacy_bound": {
+    "message_bits": 2048,
+    "minimum_independent_scalar_openings": 2048,
+    "guarded_signature_minimum_bytes": 58,
+    "direct_push_bytes": 1,
+    "signature_push_bytes_only": 120832,
+    "scope": "One scalar per guarded legacy sum-key signature, direct scalar-linear binary-label delivery; no witness discount; all keys/checks/transactions free."
+  },
+  "incremental_onchain_bytes": 0,
+  "incremental_onchain_hint_items": 0,
+  "sha256": {
+    "research/pointlocks-2026-09-17/binary_linear_label_rank.py": "eb95e880b0e20123d586374d99b60f9e619545a6c0c6d2056fd8e6aece4b0b12",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

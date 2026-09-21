@@ -14,7 +14,10 @@ use num_traits::{One, Zero};
 
 use crate::support::script::*;
 
+pub mod committed_two_check;
+pub mod sum_key;
 pub mod three_check;
+pub mod two_check;
 
 /// The largest accepted serialized Bitcoin signature for the `G/2` lock.
 ///

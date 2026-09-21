@@ -1,0 +1,1396 @@
+{
+  "question": "Can constant-message and ALL checks coexist on one locked input and give a reference interface?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Public host equations for a same-input SINGLE/ALL reference interface.\n\nSynthetic transactions and signatures only. No hash-derived signature witness,\nBitcoin Script execution, or complete covenant is asserted.\n",
+  "bitcoin_core_semantics_revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "all_assertions_passed": true,
+  "bug_scalar": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+  "same_input_index": 1,
+  "input_count": 2,
+  "all_256_flags": [
+    {
+      "flag": 0,
+      "equal": false
+    },
+    {
+      "flag": 1,
+      "equal": false
+    },
+    {
+      "flag": 2,
+      "equal": false
+    },
+    {
+      "flag": 3,
+      "equal": true
+    },
+    {
+      "flag": 4,
+      "equal": false
+    },
+    {
+      "flag": 5,
+      "equal": false
+    },
+    {
+      "flag": 6,
+      "equal": false
+    },
+    {
+      "flag": 7,
+      "equal": false
+    },
+    {
+      "flag": 8,
+      "equal": false
+    },
+    {
+      "flag": 9,
+      "equal": false
+    },
+    {
+      "flag": 10,
+      "equal": false
+    },
+    {
+      "flag": 11,
+      "equal": false
+    },
+    {
+      "flag": 12,
+      "equal": false
+    },
+    {
+      "flag": 13,
+      "equal": false
+    },
+    {
+      "flag": 14,
+      "equal": false
+    },
+    {
+      "flag": 15,
+      "equal": false
+    },
+    {
+      "flag": 16,
+      "equal": false
+    },
+    {
+      "flag": 17,
+      "equal": false
+    },
+    {
+      "flag": 18,
+      "equal": false
+    },
+    {
+      "flag": 19,
+      "equal": false
+    },
+    {
+      "flag": 20,
+      "equal": false
+    },
+    {
+      "flag": 21,
+      "equal": false
+    },
+    {
+      "flag": 22,
+      "equal": false
+    },
+    {
+      "flag": 23,
+      "equal": false
+    },
+    {
+      "flag": 24,
+      "equal": false
+    },
+    {
+      "flag": 25,
+      "equal": false
+    },
+    {
+      "flag": 26,
+      "equal": false
+    },
+    {
+      "flag": 27,
+      "equal": false
+    },
+    {
+      "flag": 28,
+      "equal": false
+    },
+    {
+      "flag": 29,
+      "equal": false
+    },
+    {
+      "flag": 30,
+      "equal": false
+    },
+    {
+      "flag": 31,
+      "equal": false
+    },
+    {
+      "flag": 32,
+      "equal": false
+    },
+    {
+      "flag": 33,
+      "equal": false
+    },
+    {
+      "flag": 34,
+      "equal": false
+    },
+    {
+      "flag": 35,
+      "equal": true
+    },
+    {
+      "flag": 36,
+      "equal": false
+    },
+    {
+      "flag": 37,
+      "equal": false
+    },
+    {
+      "flag": 38,
+      "equal": false
+    },
+    {
+      "flag": 39,
+      "equal": false
+    },
+    {
+      "flag": 40,
+      "equal": false
+    },
+    {
+      "flag": 41,
+      "equal": false
+    },
+    {
+      "flag": 42,
+      "equal": false
+    },
+    {
+      "flag": 43,
+      "equal": false
+    },
+    {
+      "flag": 44,
+      "equal": false
+    },
+    {
+      "flag": 45,
+      "equal": false
+    },
+    {
+      "flag": 46,
+      "equal": false
+    },
+    {
+      "flag": 47,
+      "equal": false
+    },
+    {
+      "flag": 48,
+      "equal": false
+    },
+    {
+      "flag": 49,
+      "equal": false
+    },
+    {
+      "flag": 50,
+      "equal": false
+    },
+    {
+      "flag": 51,
+      "equal": false
+    },
+    {
+      "flag": 52,
+      "equal": false
+    },
+    {
+      "flag": 53,
+      "equal": false
+    },
+    {
+      "flag": 54,
+      "equal": false
+    },
+    {
+      "flag": 55,
+      "equal": false
+    },
+    {
+      "flag": 56,
+      "equal": false
+    },
+    {
+      "flag": 57,
+      "equal": false
+    },
+    {
+      "flag": 58,
+      "equal": false
+    },
+    {
+      "flag": 59,
+      "equal": false
+    },
+    {
+      "flag": 60,
+      "equal": false
+    },
+    {
+      "flag": 61,
+      "equal": false
+    },
+    {
+      "flag": 62,
+      "equal": false
+    },
+    {
+      "flag": 63,
+      "equal": false
+    },
+    {
+      "flag": 64,
+      "equal": false
+    },
+    {
+      "flag": 65,
+      "equal": false
+    },
+    {
+      "flag": 66,
+      "equal": false
+    },
+    {
+      "flag": 67,
+      "equal": true
+    },
+    {
+      "flag": 68,
+      "equal": false
+    },
+    {
+      "flag": 69,
+      "equal": false
+    },
+    {
+      "flag": 70,
+      "equal": false
+    },
+    {
+      "flag": 71,
+      "equal": false
+    },
+    {
+      "flag": 72,
+      "equal": false
+    },
+    {
+      "flag": 73,
+      "equal": false
+    },
+    {
+      "flag": 74,
+      "equal": false
+    },
+    {
+      "flag": 75,
+      "equal": false
+    },
+    {
+      "flag": 76,
+      "equal": false
+    },
+    {
+      "flag": 77,
+      "equal": false
+    },
+    {
+      "flag": 78,
+      "equal": false
+    },
+    {
+      "flag": 79,
+      "equal": false
+    },
+    {
+      "flag": 80,
+      "equal": false
+    },
+    {
+      "flag": 81,
+      "equal": false
+    },
+    {
+      "flag": 82,
+      "equal": false
+    },
+    {
+      "flag": 83,
+      "equal": false
+    },
+    {
+      "flag": 84,
+      "equal": false
+    },
+    {
+      "flag": 85,
+      "equal": false
+    },
+    {
+      "flag": 86,
+      "equal": false
+    },
+    {
+      "flag": 87,
+      "equal": false
+    },
+    {
+      "flag": 88,
+      "equal": false
+    },
+    {
+      "flag": 89,
+      "equal": false
+    },
+    {
+      "flag": 90,
+      "equal": false
+    },
+    {
+      "flag": 91,
+      "equal": false
+    },
+    {
+      "flag": 92,
+      "equal": false
+    },
+    {
+      "flag": 93,
+      "equal": false
+    },
+    {
+      "flag": 94,
+      "equal": false
+    },
+    {
+      "flag": 95,
+      "equal": false
+    },
+    {
+      "flag": 96,
+      "equal": false
+    },
+    {
+      "flag": 97,
+      "equal": false
+    },
+    {
+      "flag": 98,
+      "equal": false
+    },
+    {
+      "flag": 99,
+      "equal": true
+    },
+    {
+      "flag": 100,
+      "equal": false
+    },
+    {
+      "flag": 101,
+      "equal": false
+    },
+    {
+      "flag": 102,
+      "equal": false
+    },
+    {
+      "flag": 103,
+      "equal": false
+    },
+    {
+      "flag": 104,
+      "equal": false
+    },
+    {
+      "flag": 105,
+      "equal": false
+    },
+    {
+      "flag": 106,
+      "equal": false
+    },
+    {
+      "flag": 107,
+      "equal": false
+    },
+    {
+      "flag": 108,
+      "equal": false
+    },
+    {
+      "flag": 109,
+      "equal": false
+    },
+    {
+      "flag": 110,
+      "equal": false
+    },
+    {
+      "flag": 111,
+      "equal": false
+    },
+    {
+      "flag": 112,
+      "equal": false
+    },
+    {
+      "flag": 113,
+      "equal": false
+    },
+    {
+      "flag": 114,
+      "equal": false
+    },
+    {
+      "flag": 115,
+      "equal": false
+    },
+    {
+      "flag": 116,
+      "equal": false
+    },
+    {
+      "flag": 117,
+      "equal": false
+    },
+    {
+      "flag": 118,
+      "equal": false
+    },
+    {
+      "flag": 119,
+      "equal": false
+    },
+    {
+      "flag": 120,
+      "equal": false
+    },
+    {
+      "flag": 121,
+      "equal": false
+    },
+    {
+      "flag": 122,
+      "equal": false
+    },
+    {
+      "flag": 123,
+      "equal": false
+    },
+    {
+      "flag": 124,
+      "equal": false
+    },
+    {
+      "flag": 125,
+      "equal": false
+    },
+    {
+      "flag": 126,
+      "equal": false
+    },
+    {
+      "flag": 127,
+      "equal": false
+    },
+    {
+      "flag": 128,
+      "equal": false
+    },
+    {
+      "flag": 129,
+      "equal": false
+    },
+    {
+      "flag": 130,
+      "equal": false
+    },
+    {
+      "flag": 131,
+      "equal": true
+    },
+    {
+      "flag": 132,
+      "equal": false
+    },
+    {
+      "flag": 133,
+      "equal": false
+    },
+    {
+      "flag": 134,
+      "equal": false
+    },
+    {
+      "flag": 135,
+      "equal": false
+    },
+    {
+      "flag": 136,
+      "equal": false
+    },
+    {
+      "flag": 137,
+      "equal": false
+    },
+    {
+      "flag": 138,
+      "equal": false
+    },
+    {
+      "flag": 139,
+      "equal": false
+    },
+    {
+      "flag": 140,
+      "equal": false
+    },
+    {
+      "flag": 141,
+      "equal": false
+    },
+    {
+      "flag": 142,
+      "equal": false
+    },
+    {
+      "flag": 143,
+      "equal": false
+    },
+    {
+      "flag": 144,
+      "equal": false
+    },
+    {
+      "flag": 145,
+      "equal": false
+    },
+    {
+      "flag": 146,
+      "equal": false
+    },
+    {
+      "flag": 147,
+      "equal": false
+    },
+    {
+      "flag": 148,
+      "equal": false
+    },
+    {
+      "flag": 149,
+      "equal": false
+    },
+    {
+      "flag": 150,
+      "equal": false
+    },
+    {
+      "flag": 151,
+      "equal": false
+    },
+    {
+      "flag": 152,
+      "equal": false
+    },
+    {
+      "flag": 153,
+      "equal": false
+    },
+    {
+      "flag": 154,
+      "equal": false
+    },
+    {
+      "flag": 155,
+      "equal": false
+    },
+    {
+      "flag": 156,
+      "equal": false
+    },
+    {
+      "flag": 157,
+      "equal": false
+    },
+    {
+      "flag": 158,
+      "equal": false
+    },
+    {
+      "flag": 159,
+      "equal": false
+    },
+    {
+      "flag": 160,
+      "equal": false
+    },
+    {
+      "flag": 161,
+      "equal": false
+    },
+    {
+      "flag": 162,
+      "equal": false
+    },
+    {
+      "flag": 163,
+      "equal": true
+    },
+    {
+      "flag": 164,
+      "equal": false
+    },
+    {
+      "flag": 165,
+      "equal": false
+    },
+    {
+      "flag": 166,
+      "equal": false
+    },
+    {
+      "flag": 167,
+      "equal": false
+    },
+    {
+      "flag": 168,
+      "equal": false
+    },
+    {
+      "flag": 169,
+      "equal": false
+    },
+    {
+      "flag": 170,
+      "equal": false
+    },
+    {
+      "flag": 171,
+      "equal": false
+    },
+    {
+      "flag": 172,
+      "equal": false
+    },
+    {
+      "flag": 173,
+      "equal": false
+    },
+    {
+      "flag": 174,
+      "equal": false
+    },
+    {
+      "flag": 175,
+      "equal": false
+    },
+    {
+      "flag": 176,
+      "equal": false
+    },
+    {
+      "flag": 177,
+      "equal": false
+    },
+    {
+      "flag": 178,
+      "equal": false
+    },
+    {
+      "flag": 179,
+      "equal": false
+    },
+    {
+      "flag": 180,
+      "equal": false
+    },
+    {
+      "flag": 181,
+      "equal": false
+    },
+    {
+      "flag": 182,
+      "equal": false
+    },
+    {
+      "flag": 183,
+      "equal": false
+    },
+    {
+      "flag": 184,
+      "equal": false
+    },
+    {
+      "flag": 185,
+      "equal": false
+    },
+    {
+      "flag": 186,
+      "equal": false
+    },
+    {
+      "flag": 187,
+      "equal": false
+    },
+    {
+      "flag": 188,
+      "equal": false
+    },
+    {
+      "flag": 189,
+      "equal": false
+    },
+    {
+      "flag": 190,
+      "equal": false
+    },
+    {
+      "flag": 191,
+      "equal": false
+    },
+    {
+      "flag": 192,
+      "equal": false
+    },
+    {
+      "flag": 193,
+      "equal": false
+    },
+    {
+      "flag": 194,
+      "equal": false
+    },
+    {
+      "flag": 195,
+      "equal": true
+    },
+    {
+      "flag": 196,
+      "equal": false
+    },
+    {
+      "flag": 197,
+      "equal": false
+    },
+    {
+      "flag": 198,
+      "equal": false
+    },
+    {
+      "flag": 199,
+      "equal": false
+    },
+    {
+      "flag": 200,
+      "equal": false
+    },
+    {
+      "flag": 201,
+      "equal": false
+    },
+    {
+      "flag": 202,
+      "equal": false
+    },
+    {
+      "flag": 203,
+      "equal": false
+    },
+    {
+      "flag": 204,
+      "equal": false
+    },
+    {
+      "flag": 205,
+      "equal": false
+    },
+    {
+      "flag": 206,
+      "equal": false
+    },
+    {
+      "flag": 207,
+      "equal": false
+    },
+    {
+      "flag": 208,
+      "equal": false
+    },
+    {
+      "flag": 209,
+      "equal": false
+    },
+    {
+      "flag": 210,
+      "equal": false
+    },
+    {
+      "flag": 211,
+      "equal": false
+    },
+    {
+      "flag": 212,
+      "equal": false
+    },
+    {
+      "flag": 213,
+      "equal": false
+    },
+    {
+      "flag": 214,
+      "equal": false
+    },
+    {
+      "flag": 215,
+      "equal": false
+    },
+    {
+      "flag": 216,
+      "equal": false
+    },
+    {
+      "flag": 217,
+      "equal": false
+    },
+    {
+      "flag": 218,
+      "equal": false
+    },
+    {
+      "flag": 219,
+      "equal": false
+    },
+    {
+      "flag": 220,
+      "equal": false
+    },
+    {
+      "flag": 221,
+      "equal": false
+    },
+    {
+      "flag": 222,
+      "equal": false
+    },
+    {
+      "flag": 223,
+      "equal": false
+    },
+    {
+      "flag": 224,
+      "equal": false
+    },
+    {
+      "flag": 225,
+      "equal": false
+    },
+    {
+      "flag": 226,
+      "equal": false
+    },
+    {
+      "flag": 227,
+      "equal": true
+    },
+    {
+      "flag": 228,
+      "equal": false
+    },
+    {
+      "flag": 229,
+      "equal": false
+    },
+    {
+      "flag": 230,
+      "equal": false
+    },
+    {
+      "flag": 231,
+      "equal": false
+    },
+    {
+      "flag": 232,
+      "equal": false
+    },
+    {
+      "flag": 233,
+      "equal": false
+    },
+    {
+      "flag": 234,
+      "equal": false
+    },
+    {
+      "flag": 235,
+      "equal": false
+    },
+    {
+      "flag": 236,
+      "equal": false
+    },
+    {
+      "flag": 237,
+      "equal": false
+    },
+    {
+      "flag": 238,
+      "equal": false
+    },
+    {
+      "flag": 239,
+      "equal": false
+    },
+    {
+      "flag": 240,
+      "equal": false
+    },
+    {
+      "flag": 241,
+      "equal": false
+    },
+    {
+      "flag": 242,
+      "equal": false
+    },
+    {
+      "flag": 243,
+      "equal": false
+    },
+    {
+      "flag": 244,
+      "equal": false
+    },
+    {
+      "flag": 245,
+      "equal": false
+    },
+    {
+      "flag": 246,
+      "equal": false
+    },
+    {
+      "flag": 247,
+      "equal": false
+    },
+    {
+      "flag": 248,
+      "equal": false
+    },
+    {
+      "flag": 249,
+      "equal": false
+    },
+    {
+      "flag": 250,
+      "equal": false
+    },
+    {
+      "flag": 251,
+      "equal": false
+    },
+    {
+      "flag": 252,
+      "equal": false
+    },
+    {
+      "flag": 253,
+      "equal": false
+    },
+    {
+      "flag": 254,
+      "equal": false
+    },
+    {
+      "flag": 255,
+      "equal": false
+    }
+  ],
+  "output_variants": [
+    {
+      "single": "0100000000000000000000000000000000000000000000000000000000000000",
+      "all": "1d905e0bb52b7494fd92ef310b8ff8087bc03d5dcabf525f4013b2959899a0ac"
+    },
+    {
+      "single": "0100000000000000000000000000000000000000000000000000000000000000",
+      "all": "66ba814d162266deb3e709587eea92b16e91587844583f082eb7220a93a4b7c6"
+    },
+    {
+      "single": "0100000000000000000000000000000000000000000000000000000000000000",
+      "all": "34fece3935c0e2a50e15d17918eddcc86b4a1c74b7f35a72fdee5a5cd0399389"
+    },
+    {
+      "single": "0100000000000000000000000000000000000000000000000000000000000000",
+      "all": "1c3621f74a93fbe7449ec7dd74b9c9b1b494ac69d672788f8baf76b3c409cac9"
+    }
+  ],
+  "variable_signature_equality_layout": {
+    "raw_script": "52798201218875517982012188750079820121887552795279879169527951798791695179517987916953795379ad53795279ad53795179adab53795379ad53795279ad53795179ad6d6d51",
+    "raw_bytes": 76,
+    "counted_opcodes": 48,
+    "entry_data_items": 4,
+    "entry_signature_data_items": 1,
+    "entry_key_data_items": 3,
+    "auxiliary_hint_items": 0,
+    "combined_stack_peak_by_inspection": 7,
+    "code_separator": true,
+    "entry_bottom_to_top": [
+      "sigma",
+      "Q0",
+      "Q1",
+      "Q2"
+    ],
+    "scope": "complete raw predicate layout; no execution or transaction; variable sighash flag not constrained to ALL"
+  },
+  "literal_single_all_layout": {
+    "raw_script": "527982012188755179820121887500798201218875527952798791695279517987916951795179879169093006020102020101035379ad093006020102020101035279ad093006020102020101035179ad093006020102020101015379ad093006020102020101015279ad093006020102020101015179ad6d7551",
+    "raw_bytes": 123,
+    "counted_opcodes": 41,
+    "entry_data_items": 3,
+    "hint_items": 0,
+    "combined_stack_peak_by_inspection": 6,
+    "literal_signatures": [
+      "300602010202010103",
+      "300602010202010101"
+    ],
+    "all_scriptcode": "527982012188755179820121887500798201218875527952798791695279517987916951795179879169093006020102020101035379ad093006020102020101035279ad093006020102020101035179ad5379ad5279ad5179ad6d7551",
+    "single_scriptcode": "5279820121887551798201218875007982012188755279527987916952795179879169517951798791695379ad5279ad5179ad093006020102020101015379ad093006020102020101015279ad093006020102020101015179ad6d7551",
+    "script_sig_bytes": null,
+    "serialized_witness_bytes": null,
+    "resource_boundary": "Raw complete predicate, no input pushes or transaction; not policy compiled.",
+    "cases": [
+      {
+        "scalars": [
+          "452312848583266388373324160190187140051835877600158453279131187530910662656",
+          "58293099155173501108761017175587446824134868048692250934891213058980763677235"
+        ],
+        "checks": [
+          [
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ]
+      },
+      {
+        "scalars": [
+          "452312848583266388373324160190187140051835877600158453279131187530910662656",
+          "29973848236777690167970060970907250548068038145276588342438268924756489660722"
+        ],
+        "checks": [
+          [
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ]
+      },
+      {
+        "scalars": [
+          "452312848583266388373324160190187140051835877600158453279131187530910662656",
+          "32391588078046153043621167461471705197403355334451843032238895328170786495758"
+        ],
+        "checks": [
+          [
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ]
+      },
+      {
+        "scalars": [
+          "452312848583266388373324160190187140051835877600158453279131187530910662656",
+          "67545325536341209947580258166118185858966709552065598404287580331123893117886"
+        ],
+        "checks": [
+          [
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ]
+      }
+    ]
+  },
+  "two_root_scaling_vectors": [
+    {
+      "k": 1,
+      "t": 1,
+      "r_a": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "s_a": 17,
+      "r_b": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "s_b": "17",
+      "target_scalar": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+      "keys": [
+        "03d01b75357212df130e0b7fc3c0652f018017a2df20cfd415f1cbf512cabe3c84",
+        "035b09e98c98b67b047fd6983c934c254b2e0a5c3b13ec2875b279e83bd1e81953"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 1,
+      "t": 2,
+      "r_a": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "s_a": 17,
+      "r_b": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_b": "11244668801003087773892289418455767454221092122825533022278886958187109660127",
+      "target_scalar": "13258029043418374129121889626315428085470022982406103905162501461669783461654",
+      "keys": [
+        "03d01b75357212df130e0b7fc3c0652f018017a2df20cfd415f1cbf512cabe3c84",
+        "035b09e98c98b67b047fd6983c934c254b2e0a5c3b13ec2875b279e83bd1e81953"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 1,
+      "t": 5,
+      "r_a": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "s_a": 17,
+      "r_b": "21505829891763648114329055987619236494102133314575206970830385799158076338148",
+      "s_b": "39766053553230703793336714421675486924179422930915472679746076412668446982607",
+      "target_scalar": "89063002913543783364453415719683852469213324576267261086328976167727820955489",
+      "keys": [
+        "03d01b75357212df130e0b7fc3c0652f018017a2df20cfd415f1cbf512cabe3c84",
+        "035b09e98c98b67b047fd6983c934c254b2e0a5c3b13ec2875b279e83bd1e81953"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 1,
+      "t": 13,
+      "r_a": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "s_a": 17,
+      "r_b": "109699032664856045668214896063362497021339186688470416858630178803463338613416",
+      "s_b": "44633745030193607858379199314333114087037403755137511654013332823445286277562",
+      "target_scalar": "92935143643511301523170584014618824289711636943057283754702903755957739468493",
+      "keys": [
+        "03d01b75357212df130e0b7fc3c0652f018017a2df20cfd415f1cbf512cabe3c84",
+        "035b09e98c98b67b047fd6983c934c254b2e0a5c3b13ec2875b279e83bd1e81953"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 2,
+      "t": 1,
+      "r_a": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_a": 17,
+      "r_b": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_b": "17",
+      "target_scalar": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+      "keys": [
+        "02d2bf46d436445e0e70dcbd6c16b93334c0b80de6cdc44f6a15c37c34b3677efa",
+        "02f048149784f1c2db9e4c5844618da24953ca139ee2a50a0227ed8e0710813461"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 2,
+      "t": 2,
+      "r_a": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_a": 17,
+      "r_b": "103388573995635080359749164254216598308788835304023601477803095234286494993683",
+      "s_b": "34516825169516216416516484280425151887526629082281171560262133318476424721582",
+      "target_scalar": "68236583322770155771055405054029079261583993750037289759132624524258609652093",
+      "keys": [
+        "02d2bf46d436445e0e70dcbd6c16b93334c0b80de6cdc44f6a15c37c34b3677efa",
+        "02f048149784f1c2db9e4c5844618da24953ca139ee2a50a0227ed8e0710813461"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 2,
+      "t": 5,
+      "r_a": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_a": 17,
+      "r_b": "72488970228380509287422715226575535698893157273063074627791787432852706183111",
+      "s_b": "17602500429247437064830465359164831517232540999263011661112914705525670154769",
+      "target_scalar": "92520730493363564567529870656494215216440152905371607057232511551266730431852",
+      "keys": [
+        "02d2bf46d436445e0e70dcbd6c16b93334c0b80de6cdc44f6a15c37c34b3677efa",
+        "02f048149784f1c2db9e4c5844618da24953ca139ee2a50a0227ed8e0710813461"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 2,
+      "t": 13,
+      "r_a": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "s_a": 17,
+      "r_b": "46375854666189782329411331467438732923135312366454677774518044107217916677258",
+      "s_b": "32555678319715732315032217598721461800710488923133354227428617559079017675144",
+      "target_scalar": "13760888957231607649357163675533946543454685247175389996248162771478463002739",
+      "keys": [
+        "02d2bf46d436445e0e70dcbd6c16b93334c0b80de6cdc44f6a15c37c34b3677efa",
+        "02f048149784f1c2db9e4c5844618da24953ca139ee2a50a0227ed8e0710813461"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 7,
+      "t": 1,
+      "r_a": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "s_a": 17,
+      "r_b": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "s_b": "17",
+      "target_scalar": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+      "keys": [
+        "02522d80deaa7822b685c35317faa6fdf804fdb6ec54051d56136178648bcb8d2c",
+        "039c0cf8aa04178cdc66a0e61dea2b1c2f6287d8690f8b47693dc32dfc8973e240"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 7,
+      "t": 2,
+      "r_a": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "s_a": 17,
+      "r_b": "33301309993451753050311554695703528430361259803437469669590207169100761277412",
+      "s_b": "33559874752359271277604137929182526818440092719333347493616225222512567302110",
+      "target_scalar": "38528054406042419954617712917116269876260204970329691010795162158103067801091",
+      "keys": [
+        "02522d80deaa7822b685c35317faa6fdf804fdb6ec54051d56136178648bcb8d2c",
+        "039c0cf8aa04178cdc66a0e61dea2b1c2f6287d8690f8b47693dc32dfc8973e240"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 7,
+      "t": 5,
+      "r_a": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "s_a": 17,
+      "r_b": "43584328072464330665967763306297595761508151294385275883849271528835646125177",
+      "s_b": "4759419907850905902790943110314562428821915742062399640767637759886581379826",
+      "target_scalar": "16722386874606175950524357136220841458932547302104602605034509970307823825793",
+      "keys": [
+        "02522d80deaa7822b685c35317faa6fdf804fdb6ec54051d56136178648bcb8d2c",
+        "039c0cf8aa04178cdc66a0e61dea2b1c2f6287d8690f8b47693dc32dfc8973e240"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 7,
+      "t": 13,
+      "r_a": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "s_a": 17,
+      "r_b": "10015981868058348984327315527227986149044397160813174099363811020333633533456",
+      "s_b": "50066171222576864371189218642746739354071007047874022721123875249005228842296",
+      "target_scalar": "77625761753256399089879928120786111529912525668899480724701020910220435275430",
+      "keys": [
+        "02522d80deaa7822b685c35317faa6fdf804fdb6ec54051d56136178648bcb8d2c",
+        "039c0cf8aa04178cdc66a0e61dea2b1c2f6287d8690f8b47693dc32dfc8973e240"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 19,
+      "t": 1,
+      "r_a": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "s_a": 17,
+      "r_b": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "s_b": "17",
+      "target_scalar": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+      "keys": [
+        "03397a4faa5c5f572bbc85c29bd41fa503e31db51a7046f70de83757c8f4f11beb",
+        "0221ea914dc61e807804e509eb2e7046ca83d9be9e60c4843cda86823c0ccd27e3"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 19,
+      "t": 2,
+      "r_a": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "s_a": 17,
+      "r_b": "82592391416753704330480457266605199466589998476548643675167586509583694299127",
+      "s_b": "42421513982445834979796334201930877297006016918327234549948574642074480673381",
+      "target_scalar": "108979451182090360270174928435294938688678045355910361017418557935331340729361",
+      "keys": [
+        "03397a4faa5c5f572bbc85c29bd41fa503e31db51a7046f70de83757c8f4f11beb",
+        "0221ea914dc61e807804e509eb2e7046ca83d9be9e60c4843cda86823c0ccd27e3"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 19,
+      "t": 5,
+      "r_a": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "s_a": 17,
+      "r_b": "9882445446243370679019973441389370914782298169440461435976781902375353582684",
+      "s_b": "57524803096780343139536604975846471247904284500427784190860016096770164695993",
+      "target_scalar": "141389894060795794781308939599910562691229078312514715451026734557324919379",
+      "keys": [
+        "03397a4faa5c5f572bbc85c29bd41fa503e31db51a7046f70de83757c8f4f11beb",
+        "0221ea914dc61e807804e509eb2e7046ca83d9be9e60c4843cda86823c0ccd27e3"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    },
+    {
+      "k": 19,
+      "t": 13,
+      "r_a": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "s_a": 17,
+      "r_b": "71524349876080964458635046114400672996421062511196703656602420613989324681047",
+      "s_b": "4411692396778441924773724810728882941417199899465335617819524104913676372952",
+      "target_scalar": "18838620384866279547780585821246572261582876045011855084847986119650893064277",
+      "keys": [
+        "03397a4faa5c5f572bbc85c29bd41fa503e31db51a7046f70de83757c8f4f11beb",
+        "0221ea914dc61e807804e509eb2e7046ca83d9be9e60c4843cda86823c0ccd27e3"
+      ],
+      "both_signatures_verify_under_both_keys": true
+    }
+  ],
+  "obligations": [
+    "The SINGLE-bug constant does not itself bind outputs.",
+    "Same-signature three-key equality does not extend to unrelated signatures.",
+    "The scaled two-key family still needs its target to equal the actual ALL scalar.",
+    "No byte-extraction, flag-rewrite, hash preimage, or full reference evaluator was supplied."
+  ]
+}

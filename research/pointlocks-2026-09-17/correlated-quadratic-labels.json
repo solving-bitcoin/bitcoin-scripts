@@ -1,0 +1,402 @@
+{
+  "question": "Can correlated scalar candidates evade the quadratic two-label subset boundary?",
+  "conclusion": "Not for a full t-of-N alphabet with every t+1 linear forms independent: N-t <= 3 is necessary.",
+  "field": 101,
+  "finite_degree_screens": [
+    {
+      "candidates": 4,
+      "opened": 1,
+      "secret_dimension": 2,
+      "subset_count": 4,
+      "predicted_initial_degree": 4,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 2,
+          "rank": 2,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 3,
+          "rank": 3,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 4,
+          "rank": 4,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 5,
+          "rank": 4,
+          "kernel_dimension": 1
+        }
+      ]
+    },
+    {
+      "candidates": 5,
+      "opened": 1,
+      "secret_dimension": 2,
+      "subset_count": 5,
+      "predicted_initial_degree": 5,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 2,
+          "rank": 2,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 3,
+          "rank": 3,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 4,
+          "rank": 4,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 5,
+          "rank": 5,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 5,
+          "monomials": 6,
+          "rank": 5,
+          "kernel_dimension": 1
+        }
+      ]
+    },
+    {
+      "candidates": 5,
+      "opened": 2,
+      "secret_dimension": 3,
+      "subset_count": 10,
+      "predicted_initial_degree": 4,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 3,
+          "rank": 3,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 6,
+          "rank": 6,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 10,
+          "rank": 10,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 15,
+          "rank": 10,
+          "kernel_dimension": 5
+        }
+      ]
+    },
+    {
+      "candidates": 6,
+      "opened": 2,
+      "secret_dimension": 3,
+      "subset_count": 15,
+      "predicted_initial_degree": 5,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 3,
+          "rank": 3,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 6,
+          "rank": 6,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 10,
+          "rank": 10,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 15,
+          "rank": 15,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 5,
+          "monomials": 21,
+          "rank": 15,
+          "kernel_dimension": 6
+        }
+      ]
+    },
+    {
+      "candidates": 6,
+      "opened": 3,
+      "secret_dimension": 4,
+      "subset_count": 20,
+      "predicted_initial_degree": 4,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 4,
+          "rank": 4,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 10,
+          "rank": 10,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 20,
+          "rank": 20,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 35,
+          "rank": 20,
+          "kernel_dimension": 15
+        }
+      ]
+    },
+    {
+      "candidates": 7,
+      "opened": 3,
+      "secret_dimension": 4,
+      "subset_count": 35,
+      "predicted_initial_degree": 5,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 4,
+          "rank": 4,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 10,
+          "rank": 10,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 20,
+          "rank": 20,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 35,
+          "rank": 35,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 5,
+          "monomials": 56,
+          "rank": 35,
+          "kernel_dimension": 21
+        }
+      ]
+    },
+    {
+      "candidates": 7,
+      "opened": 4,
+      "secret_dimension": 5,
+      "subset_count": 35,
+      "predicted_initial_degree": 4,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 5,
+          "rank": 5,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 15,
+          "rank": 15,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 35,
+          "rank": 35,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 70,
+          "rank": 35,
+          "kernel_dimension": 35
+        }
+      ]
+    },
+    {
+      "candidates": 8,
+      "opened": 4,
+      "secret_dimension": 5,
+      "subset_count": 70,
+      "predicted_initial_degree": 5,
+      "degrees": [
+        {
+          "degree": 0,
+          "monomials": 1,
+          "rank": 1,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 1,
+          "monomials": 5,
+          "rank": 5,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 2,
+          "monomials": 15,
+          "rank": 15,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 3,
+          "monomials": 35,
+          "rank": 35,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 4,
+          "monomials": 70,
+          "rank": 70,
+          "kernel_dimension": 0
+        },
+        {
+          "degree": 5,
+          "monomials": 126,
+          "rank": 70,
+          "kernel_dimension": 56
+        }
+      ]
+    }
+  ],
+  "curve_controls": [
+    {
+      "candidates": 4,
+      "opened": 1,
+      "secret_dimension": 2,
+      "selected_views": 4,
+      "label_vector_lengths": [
+        1,
+        1
+      ],
+      "recovered_point_components": 4,
+      "square_cdh_embeddings": 4
+    },
+    {
+      "candidates": 5,
+      "opened": 2,
+      "secret_dimension": 3,
+      "selected_views": 10,
+      "label_vector_lengths": [
+        1,
+        3
+      ],
+      "recovered_point_components": 16,
+      "square_cdh_embeddings": 10
+    },
+    {
+      "candidates": 6,
+      "opened": 3,
+      "secret_dimension": 4,
+      "selected_views": 20,
+      "label_vector_lengths": [
+        1,
+        6
+      ],
+      "recovered_point_components": 40,
+      "square_cdh_embeddings": 20
+    }
+  ],
+  "tests_run": 8,
+  "evidence": "locally-reproduced",
+  "algebra_evidence": "inspected",
+  "deployment": "unclassified",
+  "complete_publication": false,
+  "native_wrapper_added": false,
+  "public_garbling_verified": false,
+  "setup_benchmark": null,
+  "locking_script_bytes": null,
+  "serialized_witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "total_onchain_vbytes": null,
+  "primary_reference": "https://arxiv.org/pdf/1203.5685v1",
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/correlated_quadratic_label_probe.py": "d25a7c4626076c373f5290564c54008ea220ed5abb31d155d546d29f708a2cb6",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

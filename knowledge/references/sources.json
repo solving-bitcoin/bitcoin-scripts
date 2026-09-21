@@ -1,7 +1,70 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-17",
   "sources": [
+    {
+      "id": "star-configurations-1203-5685v1",
+      "title": "Geramita, Harbourne and Migliore: Star configurations in P^n",
+      "kind": "paper",
+      "url": "https://arxiv.org/pdf/1203.5685v1",
+      "revision": "arXiv:1203.5685v1, 2012-03-26, 20 pages; inspected 2026-09-18, Definition 2.1 and Proposition 2.9(4). Initial-degree property of star-configuration ideals only. The point-label application, direct field-algebra proof and exact finite-field/curve controls are separate local work; no Bitcoin construction or cryptographic theorem is inherited."
+    },
+    {
+      "id": "gess-asiacrypt-2005",
+      "title": "Kolesnikov: Gate Evaluation Secret Sharing and Secure One-Round Two-Party Computation",
+      "kind": "paper",
+      "url": "https://www.cs.toronto.edu/~vlad/papers/GESS_AC05Proceedings.pdf",
+      "revision": "ASIACRYPT 2005 proceedings, LNCS 3788, pp. 136-155, DOI 10.1007/11593447_8, 20-page author-hosted copy; inspected 2026-09-18, sections 1 and 2.1. Framework and semi-honest OT setting only. Local symmetric scalar-vector gate is not a reproduction of the optimized formula construction or its complete protocol."
+    },
+    {
+      "id": "privacy-free-formulas-2017-561",
+      "title": "Kondi and Patra: Privacy-Free Garbled Circuits for Formulas: Size Zero and Information-Theoretic",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2017/561.pdf",
+      "revision": "32-page PDF, 443776 bytes, SHA256 7a94174c813678cb629e65cedfc751e693b6b6b9efac7f6a6f64dd6ea74f75ab; inspected 2026-09-18, Definition 4 and Figures 2 and 6. Local scalar-point AND adaptation is distinct from the XOR-string formula scheme and does not refute its output-authenticity theorem."
+    },
+    {
+      "id": "cross-key-ecdsa-linear-system-2605-21498v1",
+      "title": "Madhwal et al.: Chain Reactions: How Nonce Collisions in ECDSA Compromise Polygon MEV Searchers",
+      "kind": "paper",
+      "url": "https://arxiv.org/html/2605.21498v1",
+      "revision": "arXiv:2605.21498v1, 2026-05-03; inspected 2026-09-18, section IV-C, cross-key linear system only. External transaction cases not reproduced. Local point-lock research independently checks the necessary nonzero-rank condition, including a synthetic degenerate control; no native Bitcoin extraction guarantee inherited."
+    },
+    {
+      "id": "aikw-constant-online-rate-20140827",
+      "title": "Applebaum, Ishai, Kushilevitz and Waters: Encoding Functions with Constant Online Rate or How to Compress Garbled Circuit Keys",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2012/693.pdf",
+      "revision": "38-page version dated 2014-08-27; inspected 2026-09-18, sections 3.1-3.2, 3.5 and adaptive-security qualification in 2.1. Scalar aggregate-key DDH encoding, not a native Bitcoin or malicious-setup construction."
+    },
+    {
+      "id": "tinylabels-20250312",
+      "title": "Dietz, Li and Lin: TinyLabels: How to Compress Garbled Circuit Input Labels, Efficiently",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2024/2048.pdf",
+      "revision": "81-page ePrint revision 2025-03-12, EUROCRYPT 2025; inspected 2026-09-18, sections 2.1 and 6. Ring-LWE batch-select, not a single secp256k1 scalar or a native Bitcoin opening. No execution of the authors' implementation."
+    },
+    {
+      "id": "argo-mac-20260118",
+      "title": "Eagen and Lai: Argo MAC: Garbling with Elliptic Curve MACs",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2026/049",
+      "revision": "14-page PDF dated 2026-01-18; ePrint metadata revised 2026-01-19. Inspected 2026-09-18 through zk-coins/research commit 0534c7236fd612705c8a3fbe1d60de22a9acb768, argo-mac-paper.pdf, SHA256 1b31f6167607555d4aaf8329effbdd702b756606fb209f9a58098357cfdd362a. Published component timings are reported, not locally reproduced. No native point-lock or public malicious-setup verifier inferred."
+    },
+    {
+      "id": "duty-free-bits-20260310",
+      "title": "Khambhati, Bhattacharya and Heath: Duty-Free Bits: Projectivizing Garbling Schemes",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2026/476",
+      "revision": "Official abstract and metadata inspected 2026-09-18; revision 2026-03-10, received 2026-03-08. Full PDF not obtained; no claim to have reviewed all proofs. Projectivization and VOLE/OT application do not alone establish native Bitcoin scalar extraction or public malicious-setup checking."
+    },
+    {
+      "id": "duty-free-bits-implementation-594fb4de",
+      "title": "Alpen Labs: Duty-Free Bits affine partial-garbling implementation",
+      "kind": "reference-implementation",
+      "url": "https://github.com/alpenlabs/duty-free-bits/tree/594fb4de28fac1f76a93cf9a10cee7a0262b0a52",
+      "revision": "594fb4de28fac1f76a93cf9a10cee7a0262b0a52; inspected 2026-09-18. Split pgs API and CRT-smudging/output-mask accounting inspected. Two exact upstream correctness tests locally reproduced in debug mode using upstream runtime randomness. No benchmark, Bitcoin integration or public malicious-setup verification claimed; file hashes and commands in research/pointlocks-2026-09-17/arithmetic-garbling-interface.json."
+    },
     {
       "id": "bip-16",
       "title": "BIP 16: Pay to Script Hash",
@@ -147,7 +210,7 @@
       "title": "Binohash: Transaction Introspection Without Softforks",
       "kind": "paper",
       "url": "https://robinlinus.com/binohash.pdf",
-      "revision": "2026 PDF reviewed 2026-09-01"
+      "revision": "33-page PDF inspected 2026-09-19, section 6.4 and Appendix B; SHA256 1be2b63034a86db1f9f4a35c7963248d307583723079ff25284a9fc4affee94a; earlier whole-paper review 2026-09-01"
     },
     {
       "id": "one-time-ves",
@@ -288,6 +351,48 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "bch-fri-stark-execution-binding-20260727",
+      "title": "BCH DEEP-ALI FRI-STARK verifier: mandatory auxiliary-input execution binding",
+      "kind": "upstream-source",
+      "url": "https://github.com/0zkbrewer/BCH-FRI-STARK-Verifier/tree/a600e828d68eb41840049cb16d0c21850ff9df57",
+      "revision": "a600e828d68eb41840049cb16d0c21850ff9df57 (2026-07-27); inspected 2026-09-17 for spent-locking-script and shared-transcript binding. Requires BCH introspection/CAT/SPLIT; no BTC construction or local execution claimed. Fully wired redeployment and full-parameter proving run remain pending in this version."
+    },
+    {
+      "id": "functional-adaptor-he-20251222",
+      "title": "Functional adaptor signatures from homomorphic encryption: implementation",
+      "kind": "upstream-source",
+      "url": "https://github.com/nikhilvanjani/fas-from-he-impl/tree/f59875bbf739280e6fdb460232e3cef00b604f25",
+      "revision": "f59875bbf739280e6fdb460232e3cef00b604f25 (2025-12-22); inspected 2026-09-17. Ordinary signing key retained; Python full-point Schnorr encoding is not native BIP340. No source execution or BTC composition claimed."
+    },
+    {
+      "id": "almost-scriptless-adaptors-2026-1346",
+      "title": "Almost Scriptless Adaptor Signatures from any Signature Scheme",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2026/1346.pdf",
+      "revision": "44-page PDF received 2026-06-30; approved 2026-07-02; inspected 2026-09-17; SHA256 194906ef1974c48fd469c77515b4c25d639118f27ddcb108564979e1a02a637f. Targeted audit of master-key setup, functional-key guarantees, message extension and compiler prerequisites; no concrete BTC or sub-2^64 covenant established."
+    },
+    {
+      "id": "shamir-secret-sharing-1979",
+      "title": "Adi Shamir: How to Share a Secret",
+      "kind": "paper",
+      "url": "https://web.mit.edu/6.857/OldStuff/Fall03/ref/Shamir-HowToShareASecret.pdf",
+      "revision": "Communications of the ACM 22(11), November 1979, pp. 612-613; two-page published version; inspected 2026-09-18 for threshold interpolation, not Bitcoin or malicious encrypted-share binding."
+    },
+    {
+      "id": "kolesnikov-schneider-free-xor-2008",
+      "title": "Kolesnikov and Schneider: Improved Garbled Circuit: Free XOR Gates and Applications",
+      "kind": "paper",
+      "url": "https://encrypto.de/papers/KS08XOR.pdf",
+      "revision": "ICALP 2008, LNCS 5126, pp. 486-498; 13-page published version; inspected 2026-09-18, section 3 common offset and random-oracle semi-honest construction. Does not certify the local malicious-setup protocol."
+    },
+    {
+      "id": "wots-lamport-translation-2026-1684",
+      "title": "Sergeevitch, Staniec, Tse, Vanjani and Woll: Non-Interactive Translation of Winternitz Signatures to Lamport Signatures via Secret Sharing",
+      "kind": "paper",
+      "url": "https://eprint.iacr.org/2026/1684.pdf",
+      "revision": "22-page PDF title-dated 2026-07-27; ePrint received 2026-08-13, approved 2026-08-15; SHA256 64911295ba6ffa3e3b23c8075bb074d8995e55f11d1b949c5f17a59e10124745. Inspected 2026-09-18, sections 4-10; local access-count/reconstruction probe is separate from its reported protocol and performance. Full security details are deferred in section 8. No native point-scalar or public malicious-table validation inherited."
     }
   ]
 }

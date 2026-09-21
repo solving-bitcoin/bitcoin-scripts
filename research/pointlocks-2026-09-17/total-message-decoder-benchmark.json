@@ -1,0 +1,235 @@
+{
+  "bitcoin_execution_this_run": false,
+  "boundary_checks": {
+    "cases": [
+      {
+        "codeword_at_or_above_2_2048": false,
+        "name": "zero",
+        "output_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "valid": true
+      },
+      {
+        "codeword_at_or_above_2_2048": false,
+        "name": "maximum-message",
+        "output_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "valid": true
+      },
+      {
+        "codeword_at_or_above_2_2048": true,
+        "name": "first-unused-codeword",
+        "output_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "valid": true
+      },
+      {
+        "codeword_at_or_above_2_2048": true,
+        "name": "second-unused-codeword",
+        "output_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+        "valid": true
+      },
+      {
+        "codeword_at_or_above_2_2048": true,
+        "name": "maximum-codeword",
+        "output_hex": "6d44a050d2b48e1de710faaa93988aca148ccae32ccb29f5bb29e7ee6f9da093cf73cddc1c4ef86f889f8e3a42ced098fa21f0889a35c69d8cb12bd1a58f0a7c69e0ce6532a491281b079c42b5aa505a90477687828239aa4dd2de053a2237603a654c1e45cef9e615fd1df070261493519bdc40e2a5dfc179302e839f0358e33d0d518953daec621216173409b7021e34c58ccb1502b8e6057a8c8df68db19ace1782eb86a64933f2bea172462580674b9dc71c0d885f0a348e5b1d5e0ffe1cb7e925e25696871e87330bf33e5456b0d591ef20bf2fda1bd4c7ed922ecbadfd233d5dbfffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "valid": true
+      }
+    ],
+    "corrupted_input_label_rejected": true,
+    "false_pool_validity_rejected": true,
+    "malformed_rank_rejected": true,
+    "scope": "Garbler-held label pairs supply these boundary vectors; no additional native spends are claimed."
+  },
+  "build_profile": "release",
+  "deployment": "unclassified",
+  "encrypted_share_bytes": 4508000,
+  "evidence": "locally-reproduced",
+  "incremental_hint_items": 0,
+  "incremental_onchain_script_bytes": 0,
+  "incremental_onchain_stack_items": 0,
+  "incremental_onchain_witness_bytes": 0,
+  "input_label_commitment_bytes": 368000,
+  "message_rule": "Little-endian mixed-radix integer modulo2^2048; overflow codewords are accepted and map to one256-byte message.",
+  "native_composition": {
+    "global_validity_labels": 1,
+    "membership_wire_labels": 5750,
+    "message_labels": 2048,
+    "payload_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+    "payload_matches": true,
+    "rank_and_validity_labels": 2185,
+    "scalar_opening_occurrences": 460,
+    "scope": "Actual encrypted-share openings and composed garbled evaluation using cached Core scalar records; no fresh Core run.",
+    "valid": true
+  },
+  "native_report_sha256": "03a59ef98a078ee305a1793064124514baee96368b2ea63f4cb6841671d34392",
+  "pointlock_extraction_soundness_proved": false,
+  "public_malicious_setup_binding": false,
+  "public_setup_verification_ms": null,
+  "samples": [
+    {
+      "generation_ms": 341.823792,
+      "generation_plus_opened_audit_ms": 690.483959,
+      "mixed_radix_and_gates": 472482,
+      "mixed_radix_evaluation_ms": 61.958791999999995,
+      "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+      "mixed_radix_garbled_payload_bytes": 30370000,
+      "mixed_radix_generation_ms": 270.080917,
+      "mixed_radix_opened_audit_ms": 312.303542,
+      "mixed_radix_xor_gates": 1764286,
+      "opened_audit_ms": 348.660167,
+      "rank_garbled_payload_bytes": 35712560,
+      "sample": 0,
+      "translation_and_rank_evaluation_ms": 71.42779200000001,
+      "translation_and_rank_generation_ms": 71.742875,
+      "translation_and_rank_opened_audit_ms": 36.356624999999994
+    },
+    {
+      "generation_ms": 348.782958,
+      "generation_plus_opened_audit_ms": 701.054291,
+      "mixed_radix_and_gates": 472482,
+      "mixed_radix_evaluation_ms": 61.636375,
+      "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+      "mixed_radix_garbled_payload_bytes": 30370000,
+      "mixed_radix_generation_ms": 298.504167,
+      "mixed_radix_opened_audit_ms": 316.18183300000004,
+      "mixed_radix_xor_gates": 1764286,
+      "opened_audit_ms": 352.271333,
+      "rank_garbled_payload_bytes": 35712560,
+      "sample": 1,
+      "translation_and_rank_evaluation_ms": 70.54516600000001,
+      "translation_and_rank_generation_ms": 50.278791000000005,
+      "translation_and_rank_opened_audit_ms": 36.089499999999994
+    },
+    {
+      "generation_ms": 337.268416,
+      "generation_plus_opened_audit_ms": 710.3742070000001,
+      "mixed_radix_and_gates": 472482,
+      "mixed_radix_evaluation_ms": 61.580458,
+      "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+      "mixed_radix_garbled_payload_bytes": 30370000,
+      "mixed_radix_generation_ms": 287.338416,
+      "mixed_radix_opened_audit_ms": 336.131458,
+      "mixed_radix_xor_gates": 1764286,
+      "opened_audit_ms": 373.105791,
+      "rank_garbled_payload_bytes": 35712560,
+      "sample": 2,
+      "translation_and_rank_evaluation_ms": 71.095875,
+      "translation_and_rank_generation_ms": 49.93,
+      "translation_and_rank_opened_audit_ms": 36.974333
+    },
+    {
+      "generation_ms": 325.723625,
+      "generation_plus_opened_audit_ms": 666.918667,
+      "mixed_radix_and_gates": 472482,
+      "mixed_radix_evaluation_ms": 63.882625,
+      "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+      "mixed_radix_garbled_payload_bytes": 30370000,
+      "mixed_radix_generation_ms": 274.04725,
+      "mixed_radix_opened_audit_ms": 307.130667,
+      "mixed_radix_xor_gates": 1764286,
+      "opened_audit_ms": 341.195042,
+      "rank_garbled_payload_bytes": 35712560,
+      "sample": 3,
+      "translation_and_rank_evaluation_ms": 74.10508300000001,
+      "translation_and_rank_generation_ms": 51.67637499999999,
+      "translation_and_rank_opened_audit_ms": 34.064375
+    },
+    {
+      "generation_ms": 397.12975,
+      "generation_plus_opened_audit_ms": 734.557416,
+      "mixed_radix_and_gates": 472482,
+      "mixed_radix_evaluation_ms": 61.789291000000006,
+      "mixed_radix_fingerprint_blake3": "7611de86eae60580d71a18701c71ab1f88c4e692e195841184643031e97fd69c",
+      "mixed_radix_garbled_payload_bytes": 30370000,
+      "mixed_radix_generation_ms": 304.423875,
+      "mixed_radix_opened_audit_ms": 301.011458,
+      "mixed_radix_xor_gates": 1764286,
+      "opened_audit_ms": 337.427666,
+      "rank_garbled_payload_bytes": 35712560,
+      "sample": 4,
+      "translation_and_rank_evaluation_ms": 73.261291,
+      "translation_and_rank_generation_ms": 92.70587499999999,
+      "translation_and_rank_opened_audit_ms": 36.416208
+    }
+  ],
+  "scope": "All115 independent 4-of-50 target pools, actual complement ciphertexts and per-pool garblings, private inter-circuit wiring, full2048-bit mixed-radix GC. Generation and all-secrets audit are separate. Public setup verification, BitVM3 verifier/garbling copies, native scripts/transactions, process startup and executable compilation are excluded. No free table cache.",
+  "target_point_bytes": 189750,
+  "workers": 15,
+  "command": [
+    "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_total_message_probe",
+    "--workers",
+    "15",
+    "--samples",
+    "5",
+    "--native-recovery",
+    "/Users/robinlinus/projects/bitcoin-lab/research/pointlocks-2026-09-17/anchored_publication_core_check.json"
+  ],
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "memory_bytes": 25769803776,
+    "machine": "arm64",
+    "operating_system": "Darwin",
+    "operating_system_version": "26.6.1"
+  },
+  "sha256": {
+    "examples/pointlock_total_message_probe.rs": "5fa84c131b1e8d95f63e342db3311018f02467667e78c1bd88a02bc5f44c75b4",
+    "examples/pointlock_complement_translation_probe.rs": "26d63c20c459b7379b86ed98ac023e5b96fa4d370a199770b81dc2ee3af31fe4",
+    "examples/pointlock_membership_decoder.rs": "7a72625228c112e5f9923a1e9c7e881df22e07cc834db68c5ed89afa579895bf",
+    "examples/pointlock_decoders/mixed_radix.rs": "026e07e08b74357ff2948a7eaef7d871f1819911dcedaa2a8b4d567eede77a18",
+    "examples/pointlock_decoders/composed.rs": "f4ef28c429a2f5a4b3704a1f7d6a8bd2678dfd0cf3083992ce1f9a9a5afd1263",
+    "research/pointlocks-2026-09-17/total_message_decoder_benchmark.py": "06624f0cc3dcc63dc48afaa344ae0e9d38d54a2588e962153399a158aab2f542",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "research/pointlocks-2026-09-17/anchored_publication_core_check.json": "03a59ef98a078ee305a1793064124514baee96368b2ea63f4cb6841671d34392",
+    "target/release/examples/pointlock_total_message_probe": "1873d4fb6fe6680b5c8f787100e583c0b40556ef76da66d9eb8b31f57180b61a"
+  },
+  "summary": {
+    "generation_ms": {
+      "median": 341.823792,
+      "minimum": 325.723625,
+      "maximum": 397.12975
+    },
+    "generation_plus_opened_audit_ms": {
+      "median": 701.054291,
+      "minimum": 666.918667,
+      "maximum": 734.557416
+    },
+    "mixed_radix_evaluation_ms": {
+      "median": 61.789291000000006,
+      "minimum": 61.580458,
+      "maximum": 63.882625
+    },
+    "mixed_radix_generation_ms": {
+      "median": 287.338416,
+      "minimum": 270.080917,
+      "maximum": 304.423875
+    },
+    "mixed_radix_opened_audit_ms": {
+      "median": 312.303542,
+      "minimum": 301.011458,
+      "maximum": 336.131458
+    },
+    "opened_audit_ms": {
+      "median": 348.660167,
+      "minimum": 337.427666,
+      "maximum": 373.105791
+    },
+    "translation_and_rank_evaluation_ms": {
+      "median": 71.42779200000001,
+      "minimum": 70.54516600000001,
+      "maximum": 74.10508300000001
+    },
+    "translation_and_rank_generation_ms": {
+      "median": 51.67637499999999,
+      "minimum": 49.93,
+      "maximum": 92.70587499999999
+    },
+    "translation_and_rank_opened_audit_ms": {
+      "median": 36.356624999999994,
+      "minimum": 34.064375,
+      "maximum": 36.974333
+    }
+  },
+  "historical_implementation_bodies_preserved": {
+    "examples/pointlock_complement_translation_probe.rs": true,
+    "examples/pointlock_membership_decoder.rs": true
+  }
+}

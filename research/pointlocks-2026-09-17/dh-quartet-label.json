@@ -1,0 +1,177 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "One of four scalar openings selects two implicit DH point labels.\n\nHost-only interface experiment. The labels are secret group elements, not\ntheir discrete logs and not publicly checked garbling ciphertexts. Independent\nand publicly correlated input profiles are separate. No Bitcoin wrapper.\n",
+  "tests_run": 12,
+  "failures": 0,
+  "errors": 0,
+  "honest_fixtures": 8,
+  "message_evaluations": 32,
+  "message_bits_per_scalar": 2,
+  "opened_scalar_items": 1,
+  "opened_scalar_payload_bytes": 32,
+  "output_point_items": 2,
+  "public_input_point_slots": 4,
+  "correlated_independent_setup_scalars": 2,
+  "labels_are_points_not_their_discrete_logs": true,
+  "curve_reductions": {
+    "cdh_embeddings": 8,
+    "square_cdh_embeddings": 8,
+    "square_extraction_coefficients": [
+      -1,
+      -1,
+      1,
+      1,
+      -1,
+      -2,
+      1,
+      2
+    ],
+    "changed_opposite_points_change_extraction": 8,
+    "square_to_cdh_polarization_checks": 1
+  },
+  "retained_secret_collision": {
+    "point_input_check_passes": true,
+    "all_input_points_distinct": true,
+    "original_message": [
+      0,
+      0
+    ],
+    "alternative_message": [
+      1,
+      0
+    ],
+    "complete_point_label_vectors_identical": true,
+    "public_relation": "x0*x1 = x2*x3 mod n",
+    "extra_scalar_opening_used_to_reuse_original_vector": false,
+    "scope": "Host-only chosen-input setup. No native Bitcoin setup/opening is supplied."
+  },
+  "correlated_output_equalities": {
+    "cases": 2,
+    "all_rejected": true,
+    "public_check": "A != sqrt(-1)*B and A != -sqrt(-1)*B",
+    "five_is_quadratic_nonresidue": true,
+    "guarantee": "Four implicit DH point labels are pairwise distinct in every accepted correlated setup. Does not certify entropy, exclude every efficiently known relation, or verify downstream garbling."
+  },
+  "full_alternative_codeword_checks": 12,
+  "graph_access_screens": [
+    {
+      "n": 4,
+      "t": 0,
+      "missing": 4,
+      "choices": 1,
+      "nonempty_edge_vectors": 63,
+      "distinct_access_masks": 1,
+      "complementary_nonconstant_access_pairs": 0
+    },
+    {
+      "n": 4,
+      "t": 1,
+      "missing": 3,
+      "choices": 4,
+      "nonempty_edge_vectors": 63,
+      "distinct_access_masks": 11,
+      "complementary_nonconstant_access_pairs": 3
+    },
+    {
+      "n": 5,
+      "t": 1,
+      "missing": 4,
+      "choices": 5,
+      "nonempty_edge_vectors": 1023,
+      "distinct_access_masks": 16,
+      "complementary_nonconstant_access_pairs": 0
+    },
+    {
+      "n": 5,
+      "t": 2,
+      "missing": 3,
+      "choices": 10,
+      "nonempty_edge_vectors": 1023,
+      "distinct_access_masks": 186,
+      "complementary_nonconstant_access_pairs": 10
+    },
+    {
+      "n": 6,
+      "t": 2,
+      "missing": 4,
+      "choices": 15,
+      "nonempty_edge_vectors": 32767,
+      "distinct_access_masks": 447,
+      "complementary_nonconstant_access_pairs": 0
+    },
+    {
+      "n": 6,
+      "t": 3,
+      "missing": 3,
+      "choices": 20,
+      "nonempty_edge_vectors": 32767,
+      "distinct_access_masks": 6114,
+      "complementary_nonconstant_access_pairs": 25
+    }
+  ],
+  "missing_triple_examples": [
+    {
+      "n": 4,
+      "t": 1,
+      "left_vertices": 2,
+      "right_vertices": 2,
+      "left_label_point_items": 1,
+      "right_label_point_items": 1,
+      "selections_checked": 4
+    },
+    {
+      "n": 5,
+      "t": 2,
+      "left_vertices": 2,
+      "right_vertices": 3,
+      "left_label_point_items": 1,
+      "right_label_point_items": 3,
+      "selections_checked": 10
+    },
+    {
+      "n": 6,
+      "t": 3,
+      "left_vertices": 3,
+      "right_vertices": 3,
+      "left_label_point_items": 3,
+      "right_label_point_items": 3,
+      "selections_checked": 20
+    },
+    {
+      "n": 7,
+      "t": 4,
+      "left_vertices": 3,
+      "right_vertices": 4,
+      "left_label_point_items": 3,
+      "right_label_point_items": 6,
+      "selections_checked": 35
+    }
+  ],
+  "public_ciphertext_binding": false,
+  "malicious_setup_label_separation_established": false,
+  "complete_verifier_implemented": false,
+  "native_wrapper_implemented": false,
+  "bitcoin_execution": false,
+  "independent_2048_bit_quartet_interface": {
+    "quartets": 1024,
+    "scalar_openings": 1024,
+    "guarded_legacy_signature_push_floor_vbytes": 60416,
+    "scope": "Opening-count comparison only. Excludes scripts, keys, selectors, outputs, inputs, authorization, framing and verifier binding; not a transaction size."
+  },
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "combined_stack_peak": null,
+  "executed_opcodes": null,
+  "validation_budget": null,
+  "setup_benchmark": null,
+  "onchain_vbytes": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/dh_quartet_label_probe.py": "e2e9c1428f5545267ae8156ec3fc6e01379d274cc9e117b17b28109c6c17a20e",
+    "research/pointlocks-2026-09-17/vector_label_gate_probe.py": "497dae66c78b697dcfd4209359e649b0056e20dd7f08c9715ab5386335da2a6c",
+    "research/pointlocks-2026-09-17/nonce_relation_extraction.py": "d54581f95ca2a42e886c2cb0c967e69561a103d8dc4da554f431fb684d16a9de",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "exhaustive_valid_vectors": 1785,
+  "malformed_rejections": 303,
+  "normalization_cases": [
+    {
+      "input": "",
+      "semantic_value": 0,
+      "normalized": ""
+    },
+    {
+      "input": "00",
+      "semantic_value": 0,
+      "normalized": ""
+    },
+    {
+      "input": "80",
+      "semantic_value": 0,
+      "normalized": ""
+    },
+    {
+      "input": "0080",
+      "semantic_value": 0,
+      "normalized": ""
+    },
+    {
+      "input": "01",
+      "semantic_value": 1,
+      "normalized": "01"
+    },
+    {
+      "input": "0100",
+      "semantic_value": 1,
+      "normalized": "01"
+    },
+    {
+      "input": "81",
+      "semantic_value": -1,
+      "normalized": "81"
+    },
+    {
+      "input": "0180",
+      "semantic_value": -1,
+      "normalized": "81"
+    }
+  ],
+  "schedule": "SARDTSARDTSARDTSARDTSARDTSARDTSARDTSARDTSARDTSARDTSARDTSARDTS",
+  "semantic_hash_words": 76414578004274614,
+  "root_fragment": {
+    "script_hex": "74013d880093766ba876a8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa877",
+    "bytes": 252,
+    "executed_non_push_opcodes": 189,
+    "combined_peak": 64,
+    "input_data_items": 61,
+    "hint_items": 60,
+    "non_hint_operands": 1,
+    "retained_alt_items": 1,
+    "root_hex": "b46b43e18cf7ebf1c8c923b797bc981f82db648e18751661470081f841727a95",
+    "retained_number": "15cd5b07"
+  },
+  "unmined_candidate": {
+    "script_hex": "6b74013d880093766ba876a8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8527a7aa7527a7aa6527a7aaa527a7aa9527a7aa8776c0415cd5b079d6c76a800ac75ac",
+    "script_bytes": 267,
+    "counted_non_push_opcodes": 198,
+    "entry_data_items": 62,
+    "hint_items": 60,
+    "non_hint_operands": 2,
+    "combined_peak_by_inspection": 65,
+    "scope": "Complete numeric-equality/root-signature/pinning candidate; not executed, not an output verifier."
+  },
+  "all_expectations_met": true
+}

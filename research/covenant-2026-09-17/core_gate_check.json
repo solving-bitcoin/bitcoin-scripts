@@ -1,0 +1,481 @@
+{
+  "question": "Can legacy CHECKSIG failure expose DER syntax without EC recovery?",
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "scope": "Complete P2SH spends of raw boundary vectors; no new PoW mined, no output covenant.",
+  "results": [
+    {
+      "name": "hash-known-polyglot",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "a800ac91",
+      "redeemscript_bytes": 4,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 3,
+      "executed_non_push_opcodes_redeem_if_success": 3,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e600000000161000000000000000000200a8013bbb867804a800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "7f86ef9ae92284cfec05a10b95de25b02c9eedb93507f1d97e25f43d4692ecfa",
+        "weight": 416,
+        "total_bytes": 104,
+        "witness_bytes": 0,
+        "script_sig_bytes": 22
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "7aedf2cb87f32aa900b132abae198461a44e1b876eba99ac2cbfe0f3000658df"
+      },
+      "policy": {
+        "txid": "7f86ef9ae92284cfec05a10b95de25b02c9eedb93507f1d97e25f43d4692ecfa",
+        "wtxid": "7f86ef9ae92284cfec05a10b95de25b02c9eedb93507f1d97e25f43d4692ecfa",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 0 of 7f86ef9ae92284cfec05a10b95de25b02c9eedb93507f1d97e25f43d4692ecfa (wtxid 7f86ef9ae92284cfec05a10b95de25b02c9eedb93507f1d97e25f43d4692ecfa), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:0"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-validated"
+    },
+    {
+      "name": "hash-known-polyglot",
+      "recipient_script": "00142222222222222222222222222222222222222222",
+      "redeemscript_hex": "a800ac91",
+      "redeemscript_bytes": 4,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 3,
+      "executed_non_push_opcodes_redeem_if_success": 3,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e600000000161000000000000000000200a8013bbb867804a800ac91ffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+        "txid": "2ddf390126b78808e8b5ebe595e7199814ea511ea1cbe745913fff4652921d34",
+        "weight": 416,
+        "total_bytes": 104,
+        "witness_bytes": 0,
+        "script_sig_bytes": 22
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "0d654d4e2dbc585c5e33c42d8ddd1159e0d82396a46158d54cd6314156f781fd"
+      },
+      "policy": {
+        "txid": "2ddf390126b78808e8b5ebe595e7199814ea511ea1cbe745913fff4652921d34",
+        "wtxid": "2ddf390126b78808e8b5ebe595e7199814ea511ea1cbe745913fff4652921d34",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 0 of 2ddf390126b78808e8b5ebe595e7199814ea511ea1cbe745913fff4652921d34 (wtxid 2ddf390126b78808e8b5ebe595e7199814ea511ea1cbe745913fff4652921d34), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:0"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-validated"
+    },
+    {
+      "name": "hash-mutated-preimage",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "a800ac91",
+      "redeemscript_bytes": 4,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 3,
+      "executed_non_push_opcodes_redeem_if_success": null,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e601000000171100000000000000000200a8013bbb86780004a800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee",
+        "weight": 420,
+        "total_bytes": 105,
+        "witness_bytes": 0,
+        "script_sig_bytes": 23
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 0 of 6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee (wtxid 6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:1"
+      },
+      "policy": {
+        "txid": "6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee",
+        "wtxid": "6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 0 of 6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee (wtxid 6fa531982e5c1d16002a13f1b4bef423ebb390fdd597646b84ab50efa78f29ee), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:1"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "parser-known-polyglot",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": 4,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6020000002920301d020a7993dad81d0e10285a7e020f682a7033db72199360c2dc3599f2d302078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "e815b06631802f62339a880940df312e9975a95764ec561bc1f7bc6470906d31",
+        "weight": 492,
+        "total_bytes": 123,
+        "witness_bytes": 0,
+        "script_sig_bytes": 41
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4e306874ecd0bb6945dc18794aa60e6d390ca99e2bd837dc29383a1d0d69a409"
+      },
+      "policy": {
+        "txid": "e815b06631802f62339a880940df312e9975a95764ec561bc1f7bc6470906d31",
+        "wtxid": "e815b06631802f62339a880940df312e9975a95764ec561bc1f7bc6470906d31",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 0 of e815b06631802f62339a880940df312e9975a95764ec561bc1f7bc6470906d31 (wtxid e815b06631802f62339a880940df312e9975a95764ec561bc1f7bc6470906d31), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:2"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-validated"
+    },
+    {
+      "name": "parser-wrong-sequence-tag",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": null,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6030000002920311d020a7993dad81d0e10285a7e020f682a7033db72199360c2dc3599f2d302078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be",
+        "weight": 492,
+        "total_bytes": 123,
+        "witness_bytes": 0,
+        "script_sig_bytes": 41
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 0 of 92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be (wtxid 92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:3"
+      },
+      "policy": {
+        "txid": "92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be",
+        "wtxid": "92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 0 of 92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be (wtxid 92e2c426caa1e6d32edb89a510068a81af45a14848721b957a0618ca0d1182be), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:3"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "parser-negative-r",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": null,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6040000002920301d020af993dad81d0e10285a7e020f682a7033db72199360c2dc3599f2d302078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16",
+        "weight": 492,
+        "total_bytes": 123,
+        "witness_bytes": 0,
+        "script_sig_bytes": 41
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 0 of e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16 (wtxid e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:4"
+      },
+      "policy": {
+        "txid": "e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16",
+        "wtxid": "e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 0 of e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16 (wtxid e6023a0e9af21ccfe8b4daa42d5d075db8a3de1020952754852bb6313c748f16), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:4"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "parser-empty-signature",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": null,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6050000000900078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb",
+        "weight": 364,
+        "total_bytes": 91,
+        "witness_bytes": 0,
+        "script_sig_bytes": 9
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb (wtxid 21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:5"
+      },
+      "policy": {
+        "txid": "21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb",
+        "wtxid": "21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb (wtxid 21503a925f0b0db4ee24f67be9ae148676d73407bd4d65ba0ecea324ddacd5cb), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:5"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "parser-zero-r-der-valid",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": 4,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6060000002920301d020100021801000000000000000000000000000000000000000000000001078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "2bd36e2ea57d10b9351cb4f9618ee1d8d3f5e05bd232f66a56da975b56a388f1",
+        "weight": 492,
+        "total_bytes": 123,
+        "witness_bytes": 0,
+        "script_sig_bytes": 41
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "11ddbb398b6089b705d1c90a8e077b539eb070faf44a1e249a5e85ad6aec60b6"
+      },
+      "policy": {
+        "txid": "2bd36e2ea57d10b9351cb4f9618ee1d8d3f5e05bd232f66a56da975b56a388f1",
+        "wtxid": "2bd36e2ea57d10b9351cb4f9618ee1d8d3f5e05bd232f66a56da975b56a388f1",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 0 of 2bd36e2ea57d10b9351cb4f9618ee1d8d3f5e05bd232f66a56da975b56a388f1 (wtxid 2bd36e2ea57d10b9351cb4f9618ee1d8d3f5e05bd232f66a56da975b56a388f1), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:6"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-validated"
+    },
+    {
+      "name": "parser-undefined-hashtype",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "8201208800ac91",
+      "redeemscript_bytes": 7,
+      "locking_script_bytes": 23,
+      "input_data_items": 1,
+      "hint_items": 0,
+      "redeem_entry_items": 1,
+      "script_sig_push_items": 2,
+      "combined_stack_peak_by_inspection": 3,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": 4,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6070000002920301d020a7993dad81d0e10285a7e020f682a7033db72199360c2dc3599f2d300078201208800ac91ffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "5626834e35a2d91ab668460a51714cce04829892f7b6e2960298a868f8c01bf1",
+        "weight": 492,
+        "total_bytes": 123,
+        "witness_bytes": 0,
+        "script_sig_bytes": 41
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "2e1dd953997def7b42be92c93cd2f8b2a764d4ef6b33f4206fe20247f4b0bfd3"
+      },
+      "policy": {
+        "txid": "5626834e35a2d91ab668460a51714cce04829892f7b6e2960298a868f8c01bf1",
+        "wtxid": "5626834e35a2d91ab668460a51714cce04829892f7b6e2960298a868f8c01bf1",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 0 of 5626834e35a2d91ab668460a51714cce04829892f7b6e2960298a868f8c01bf1 (wtxid 5626834e35a2d91ab668460a51714cce04829892f7b6e2960298a868f8c01bf1), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:7"
+      },
+      "evidence": "locally-reproduced",
+      "deployment_class": "consensus-validated"
+    },
+    {
+      "name": "same-signature-two-contexts",
+      "recipient_script": "00141111111111111111111111111111111111111111",
+      "redeemscript_hex": "6eadabac",
+      "redeemscript_bytes": 4,
+      "locking_script_bytes": 23,
+      "input_data_items": 2,
+      "hint_items": 0,
+      "redeem_entry_items": 2,
+      "script_sig_push_items": 3,
+      "combined_stack_peak_by_inspection": 4,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": 4,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6080000006f473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817980220663c18d55a5b418ad2339992d7751e63fe4fb5ffb4eca5d9f4367941fc8cc6b7012103f5456ec4067ac3ab1f1eb01ef582c58e22725bcf0ecf337287428d56b8cb2d7f046eadabacffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "txid": "429fd1610f4ffe3c2d362c60f4105a5d798c227442f028bcf36cdc200d8c6544",
+        "weight": 772,
+        "total_bytes": 193,
+        "witness_bytes": 0,
+        "script_sig_bytes": 111
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "5940cea140f9b7c90dbc5b3f0a8fb572319b8c29db6906a003d319d3645e645e"
+      },
+      "policy": {
+        "txid": "429fd1610f4ffe3c2d362c60f4105a5d798c227442f028bcf36cdc200d8c6544",
+        "wtxid": "429fd1610f4ffe3c2d362c60f4105a5d798c227442f028bcf36cdc200d8c6544",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 0 of 429fd1610f4ffe3c2d362c60f4105a5d798c227442f028bcf36cdc200d8c6544 (wtxid 429fd1610f4ffe3c2d362c60f4105a5d798c227442f028bcf36cdc200d8c6544), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:8"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "crypto_vector": {
+        "name": "same-signature-two-contexts",
+        "script_codes": [
+          "6eadac",
+          "ac"
+        ],
+        "output_script": "00141111111111111111111111111111111111111111",
+        "digest_hex": [
+          "861d0823a57dca5100f2936cfb71f39ea4821397ff76250161d18883720d815b",
+          "529539ce5a344d66a559c692aa5c3067e672a2b0ba06d0798a6c1c7a9af0cd88"
+        ],
+        "same_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817980220663c18d55a5b418ad2339992d7751e63fe4fb5ffb4eca5d9f4367941fc8cc6b701",
+        "same_public_key": "03f5456ec4067ac3ab1f1eb01ef582c58e22725bcf0ecf337287428d56b8cb2d7f",
+        "known_private_scalar": "faaee7434b1d0d43acc893865ec07934cee8782a4e532162e7c65738675e9a9c",
+        "locally_verified": [
+          true,
+          true
+        ],
+        "openssl_verification": [
+          "Signature Verified Successfully",
+          "Signature Verified Successfully"
+        ],
+        "spending_transaction_hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6080000006f473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817980220663c18d55a5b418ad2339992d7751e63fe4fb5ffb4eca5d9f4367941fc8cc6b7012103f5456ec4067ac3ab1f1eb01ef582c58e22725bcf0ecf337287428d56b8cb2d7f046eadabacffffffff01301b0f0000000000160014111111111111111111111111111111111111111100000000",
+        "static_non_push_opcodes": 4,
+        "script_sig_bytes": 111,
+        "witness_bytes": 0,
+        "complete_input_stack_items": 2,
+        "hint_stack_items": 0,
+        "combined_stack_peak_by_inspection": 4,
+        "redeemscript_hex": "6eadabac",
+        "redeemscript_bytes": 4,
+        "script_pubkey_hex": "a914343f6db6bdd6f9eb3f87dac3b6dbc467547b120887",
+        "locking_script_bytes": 23
+      }
+    },
+    {
+      "name": "same-signature-two-contexts",
+      "recipient_script": "00142222222222222222222222222222222222222222",
+      "redeemscript_hex": "6eadabac",
+      "redeemscript_bytes": 4,
+      "locking_script_bytes": 23,
+      "input_data_items": 2,
+      "hint_items": 0,
+      "redeem_entry_items": 2,
+      "script_sig_push_items": 3,
+      "combined_stack_peak_by_inspection": 4,
+      "static_non_push_opcodes_redeem": 4,
+      "executed_non_push_opcodes_redeem_if_success": 4,
+      "transaction": {
+        "hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6080000006f473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802201e2a65c50757dd8e53adc483bef9b217c15fb9b1f9a1ae13054559c75c66ca0b012103a82bb19790fd86aa01ac40807befd857d949562f495976bf656f71f6c2dfcc37046eadabacffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+        "txid": "2127d554a3db534e67cbca1c325518ed3d4cedcaab601f6afa72b6d0e3a8f285",
+        "weight": 772,
+        "total_bytes": 193,
+        "witness_bytes": 0,
+        "script_sig_bytes": 111
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "0706b633ccdf894d97eb7f0b5e9f26bc7c7f4174eeb739134a1ad100e37a7cab"
+      },
+      "policy": {
+        "txid": "2127d554a3db534e67cbca1c325518ed3d4cedcaab601f6afa72b6d0e3a8f285",
+        "wtxid": "2127d554a3db534e67cbca1c325518ed3d4cedcaab601f6afa72b6d0e3a8f285",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 0 of 2127d554a3db534e67cbca1c325518ed3d4cedcaab601f6afa72b6d0e3a8f285 (wtxid 2127d554a3db534e67cbca1c325518ed3d4cedcaab601f6afa72b6d0e3a8f285), spending e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526:8"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "crypto_vector": {
+        "name": "same-signature-two-contexts",
+        "script_codes": [
+          "6eadac",
+          "ac"
+        ],
+        "output_script": "00142222222222222222222222222222222222222222",
+        "digest_hex": [
+          "0dcd4f214da68c281d0934eddcba661ee4fb9edddb108fcfb0118eaea2f718c8",
+          "d17883973ef6d10b75adabe65ec701ee1ceb08609715d3e5655939acba5fc5f3"
+        ],
+        "same_signature": "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802201e2a65c50757dd8e53adc483bef9b217c15fb9b1f9a1ae13054559c75c66ca0b01",
+        "same_public_key": "03a82bb19790fd86aa01ac40807befd857d949562f495976bf656f71f6c2dfcc37",
+        "known_private_scalar": "5cfbd24e28ab8416efc2882da4071b4ba69f7059a3b2130732c7288d002cd91b",
+        "locally_verified": [
+          true,
+          true
+        ],
+        "openssl_verification": [
+          "Signature Verified Successfully",
+          "Signature Verified Successfully"
+        ],
+        "spending_transaction_hex": "02000000012675fe36092042c4937509214d737c3c4e04cc6c111eaf560deb4341578e30e6080000006f473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802201e2a65c50757dd8e53adc483bef9b217c15fb9b1f9a1ae13054559c75c66ca0b012103a82bb19790fd86aa01ac40807befd857d949562f495976bf656f71f6c2dfcc37046eadabacffffffff01301b0f0000000000160014222222222222222222222222222222222222222200000000",
+        "static_non_push_opcodes": 4,
+        "script_sig_bytes": 111,
+        "witness_bytes": 0,
+        "complete_input_stack_items": 2,
+        "hint_stack_items": 0,
+        "combined_stack_peak_by_inspection": 4,
+        "redeemscript_hex": "6eadabac",
+        "redeemscript_bytes": 4,
+        "script_pubkey_hex": "a914343f6db6bdd6f9eb3f87dac3b6dbc467547b120887",
+        "locking_script_bytes": 23
+      }
+    }
+  ],
+  "funding_txid": "e6308e574143eb0d56af1e116ccc044e3c7c734d21097593c442200936fe7526",
+  "all_expectations_met": true
+}

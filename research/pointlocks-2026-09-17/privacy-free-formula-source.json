@@ -1,0 +1,20 @@
+{
+  "evidence": "inspected",
+  "deployment": "unclassified",
+  "title": "Privacy-Free Garbled Circuits for Formulas: Size Zero and Information-Theoretic",
+  "authors": ["Yashvanth Kondi", "Arpita Patra"],
+  "publication": "CRYPTO 2017; ePrint 2017/561",
+  "url": "https://eprint.iacr.org/2017/561.pdf",
+  "inspected_on": "2026-09-18",
+  "pdf_bytes": 443776,
+  "pdf_pages": 32,
+  "pdf_sha256": "7a94174c813678cb629e65cedfc751e693b6b6b9efac7f6a6f64dd6ea74f75ab",
+  "inspected_parts": [
+    "Definition 4 and its encoding-information input, PDF page 10",
+    "Section 3.1 and Figure 2 AND gate, PDF pages 11-13",
+    "Figure 6 verification algorithm, PDF page 15"
+  ],
+  "local_reproduction_boundary": "A scalar-field AND adaptation with public point commitments and optional public affine offsets, not the paper's complete XOR-string formula garbling.",
+  "source_security_contradicted": false,
+  "native_bitcoin_implementation": false
+}

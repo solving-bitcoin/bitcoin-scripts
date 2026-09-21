@@ -1,0 +1,612 @@
+{
+  "scope": "Complete funded raw consensus-boundary transactions. No repository compiler metrics, no output covenant.",
+  "redeem_script": "745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551",
+  "redeem_script_bytes": 49,
+  "locking_script_bytes": 23,
+  "redeem_entry_data_items": 3,
+  "hint_items": 0,
+  "all_hint_items_at_entry": 0,
+  "script_sig_push_items": 4,
+  "combined_stack_peak_if_success": 6,
+  "redeem_executed_non_push_opcodes": 32,
+  "P2SH_additional_non_push_opcodes": 2,
+  "native_signature_checks": 4,
+  "stack_composition": "Three non-hint data items at redeem entry; scriptSig also pushes the redeem script. Empty altstack. Redeem peak six includes every data item; P2SH outer peak five. The separate OP_TRUE P2WSH input has one witness item.",
+  "processed_script_code_bytes": [
+    48,
+    13
+  ],
+  "results": [
+    {
+      "name": "SINGLE-bug",
+      "expected": true,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad21033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f331745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "f357bee236ff05a6bb63aac141dfd8fcfb4fca1c845b60110a1fc165adb5a2c4",
+        "wtxid": "9305cc1bdfdae2375f2ac0b444559a28b6b6cb3e647f44b175dde5fa0fc2a6bd",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": {
+        "combined_stack_peak": 6,
+        "executed_non_push_opcodes": 32,
+        "signature_checks": 4
+      },
+      "policy": {
+        "txid": "f357bee236ff05a6bb63aac141dfd8fcfb4fca1c845b60110a1fc165adb5a2c4",
+        "wtxid": "9305cc1bdfdae2375f2ac0b444559a28b6b6cb3e647f44b175dde5fa0fc2a6bd",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of f357bee236ff05a6bb63aac141dfd8fcfb4fca1c845b60110a1fc165adb5a2c4 (wtxid 9305cc1bdfdae2375f2ac0b444559a28b6b6cb3e647f44b175dde5fa0fc2a6bd), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4f04c4413b1bed215272c3715d2e51cc03d170dd3b766edea7097bade66fa0ed"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "test_block_invalidated_for_same_funding_comparison": true
+    },
+    {
+      "name": "SINGLE-bug-changed-recipient-same-data",
+      "expected": true,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad21033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f331745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001422222222222222222222222222222222222222220101510000000000",
+        "txid": "8acafe921d8bbdf4ad3e9ddf8543973850534ed3ed1a528c4f7884473ab68610",
+        "wtxid": "5656751edf1ad98aed38ea54eb03a23f39a7147109204af3d1ce56bf7c9d897d",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": {
+        "combined_stack_peak": 6,
+        "executed_non_push_opcodes": 32,
+        "signature_checks": 4
+      },
+      "policy": {
+        "txid": "8acafe921d8bbdf4ad3e9ddf8543973850534ed3ed1a528c4f7884473ab68610",
+        "wtxid": "5656751edf1ad98aed38ea54eb03a23f39a7147109204af3d1ce56bf7c9d897d",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 8acafe921d8bbdf4ad3e9ddf8543973850534ed3ed1a528c4f7884473ab68610 (wtxid 5656751edf1ad98aed38ea54eb03a23f39a7147109204af3d1ce56bf7c9d897d), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "69aa3084ba9e3c36f00389de4bc3122f209301f2a3f215a0167b84feddae09f6"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "test_block_invalidated_for_same_funding_comparison": true
+    },
+    {
+      "name": "SINGLE-ANYONECANPAY-bug",
+      "expected": true,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179883",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179883210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad21033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f331745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "c94b2583e5393cc6a3e7a0cec03bcf4f5fa071a45aab140eb4bf5a94cb272f68",
+        "wtxid": "48a95e9dbba90800be8a4d52d24b2b4714e69bc374adcd0e3652d1762a3b5374",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": {
+        "combined_stack_peak": 6,
+        "executed_non_push_opcodes": 32,
+        "signature_checks": 4
+      },
+      "policy": {
+        "txid": "c94b2583e5393cc6a3e7a0cec03bcf4f5fa071a45aab140eb4bf5a94cb272f68",
+        "wtxid": "48a95e9dbba90800be8a4d52d24b2b4714e69bc374adcd0e3652d1762a3b5374",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of c94b2583e5393cc6a3e7a0cec03bcf4f5fa071a45aab140eb4bf5a94cb272f68 (wtxid 48a95e9dbba90800be8a4d52d24b2b4714e69bc374adcd0e3652d1762a3b5374), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "534e8c5c41fd61a2fe08c1611bfd7ab00f3260054683666cbd90314644ff8a5c"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "test_block_invalidated_for_same_funding_comparison": true
+    },
+    {
+      "name": "undefined-upper-bits-SINGLE-bug",
+      "expected": true,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179823",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179823210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad21033521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f331745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "a8478c626732437ee729bcd49c11d3d59e26adccbd76ac56bc3b373f760c2963",
+        "wtxid": "fcafe5f6b1c04487b6e8b11a3b8dd1da7f890d095b4d3d77bb2fb77ce5a7c63a",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": {
+        "combined_stack_peak": 6,
+        "executed_non_push_opcodes": 32,
+        "signature_checks": 4
+      },
+      "policy": {
+        "txid": "a8478c626732437ee729bcd49c11d3d59e26adccbd76ac56bc3b373f760c2963",
+        "wtxid": "fcafe5f6b1c04487b6e8b11a3b8dd1da7f890d095b4d3d77bb2fb77ce5a7c63a",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of a8478c626732437ee729bcd49c11d3d59e26adccbd76ac56bc3b373f760c2963 (wtxid fcafe5f6b1c04487b6e8b11a3b8dd1da7f890d095b4d3d77bb2fb77ce5a7c63a), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "024d3eda5dd274958f9942d5956d883e64c212827ce610c3a8f2dd991ef49722"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-validated",
+      "test_block_invalidated_for_same_funding_comparison": true
+    },
+    {
+      "name": "ALL-first-context-only",
+      "expected": false,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179801",
+        "03d1795baec5ac4a1589f6b39425f274978383698c74b8183de336551ae139eac8",
+        "038c5a11ab4a18509f7d60168b61c3e979f85e0e115f6c8f237624606097abc190"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650000000030745388820121887c820121887c6e8791695279820139a0697552795279ad52795179ad52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110000000001000000",
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be65000000000d52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110000000001000000"
+      ],
+      "actual_digest_bytes": [
+        "54d7fa08fbc8ae71070179c305cfbf823634ccffbf332451af272f71d43d4193",
+        "dd0fae7048394a8d70e925acb74d9e25b012f0f1cda380fdc7491ed1c803b34c"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798012103d1795baec5ac4a1589f6b39425f274978383698c74b8183de336551ae139eac821038c5a11ab4a18509f7d60168b61c3e979f85e0e115f6c8f237624606097abc19031745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "c4c69d91a87632bdcb745f36e595c2c5b9bf47c881add1f95afe51870c95d300",
+        "wtxid": "15e73b8323ebd2955bc9384e9dc1350ce257ed9ea73b0ccfc7f656b425716f5b",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "c4c69d91a87632bdcb745f36e595c2c5b9bf47c881add1f95afe51870c95d300",
+        "wtxid": "15e73b8323ebd2955bc9384e9dc1350ce257ed9ea73b0ccfc7f656b425716f5b",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of c4c69d91a87632bdcb745f36e595c2c5b9bf47c881add1f95afe51870c95d300 (wtxid 15e73b8323ebd2955bc9384e9dc1350ce257ed9ea73b0ccfc7f656b425716f5b), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of c4c69d91a87632bdcb745f36e595c2c5b9bf47c881add1f95afe51870c95d300 (wtxid 15e73b8323ebd2955bc9384e9dc1350ce257ed9ea73b0ccfc7f656b425716f5b), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "NONE-first-context-only",
+      "expected": false,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802",
+        "025feb70a3b37dce92e33a88b787d7755171f17436619e5ba6c1d3debaec0668ea",
+        "026d15871a33fe8645c58664f18f5498abbcf44ef542469690acbfde60c2e99fd0"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6501000000000000000051d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650000000030745388820121887c820121887c6e8791695279820139a0697552795279ad52795179ad52795279ad52795179ad6d7551ffffffff000000000002000000",
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6501000000000000000051d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be65000000000d52795279ad52795179ad6d7551ffffffff000000000002000000"
+      ],
+      "actual_digest_bytes": [
+        "5ae20ae9c5bf8fc7133e517af90fcb7fd7b70a609e46c7a38707430fd69afed2",
+        "19ade5d764d61345b147c3b2a55ee1c52c5185072d05e1158f5e03314796810d"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817980221025feb70a3b37dce92e33a88b787d7755171f17436619e5ba6c1d3debaec0668ea21026d15871a33fe8645c58664f18f5498abbcf44ef542469690acbfde60c2e99fd031745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "da5d03a6fbedd977f6b73e9becd5b1c4b91a7d0c264c530c153ee7a2d09b53c6",
+        "wtxid": "deb29ab0a963a3e325a15f663942238a77661ac31276b13f7dcc44b29ba7217a",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "da5d03a6fbedd977f6b73e9becd5b1c4b91a7d0c264c530c153ee7a2d09b53c6",
+        "wtxid": "deb29ab0a963a3e325a15f663942238a77661ac31276b13f7dcc44b29ba7217a",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of da5d03a6fbedd977f6b73e9becd5b1c4b91a7d0c264c530c153ee7a2d09b53c6 (wtxid deb29ab0a963a3e325a15f663942238a77661ac31276b13f7dcc44b29ba7217a), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of da5d03a6fbedd977f6b73e9becd5b1c4b91a7d0c264c530c153ee7a2d09b53c6 (wtxid deb29ab0a963a3e325a15f663942238a77661ac31276b13f7dcc44b29ba7217a), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "in-range-SINGLE-first-context-only",
+      "expected": false,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+        "03e81f8d1fd93d8250e9233153e772be469838fb78303ac2c566b31fc428d17af9",
+        "024421bd01ded69dd5de442e7837f000fa5edf11fe915504f6206959ea16077baf"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6501000000000000000051d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650000000030745388820121887c820121887c6e8791695279820139a0697552795279ad52795179ad52795279ad52795179ad6d7551ffffffff02ffffffffffffffff00905f01000000000016001422222222222222222222222222222222222222220000000003000000",
+        "020000000251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6501000000000000000051d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be65000000000d52795279ad52795179ad6d7551ffffffff02ffffffffffffffff00905f01000000000016001422222222222222222222222222222222222222220000000003000000"
+      ],
+      "actual_digest_bytes": [
+        "265cfa32d77ba13268b71378fa155a4b92df407d9e16cd78e48eb0c1b5901962",
+        "856dd43799243d63727bfcb26d37e1dbab2d2a7b3ad6504477dd009fe697af03"
+      ],
+      "output_values": [
+        1900000,
+        90000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798032103e81f8d1fd93d8250e9233153e772be469838fb78303ac2c566b31fc428d17af921024421bd01ded69dd5de442e7837f000fa5edf11fe915504f6206959ea16077baf31745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff02e0fd1c00000000001600141111111111111111111111111111111111111111905f01000000000016001422222222222222222222222222222222222222220101510000000000",
+        "txid": "4f8acc4ec5c6d57d1e243ab0529251644227756f3a7837e408667b90b08d1333",
+        "wtxid": "43f5bee01307519aa05b5459863f9160ad5bbe46a2ffb887bac5bc7a5a8c1457",
+        "base_bytes": 344,
+        "total_bytes": 350,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1382
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "4f8acc4ec5c6d57d1e243ab0529251644227756f3a7837e408667b90b08d1333",
+        "wtxid": "43f5bee01307519aa05b5459863f9160ad5bbe46a2ffb887bac5bc7a5a8c1457",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 4f8acc4ec5c6d57d1e243ab0529251644227756f3a7837e408667b90b08d1333 (wtxid 43f5bee01307519aa05b5459863f9160ad5bbe46a2ffb887bac5bc7a5a8c1457), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of 4f8acc4ec5c6d57d1e243ab0529251644227756f3a7837e408667b90b08d1333 (wtxid 43f5bee01307519aa05b5459863f9160ad5bbe46a2ffb887bac5bc7a5a8c1457), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "duplicate-compressed-key",
+      "expected": false,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 190,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000be473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad31745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "68170cb0009dcb7fefc4a167b523fcf6659a22b42290fdde45596854795cd981",
+        "wtxid": "72454b2c1c8a3bb47cfadf188aaf3127ab8de3ca379247c713d259ce0843c73e",
+        "base_bytes": 313,
+        "total_bytes": 319,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1258
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "68170cb0009dcb7fefc4a167b523fcf6659a22b42290fdde45596854795cd981",
+        "wtxid": "72454b2c1c8a3bb47cfadf188aaf3127ab8de3ca379247c713d259ce0843c73e",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of 68170cb0009dcb7fefc4a167b523fcf6659a22b42290fdde45596854795cd981 (wtxid 72454b2c1c8a3bb47cfadf188aaf3127ab8de3ca379247c713d259ce0843c73e), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of 68170cb0009dcb7fefc4a167b523fcf6659a22b42290fdde45596854795cd981 (wtxid 72454b2c1c8a3bb47cfadf188aaf3127ab8de3ca379247c713d259ce0843c73e), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "short-valid-SINGLE-signature",
+      "expected": false,
+      "data": [
+        "300602010102010103",
+        "032baf163f5e27261ab3228e61fb86dc98054abd514751fce93d7444e8fbc6a293",
+        "03784b6ebe47edcb0b81092d016c054a4375f9d0b73ca68afdf6c97614c83b83df"
+      ],
+      "signature_bytes": 9,
+      "script_sig_bytes": 128,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000800930060201010201010321032baf163f5e27261ab3228e61fb86dc98054abd514751fce93d7444e8fbc6a2932103784b6ebe47edcb0b81092d016c054a4375f9d0b73ca68afdf6c97614c83b83df31745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "f5d14af32cf37520b80f48b27692af853b1ceac19b3dac96f6c8bacfb834b61f",
+        "wtxid": "c5fa11460022644c6830e5c9d138929a3e66d6e3285654f419454ec86a856bcd",
+        "base_bytes": 251,
+        "total_bytes": 257,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1010
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "f5d14af32cf37520b80f48b27692af853b1ceac19b3dac96f6c8bacfb834b61f",
+        "wtxid": "c5fa11460022644c6830e5c9d138929a3e66d6e3285654f419454ec86a856bcd",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of f5d14af32cf37520b80f48b27692af853b1ceac19b3dac96f6c8bacfb834b61f (wtxid c5fa11460022644c6830e5c9d138929a3e66d6e3285654f419454ec86a856bcd), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of f5d14af32cf37520b80f48b27692af853b1ceac19b3dac96f6c8bacfb834b61f (wtxid c5fa11460022644c6830e5c9d138929a3e66d6e3285654f419454ec86a856bcd), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    },
+    {
+      "name": "uncompressed-second-key",
+      "expected": false,
+      "data": [
+        "3044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803",
+        "0272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad",
+        "043521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3c9cfffe4db14beb44c17cdb0360f87b9ff05e1e62bf7c49e6bae1c9a9adddc9b"
+      ],
+      "signature_bytes": 71,
+      "script_sig_bytes": 222,
+      "processed_preimages": [
+        null,
+        null
+      ],
+      "actual_digest_bytes": [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "0100000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "output_values": [
+        1990000
+      ],
+      "fee_sats": 10000,
+      "locked_input_witness_items": 0,
+      "locked_input_serialized_witness_bytes": 1,
+      "helper_witness_items": 1,
+      "helper_hint_items": 0,
+      "helper_serialized_witness_bytes": 3,
+      "all_inputs_hint_items": 0,
+      "all_inputs_data_items": 4,
+      "transaction": {
+        "hex": "0200000000010251d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be650100000000ffffffff51d74545c9d915d8f90d7c9fd05441296eaed70d7b271b067b38879c8210be6500000000de473044022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803210272090645be68632c9010b17740ae5a79d82b03f6d2814ee58ac45c8967a29aad41043521f95b51758216464ffdb972625f68c9633d2c0fbb3ca65fb4f53c036b64f3c9cfffe4db14beb44c17cdb0360f87b9ff05e1e62bf7c49e6bae1c9a9adddc9b31745388820121887c820121887c6e8791695279820139a0697552795279ad52795179adab52795279ad52795179ad6d7551ffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "dd9fb22e3007e5fc890e73028a2958e1e2ff4a12b8860da08714bf9a8399f98b",
+        "wtxid": "f4e92fce8155e72dd8c473ebe568802892dd4dadb257da766f27a79c970adf84",
+        "base_bytes": 345,
+        "total_bytes": 351,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1386
+      },
+      "host_trace": null,
+      "policy": {
+        "txid": "dd9fb22e3007e5fc890e73028a2958e1e2ff4a12b8860da08714bf9a8399f98b",
+        "wtxid": "f4e92fce8155e72dd8c473ebe568802892dd4dadb257da766f27a79c970adf84",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of dd9fb22e3007e5fc890e73028a2958e1e2ff4a12b8860da08714bf9a8399f98b (wtxid f4e92fce8155e72dd8c473ebe568802892dd4dadb257da766f27a79c970adf84), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of dd9fb22e3007e5fc890e73028a2958e1e2ff4a12b8860da08714bf9a8399f98b (wtxid f4e92fce8155e72dd8c473ebe568802892dd4dadb257da766f27a79c970adf84), spending 65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751:0"
+      },
+      "evidence": "differentially-validated",
+      "deployment_class": "consensus-incompatible"
+    }
+  ],
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "funding": {
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0340420f000000000017a9146429e481ac90272c7b2165e56f526e3eb3bb83928740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332607046e729010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "txid": "65be10829c87387b061b277b0dd7ae6e294154d09f7c0df9d815d9c94545d751",
+    "wtxid": "017c6dc7135f10763cfb4722be17baab6df923a591f34ca41229e7682131803a",
+    "weight": 681,
+    "vsize": 171,
+    "base_bytes": 169,
+    "total_bytes": 174,
+    "witness_bytes": 3
+  },
+  "all_expectations_met": true
+}

@@ -1,0 +1,132 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "os": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "hardware_source": "Existing same-host anchored-setup-summary.json; OS and CPU count checked below.",
+  "current_os": "macOS-26.6.1-arm64-arm-64bit",
+  "current_logical_cpus": 15,
+  "source_sha256": "cb0efd96a0738317acbc16e160bd44d20f97a309c0232a61aeef67147f4d0b15",
+  "executable_sha256": "86b18b7c86bbbd41169b003fa07914dea82f5ea0503fbbd9019914919cdaa2bd",
+  "cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+  "native_core_report_sha256": "03a59ef98a078ee305a1793064124514baee96368b2ea63f4cb6841671d34392",
+  "runs": {
+    "row_mac": {
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_subset_translation_probe",
+        "--pools",
+        "115",
+        "--workers",
+        "15",
+        "--samples",
+        "3",
+        "--native-recovery",
+        "/Users/robinlinus/projects/bitcoin-lab/research/pointlocks-2026-09-17/anchored_publication_core_check.json"
+      ],
+      "summary": {
+        "preparation_ms": {
+          "first": 16.785125,
+          "median": 10.7255,
+          "min": 10.491541999999999,
+          "max": 16.785125
+        },
+        "table_generation_ms": {
+          "first": 2040.481292,
+          "median": 1382.841083,
+          "min": 1353.2932500000002,
+          "max": 2040.481292
+        },
+        "opened_table_audit_ms": {
+          "first": 1526.852667,
+          "median": 1368.765667,
+          "min": 1360.478625,
+          "max": 1526.852667
+        },
+        "generation_plus_opened_audit_ms": {
+          "first": 3584.119084,
+          "median": 2762.33225,
+          "min": 2724.263417,
+          "max": 3584.119084
+        },
+        "selected_opening_check_ms": {
+          "first": 10.462000000000002,
+          "median": 10.338415999999999,
+          "min": 10.337000000000002,
+          "max": 10.462000000000002
+        }
+      },
+      "bytes_identical_to_uncached_full_table": true,
+      "native_recovery_check": {
+        "binary_input_labels_recovered": 2070,
+        "payload_matches_core_report": true,
+        "pools": 115,
+        "publication_vbytes": 96176,
+        "scalars_from_core_report": 460,
+        "scope": "Uses scalar extraction records from the existing Core report; no new Core run and no full garbled verifier evaluation."
+      },
+      "table_bytes": 8051288000,
+      "label_commitment_bytes": 0
+    },
+    "label_hash": {
+      "command": [
+        "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_subset_translation_probe",
+        "--pools",
+        "115",
+        "--workers",
+        "15",
+        "--samples",
+        "3",
+        "--native-recovery",
+        "/Users/robinlinus/projects/bitcoin-lab/research/pointlocks-2026-09-17/anchored_publication_core_check.json",
+        "--label-hash-auth"
+      ],
+      "summary": {
+        "preparation_ms": {
+          "first": 12.937417,
+          "median": 10.619083,
+          "min": 10.490667,
+          "max": 12.937417
+        },
+        "table_generation_ms": {
+          "first": 833.579584,
+          "median": 794.808833,
+          "min": 791.421417,
+          "max": 833.579584
+        },
+        "opened_table_audit_ms": {
+          "first": 809.620292,
+          "median": 784.152333,
+          "min": 783.30475,
+          "max": 809.620292
+        },
+        "generation_plus_opened_audit_ms": {
+          "first": 1656.1372929999998,
+          "median": 1589.580249,
+          "min": 1585.216834,
+          "max": 1656.1372929999998
+        },
+        "selected_opening_check_ms": {
+          "first": 10.49475,
+          "median": 10.539916,
+          "min": 10.49475,
+          "max": 10.655917
+        }
+      },
+      "bytes_identical_to_uncached_full_table": true,
+      "native_recovery_check": {
+        "binary_input_labels_recovered": 2070,
+        "payload_matches_core_report": true,
+        "pools": 115,
+        "publication_vbytes": 96176,
+        "scalars_from_core_report": 460,
+        "scope": "Uses scalar extraction records from the existing Core report; no new Core run and no full garbled verifier evaluation."
+      },
+      "table_bytes": 7627536000,
+      "label_commitment_bytes": 132480
+    }
+  },
+  "scope": "All selected pool tables retained in RAM. Includes allocation, writes and worker startup. Opened audit requires every scalar and both labels; no public setup verification, VSS, garbled verifier, message-decoder circuit, point-lock scripts/transactions, process startup or compilation."
+}

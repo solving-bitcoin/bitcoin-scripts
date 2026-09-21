@@ -1,0 +1,154 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Native BIP143 dependency test and scoped staged-grinding estimate.\n\nNo rare nonce search or non-extracting native transaction is executed. The\ndependency test uses the real direct-context witness script and checks its\nbaseline digests against the funded Core fixture before making mutations.\n",
+  "source_fixture_sha256": "c345b96b5613c4096940946643a86509ae6e156ab1b54186cdb0384070f33f08",
+  "native_dependency_test": {
+    "baseline_digests_matched": 24,
+    "flags": [
+      130,
+      130,
+      131,
+      3,
+      1,
+      1
+    ],
+    "stages": [
+      {
+        "mutation": "own-sequence",
+        "changed_contexts": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "previous_digests": [
+          "322dac8ff2538a9ab02fd301103e97777afbd968a5548af716e8aad04c18bc75",
+          "c522bf463224adbab4a05d553649fd0536d6c9ba5878a788a2c1aaf30617b61b",
+          "52aa09a6c66f2c01e82cf4e1f80dad1c6732c679c7aa5453af59a5e346f98b6d",
+          "92e2e56953ff7ba70d6b6627131ec1aa32a0db42df5609e66567b2ed13c13a7c",
+          "69a830e794a041d53bc8488e6ff1328d5f75b98a3cfb33f8a97147a6bbdfa932",
+          "4a6b19dbeb3711697d4617a1a8d79659aaa7a6b4ad78a206291e767626e2b317"
+        ],
+        "new_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "9cef3c56055475698f49cf9ae057a9698458d608ba6c0d59f0685467bf3b4755",
+          "e29c2f37bf884c32d80d3aac2d3ff1e74922bc5b4a272152b4ab82b444023fe3",
+          "280c65c2f20bb422a3e37bca0fdbd327ea96e1db6275c920c8261a4dd377da78",
+          "95d1e80dc3ffbfd176d90e4c5cbc961d3fc08b3ee37149971da839414efb51bf"
+        ]
+      },
+      {
+        "mutation": "corresponding-output",
+        "changed_contexts": [
+          false,
+          false,
+          true,
+          true,
+          true,
+          true
+        ],
+        "previous_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "9cef3c56055475698f49cf9ae057a9698458d608ba6c0d59f0685467bf3b4755",
+          "e29c2f37bf884c32d80d3aac2d3ff1e74922bc5b4a272152b4ab82b444023fe3",
+          "280c65c2f20bb422a3e37bca0fdbd327ea96e1db6275c920c8261a4dd377da78",
+          "95d1e80dc3ffbfd176d90e4c5cbc961d3fc08b3ee37149971da839414efb51bf"
+        ],
+        "new_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "a7194451130f2df8aaa1183628387efbb3b67c46de5ae41e5a6616f226c587ba",
+          "31c70a953a79859d34854d3f1e3fc53ef4435cb4688931a4724c1075b810750a",
+          "d680eaa6cdc2174ed58b6e7000aa59c8d05afccb592263b416929c2a063c25e9",
+          "bec5184ae951f83157d4bc2bf5cdf2650996d7b25549715636ead281f385c6c8"
+        ]
+      },
+      {
+        "mutation": "other-input-outpoint",
+        "changed_contexts": [
+          false,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "previous_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "a7194451130f2df8aaa1183628387efbb3b67c46de5ae41e5a6616f226c587ba",
+          "31c70a953a79859d34854d3f1e3fc53ef4435cb4688931a4724c1075b810750a",
+          "d680eaa6cdc2174ed58b6e7000aa59c8d05afccb592263b416929c2a063c25e9",
+          "bec5184ae951f83157d4bc2bf5cdf2650996d7b25549715636ead281f385c6c8"
+        ],
+        "new_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "a7194451130f2df8aaa1183628387efbb3b67c46de5ae41e5a6616f226c587ba",
+          "592ab225fd8eaa88c3789485323f176f19e9ce93e94dfdbaf54039379bf8913b",
+          "9a4eaec689da38b8550e0e66dc9f54783e4782061c1a17ea79c832c5fe8687a1",
+          "1381d132e08d25cdfef20b3106e2505a309517ca077cc5e4b14a9205d46af2d4"
+        ]
+      },
+      {
+        "mutation": "noncorresponding-output",
+        "changed_contexts": [
+          false,
+          false,
+          false,
+          false,
+          true,
+          true
+        ],
+        "previous_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "a7194451130f2df8aaa1183628387efbb3b67c46de5ae41e5a6616f226c587ba",
+          "592ab225fd8eaa88c3789485323f176f19e9ce93e94dfdbaf54039379bf8913b",
+          "9a4eaec689da38b8550e0e66dc9f54783e4782061c1a17ea79c832c5fe8687a1",
+          "1381d132e08d25cdfef20b3106e2505a309517ca077cc5e4b14a9205d46af2d4"
+        ],
+        "new_digests": [
+          "57a79331d357e80df4a05e2e8cd0d0e94623e6c28378e8a877e46b92a78eb4bd",
+          "39bccba86738c56d87a6b9d9779de8cd004cecd6166cbab7e14e5fcca28a9985",
+          "a7194451130f2df8aaa1183628387efbb3b67c46de5ae41e5a6616f226c587ba",
+          "592ab225fd8eaa88c3789485323f176f19e9ce93e94dfdbaf54039379bf8913b",
+          "fcf911e4d6e423c84d587bbc576bd88c8ea4301075421c1469c557b2757b3e40",
+          "dc74e1e35aff0d1763f3919be0aab801d80cca57736a4a9b97a65b28c44b3875"
+        ]
+      }
+    ],
+    "scope": "Real BIP143 suffix digests and baseline funded fixture. The mutated outpoint is a dependency fixture, not an existing UTXO; a real attack must generate its replacement ancestor."
+  },
+  "staged_cost_model": {
+    "evidence": "inspected",
+    "best_screened": {
+      "r_der_bytes": 25,
+      "s_der_bytes": 28,
+      "groups": [
+        2,
+        1,
+        1,
+        2
+      ],
+      "nonces_per_context": 5,
+      "distinct_nonces": 30,
+      "raw_flags_per_context": 4,
+      "log2_nonce_point_trials": 61.91253715874966,
+      "log2_stage_transaction_trials": [
+        55.3674369428648,
+        27.6837184714324,
+        27.6837184714324,
+        55.3674369428648
+      ],
+      "log2_total_scalar_signature_checks": 61.68936504109808
+    },
+    "warning": "Heuristic estimate of one strategy avoiding known/repeated nonces; no attack executed, no lower bound, no general extraction impossibility. Group trials, scalar checks, native hashes and ancestor work are distinct costs. Four raw flags per class deliberately ignores extra ALL-type choices."
+  },
+  "all_expectations_met": true
+}

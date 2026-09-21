@@ -1,0 +1,1551 @@
+{
+  "scope": "Typed destructive selection in two anchored P2WSH layouts.\n\nOnly small selector fixtures, not a complete 256-byte publication or a proof\nof general short-signature extraction. Secrets are public deterministic tests.\nNative tests use a disposable network/wallet-disabled Bitcoin Core regtest.\n",
+  "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "cases": [
+    {
+      "name": "inline-select-0-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205ab57e70a9b8acdef8c741d1a63f5147a94a0a86040c155c6d45fad254c7323a012103ea6ea0c059133807d80a6d5e735b575c8f2fd47994c0a772b0b12bc6af5c46b3010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a2010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "180b38dce526f860880bfff96e3a058f6cdb0b3fecca56929718b2ac225b88b4",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "180b38dce526f860880bfff96e3a058f6cdb0b3fecca56929718b2ac225b88b4"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "17bb81f3ef631788a61b56b35fc87ef9c8349e33bb1cf99772c3d18f9f8885c2"
+      }
+    },
+    {
+      "name": "inline-select-0-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a2010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "4cc4354bf8d0daa8aa1ad63d6f53cecca6dde696aec8a9af2e8fb47755dc18f0",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "4cc4354bf8d0daa8aa1ad63d6f53cecca6dde696aec8a9af2e8fb47755dc18f0"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "6b2b9e8ac5b869f85393c2aaf28aa6a14085d0ee53c947f16b7a2af396e27d17"
+      }
+    },
+    {
+      "name": "inline-select-0-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022063f4ad02f678242e7c2907eec101d01c7b8e5caae05d8f7aa9c621f6069bc0d7012102703938e188412e5600d139cffa6762309484979f5671834b665a518f0f04fff801012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a2010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "407bff05d4660994eec954ccc8f069ee440317e2d364704be0d322326b9b75fd",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "407bff05d4660994eec954ccc8f069ee440317e2d364704be0d322326b9b75fd"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "473d276990da8b995048d53152a3243c1b575338e957de3ddda9b2c168c0a7fc"
+      }
+    },
+    {
+      "name": "inline-select-1-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022000c4b233208f1e4cdf63c57b50688154ade214e9126add80de915e0b31ba50ac012103763caa74f9a61266d6d240b18735a98ece993869beb488b7b1ac11ec951f0a41010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022021a9ad5ecad70c4dfd4cb112cbd845d5ed410b464b42f002f18aa2c86247224a0121025e1ddadcb6ccac14c56f17ebb33a84ecc81fa047628488e545da0ed9b1a0421a010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "34f7493bf69e375e8e77be41faa0ca51e3062cc32b9e9e5d1b5afe4598db076e",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "34f7493bf69e375e8e77be41faa0ca51e3062cc32b9e9e5d1b5afe4598db076e"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "1412e657e4ef7835a2f89a0deef28a3dce5480f355a4c93fdad89f6eec025770"
+      }
+    },
+    {
+      "name": "inline-select-1-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022021a9ad5ecad70c4dfd4cb112cbd845d5ed410b464b42f002f18aa2c86247224a0121025e1ddadcb6ccac14c56f17ebb33a84ecc81fa047628488e545da0ed9b1a0421a010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "ca2e051579a0bc5464b527c6d96e4468076b8c7e5cb0b8da5b71f1c9c2ef35dd",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "ca2e051579a0bc5464b527c6d96e4468076b8c7e5cb0b8da5b71f1c9c2ef35dd"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "67b6b9d7762ef9ee9157cd4fdeee500426ffdea06422c33348b4b94a9991bdca"
+      }
+    },
+    {
+      "name": "inline-select-1-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022063f4ad02f678242e7c2907eec101d01c7b8e5caae05d8f7aa9c621f6069bc0d7012102703938e188412e5600d139cffa6762309484979f5671834b665a518f0f04fff801012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022021a9ad5ecad70c4dfd4cb112cbd845d5ed410b464b42f002f18aa2c86247224a0121025e1ddadcb6ccac14c56f17ebb33a84ecc81fa047628488e545da0ed9b1a0421a010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "ec7a54ad949c4f423b6df24a76c30da46775a676a5f9af670a7dc2061fd20ba2",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "ec7a54ad949c4f423b6df24a76c30da46775a676a5f9af670a7dc2061fd20ba2"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "445b563d9855fc8d762c557c6af2812bcd11e2cd71d0b9ea6ef4b5aa93b6d517"
+      }
+    },
+    {
+      "name": "inline-select-2-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022000c4b233208f1e4cdf63c57b50688154ade214e9126add80de915e0b31ba50ac012103763caa74f9a61266d6d240b18735a98ece993869beb488b7b1ac11ec951f0a41010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302204b57ca2b7e4138d474cca2827e7d662f5d05b0ef959a3319a896898785fe3c4301210256671023d2dd2d0b24d3a54fa9c16cc752749ebd6e6b8487508cbfa9638027f9010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "a81555b27e62a8f90af14c02dcc8798fa81bc4cd88b5c3ba56abfbb00d6ede52",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "a81555b27e62a8f90af14c02dcc8798fa81bc4cd88b5c3ba56abfbb00d6ede52"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "60639c721737db8034a4751f7b085d6327661a500ae06268d403bf0c05f14a6e"
+      }
+    },
+    {
+      "name": "inline-select-2-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205ab57e70a9b8acdef8c741d1a63f5147a94a0a86040c155c6d45fad254c7323a012103ea6ea0c059133807d80a6d5e735b575c8f2fd47994c0a772b0b12bc6af5c46b3010228302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302204b57ca2b7e4138d474cca2827e7d662f5d05b0ef959a3319a896898785fe3c4301210256671023d2dd2d0b24d3a54fa9c16cc752749ebd6e6b8487508cbfa9638027f9010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "dcc7feeb482679e56492a06af6a324e2708c5646e659111be5e82ba67bc3d421",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "dcc7feeb482679e56492a06af6a324e2708c5646e659111be5e82ba67bc3d421"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4a670bb398f922a586ce05382b2dfc8d54a5c26c1a1a853117448511d2c204e7"
+      }
+    },
+    {
+      "name": "inline-select-2-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022063f4ad02f678242e7c2907eec101d01c7b8e5caae05d8f7aa9c621f6069bc0d7012102703938e188412e5600d139cffa6762309484979f5671834b665a518f0f04fff801012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302204b57ca2b7e4138d474cca2827e7d662f5d05b0ef959a3319a896898785fe3c4301210256671023d2dd2d0b24d3a54fa9c16cc752749ebd6e6b8487508cbfa9638027f9010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "940f216f61dc4da88265724e1e3e342cb094e9a9bf42175495612f237bc2d306",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "940f216f61dc4da88265724e1e3e342cb094e9a9bf42175495612f237bc2d306"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "3429d6b81ea57cf64e2f2e9540a8416da3303c1be41741f24e10ef6401252ce1"
+      }
+    },
+    {
+      "name": "inline-select-3-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022000c4b233208f1e4cdf63c57b50688154ade214e9126add80de915e0b31ba50ac012103763caa74f9a61266d6d240b18735a98ece993869beb488b7b1ac11ec951f0a41010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200f16b4f80f4bb31ee3ab21dee227ebc1261229b794c062fdceac45dda293bb9301210304da5a8ff978c24dd25066b3a9c57ef5304a7e1bacac0fe857af3fa25311108301012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "317ef6d1ce0cbbd4b4407f1d2bb674aab29da776bb9c3c65a3eb4fcfaf86bc01",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "317ef6d1ce0cbbd4b4407f1d2bb674aab29da776bb9c3c65a3eb4fcfaf86bc01"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "7cb54d72243c2e771e54746e933077891a91b7aeb22da6cb1da06d6e15200e14"
+      }
+    },
+    {
+      "name": "inline-select-3-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205ab57e70a9b8acdef8c741d1a63f5147a94a0a86040c155c6d45fad254c7323a012103ea6ea0c059133807d80a6d5e735b575c8f2fd47994c0a772b0b12bc6af5c46b3010228302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200f16b4f80f4bb31ee3ab21dee227ebc1261229b794c062fdceac45dda293bb9301210304da5a8ff978c24dd25066b3a9c57ef5304a7e1bacac0fe857af3fa25311108301012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "57d7ccb135b199f77abe19022254484eacc24241b5616d88f65d5dd3bcd2b4ec",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "57d7ccb135b199f77abe19022254484eacc24241b5616d88f65d5dd3bcd2b4ec"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "46a0386dea5b8682420093a835afb587785b23c0d8ed0f470460337700c33dd4"
+      }
+    },
+    {
+      "name": "inline-select-3-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010128302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200f16b4f80f4bb31ee3ab21dee227ebc1261229b794c062fdceac45dda293bb9301210304da5a8ff978c24dd25066b3a9c57ef5304a7e1bacac0fe857af3fa25311108301012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "16e56359c6a0a6b66200797ba7c35f69b2984aed17b5ed9be969207d589fda23",
+        "allowed": true,
+        "vsize": 262,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038167,
+          "effective-includes": [
+            "16e56359c6a0a6b66200797ba7c35f69b2984aed17b5ed9be969207d589fda23"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "26f3b58c601da7fb775148c457e7cd70279ef4f5b0ecd68de5739cc5beb4f9a6"
+      }
+    },
+    {
+      "name": "inline-zero-index-hash-equation-satisfied",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022000c4b233208f1e4cdf63c57b50688154ade214e9126add80de915e0b31ba50ac012103763caa74f9a61266d6d240b18735a98ece993869beb488b7b1ac11ec951f0a41010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200f16b4f80f4bb31ee3ab21dee227ebc1261229b794c062fdceac45dda293bb9301210304da5a8ff978c24dd25066b3a9c57ef5304a7e1bacac0fe857af3fa2531110830014f058563d44bdae426b7b9760d3b8636f8733d2693c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1026,
+        "vbytes": 257
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "non-DER-table-element",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "6eee6d7ff25179cc6c1b72acef63ea124f055a9650c5dc7db9556fc6b91fdf85",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 6eee6d7ff25179cc6c1b72acef63ea124f055a9650c5dc7db9556fc6b91fdf85), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 6eee6d7ff25179cc6c1b72acef63ea124f055a9650c5dc7db9556fc6b91fdf85), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-negative-index",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a2018128302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1047,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "roll-index-out-of-stack",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "e814c670ed10f992e35911fb4606e2af0dc410830c803fe77705782159a2c671",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid e814c670ed10f992e35911fb4606e2af0dc410830c803fe77705782159a2c671), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid e814c670ed10f992e35911fb4606e2af0dc410830c803fe77705782159a2c671), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-beyond-stack",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a202e80328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1048,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "roll-index-out-of-stack",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "d65faf7939cc0442dca5d64eb3f07198e8084061ec28aeccf4108c3f9987b8c4",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid d65faf7939cc0442dca5d64eb3f07198e8084061ec28aeccf4108c3f9987b8c4), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid d65faf7939cc0442dca5d64eb3f07198e8084061ec28aeccf4108c3f9987b8c4), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-five-byte-index",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a205010000000028302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1051,
+        "vbytes": 263
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "oversized-roll-index",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "ecae26702224de2f3f8b706c37191ffd74735a53b93bb1420edfc58cdb368efb",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+        "reject-details": "mempool-script-verify-flag-failed (unknown error), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid ecae26702224de2f3f8b706c37191ffd74735a53b93bb1420edfc58cdb368efb), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (unknown error), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid ecae26702224de2f3f8b706c37191ffd74735a53b93bb1420edfc58cdb368efb), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-extra-entry-item",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510b01013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc0121023e7b6a216a9db0ec5f0906158be2a993d5f756e3b45fc60a8a0132bed82e96a2010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1049,
+        "vbytes": 263
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "unclean-terminal-stack",
+        "signature_checks": 5,
+        "combined_stack_peak": 14
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "30ff792c62215cb22233cd775d43ca76f36f124891950339f6ee41e821f780e9",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Stack size must be exactly one after execution)",
+        "reject-details": "mempool-script-verify-flag-failed (Stack size must be exactly one after execution), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 30ff792c62215cb22233cd775d43ca76f36f124891950339f6ee41e821f780e9), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size must be exactly one after execution), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 30ff792c62215cb22233cd775d43ca76f36f124891950339f6ee41e821f780e9), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-outside-table-hash-equation-satisfied",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022035806a55b22011d49d72fa80fe35024c6595862cdb91724201df3104efc023a9012102447e9d36e9173557593a5e73fcb5cb110b7cfecd38475a5735f71cfc38b07ece010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220760efe289de74edf34d57225cb003c5ffce548b94c2847bbc35b211f47cab4dc011425c86631cd4db1cb3c60b45db5016303bd91581e010528302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1034,
+        "vbytes": 259
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "table-element-used-as-key",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "79f376d1f155e3da693bb5e912bcec9337c5f5d11fed259217977a122381e15d",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 79f376d1f155e3da693bb5e912bcec9337c5f5d11fed259217977a122381e15d), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid 79f376d1f155e3da693bb5e912bcec9337c5f5d11fed259217977a122381e15d), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "inline-negative-zero",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0100000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022000c4b233208f1e4cdf63c57b50688154ade214e9126add80de915e0b31ba50ac012103763caa74f9a61266d6d240b18735a98ece993869beb488b7b1ac11ec951f0a41010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200f16b4f80f4bb31ee3ab21dee227ebc1261229b794c062fdceac45dda293bb9301210304da5a8ff978c24dd25066b3a9c57ef5304a7e1bacac0fe857af3fa253111083018014f058563d44bdae426b7b9760d3b8636f8733d2693c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022048c4d473d38306677520b1762b8a8e22758c378049f3190178066a901826a21d01a3210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a988547a7dad547a82013c887cabad537a547a7a78a988537a7dad537a82013c887cabad6d5100000000",
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "weight": 1027,
+        "vbytes": 257
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "non-DER-table-element",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6",
+        "wtxid": "ab90aa889e4488559c499decc6c946c3e808d0d3429163596d9f18a6acdbe3b0",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+        "reject-details": "mempool-script-verify-flag-failed (unknown error), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid ab90aa889e4488559c499decc6c946c3e808d0d3429163596d9f18a6acdbe3b0), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 1 of 1ff3dd499a30a055e15e5fc8222841b87968c12cc575d1db04834812dd5884d6 (wtxid ab90aa889e4488559c499decc6c946c3e808d0d3429163596d9f18a6acdbe3b0), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:1"
+      }
+    },
+    {
+      "name": "phased-select-0-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302201526b91e11fe47e44159f70fc1ad3ba6c2e22499f084182e8d562cfc6158277a012103b1d7fdc7cf184fcf4a9933997bee18f4b6ecea9c610a1de0deeb55123e52a833010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc02010101010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "20a93578bf6555a43febbb3eac4c368a1041d18283db5831455838c276c3a952",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "20a93578bf6555a43febbb3eac4c368a1041d18283db5831455838c276c3a952"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "5008237c28caee2b48e35b87f97e715eafbabf9e9c4e713ba1450e7724a60d4a"
+      }
+    },
+    {
+      "name": "phased-select-0-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a0102010101010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "7fda208ed397ede559c18750babfc77061b9928bdaface03c3862a7f5c4b836c",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "7fda208ed397ede559c18750babfc77061b9928bdaface03c3862a7f5c4b836c"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "26ba2682d25eadf49d277d4a81d521fbaf7fa8a93badb9b135eb6b347b9daf39"
+      }
+    },
+    {
+      "name": "phased-select-0-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 0,
+          "scalar": 5
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022051f9a8bd05efdeff72439aed8f872c5861a34cd6a0de69452c5e52e7582f2c0e01210264724014c94ee0439317e93b425451dc6c58304cbda6a00e6fee3cefd834bb3001012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb02010101010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "1835f2a2af823762a45367f7d64f3b73e339fda1cbd844b02ff6617906ce4493",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "1835f2a2af823762a45367f7d64f3b73e339fda1cbd844b02ff6617906ce4493"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "78906e9765c73ffa16aaa5f530fd26c456badc881d57642f7ee70596c85775dc"
+      }
+    },
+    {
+      "name": "phased-select-1-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220541346db5b32ba9cb13a1c84635ffad5d2821757fd5d18b0075427d13605bca001210211118dfc0c0d12188b4dd293984c0d384aa6fb35826f904f1738b39081e2739a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022015381bcdc41b11cdee233ceffd31ce15dfd90bd10f2b66ca53893f7ecdd5d1d5012102c14da51167730fce337679d8c77896075b4f61d2cd805f835f887f9b7efca92f010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe402010101010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "072ebde02fec38eb93dd2cf141b350a8db147dd30540d2d6a9a8257759248b34",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "072ebde02fec38eb93dd2cf141b350a8db147dd30540d2d6a9a8257759248b34"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "53e01ccbdb9c87c66e8a8b2fe64205a9a4539a4e9023a5b92a977b31a0f9d735"
+      }
+    },
+    {
+      "name": "phased-select-1-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220541346db5b32ba9cb13a1c84635ffad5d2821757fd5d18b0075427d13605bca001210211118dfc0c0d12188b4dd293984c0d384aa6fb35826f904f1738b39081e2739a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a0102010101010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "837dbbdb856084e5cab42cf8ccb1281441329bc8d519aa728d9aff49973cb36d",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "837dbbdb856084e5cab42cf8ccb1281441329bc8d519aa728d9aff49973cb36d"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "07e536f0aa7c4df33f9b41d94ab9df90d9e7ed0b700724e8ac106b63bafd7521"
+      }
+    },
+    {
+      "name": "phased-select-1-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 1,
+          "scalar": 7
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220541346db5b32ba9cb13a1c84635ffad5d2821757fd5d18b0075427d13605bca001210211118dfc0c0d12188b4dd293984c0d384aa6fb35826f904f1738b39081e2739a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022051f9a8bd05efdeff72439aed8f872c5861a34cd6a0de69452c5e52e7582f2c0e01210264724014c94ee0439317e93b425451dc6c58304cbda6a00e6fee3cefd834bb3001012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb02010101010328302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "14766231556aaa25cc2c0bf40ee5206a0de8494f68363024cecf96dcea034235",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "14766231556aaa25cc2c0bf40ee5206a0de8494f68363024cecf96dcea034235"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "68c29abd47171c4851dff6749e3d6f506a0b2f8cdb13901d0d1d2107a9994599"
+      }
+    },
+    {
+      "name": "phased-select-2-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302206e6d5c8d529b4a2ce2ffec2ea45e6ebcb293900fdc3ef496e47e117ffb3473350121022c282a9b64a23adb473fda08edeb0b181a4b135d58cc413e5f10ec5303097c423c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022015381bcdc41b11cdee233ceffd31ce15dfd90bd10f2b66ca53893f7ecdd5d1d5012102c14da51167730fce337679d8c77896075b4f61d2cd805f835f887f9b7efca92f010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe402010101010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "4526c917054f7e7891f654e18fcdf87bf32490aaa081e668e849fd7f646ee83a",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "4526c917054f7e7891f654e18fcdf87bf32490aaa081e668e849fd7f646ee83a"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "083ac3b6882f7ae9271c33a87b9d5027d27c57d178b4141c47793779b703363a"
+      }
+    },
+    {
+      "name": "phased-select-2-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302206e6d5c8d529b4a2ce2ffec2ea45e6ebcb293900fdc3ef496e47e117ffb3473350121022c282a9b64a23adb473fda08edeb0b181a4b135d58cc413e5f10ec5303097c423c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302201526b91e11fe47e44159f70fc1ad3ba6c2e22499f084182e8d562cfc6158277a012103b1d7fdc7cf184fcf4a9933997bee18f4b6ecea9c610a1de0deeb55123e52a833010228302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc02010101010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "d2eb3c57ce8b8e3e0efbbc11f6ececd170abfcc3c39903334880c7205c458898",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "d2eb3c57ce8b8e3e0efbbc11f6ececd170abfcc3c39903334880c7205c458898"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "286c12a2e9caf06d8d01c152c691e743e7f6eb6ef4d186f0c538e85d0587944e"
+      }
+    },
+    {
+      "name": "phased-select-2-3",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 3,
+          "scalar": 11
+        },
+        {
+          "label": 2,
+          "scalar": 8
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302206e6d5c8d529b4a2ce2ffec2ea45e6ebcb293900fdc3ef496e47e117ffb3473350121022c282a9b64a23adb473fda08edeb0b181a4b135d58cc413e5f10ec5303097c423c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022051f9a8bd05efdeff72439aed8f872c5861a34cd6a0de69452c5e52e7582f2c0e01210264724014c94ee0439317e93b425451dc6c58304cbda6a00e6fee3cefd834bb3001012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb02010101010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a01020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "e1c061a1b7e4f107a5c0d8ea93ecb6e931e994e9d3af843593f9f4e5b1c79607",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "e1c061a1b7e4f107a5c0d8ea93ecb6e931e994e9d3af843593f9f4e5b1c79607"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "2d412f75c71082f3c64fad18ef8d6b9e6dae395bafcfd37600b7e307f57e0864"
+      }
+    },
+    {
+      "name": "phased-select-3-0",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 0,
+          "scalar": 5
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200eed3bd4dff3af09b5838f4dd444f980d41b7db7dc2c44cfad43e7f83caa65c20121029501aafb056dfe50c861583994331fe9af665d49e42a70ebf39686e5a2890fb53c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022015381bcdc41b11cdee233ceffd31ce15dfd90bd10f2b66ca53893f7ecdd5d1d5012102c14da51167730fce337679d8c77896075b4f61d2cd805f835f887f9b7efca92f010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe40201010101012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "4e52c5b70e66e80a07de4deca6e4e9b48564f58e7135f4407e85813309510421",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "4e52c5b70e66e80a07de4deca6e4e9b48564f58e7135f4407e85813309510421"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "1cb2a72e4250d45f352a504b763cc504961b90600af85f1737c1b8b1059279f7"
+      }
+    },
+    {
+      "name": "phased-select-3-1",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 1,
+          "scalar": 7
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200eed3bd4dff3af09b5838f4dd444f980d41b7db7dc2c44cfad43e7f83caa65c20121029501aafb056dfe50c861583994331fe9af665d49e42a70ebf39686e5a2890fb53c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302201526b91e11fe47e44159f70fc1ad3ba6c2e22499f084182e8d562cfc6158277a012103b1d7fdc7cf184fcf4a9933997bee18f4b6ecea9c610a1de0deeb55123e52a833010228302502205cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc0201010101012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "e6e5f18d889c4b657a9f492bd2b2223a1c0d5c220d13327bfec5d3ac8cac666f",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "e6e5f18d889c4b657a9f492bd2b2223a1c0d5c220d13327bfec5d3ac8cac666f"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4ff80b3eb57cc36b3ad1c4a79202710f78649c86d3bff0f211ee52b9166c55c2"
+      }
+    },
+    {
+      "name": "phased-select-3-2",
+      "expected": true,
+      "recovery": [
+        {
+          "label": 2,
+          "scalar": 8
+        },
+        {
+          "label": 3,
+          "scalar": 11
+        }
+      ],
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200eed3bd4dff3af09b5838f4dd444f980d41b7db7dc2c44cfad43e7f83caa65c20121029501aafb056dfe50c861583994331fe9af665d49e42a70ebf39686e5a2890fb53c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010128302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a010201010101012830250220774ae7f858a9411e5ef4246b70c65aac5649980be5c17891bbec17895da008cb020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": true,
+        "failure": null,
+        "signature_checks": 5,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "ae2028b2620cf5ee86be51e69a5eff1696be0282c8211a775b494e2f5ca6f802",
+        "allowed": true,
+        "vsize": 261,
+        "fees": {
+          "base": 0.0001,
+          "effective-feerate": 0.00038314,
+          "effective-includes": [
+            "ae2028b2620cf5ee86be51e69a5eff1696be0282c8211a775b494e2f5ca6f802"
+          ]
+        }
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "6a278d092bd050a8d54092c1a54122d6338dfb439a4930674fff2129107039b5"
+      }
+    },
+    {
+      "name": "phased-zero-index-hash-equation-satisfied",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200eed3bd4dff3af09b5838f4dd444f980d41b7db7dc2c44cfad43e7f83caa65c20121029501aafb056dfe50c861583994331fe9af665d49e42a70ebf39686e5a2890fb53c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022015381bcdc41b11cdee233ceffd31ce15dfd90bd10f2b66ca53893f7ecdd5d1d5012102c14da51167730fce337679d8c77896075b4f61d2cd805f835f887f9b7efca92f010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101010014f058563d44bdae426b7b9760d3b8636f8733d2693c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1023,
+        "vbytes": 256
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "non-DER-table-element",
+        "signature_checks": 3,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "54fb27f5a93d3de2f1b6ac2a51130df504bea9ca247f77b56e8e99b9790583e9",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical DER signature)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical DER signature), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 54fb27f5a93d3de2f1b6ac2a51130df504bea9ca247f77b56e8e99b9790583e9), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 54fb27f5a93d3de2f1b6ac2a51130df504bea9ca247f77b56e8e99b9790583e9), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-negative-index",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a0102010101018128302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1044,
+        "vbytes": 261
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "roll-index-out-of-stack",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "e51e5c77446dccb1068d407fcbe2e7749b0e107800248e4ced34d673ed282358",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid e51e5c77446dccb1068d407fcbe2e7749b0e107800248e4ced34d673ed282358), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid e51e5c77446dccb1068d407fcbe2e7749b0e107800248e4ced34d673ed282358), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-beyond-stack",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a010201010102e80328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1045,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "roll-index-out-of-stack",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "578c3c1eec0b79bee9a4d290aff87ad115356b9a74730e50e6d9c294411c95eb",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Operation not valid with the current stack size)",
+        "reject-details": "mempool-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 578c3c1eec0b79bee9a4d290aff87ad115356b9a74730e50e6d9c294411c95eb), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Operation not valid with the current stack size), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 578c3c1eec0b79bee9a4d290aff87ad115356b9a74730e50e6d9c294411c95eb), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-five-byte-index",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a010201010105010000000028302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1048,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "oversized-roll-index",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "30983182681e7f4894b41dcc969f00c2fc672cf411ca0886654b6b8ccc613f45",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+        "reject-details": "mempool-script-verify-flag-failed (unknown error), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 30983182681e7f4894b41dcc969f00c2fc672cf411ca0886654b6b8ccc613f45), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (unknown error), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 30983182681e7f4894b41dcc969f00c2fc672cf411ca0886654b6b8ccc613f45), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-extra-entry-item",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510b01013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd64012103ce542f7c0d127e24709d1f7248b511a8f119b0047501c549dc1c0d779fd32eae010228302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a0102010101010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1046,
+        "vbytes": 262
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "unclean-terminal-stack",
+        "signature_checks": 5,
+        "combined_stack_peak": 14
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "b561648a5fe8b74fc638ddd4873078db6b2e56822008dabcd49b6c417cb9999b",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Stack size must be exactly one after execution)",
+        "reject-details": "mempool-script-verify-flag-failed (Stack size must be exactly one after execution), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid b561648a5fe8b74fc638ddd4873078db6b2e56822008dabcd49b6c417cb9999b), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size must be exactly one after execution), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid b561648a5fe8b74fc638ddd4873078db6b2e56822008dabcd49b6c417cb9999b), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-outside-table-hash-equation-satisfied",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630220344eb219d0a9ee5fa4499c62e833e6c8c76f665c1d36fe336959d2656ec98c860121038a3d460e1fd63ba67a4467cc84f8c50128c69ecd72ea1fd3e278c20bdb0563173c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302205143b00b1793286ffccb2d12a91c5d6422e1c516f87dacdfdd9cdd35f7e9cd640114f382e29ab384f8f7e948e4e9bf7788ea090f2660010428302502202f01e5e15cca351daff3843fb70f3c2f0a1bdd05e5af888a67784ef3e10a2a0102010101010428302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe4020101013c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1031,
+        "vbytes": 258
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "table-element-used-as-key",
+        "signature_checks": 1,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "0a93e2f3d2fdf33e80b8279d739207eb9d42d34e3d82a922dcfcfe4606af166b",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed)",
+        "reject-details": "mempool-script-verify-flag-failed (Public key is neither compressed or uncompressed), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 0a93e2f3d2fdf33e80b8279d739207eb9d42d34e3d82a922dcfcfe4606af166b), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid 0a93e2f3d2fdf33e80b8279d739207eb9d42d34e3d82a922dcfcfe4606af166b), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    },
+    {
+      "name": "phased-negative-zero",
+      "expected": false,
+      "transaction": {
+        "hex": "02000000000102228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0000000000ffffffff228e293e035c878e414fb2577b79bd4de4ea9197d371b34e4c66ed096cd7eb5e0200000000ffffffff0130e60200000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600101510a3c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302200eed3bd4dff3af09b5838f4dd444f980d41b7db7dc2c44cfad43e7f83caa65c20121029501aafb056dfe50c861583994331fe9af665d49e42a70ebf39686e5a2890fb53c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022015381bcdc41b11cdee233ceffd31ce15dfd90bd10f2b66ca53893f7ecdd5d1d5012102c14da51167730fce337679d8c77896075b4f61d2cd805f835f887f9b7efca92f010328302502202f8bde4d1a07209355b4a7250a5c5128e88b84bddc619ab7cba8d569b240efe402010101018014f058563d44bdae426b7b9760d3b8636f8733d2693c303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203d4bb0c1fca0fc85e14d6bcd5ee9659094258c31bea199b183c61006d35f703601a0210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ad1425c86631cd4db1cb3c60b45db5016303bd91581e14ea23c8dbf73562f909b04009b09bdec09779ff8714f382e29ab384f8f7e948e4e9bf7788ea090f266014961cf7331d27442a22325d91d8eb8fe6601176a4547a557a7a78a9886b537a547a7a78a988777778ad7c82013c887cabad6c78ad7c82013c887cabad5100000000",
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "weight": 1024,
+        "vbytes": 256
+      },
+      "independent_trace": {
+        "accepted": false,
+        "failure": "non-DER-table-element",
+        "signature_checks": 3,
+        "combined_stack_peak": 13
+      },
+      "policy": {
+        "txid": "a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f",
+        "wtxid": "be40cd6165c11d58a1d66841962b7829be9a12530a924eccb873cd5b564674d4",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+        "reject-details": "mempool-script-verify-flag-failed (unknown error), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid be40cd6165c11d58a1d66841962b7829be9a12530a924eccb873cd5b564674d4), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Non-canonical DER signature), input 1 of a055b4e9f14e0d8378d4d52c2dd037819fbffb1495da7b6d5195b5a445fec47f (wtxid be40cd6165c11d58a1d66841962b7829be9a12530a924eccb873cd5b564674d4), spending 5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22:2"
+      }
+    }
+  ],
+  "general_extraction_proved": false,
+  "complete_publication": false,
+  "setup_benchmark": false,
+  "evidence": "differentially-validated",
+  "deployment_class": "policy-validated",
+  "test_only_funding": {
+    "txid": "5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22",
+    "wtxid": "61a1414fe0044b19431b2e27f845d357423efbdbbf734e9a70cc91e267bb8f0d",
+    "weight": 897,
+    "vsize": 225,
+    "size": 228,
+    "inputs": 1,
+    "outputs": 4,
+    "policy": {
+      "txid": "5eebd76c09ed664c4eb371d39791eae44dbd797b57b24f418e875c033e298e22",
+      "wtxid": "61a1414fe0044b19431b2e27f845d357423efbdbbf734e9a70cc91e267bb8f0d",
+      "allowed": true,
+      "vsize": 225,
+      "fees": {
+        "base": 0.0001,
+        "effective-feerate": 0.00044444,
+        "effective-includes": [
+          "61a1414fe0044b19431b2e27f845d357423efbdbbf734e9a70cc91e267bb8f0d"
+        ]
+      }
+    },
+    "block_hash": "34d829db939fb5bf708347717add82ecf6f5502dcfa30868b7186a33192b322e",
+    "block_height": 102,
+    "consensus_accepted": true,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff04a0860100000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260a086010000000000220020fcb57e4025369999a9862c8151eefc15498615818aea75d223ad781ccb66ce5ba086010000000000220020c7852e7d98dcfa3981ff8cc2ff7060300a812ab78b5daccd502e11deb1cc91f71037012a010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000"
+  },
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "metrics": [
+    {
+      "mode": "inline",
+      "script_bytes": 163,
+      "charged_ops": 32,
+      "hint_items_per_input": 2,
+      "entry_items": 9,
+      "complete_witness_items": 10,
+      "serialized_witness_bytes": [
+        502
+      ],
+      "combined_stack_peak": 13
+    },
+    {
+      "mode": "phased",
+      "script_bytes": 160,
+      "charged_ops": 33,
+      "hint_items_per_input": 2,
+      "entry_items": 9,
+      "complete_witness_items": 10,
+      "serialized_witness_bytes": [
+        499
+      ],
+      "combined_stack_peak": 13
+    }
+  ],
+  "summary": {
+    "positive_cases": 24,
+    "negative_cases": 14,
+    "all_expectations_met": true
+  },
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/typed_selector_core_check.py": "40e11bfa9694aa81f2afccfaa8d2df2c11ca9acf5c80bfff31559af440a27f11",
+    "examples/pointlock_anchored_typed_size_probe.rs": "1438f98a2f63cd82b067ad06c959ab40a6ecf67a36bc815f5079d6dff997e7ae",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/pointlocks-2026-09-17/anchored_native_core_check.py": "5dfeaa8caa261f3b3e254ec1d96895fcffbdc02dde6410fd2bce25b0ca9734a5",
+    "research/pointlocks-2026-09-17/anchored_extraction.py": "97db9d2fac8b6e6bd15a7e483850f1f436fc806fb7d20c5d56040f2bcf029651",
+    "research/pointlocks-2026-09-17/anchored_consensus_flags_check.py": "8e3e0bf41868c3b1088ac4447c1f180bfa91d92edfc3f61f0d24c7fdbb396c69"
+  }
+}

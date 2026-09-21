@@ -1,0 +1,70 @@
+{
+  "build_profile": "release",
+  "candidates": 5750,
+  "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "pools": 115,
+  "samples": [
+    {
+      "combined_ms": 127.572167,
+      "generation_ms": 96.85475000000001,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.717417
+    },
+    {
+      "combined_ms": 66.175708,
+      "generation_ms": 35.75225,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.423458
+    },
+    {
+      "combined_ms": 64.570083,
+      "generation_ms": 34.809458,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 29.760624999999997
+    },
+    {
+      "combined_ms": 66.195375,
+      "generation_ms": 36.674,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 29.521375
+    },
+    {
+      "combined_ms": 66.26754199999999,
+      "generation_ms": 35.648625,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.618917
+    },
+    {
+      "combined_ms": 67.1765,
+      "generation_ms": 36.482292,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.694208
+    },
+    {
+      "combined_ms": 68.503208,
+      "generation_ms": 37.3595,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 31.143708
+    },
+    {
+      "combined_ms": 67.410209,
+      "generation_ms": 35.765834000000005,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 31.644375000000004
+    },
+    {
+      "combined_ms": 65.535084,
+      "generation_ms": 34.746875,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.788209000000002
+    },
+    {
+      "combined_ms": 65.760333,
+      "generation_ms": 35.678625,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 30.081708
+    }
+  ],
+  "scope": "Point-label generation, candidate/table generation, policy compilation and public checking for the entire115pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+  "workers": 15
+}

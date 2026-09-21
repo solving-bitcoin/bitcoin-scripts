@@ -1,0 +1,91 @@
+{
+  "question": "Focused reproduction of the WOTS translation interface in ePrint2026/1684.\n\nTests access counts, polynomial reconstruction, and the separate malicious-table\nbinding obligation. No Bitcoin execution, point lock, setup benchmark, or full\ngarbling privacy proof is claimed. All test seeds are public deterministic data.\n",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "reference": {
+    "url": "https://eprint.iacr.org/2026/1684.pdf",
+    "pdf_title_date": "2026-07-27",
+    "pdf_pages": 22,
+    "pdf_sha256": "64911295ba6ffa3e3b23c8075bb074d8995e55f11d1b949c5f17a59e10124745"
+  },
+  "field": 170141183460469231731687303715884105727,
+  "profiles": [
+    {
+      "digits": 8,
+      "width": 1,
+      "messages": 256,
+      "label_deficit_checks": 4096
+    },
+    {
+      "digits": 4,
+      "width": 2,
+      "messages": 256,
+      "label_deficit_checks": 4096
+    },
+    {
+      "digits": 2,
+      "width": 3,
+      "messages": 64,
+      "label_deficit_checks": 768
+    },
+    {
+      "digits": 2,
+      "width": 4,
+      "messages": 256,
+      "label_deficit_checks": 4096
+    }
+  ],
+  "reconstruction": {
+    "messages": 16,
+    "selected_labels": 64,
+    "ciphertext_rows": 48
+  },
+  "full_message_row_counts": [
+    {
+      "message_bits": 2048,
+      "chunk_bits": 4,
+      "digit_bits": 4,
+      "chunks": 512,
+      "single_checksum_chains": 512,
+      "message_chains": 512,
+      "ciphertext_rows": 61440,
+      "field_ciphertext_payload_bytes": 983040
+    },
+    {
+      "message_bits": 2048,
+      "chunk_bits": 8,
+      "digit_bits": 4,
+      "chunks": 256,
+      "single_checksum_chains": 256,
+      "message_chains": 512,
+      "ciphertext_rows": 122880,
+      "field_ciphertext_payload_bytes": 1966080
+    },
+    {
+      "message_bits": 2048,
+      "chunk_bits": 128,
+      "digit_bits": 4,
+      "chunks": 16,
+      "single_checksum_chains": 16,
+      "message_chains": 512,
+      "ciphertext_rows": 1966080,
+      "field_ciphertext_payload_bytes": 31457280
+    }
+  ],
+  "malformed_table": {
+    "wots_still_valid": true,
+    "endpoints_unchanged": true,
+    "intended_label_hashes_unchanged": true,
+    "selected_label_commitment_failed": true,
+    "scope": "Missing public table-binding obligation; not an attack on honest-garbler privacy or the paper protocol with its own audit."
+  },
+  "bitcoin_execution": false,
+  "point_scalar_extraction": false,
+  "setup_benchmark": false,
+  "hint_items": null,
+  "stack_peak": null,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "source_sha256": "77805d1bfd7c8e337b00738772febd9a02e10f39a42d28de5510b09a9b618267",
+  "all_expectations_met": true
+}

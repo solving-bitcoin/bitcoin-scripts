@@ -1,0 +1,120 @@
+{
+  "scope": "Optimistic representation bound for explicit HASH160-tau anchored tables.\n\nThis does not cover other representations or label encodings. Every selected\npoint has tau40, a compressed recovered key33, and d exact60-byte signatures.\nEverything receives witness discount; every opcode and transaction is free.\n",
+  "evidence": "inspected",
+  "deployment": "unclassified",
+  "method": "Weighted binary entropy bound, computed by 100 bisection steps. Derivation is in anchored-rounds-limits.md.",
+  "rows": [
+    {
+      "rounds": 3,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 258,
+      "optimizing_selection_density": 0.13833429670654554,
+      "bytes_per_message_bit": 97.76543906286713,
+      "optimistic_total_vbytes": 50055.90480018797
+    },
+    {
+      "rounds": 4,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 319,
+      "optimizing_selection_density": 0.12189536751307636,
+      "bytes_per_message_bit": 111.97895548953042,
+      "optimistic_total_vbytes": 57333.225210639575
+    },
+    {
+      "rounds": 5,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 380,
+      "optimizing_selection_density": 0.109412173407804,
+      "bytes_per_message_bit": 125.62047308262478,
+      "optimistic_total_vbytes": 64317.68221830389
+    },
+    {
+      "rounds": 6,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 441,
+      "optimizing_selection_density": 0.09955467423800989,
+      "bytes_per_message_bit": 138.8068026089622,
+      "optimistic_total_vbytes": 71069.08293578864
+    },
+    {
+      "rounds": 7,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 502,
+      "optimizing_selection_density": 0.09154031309510892,
+      "bytes_per_message_bit": 151.61841950759538,
+      "optimistic_total_vbytes": 77628.63078788883
+    },
+    {
+      "rounds": 8,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 563,
+      "optimizing_selection_density": 0.08487549314471846,
+      "bytes_per_message_bit": 164.1137177007497,
+      "optimistic_total_vbytes": 84026.22346278385
+    },
+    {
+      "rounds": 9,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 624,
+      "optimizing_selection_density": 0.07923194599171465,
+      "bytes_per_message_bit": 176.3367578741096,
+      "optimistic_total_vbytes": 90284.42003154411
+    },
+    {
+      "rounds": 10,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 685,
+      "optimizing_selection_density": 0.07438204391006711,
+      "bytes_per_message_bit": 188.3218174328096,
+      "optimistic_total_vbytes": 96420.77052559852
+    },
+    {
+      "rounds": 11,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 746,
+      "optimizing_selection_density": 0.07016251364680323,
+      "bytes_per_message_bit": 200.09622593698697,
+      "optimistic_total_vbytes": 102449.26767973733
+    },
+    {
+      "rounds": 12,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 807,
+      "optimizing_selection_density": 0.06645291760494813,
+      "bytes_per_message_bit": 211.68221762169105,
+      "optimistic_total_vbytes": 108381.29542230582
+    },
+    {
+      "rounds": 13,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 868,
+      "optimizing_selection_density": 0.06316229759821017,
+      "bytes_per_message_bit": 223.09818930908023,
+      "optimistic_total_vbytes": 114226.27292624908
+    },
+    {
+      "rounds": 14,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 929,
+      "optimizing_selection_density": 0.060220563325264445,
+      "bytes_per_message_bit": 234.3595824072254,
+      "optimistic_total_vbytes": 119992.1061924994
+    },
+    {
+      "rounds": 15,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 990,
+      "optimizing_selection_density": 0.05757275775977035,
+      "bytes_per_message_bit": 245.47951833434274,
+      "optimistic_total_vbytes": 125685.51338718348
+    },
+    {
+      "rounds": 16,
+      "fixed_bytes_per_candidate": 21,
+      "selected_bytes_per_label": 1051,
+      "optimizing_selection_density": 0.05517513078460404,
+      "bytes_per_message_bit": 256.46926706569377,
+      "optimistic_total_vbytes": 131312.2647376352
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Independent exhaustive small-curve algebra; no Bitcoin script or native hash construction",
+  "cases": [
+    {
+      "p": 211,
+      "n": 199,
+      "generator": [
+        3,
+        33
+      ],
+      "counts": {
+        "four_root_sets": 2,
+        "maps_tested": 315216,
+        "matched": 16,
+        "mismatched": 0,
+        "quartics_checked": 0
+      },
+      "mismatched_vectors": []
+    },
+    {
+      "p": 163,
+      "n": 139,
+      "generator": [
+        2,
+        34
+      ],
+      "counts": {
+        "four_root_sets": 4,
+        "maps_tested": 306912,
+        "matched": 48,
+        "mismatched": 8,
+        "quartics_checked": 8
+      },
+      "mismatched_vectors": [
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_scalar_triple": [
+            3,
+            58,
+            81
+          ],
+          "a": 54,
+          "b": 95,
+          "A_scalar": 81,
+          "B_scalar": 3,
+          "U": [
+            33,
+            35
+          ],
+          "V": [
+            45,
+            34
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_scalar_triple": [
+            3,
+            58,
+            81
+          ],
+          "a": 85,
+          "b": 44,
+          "A_scalar": 81,
+          "B_scalar": 3,
+          "U": [
+            33,
+            35
+          ],
+          "V": [
+            45,
+            34
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_scalar_triple": [
+            58,
+            81,
+            136
+          ],
+          "a": 54,
+          "b": 44,
+          "A_scalar": 58,
+          "B_scalar": 136,
+          "U": [
+            33,
+            128
+          ],
+          "V": [
+            45,
+            129
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 6,
+          "target_r": 9,
+          "source_scalar_triple": [
+            58,
+            81,
+            136
+          ],
+          "a": 85,
+          "b": 95,
+          "A_scalar": 58,
+          "B_scalar": 136,
+          "U": [
+            33,
+            128
+          ],
+          "V": [
+            45,
+            129
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_scalar_triple": [
+            21,
+            30,
+            118
+          ],
+          "a": 18,
+          "b": 97,
+          "A_scalar": 21,
+          "B_scalar": 30,
+          "U": [
+            65,
+            125
+          ],
+          "V": [
+            14,
+            44
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_scalar_triple": [
+            21,
+            30,
+            118
+          ],
+          "a": 121,
+          "b": 42,
+          "A_scalar": 21,
+          "B_scalar": 30,
+          "U": [
+            65,
+            125
+          ],
+          "V": [
+            14,
+            44
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_scalar_triple": [
+            21,
+            109,
+            118
+          ],
+          "a": 18,
+          "b": 42,
+          "A_scalar": 118,
+          "B_scalar": 109,
+          "U": [
+            65,
+            38
+          ],
+          "V": [
+            14,
+            119
+          ],
+          "signed_integer_gap": 139
+        },
+        {
+          "source_r": 9,
+          "target_r": 6,
+          "source_scalar_triple": [
+            21,
+            109,
+            118
+          ],
+          "a": 121,
+          "b": 97,
+          "A_scalar": 118,
+          "B_scalar": 109,
+          "U": [
+            65,
+            38
+          ],
+          "V": [
+            14,
+            119
+          ],
+          "signed_integer_gap": 139
+        }
+      ]
+    }
+  ]
+}

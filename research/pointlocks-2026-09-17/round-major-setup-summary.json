@@ -1,0 +1,180 @@
+{
+  "scope": "Scoped 95-pool setup benchmark; excludes garbling and proof verification.\n\nThis measures generation and public checking of the point-lock instance,\nnot the complete setup required by the active goal. Fixed public test seeds.\n",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "complete_goal_setup_measured": false,
+  "hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "memory_bytes": 25769803776,
+    "os": "macOS-26.6.1-arm64-arm-64bit",
+    "macos_version": "26.6.1",
+    "macos_build": "25G76"
+  },
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "build_profile": "release",
+  "executable_sha256": "6a07a7ade642180522512616c99c483bfa6964e62f3066f1d089211d1b8ce26d",
+  "serial": {
+    "command": [
+      "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_round_major_publication_probe",
+      "--benchmark",
+      "3",
+      "--workers",
+      "1"
+    ],
+    "workers": 1,
+    "samples": 3,
+    "raw": {
+      "build_profile": "release",
+      "candidates": 5130,
+      "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+      "pools": 95,
+      "samples": [
+        {
+          "combined_ms": 622.323458,
+          "generation_ms": 390.754541,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 231.568917
+        },
+        {
+          "combined_ms": 528.8492500000001,
+          "generation_ms": 300.027625,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 228.821625
+        },
+        {
+          "combined_ms": 527.624542,
+          "generation_ms": 299.756209,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 227.868333
+        }
+      ],
+      "scope": "Point-label generation, candidate/table generation, policy compilation and public checking for the entire95pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+      "workers": 1
+    },
+    "summary": {
+      "generation_ms": {
+        "min": 299.756209,
+        "median": 300.027625,
+        "max": 390.754541,
+        "first": 390.754541
+      },
+      "verification_ms": {
+        "min": 227.868333,
+        "median": 228.821625,
+        "max": 231.568917,
+        "first": 231.568917
+      },
+      "combined_ms": {
+        "min": 527.624542,
+        "median": 528.8492500000001,
+        "max": 622.323458,
+        "first": 622.323458
+      }
+    }
+  },
+  "parallel": {
+    "command": [
+      "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_round_major_publication_probe",
+      "--benchmark",
+      "7",
+      "--workers",
+      "15"
+    ],
+    "workers": 15,
+    "samples": 7,
+    "raw": {
+      "build_profile": "release",
+      "candidates": 5130,
+      "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+      "pools": 95,
+      "samples": [
+        {
+          "combined_ms": 154.469208,
+          "generation_ms": 111.386875,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 43.082333
+        },
+        {
+          "combined_ms": 89.762834,
+          "generation_ms": 47.468959,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 42.293875
+        },
+        {
+          "combined_ms": 89.415666,
+          "generation_ms": 47.049583,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 42.366082999999996
+        },
+        {
+          "combined_ms": 88.425583,
+          "generation_ms": 46.493,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 41.932583
+        },
+        {
+          "combined_ms": 89.628083,
+          "generation_ms": 47.314208,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 42.313875
+        },
+        {
+          "combined_ms": 90.524333,
+          "generation_ms": 47.629917,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 42.894416
+        },
+        {
+          "combined_ms": 89.52800099999999,
+          "generation_ms": 48.023292000000005,
+          "target_curve_multiplications": 10372,
+          "verification_ms": 41.504709
+        }
+      ],
+      "scope": "Point-label generation, candidate/table generation, policy compilation and public checking for the entire95pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+      "workers": 15
+    },
+    "summary": {
+      "generation_ms": {
+        "min": 46.493,
+        "median": 47.468959,
+        "max": 111.386875,
+        "first": 111.386875
+      },
+      "verification_ms": {
+        "min": 41.504709,
+        "median": 42.313875,
+        "max": 43.082333,
+        "first": 43.082333
+      },
+      "combined_ms": {
+        "min": 88.425583,
+        "median": 89.628083,
+        "max": 154.469208,
+        "first": 154.469208
+      }
+    }
+  },
+  "serial_matches_core_validated_parallel_transaction_and_pool_bytes": true,
+  "opening_transaction_attempts": 1,
+  "byte_identity_command": [
+    "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_round_major_publication_probe",
+    "--workers",
+    "1",
+    "--funding-txid",
+    "c907ed5b0e2983443cb53a088e4cee56c8c8560b922d6fa3c7560b10e8ffb826",
+    "--funding-vout",
+    "0",
+    "--funding-amount",
+    "100000000"
+  ],
+  "source_and_artifact_sha256": {
+    "research/pointlocks-2026-09-17/round_major_setup_benchmark.py": "39451751ecea2d6898c50a51bc65bafaf8707c95493fb4b34cff2984ecf00e97",
+    "examples/pointlock_round_major_publication_probe.rs": "7f7fba35ff2f2c2cd5c005e19316af96a0303960844301ce86832ff2529bbdaf",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471",
+    "research/pointlocks-2026-09-17/round_major_publication_core_check.py": "2d660fc1715e4d48d32732a515a66635f6e37354c417253afab8a0bf93d6fa8a",
+    "research/pointlocks-2026-09-17/round_major_publication_core_check.json": "652810b3903e7dfada7bcb5f01c487fb5dc3d965744a49ee00470092a4ab9f7d",
+    "research/pointlocks-2026-09-17/round-major-publication-transactions.json": "c50db9a054d7b7ed887087799c5f18f29880b7c4d09d8b10b09a55bd6810834e"
+  }
+}

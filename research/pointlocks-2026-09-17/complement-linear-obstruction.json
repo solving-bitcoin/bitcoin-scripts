@@ -1,0 +1,62 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Reproduce the scoped span obstruction for scalar-linear complement labels.\n\nThe universal proof is in complement-linear-obstruction.md. These are exact\nfinite-field regression examples, not an empirical proof of impossibility.\n",
+  "field_prime": 101,
+  "examples": [
+    {
+      "t": 1,
+      "excluded_n": 3,
+      "every_t_plus_one_independent_checks": 3,
+      "intersection_dimension": 0,
+      "selected_zero_becomes_reconstructible": true,
+      "tight_boundary_n": 2,
+      "tight_boundary_checks": 4
+    },
+    {
+      "t": 2,
+      "excluded_n": 4,
+      "every_t_plus_one_independent_checks": 4,
+      "intersection_dimension": 1,
+      "selected_zero_becomes_reconstructible": true,
+      "tight_boundary_n": 3,
+      "tight_boundary_checks": 9
+    },
+    {
+      "t": 3,
+      "excluded_n": 5,
+      "every_t_plus_one_independent_checks": 5,
+      "intersection_dimension": 2,
+      "selected_zero_becomes_reconstructible": true,
+      "tight_boundary_n": 4,
+      "tight_boundary_checks": 16
+    },
+    {
+      "t": 4,
+      "excluded_n": 6,
+      "every_t_plus_one_independent_checks": 6,
+      "intersection_dimension": 3,
+      "selected_zero_becomes_reconstructible": true,
+      "tight_boundary_n": 5,
+      "tight_boundary_checks": 25
+    },
+    {
+      "t": 5,
+      "excluded_n": 7,
+      "every_t_plus_one_independent_checks": 7,
+      "intersection_dimension": 4,
+      "selected_zero_becomes_reconstructible": true,
+      "tight_boundary_n": 6,
+      "tight_boundary_checks": 36
+    }
+  ],
+  "dependent_scalar_example": {
+    "selected": [
+      0,
+      1
+    ],
+    "unselected_recovered": 3,
+    "relation": "x_3=x_0+x_1"
+  },
+  "source_sha256": "62a420b5b9c07c5718db10fe56d634d272f1e44fc29a17a02a9673fb13737037"
+}

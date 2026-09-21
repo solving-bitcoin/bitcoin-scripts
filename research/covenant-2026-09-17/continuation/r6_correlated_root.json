@@ -1,0 +1,1507 @@
+{
+  "question": "Can correlated root/key hash predicates avoid a second rare gate?",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "model_only": true,
+  "curve": {
+    "p": 211,
+    "n": 199,
+    "a": 0,
+    "b": 7,
+    "G": [
+      3,
+      33
+    ]
+  },
+  "seed_hex": "626974636f696e2d6c61622f72362d636f7272656c617465642d726f6f742f323032362d30392d31372f7631",
+  "adapter": "SHA256(seed||compressed tiny point), low two bits zero, mapped r/s, fixed ALL",
+  "raw_proposed_script": "6e7ca87cada87cac",
+  "inspected_fragment_metrics": {
+    "bytes": 8,
+    "static_non_push_opcodes": 8,
+    "entry_data_items": 2,
+    "hint_items": 0,
+    "combined_stack_peak": 4,
+    "complete_bitcoin_witness_bytes": null
+  },
+  "hash_admissible_keys": 53,
+  "recovery_branch_counts": [
+    0,
+    2,
+    4
+  ],
+  "all_scalar_contexts": 199,
+  "verified_recovery_edges": 11880,
+  "accepted_two_cycle_models": 8,
+  "two_cycle_example": {
+    "z": 13,
+    "point_indices": [
+      80,
+      84
+    ],
+    "points": [
+      [
+        22,
+        152
+      ],
+      [
+        19,
+        89
+      ]
+    ],
+    "model_signatures": [
+      [
+        85,
+        18,
+        1
+      ],
+      [
+        129,
+        81,
+        1
+      ]
+    ],
+    "wrong_second_key_index": 1,
+    "same_script_model_accepts": true,
+    "wrong_key_rejected": true
+  },
+  "aggregate_self_loops": 60,
+  "aggregate_distinct_two_cycles": 8,
+  "contexts_with_self_loop": 53,
+  "contexts_with_two_cycle": 8,
+  "ideal_batch_estimate": {
+    "der_probability": 2.1156985668610573e-14,
+    "favorable_branches_per_key": 4,
+    "total_raw_queries_log2_for_one_expected_match": 150.71292961680706,
+    "expected_matches_with_2pow64_total_queries": 6.217479283469956e-53,
+    "universal_lower_bound": false
+  },
+  "self_digest_affine_identity": {
+    "actual_secp256k1": true,
+    "mined_hashes": false,
+    "nonce_256G": [
+      "0x8282263212c609d9ea2a6e3e172de238d8c39cabd5ac1ca10646e23fd5f51508",
+      "0x11f8a8098557dfe45e8256e830b60ace62d613ac2f7b17bed31b6eaff6e26caf"
+    ],
+    "required_r_hex": "0x8282263212c609d9ea2a6e3e172de238d8c39cabd5ac1ca10646e23fd5f51508",
+    "required_unsigned_r_bytes": 32,
+    "required_der_r_bytes": 33,
+    "maximum_r_bytes_for_32byte_signature_with_nonzero_s": 24,
+    "maximum_r_bytes_for_20byte_signature_with_nonzero_s": 12,
+    "checked_cases": 24,
+    "cases": [
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 1,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000001",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 1,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000101",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 1,
+        "synthetic_der_hex": "301d020a01000000000000000003020f40000000000000000000000000007b01",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 2,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000002",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 2,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000102",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 2,
+        "synthetic_der_hex": "301d020a01000000000000000003020f40000000000000000000000000007b02",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 3,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000003",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 3,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000103",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 3,
+        "synthetic_der_hex": "301d020a01000000000000000003020f40000000000000000000000000007b03",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 129,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000081",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 129,
+        "synthetic_der_hex": "301d020a01000000000000000003020f01000000000000000000000000000181",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 32,
+        "r_bytes": 10,
+        "s_bytes": 15,
+        "flag": 129,
+        "synthetic_der_hex": "301d020a01000000000000000003020f40000000000000000000000000007b81",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 1,
+        "synthetic_der_hex": "3011020601000000000302070100000000000001",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 1,
+        "synthetic_der_hex": "3011020601000000000302070100000000000101",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 1,
+        "synthetic_der_hex": "3011020601000000000302074000000000007b01",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 2,
+        "synthetic_der_hex": "3011020601000000000302070100000000000002",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 2,
+        "synthetic_der_hex": "3011020601000000000302070100000000000102",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 2,
+        "synthetic_der_hex": "3011020601000000000302074000000000007b02",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 3,
+        "synthetic_der_hex": "3011020601000000000302070100000000000003",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 3,
+        "synthetic_der_hex": "3011020601000000000302070100000000000103",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 3,
+        "synthetic_der_hex": "3011020601000000000302074000000000007b03",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 129,
+        "synthetic_der_hex": "3011020601000000000302070100000000000081",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 129,
+        "synthetic_der_hex": "3011020601000000000302070100000000000181",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      },
+      {
+        "hash_size": 20,
+        "r_bytes": 6,
+        "s_bytes": 7,
+        "flag": 129,
+        "synthetic_der_hex": "3011020601000000000302074000000000007b81",
+        "recovered_nonce_is_256G": true,
+        "signature_valid": false
+      }
+    ]
+  },
+  "per_scalar": [
+    {
+      "z": 0,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 1,
+      "edges": 58,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 2,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 3,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 4,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 5,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 6,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 7,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 8,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 9,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 10,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 11,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 12,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 13,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 14,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 15,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 16,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 17,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 18,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 19,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 20,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 21,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 22,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 23,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 24,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 25,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 26,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 27,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 28,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 29,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 30,
+      "edges": 59,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 31,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 32,
+      "edges": 58,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 33,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 34,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 35,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 36,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 37,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 38,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 39,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 40,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 41,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 42,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 43,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 44,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 45,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 46,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 47,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 48,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 49,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 50,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 51,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 52,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 53,
+      "edges": 60,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 54,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 55,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 56,
+      "edges": 60,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 57,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 58,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 59,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 60,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 61,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 62,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 63,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 64,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 65,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 66,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 67,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 68,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 69,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 70,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 71,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 72,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 73,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 74,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 75,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 76,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 77,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 78,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 79,
+      "edges": 58,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 80,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 81,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 82,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 83,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 84,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 85,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 86,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 87,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 88,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 89,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 90,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 91,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 92,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 93,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 94,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 95,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 96,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 97,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 98,
+      "edges": 59,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 99,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 100,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 101,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 102,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 103,
+      "edges": 60,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 104,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 105,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 106,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 107,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 108,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 109,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 110,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 111,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 112,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 113,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 114,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 115,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 116,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 117,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 118,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 119,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 120,
+      "edges": 58,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 121,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 122,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 123,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 124,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 125,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 126,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 127,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 128,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 129,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 130,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 131,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 132,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 133,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 134,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 135,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 136,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 137,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 138,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 139,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 140,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 141,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 142,
+      "edges": 59,
+      "self_loops": 2,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 143,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 144,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 145,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 146,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 147,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 148,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 149,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 150,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 151,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 152,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 153,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 154,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 155,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 156,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 157,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 158,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 159,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 160,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 161,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 162,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 163,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 164,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 165,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 166,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 167,
+      "edges": 58,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 168,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 169,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 170,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 171,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 172,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 173,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 174,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 175,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 176,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 177,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 178,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 179,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 180,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 181,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 182,
+      "edges": 60,
+      "self_loops": 1,
+      "distinct_two_cycles": 1
+    },
+    {
+      "z": 183,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 184,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 185,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 186,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 187,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 188,
+      "edges": 59,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 189,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 190,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 191,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 192,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 193,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 194,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 195,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 196,
+      "edges": 59,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 197,
+      "edges": 60,
+      "self_loops": 0,
+      "distinct_two_cycles": 0
+    },
+    {
+      "z": 198,
+      "edges": 58,
+      "self_loops": 1,
+      "distinct_two_cycles": 0
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "build_profile": "release",
+  "candidates": 5750,
+  "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "pools": 115,
+  "samples": [
+    {
+      "combined_ms": 130.230542,
+      "generation_ms": 111.130542,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 19.099999999999998
+    },
+    {
+      "combined_ms": 45.01025,
+      "generation_ms": 25.744875,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 19.265375000000002
+    },
+    {
+      "combined_ms": 46.589791,
+      "generation_ms": 25.892416,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 20.697375
+    },
+    {
+      "combined_ms": 45.161249,
+      "generation_ms": 25.662958,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 19.498291000000002
+    },
+    {
+      "combined_ms": 51.450500000000005,
+      "generation_ms": 26.060167,
+      "target_curve_multiplications": 11578,
+      "verification_ms": 25.390333000000002
+    }
+  ],
+  "scope": "Direct point-label generation, key-table generation, policy compilation and public checking for the entire115pool instance. Excludes garbling/VSS, transaction funding, opening generation, process startup and compilation of this executable.",
+  "workers": 15,
+  "command": [
+    "/Users/robinlinus/projects/bitcoin-lab/target/release/examples/pointlock_direct_context_publication_probe",
+    "--benchmark",
+    "5",
+    "--workers",
+    "15"
+  ],
+  "hardware_from_same_host_prior_benchmark": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "os": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "sha256": {
+    "examples/pointlock_direct_context_publication_probe.rs": "6bfb091c1efce6cfdab88d3f00adee06bce212f7d2f91f2a12ceb8a0f69f8e2c",
+    "examples/pointlock_direct_context_size_probe.rs": "83723903a6f6d06b1f388e5cbf234753bf1f46139af6f3c0f773905ad5bd2bfa",
+    "target/release/examples/pointlock_direct_context_publication_probe": "f82f48dd9e24785b5daf14336de75ce698f0ace70bdaa9904cd3d515500dc0d0",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471"
+  },
+  "summary": {
+    "generation_ms": {
+      "first": 111.130542,
+      "median": 25.892416,
+      "min": 25.662958,
+      "max": 111.130542
+    },
+    "verification_ms": {
+      "first": 19.099999999999998,
+      "median": 19.498291000000002,
+      "min": 19.099999999999998,
+      "max": 25.390333000000002
+    },
+    "combined_ms": {
+      "first": 130.230542,
+      "median": 46.589791,
+      "min": 45.01025,
+      "max": 130.230542
+    }
+  },
+  "same_labels_as_existing_translation": {
+    "candidate_points": 5750,
+    "selected_scalars": 460,
+    "complete_selected_records_identical": true,
+    "payload_identical": true,
+    "scope": "Exact equality with the existing anchored fixture inputs to the independently measured translation. No new garbled verifier evaluation."
+  }
+}

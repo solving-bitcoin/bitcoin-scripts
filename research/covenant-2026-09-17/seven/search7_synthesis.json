@@ -1,0 +1,24 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Exact reduced random-function model; no Bitcoin Script executed.",
+  "domain_size": 4,
+  "exhaustive_assignments": 1024,
+  "words": [
+    "s",
+    "sss"
+  ],
+  "gate": "output < 2",
+  "actual_joint_probability": "5/16",
+  "independent_joint_probability": "1/4",
+  "internal_collision_probability": "1/4",
+  "joint_and_internal_collision_probability": "1/8",
+  "union_bound_at_2pow64_160bit_states": "2^-33 (strict upper bound for output-output collisions)",
+  "union_bound_at_2pow68_160bit_states": "2^-25 (strict upper bound for output-output collisions)",
+  "notes": [
+    "Distinct hash words are not exactly independent in a finite random-function model.",
+    "These tiny-domain discrepancies do not estimate attacks against full-width Bitcoin hashes.",
+    "A coupling to fresh independent samples differs only after a repeated internal state/query input.",
+    "External oracle queries and the native-transaction digest derivation require additional accounting."
+  ]
+}

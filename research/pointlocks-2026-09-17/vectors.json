@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "name": "representative",
+      "public_test_scalar": "0707070707070707070707070707070707070707070707070707070707070707",
+      "signature": "303902153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302203b2ee18178b8f2e9f6dd0c82c5e1bcc98626f80cca0fcb48c94edd893b1ced5b03",
+      "target": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+      "three_check_script": "820139a069762102989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f6eadabad21023edfe0a98074b5b7861a52b880a60f049fd4274c772406be25aac6e320be5093ac",
+      "two_check_script": "820139a069762102989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6fad21023edfe0a98074b5b7861a52b880a60f049fd4274c772406be25aac6e320be5093ac"
+    },
+    {
+      "name": "high_s_fallback",
+      "public_test_scalar": "2bc9d158aa8c0ccb5e57ee0f6edbd71986d829031f5fd8e795ef16793ff329ba",
+      "signature": "303a02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414003",
+      "target": "024264d18ef28a721039f69ab65dcd14fd95a2f5bedc42c179775c932ace4ac79e",
+      "three_check_script": "820139a0697621024264d18ef28a721039f69ab65dcd14fd95a2f5bedc42c179775c932ace4ac79e6eadabad210282462635d5baeb4ab2f588cfc2d1ffab7097e88c3e761cc72b892618189302bbac",
+      "two_check_script": "820139a0697621024264d18ef28a721039f69ab65dcd14fd95a2f5bedc42c179775c932ace4ac79ead210282462635d5baeb4ab2f588cfc2d1ffab7097e88c3e761cc72b892618189302bbac"
+    }
+  ],
+  "compilation": "support::script::ScriptCompilation::compile_with_policy()",
+  "generator": "cargo run --locked --example pointlock_vectors"
+}

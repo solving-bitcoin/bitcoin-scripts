@@ -1,0 +1,1240 @@
+{
+  "scope": "Fresh-mask boundaries for the local DDH batch-select publication candidate.\n\nGroup-action disclosures can expose alternative labels even when their scalar\nis hidden. Unbound mask points instead make a fixed-challenge linear audit\nforgeable. Public deterministic fixtures; no native Bitcoin or ZKP construction.\n",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "tests_run": 3,
+  "coefficient_cases": {
+    "field": 5,
+    "messages": 8,
+    "row_coefficient_message_cases": 15000,
+    "nonzero_determinants": 12000,
+    "universally_redundant_row_coefficient_cases": 75
+  },
+  "masked_actions": {
+    "full_alternative_label_recoveries": [
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 0,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "ce4282e86bb58e41cf86bfdd2e91d5c1",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 0,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "7b7ebbe0e4337da71ba2917a75bb2962",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 0,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 0,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "7aacb68e6d8a92912fb6479c064764c0"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 0,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 1,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 2,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 3,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 4,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 0,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 1,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "coefficient_case": 5,
+        "row": 2,
+        "alternatives": [
+          "8715fe0fa06b3094491c30a16a0ceffe",
+          "3229c7072fedc3729d381e063126135d",
+          "33fbca69a6542c44a92cc8e042da5eff"
+        ]
+      }
+    ],
+    "redundant_row_controls": 64,
+    "wrong_action_rejections": 80,
+    "receiver_inputs_exclude_mask_scalar_and_hidden_key_vector": true
+  },
+  "linear_certificate": {
+    "honest_certificate_passes": true,
+    "changed_off_diagonal_cell": [
+      0,
+      1
+    ],
+    "forged_certificate_passes": true,
+    "common_mask_relation_is_false": true,
+    "forging_function_receives_public_data_only": true,
+    "challenge_binds_proof_commitments": false,
+    "proof_rejection_controls": 3,
+    "opening_controls": [
+      {
+        "bits": [
+          0,
+          0,
+          0
+        ],
+        "original_label_checks_pass": true
+      },
+      {
+        "bits": [
+          0,
+          0,
+          1
+        ],
+        "original_label_checks_pass": true
+      },
+      {
+        "bits": [
+          0,
+          1,
+          0
+        ],
+        "original_label_checks_pass": false
+      },
+      {
+        "bits": [
+          0,
+          1,
+          1
+        ],
+        "original_label_checks_pass": false
+      },
+      {
+        "bits": [
+          1,
+          0,
+          0
+        ],
+        "original_label_checks_pass": true
+      },
+      {
+        "bits": [
+          1,
+          0,
+          1
+        ],
+        "original_label_checks_pass": true
+      },
+      {
+        "bits": [
+          1,
+          1,
+          0
+        ],
+        "original_label_checks_pass": false
+      },
+      {
+        "bits": [
+          1,
+          1,
+          1
+        ],
+        "original_label_checks_pass": false
+      }
+    ],
+    "forged_public_certificate": {
+      "response": "67638dde1540e24b4b2e756dd1af50611163e3210b0c7b2ff396e6d3d87d90c2",
+      "mask_point": "02f23f15c4fee5ada092dd130de13c87d5fb7d36f2f5414002be0a2d54668c32d8",
+      "mask_actions": {
+        "0": "03c95942e708bedcfd5f6ada4f7a1c7f50c8bb34d8e59fe5c47c0aefe9e5d58ab0",
+        "2": "037b8eb522d48491a65ae90b8ea256ecb4a6253d31a11750008452aedc1228cdf9"
+      }
+    }
+  },
+  "native_execution": false,
+  "public_setup_verifier_supplied": false,
+  "setup_benchmark": false,
+  "new_script_bytes": null,
+  "new_witness_bytes": null,
+  "new_hint_items": null,
+  "new_stack_peak": null,
+  "source_sha256": {
+    "research/pointlocks-2026-09-17/ddh_masked_audit_probe.py": "5fb22e6397effe03ac4a5422c42a3f1b848627ad853b0588f42b04365dd22f28",
+    "research/pointlocks-2026-09-17/ddh_linear_leakage_probe.py": "53a7b3de911fd4d402e06c9f6974b8347a890de7b5815ff4b413563e160f14a1",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5",
+    "examples/pointlock_ddh_batch_select_probe.rs": "08cc7777d7d64b0757ebb4adf77c9bf3b1027c2b2392cfcef03f61c48097e330"
+  }
+}

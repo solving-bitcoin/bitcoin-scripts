@@ -1,0 +1,620 @@
+{
+  "question": "Solve variable-DER self-digest equations and bind actual output-specific hashes",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "deterministic": true,
+  "rng_used": false,
+  "native_hash_or_der_mining_performed": false,
+  "script_metrics": {
+    "locking_script_bytes": null,
+    "serialized_witness_bytes": null,
+    "entry_data_items": null,
+    "hint_items": null,
+    "combined_stack_peak": null,
+    "executed_opcodes": null,
+    "reason": "Host algebra experiment; no executable Script candidate supplied"
+  },
+  "affine_equation_checks": [
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 0,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 1,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 2,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 3,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 129,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 24,
+      "slen": 1,
+      "flag": 255,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 0,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 1,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 2,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 3,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 129,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 21,
+      "slen": 4,
+      "flag": 255,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 0,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 1,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 2,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 3,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 129,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 32,
+      "rlen": 12,
+      "slen": 13,
+      "flag": 255,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 0,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 1,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 2,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 3,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 129,
+      "identity_holds": true,
+      "signature_valid": false
+    },
+    {
+      "size": 20,
+      "rlen": 6,
+      "slen": 7,
+      "flag": 255,
+      "identity_holds": true,
+      "signature_valid": false
+    }
+  ],
+  "complete_one_byte_s_scan": {
+    "size": 32,
+    "rlen": 24,
+    "slen": 1,
+    "positive_s_values": 127,
+    "flags": 256,
+    "candidate_points": 32512,
+    "valid_der_digest_identities": [],
+    "infinite_points": 0,
+    "points_with_x_at_least_n": 0,
+    "ordered_point_transcript_sha256": "618c6eea0438f555a2c0eb129e6edf1000f01a5fa2bc80021061bc82bd5ac836",
+    "all_layouts_or_full_s_domain_enumerated": false
+  },
+  "half_generator_obstruction": {
+    "r_hex": "0x3b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63",
+    "r_der_bytes": 21,
+    "s_der_bytes": 4,
+    "r_plus_n_below_field": false,
+    "all_512_flag_sign_intervals_exclude_zero_mod_n": true,
+    "checked_flag_sign_intervals": 512,
+    "overall_residual_min": "43524539333053866757536971748339137481820536412829951842617913153791207669760",
+    "overall_residual_max": "43524539333053866757536971748339137481820536412829951842617913154888580202493"
+  },
+  "variable_key_examples": {
+    "actual_curve": "secp256k1",
+    "synthetic_funding_outpoint": true,
+    "self_digest_examples": [
+      {
+        "flag": 0,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302040080000000",
+        "key_hex": "03c5c05ba2af119e39a976e0e0423f03aedceb707d09093f7ebdae65d5f4c16cfe",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      },
+      {
+        "flag": 1,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302040080000101",
+        "key_hex": "02c7bddd69694bba52ac7efe04c8bdb9f9b1136d5b8b3240ce5ac0a548248576f3",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      },
+      {
+        "flag": 2,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302040080000202",
+        "key_hex": "0366ff9c6bb5f2a8232e31a23517bad1bcb721e8e3cedf33e4c0cac9f001622638",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      },
+      {
+        "flag": 3,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302040080000303",
+        "key_hex": "03715c5d1bac02f30ce835b3015ccf1f7a5959e08583e716b4b618a85d5ff86007",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      },
+      {
+        "flag": 129,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c6302040080008181",
+        "key_hex": "022a5b6cc54bcfcc6329b5aaeaa48d45d5f80ec1f6d9d704be87aa57bda95f10d1",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      },
+      {
+        "flag": 255,
+        "alpha_hex": "301d02153b78ce563f89a0ed9414f5aa28ad0d96d6795f9c630204008000ffff",
+        "key_hex": "021088901656e551113d85e3f3182fe336cf2d4fff2c4b4b6fc5d64e01cfa295a6",
+        "self_digest_signature_valid": true,
+        "known_hash_preimage": false
+      }
+    ],
+    "native_hash_examples": [
+      {
+        "output_script_hex": "51",
+        "legacy_all_digest_hex": "222cd1f2e8dd06d8a9f9009377bc0231b834b3f435cae36a4487154c5797cfe7",
+        "recovery_key_hex": "03ca83ae816a1e93ff4f54053fb53e162ed82cd03967ee8a6801072d04b77ef8d0",
+        "variable_key_accepts": true,
+        "fixed_self_digest_key_accepts": false,
+        "alpha_equals_native_hash": false
+      },
+      {
+        "output_script_hex": "52",
+        "legacy_all_digest_hex": "a0065368bc7d6db1021a4978a820aebb2b76ceda6bdd2faa1fc25424a143aa2a",
+        "recovery_key_hex": "030e6edcd7277f2b39c92435e661d92384e30770951d896903f067485e9caef89b",
+        "variable_key_accepts": true,
+        "fixed_self_digest_key_accepts": false,
+        "alpha_equals_native_hash": false
+      }
+    ]
+  },
+  "finite_der_domains": [
+    {
+      "size": 20,
+      "layouts": [
+        {
+          "rlen": 12,
+          "slen": 1,
+          "positive_r_count": "39459338752221496262409584640",
+          "positive_s_count": "127",
+          "pairs_per_flag": "5011336021532130025326017249280",
+          "equidistribution_expected_solutions_per_flag": 4.327874256816788e-47
+        },
+        {
+          "rlen": 11,
+          "slen": 2,
+          "positive_r_count": "154138042000865219775037440",
+          "positive_s_count": "32640",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 10,
+          "slen": 3,
+          "positive_r_count": "602101726565879764746240",
+          "positive_s_count": "8355840",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 9,
+          "slen": 4,
+          "positive_r_count": "2351959869397967831040",
+          "positive_s_count": "2139095040",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 8,
+          "slen": 5,
+          "positive_r_count": "9187343239835811840",
+          "positive_s_count": "547608330240",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 7,
+          "slen": 6,
+          "positive_r_count": "35888059530608640",
+          "positive_s_count": "140187732541440",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 6,
+          "slen": 7,
+          "positive_r_count": "140187732541440",
+          "positive_s_count": "35888059530608640",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 5,
+          "slen": 8,
+          "positive_r_count": "547608330240",
+          "positive_s_count": "9187343239835811840",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 4,
+          "slen": 9,
+          "positive_r_count": "2139095040",
+          "positive_s_count": "2351959869397967831040",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 3,
+          "slen": 10,
+          "positive_r_count": "8355840",
+          "positive_s_count": "602101726565879764746240",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 2,
+          "slen": 11,
+          "positive_r_count": "32640",
+          "positive_s_count": "154138042000865219775037440",
+          "pairs_per_flag": "5031065690908240773457222041600",
+          "equidistribution_expected_solutions_per_flag": 4.3449131318436255e-47
+        },
+        {
+          "rlen": 1,
+          "slen": 12,
+          "positive_r_count": "127",
+          "positive_s_count": "39459338752221496262409584640",
+          "pairs_per_flag": "5011336021532130025326017249280",
+          "equidistribution_expected_solutions_per_flag": 4.327874256816788e-47
+        }
+      ],
+      "strict_der_nonzero_r_s_all_flags_count": "15445332211749546953017409258127360",
+      "equidistribution_expected_all_layout_solutions": 1.3338849237009877e-43,
+      "equidistribution_expected_all_layout_solutions_log2": -142.42727387178033,
+      "this_is_a_model_not_a_secp_lower_bound": true
+    },
+    {
+      "size": 32,
+      "layouts": [
+        {
+          "rlen": 24,
+          "slen": 1,
+          "positive_r_count": "3126290903366413271051027935386630734582227809254548439040",
+          "positive_s_count": "127",
+          "pairs_per_flag": "397038944727534485423480547794102103291942931775327651758080",
+          "equidistribution_expected_solutions_per_flag": 3.4288952496038146e-18
+        },
+        {
+          "rlen": 23,
+          "slen": 2,
+          "positive_r_count": "12212073841275051840043077872604026306961827379900579840",
+          "positive_s_count": "32640",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 22,
+          "slen": 3,
+          "positive_r_count": "47703413442480671250168272939859477761569638202736640",
+          "positive_s_count": "8355840",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 21,
+          "slen": 4,
+          "positive_r_count": "186341458759690122070969816171326085006131399229440",
+          "positive_s_count": "2139095040",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 20,
+          "slen": 5,
+          "positive_r_count": "727896323280039539339725844419242519555200778240",
+          "positive_s_count": "547608330240",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 19,
+          "slen": 6,
+          "positive_r_count": "2843345012812654450545804079762666092012503040",
+          "positive_s_count": "140187732541440",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 18,
+          "slen": 7,
+          "positive_r_count": "11106816456299431447444547186572914421923840",
+          "positive_s_count": "35888059530608640",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 17,
+          "slen": 8,
+          "positive_r_count": "43386001782419654091580262447550446960640",
+          "positive_s_count": "9187343239835811840",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 16,
+          "slen": 9,
+          "positive_r_count": "169476569462576773795235400185743933440",
+          "positive_s_count": "2351959869397967831040",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 15,
+          "slen": 10,
+          "positive_r_count": "662017849463190522637638281975562240",
+          "positive_s_count": "602101726565879764746240",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 14,
+          "slen": 11,
+          "positive_r_count": "2586007224465587979053274538967040",
+          "positive_s_count": "154138042000865219775037440",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 13,
+          "slen": 12,
+          "positive_r_count": "10101590720568703043176853667840",
+          "positive_s_count": "39459338752221496262409584640",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 12,
+          "slen": 13,
+          "positive_r_count": "39459338752221496262409584640",
+          "positive_s_count": "10101590720568703043176853667840",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 11,
+          "slen": 14,
+          "positive_r_count": "154138042000865219775037440",
+          "positive_s_count": "2586007224465587979053274538967040",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 10,
+          "slen": 15,
+          "positive_r_count": "602101726565879764746240",
+          "positive_s_count": "662017849463190522637638281975562240",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 9,
+          "slen": 16,
+          "positive_r_count": "2351959869397967831040",
+          "positive_s_count": "169476569462576773795235400185743933440",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 8,
+          "slen": 17,
+          "positive_r_count": "9187343239835811840",
+          "positive_s_count": "43386001782419654091580262447550446960640",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 7,
+          "slen": 18,
+          "positive_r_count": "35888059530608640",
+          "positive_s_count": "11106816456299431447444547186572914421923840",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 6,
+          "slen": 19,
+          "positive_r_count": "140187732541440",
+          "positive_s_count": "2843345012812654450545804079762666092012503040",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 5,
+          "slen": 20,
+          "positive_r_count": "547608330240",
+          "positive_s_count": "727896323280039539339725844419242519555200778240",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 4,
+          "slen": 21,
+          "positive_r_count": "2139095040",
+          "positive_s_count": "186341458759690122070969816171326085006131399229440",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 3,
+          "slen": 22,
+          "positive_r_count": "8355840",
+          "positive_s_count": "47703413442480671250168272939859477761569638202736640",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 2,
+          "slen": 23,
+          "positive_r_count": "32640",
+          "positive_s_count": "12212073841275051840043077872604026306961827379900579840",
+          "pairs_per_flag": "398602090179217692059006061761795418659234045679954925977600",
+          "equidistribution_expected_solutions_per_flag": 3.44239483720068e-18
+        },
+        {
+          "rlen": 1,
+          "slen": 24,
+          "positive_r_count": "127",
+          "positive_s_count": "3126290903366413271051027935386630734582227809254548439040",
+          "pairs_per_flag": "397038944727534485423480547794102103291942931775327651758080",
+          "equidistribution_expected_solutions_per_flag": 3.4288952496038146e-18
+        }
+      ],
+      "strict_der_nonzero_r_s_all_flags_count": "2448210911589851698213144180313012074774280926338473900805980160",
+      "equidistribution_expected_all_layout_solutions": 2.1143162090911383e-14,
+      "equidistribution_expected_all_layout_solutions_log2": -45.42680217158294,
+      "this_is_a_model_not_a_secp_lower_bound": true
+    }
+  ],
+  "target_matching_model": {
+    "equation": "E <= Q_setup * Q_tx / 2^256",
+    "at_total_work_2pow64": 7.346839692639297e-40,
+    "granting_all_native_digest_branches_upper_bound": 5.877471754111438e-39,
+    "branch_grant": "At most four nonce points and two 256-bit representations per scalar",
+    "scope": "Preselected target blobs independent of fresh ideal native hashes"
+  },
+  "source": {
+    "url": "https://www.secg.org/sec1-v2.pdf",
+    "version": "2.0, 2009-05-21",
+    "sections": "4.1.4-4.1.7"
+  }
+}

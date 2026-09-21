@@ -81,16 +81,33 @@ the stack limit. Record that distinction in every result that uses it.
 4. Add or update the knowledge page and `knowledge/catalog.json`.
 5. Update every affected comparison, technique, protocol, reference, negative
    result, and open problem page.
-6. Run:
+6. Validate the knowledge base, then run only the correctness, integration,
+   and metric tests for the primitive being changed:
 
    ```sh
    python3 tools/kb.py validate
-   cargo test --locked -- --skip fields::
+   cargo test --locked --lib '<affected_module>::'
    ```
+
+   Select relevant integration-test binaries and named metric tests explicitly.
+   For example, point-lock work uses:
+
+   ```sh
+   cargo test --locked --lib signatures::pointlocks::
+   cargo test --locked --test pointlock_core_vectors
+   cargo test --locked --test primitive_metrics pointlock_metrics_are_current
+   ```
+
+Do not run tests of unrelated primitives by default. Full-repository runs,
+including `cargo test --locked -- --skip fields::`, are opt-in and require an
+explicit user request. A primitive change does not authorize that broad run.
+For shared infrastructure changes, select the affected dependent regressions
+instead of automatically running the entire suite. Keep expensive research
+experiments and full metric regeneration opt-in as well.
 
 Skip field-arithmetic tests by default, including in future work, unless the
 user explicitly requests them. Keep the `--skip fields::` filter on broad test
-runs and prefer targeted tests for the primitive being changed.
+runs unless field-arithmetic testing was explicitly requested too.
 
 Use `UPDATE_PRIMITIVE_METRICS=1 cargo test --locked --test primitive_metrics`
 only for an intentional metric change. Do not silently refresh measurements.

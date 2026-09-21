@@ -1,0 +1,2114 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Independent host polynomial / group audit; no Script or Core.",
+  "secp_point_controls": [
+    {
+      "a_scalar": 1,
+      "b_scalar": 2,
+      "branch": "ordinary",
+      "xA": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "xB": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 1,
+      "b_scalar": 3,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "xB": "112711660439710606056748659173929673102114977341539408544630613555209775888121",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 1,
+      "b_scalar": -3,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "xB": "112711660439710606056748659173929673102114977341539408544630613555209775888121",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 1,
+      "b_scalar": 7,
+      "branch": "ordinary",
+      "xA": "55066263022277343669578718895168534326250603453777594175500187360389116729240",
+      "xB": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 2,
+      "b_scalar": 4,
+      "branch": "ordinary",
+      "xA": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "xB": "103388573995635080359749164254216598308788835304023601477803095234286494993683",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 2,
+      "b_scalar": 6,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "xB": "115780575977492633039504758427830329241728645270042306223540962614150928364886",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 2,
+      "b_scalar": -6,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "xB": "115780575977492633039504758427830329241728645270042306223540962614150928364886",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 2,
+      "b_scalar": 14,
+      "branch": "ordinary",
+      "xA": "89565891926547004231252920425935692360644145829622209833684329913297188986597",
+      "xB": "33301309993451753050311554695703528430361259803437469669590207169100761277412",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 7,
+      "b_scalar": 14,
+      "branch": "ordinary",
+      "xA": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "xB": "33301309993451753050311554695703528430361259803437469669590207169100761277412",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 7,
+      "b_scalar": 21,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "xB": "24049875635381557237058143631624836741422505207761609709712554171343558302165",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 7,
+      "b_scalar": -21,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "xB": "24049875635381557237058143631624836741422505207761609709712554171343558302165",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 7,
+      "b_scalar": 49,
+      "branch": "ordinary",
+      "xA": "41948375291644419605210209193538855353224492619856392092318293986323063962044",
+      "xB": "109846273198995465046214558810696509369395695668678477567979041624391316796720",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 19,
+      "b_scalar": 38,
+      "branch": "ordinary",
+      "xA": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "xB": "82592391416753704330480457266605199466589998476548643675167586509583694299127",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 19,
+      "b_scalar": 57,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "xB": "17189284425153064836001861279656763224636129289551722165462018837400972173600",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 19,
+      "b_scalar": -57,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "xB": "17189284425153064836001861279656763224636129289551722165462018837400972173600",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 19,
+      "b_scalar": 133,
+      "branch": "ordinary",
+      "xA": "19588375357829479297593261744848590434972900972071148260168833594658324503404",
+      "xB": "1452956467390776672598891683932543545232174773492717225355396872020281653030",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 43,
+      "b_scalar": 86,
+      "branch": "ordinary",
+      "xA": "96414945312501980282409358461754977502747357521062737878469375231739675541449",
+      "xB": "33238836385049624224277173107813446262790356254484721792146647050258190102188",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 43,
+      "b_scalar": 129,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "96414945312501980282409358461754977502747357521062737878469375231739675541449",
+      "xB": "42781960159024299958163639356878453190501432691827926213851649420102986506453",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 43,
+      "b_scalar": -129,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "96414945312501980282409358461754977502747357521062737878469375231739675541449",
+      "xB": "42781960159024299958163639356878453190501432691827926213851649420102986506453",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 43,
+      "b_scalar": 301,
+      "branch": "ordinary",
+      "xA": "96414945312501980282409358461754977502747357521062737878469375231739675541449",
+      "xB": "10191925848145796269179143174718252157197994845450921488419057278697294954279",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 97,
+      "b_scalar": 194,
+      "branch": "ordinary",
+      "xA": "73191618600684934363477573887062328895873581780579362909629019010919633615168",
+      "xB": "59505331166034729106108168770718792418213360056441445208537234036851029690467",
+      "psi_nonzero": true,
+      "Q_zero": false
+    },
+    {
+      "a_scalar": 97,
+      "b_scalar": 291,
+      "branch": "B=3A: denominator clearing loses target-gap condition",
+      "xA": "73191618600684934363477573887062328895873581780579362909629019010919633615168",
+      "xB": "70503591696111587823684143441940518988407826572936457432456833741614824373043",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 97,
+      "b_scalar": -291,
+      "branch": "B=-3A: target point is infinite",
+      "xA": "73191618600684934363477573887062328895873581780579362909629019010919633615168",
+      "xB": "70503591696111587823684143441940518988407826572936457432456833741614824373043",
+      "psi_nonzero": true,
+      "Q_zero": true
+    },
+    {
+      "a_scalar": 97,
+      "b_scalar": 679,
+      "branch": "ordinary",
+      "xA": "73191618600684934363477573887062328895873581780579362909629019010919633615168",
+      "xB": "112360358381809184317644684462405966002192061098297684116627367233419827234341",
+      "psi_nonzero": true,
+      "Q_zero": false
+    }
+  ],
+  "toy_complete_cases": [
+    {
+      "p": 43,
+      "n": 31,
+      "generator": [
+        2,
+        12
+      ],
+      "beta": 6,
+      "lambda": 5,
+      "complete_six_slope_maps_tested": 744,
+      "matches": [
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            29
+          ],
+          "slope": 12,
+          "shift": 22,
+          "exponent": 2,
+          "branch": "nonzero translation",
+          "A": 2,
+          "B": 15,
+          "source_gap": 31,
+          "target_gap": -31,
+          "Q_zero": false
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            15,
+            29
+          ],
+          "slope": 19,
+          "shift": 9,
+          "exponent": 2,
+          "branch": "nonzero translation",
+          "A": 2,
+          "B": 15,
+          "source_gap": 31,
+          "target_gap": -31,
+          "Q_zero": false
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            16,
+            29
+          ],
+          "slope": 12,
+          "shift": 9,
+          "exponent": 2,
+          "branch": "nonzero translation",
+          "A": 29,
+          "B": 16,
+          "source_gap": 31,
+          "target_gap": -31,
+          "Q_zero": false
+        },
+        {
+          "source_r": 7,
+          "target_r": 7,
+          "source_triple": [
+            2,
+            16,
+            29
+          ],
+          "slope": 19,
+          "shift": 22,
+          "exponent": 2,
+          "branch": "nonzero translation",
+          "A": 29,
+          "B": 16,
+          "source_gap": 31,
+          "target_gap": -31,
+          "Q_zero": false
+        }
+      ],
+      "point_formula_controls": [
+        {
+          "a_scalar": 1,
+          "b_scalar": 2,
+          "branch": "ordinary",
+          "xA": "2",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 3,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "2",
+          "xB": "35",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": -3,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "2",
+          "xB": "35",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 7,
+          "branch": "ordinary",
+          "xA": "2",
+          "xB": "25",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 4,
+          "branch": "ordinary",
+          "xA": "7",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 6,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "7",
+          "xB": "29",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": -6,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "7",
+          "xB": "29",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "7",
+          "xB": "34",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 6,
+          "branch": "ordinary",
+          "xA": "35",
+          "xB": "29",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 9,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "35",
+          "xB": "20",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": -9,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "35",
+          "xB": "20",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 21,
+          "branch": "ordinary",
+          "xA": "35",
+          "xB": "42",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 8,
+          "branch": "ordinary",
+          "xA": "21",
+          "xB": "32",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 12,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "21",
+          "xB": "37",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": -12,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "21",
+          "xB": "37",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 28,
+          "branch": "ordinary",
+          "xA": "21",
+          "xB": "35",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 10,
+          "branch": "ordinary",
+          "xA": "12",
+          "xB": "42",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 15,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "12",
+          "xB": "38",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": -15,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "12",
+          "xB": "38",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 35,
+          "branch": "ordinary",
+          "xA": "12",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 12,
+          "branch": "ordinary",
+          "xA": "29",
+          "xB": "37",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 18,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "29",
+          "xB": "13",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": -18,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "29",
+          "xB": "13",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 42,
+          "branch": "ordinary",
+          "xA": "29",
+          "xB": "40",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "25",
+          "xB": "34",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 21,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "25",
+          "xB": "42",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": -21,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "25",
+          "xB": "42",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 49,
+          "branch": "ordinary",
+          "xA": "25",
+          "xB": "13",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 16,
+          "branch": "ordinary",
+          "xA": "32",
+          "xB": "38",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 24,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "32",
+          "xB": "25",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": -24,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "32",
+          "xB": "25",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 56,
+          "branch": "ordinary",
+          "xA": "32",
+          "xB": "29",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 18,
+          "branch": "ordinary",
+          "xA": "20",
+          "xB": "13",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 27,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "20",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": -27,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "20",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 63,
+          "branch": "ordinary",
+          "xA": "20",
+          "xB": "2",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 20,
+          "branch": "ordinary",
+          "xA": "42",
+          "xB": "40",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 30,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "42",
+          "xB": "2",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": -30,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "42",
+          "xB": "2",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 70,
+          "branch": "ordinary",
+          "xA": "42",
+          "xB": "32",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 22,
+          "branch": "ordinary",
+          "xA": "40",
+          "xB": "20",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 33,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "40",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": -33,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "40",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 77,
+          "branch": "ordinary",
+          "xA": "40",
+          "xB": "38",
+          "psi_nonzero": true,
+          "Q_zero": false
+        }
+      ]
+    },
+    {
+      "p": 79,
+      "n": 67,
+      "generator": [
+        1,
+        18
+      ],
+      "beta": 23,
+      "lambda": 29,
+      "complete_six_slope_maps_tested": 3216,
+      "matches": [],
+      "point_formula_controls": [
+        {
+          "a_scalar": 1,
+          "b_scalar": 2,
+          "branch": "ordinary",
+          "xA": "1",
+          "xB": "60",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 3,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "1",
+          "xB": "15",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": -3,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "1",
+          "xB": "15",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 7,
+          "branch": "ordinary",
+          "xA": "1",
+          "xB": "61",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 4,
+          "branch": "ordinary",
+          "xA": "60",
+          "xB": "49",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 6,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "60",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": -6,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "60",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "60",
+          "xB": "9",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 6,
+          "branch": "ordinary",
+          "xA": "15",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 9,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "15",
+          "xB": "37",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": -9,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "15",
+          "xB": "37",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 21,
+          "branch": "ordinary",
+          "xA": "15",
+          "xB": "6",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 8,
+          "branch": "ordinary",
+          "xA": "49",
+          "xB": "43",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 12,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "49",
+          "xB": "12",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": -12,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "49",
+          "xB": "12",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 28,
+          "branch": "ordinary",
+          "xA": "49",
+          "xB": "74",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 10,
+          "branch": "ordinary",
+          "xA": "42",
+          "xB": "26",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 15,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "42",
+          "xB": "63",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": -15,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "42",
+          "xB": "63",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 35,
+          "branch": "ordinary",
+          "xA": "42",
+          "xB": "8",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 12,
+          "branch": "ordinary",
+          "xA": "59",
+          "xB": "12",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 18,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "59",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": -18,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "59",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 42,
+          "branch": "ordinary",
+          "xA": "59",
+          "xB": "28",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "61",
+          "xB": "9",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 21,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "61",
+          "xB": "6",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": -21,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "61",
+          "xB": "6",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 49,
+          "branch": "ordinary",
+          "xA": "61",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 16,
+          "branch": "ordinary",
+          "xA": "43",
+          "xB": "19",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 24,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "43",
+          "xB": "66",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": -24,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "43",
+          "xB": "66",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 56,
+          "branch": "ordinary",
+          "xA": "43",
+          "xB": "18",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 18,
+          "branch": "ordinary",
+          "xA": "37",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 27,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "37",
+          "xB": "14",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": -27,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "37",
+          "xB": "14",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 63,
+          "branch": "ordinary",
+          "xA": "37",
+          "xB": "49",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 20,
+          "branch": "ordinary",
+          "xA": "26",
+          "xB": "29",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 30,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "26",
+          "xB": "55",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": -30,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "26",
+          "xB": "55",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 70,
+          "branch": "ordinary",
+          "xA": "26",
+          "xB": "15",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 22,
+          "branch": "ordinary",
+          "xA": "18",
+          "xB": "45",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 33,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "18",
+          "xB": "27",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": -33,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "18",
+          "xB": "27",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 77,
+          "branch": "ordinary",
+          "xA": "18",
+          "xB": "26",
+          "psi_nonzero": true,
+          "Q_zero": false
+        }
+      ]
+    },
+    {
+      "p": 163,
+      "n": 139,
+      "generator": [
+        2,
+        34
+      ],
+      "beta": 58,
+      "lambda": 96,
+      "complete_six_slope_maps_tested": 13344,
+      "matches": [],
+      "point_formula_controls": [
+        {
+          "a_scalar": 1,
+          "b_scalar": 2,
+          "branch": "ordinary",
+          "xA": "2",
+          "xB": "31",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 3,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "2",
+          "xB": "6",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": -3,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "2",
+          "xB": "6",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 7,
+          "branch": "ordinary",
+          "xA": "2",
+          "xB": "85",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 4,
+          "branch": "ordinary",
+          "xA": "31",
+          "xB": "105",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 6,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "31",
+          "xB": "4",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": -6,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "31",
+          "xB": "4",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "31",
+          "xB": "18",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 6,
+          "branch": "ordinary",
+          "xA": "6",
+          "xB": "4",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 9,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "6",
+          "xB": "121",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": -9,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "6",
+          "xB": "121",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 21,
+          "branch": "ordinary",
+          "xA": "6",
+          "xB": "148",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 8,
+          "branch": "ordinary",
+          "xA": "105",
+          "xB": "97",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 12,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "105",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": -12,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "105",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 28,
+          "branch": "ordinary",
+          "xA": "105",
+          "xB": "48",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 10,
+          "branch": "ordinary",
+          "xA": "109",
+          "xB": "22",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 15,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "109",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": -15,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "109",
+          "xB": "21",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 35,
+          "branch": "ordinary",
+          "xA": "109",
+          "xB": "71",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 12,
+          "branch": "ordinary",
+          "xA": "4",
+          "xB": "7",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 18,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "4",
+          "xB": "140",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": -18,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "4",
+          "xB": "140",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 42,
+          "branch": "ordinary",
+          "xA": "4",
+          "xB": "45",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "85",
+          "xB": "18",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 21,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "85",
+          "xB": "148",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": -21,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "85",
+          "xB": "148",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 49,
+          "branch": "ordinary",
+          "xA": "85",
+          "xB": "117",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 16,
+          "branch": "ordinary",
+          "xA": "97",
+          "xB": "38",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 24,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "97",
+          "xB": "43",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": -24,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "97",
+          "xB": "43",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 56,
+          "branch": "ordinary",
+          "xA": "97",
+          "xB": "122",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 18,
+          "branch": "ordinary",
+          "xA": "121",
+          "xB": "140",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 27,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "121",
+          "xB": "106",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": -27,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "121",
+          "xB": "106",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 63,
+          "branch": "ordinary",
+          "xA": "121",
+          "xB": "128",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 20,
+          "branch": "ordinary",
+          "xA": "22",
+          "xB": "69",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 30,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "22",
+          "xB": "9",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": -30,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "22",
+          "xB": "9",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 70,
+          "branch": "ordinary",
+          "xA": "22",
+          "xB": "108",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 22,
+          "branch": "ordinary",
+          "xA": "137",
+          "xB": "103",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 33,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "137",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": -33,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "137",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 77,
+          "branch": "ordinary",
+          "xA": "137",
+          "xB": "130",
+          "psi_nonzero": true,
+          "Q_zero": false
+        }
+      ]
+    },
+    {
+      "p": 211,
+      "n": 199,
+      "generator": [
+        3,
+        33
+      ],
+      "beta": 14,
+      "lambda": 106,
+      "complete_six_slope_maps_tested": 9552,
+      "matches": [],
+      "point_formula_controls": [
+        {
+          "a_scalar": 1,
+          "b_scalar": 2,
+          "branch": "ordinary",
+          "xA": "3",
+          "xB": "94",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 3,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "3",
+          "xB": "92",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": -3,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "3",
+          "xB": "92",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 1,
+          "b_scalar": 7,
+          "branch": "ordinary",
+          "xA": "3",
+          "xB": "66",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 4,
+          "branch": "ordinary",
+          "xA": "94",
+          "xB": "59",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 6,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "94",
+          "xB": "178",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": -6,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "94",
+          "xB": "178",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 2,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "94",
+          "xB": "123",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 6,
+          "branch": "ordinary",
+          "xA": "92",
+          "xB": "178",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 9,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "92",
+          "xB": "201",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": -9,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "92",
+          "xB": "201",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 3,
+          "b_scalar": 21,
+          "branch": "ordinary",
+          "xA": "92",
+          "xB": "103",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 8,
+          "branch": "ordinary",
+          "xA": "59",
+          "xB": "151",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 12,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "59",
+          "xB": "202",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": -12,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "59",
+          "xB": "202",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 4,
+          "b_scalar": 28,
+          "branch": "ordinary",
+          "xA": "59",
+          "xB": "61",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 10,
+          "branch": "ordinary",
+          "xA": "147",
+          "xB": "190",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 15,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "147",
+          "xB": "67",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": -15,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "147",
+          "xB": "67",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 5,
+          "b_scalar": 35,
+          "branch": "ordinary",
+          "xA": "147",
+          "xB": "189",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 12,
+          "branch": "ordinary",
+          "xA": "178",
+          "xB": "202",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 18,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "178",
+          "xB": "63",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": -18,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "178",
+          "xB": "63",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 6,
+          "b_scalar": 42,
+          "branch": "ordinary",
+          "xA": "178",
+          "xB": "51",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 14,
+          "branch": "ordinary",
+          "xA": "66",
+          "xB": "123",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 21,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "66",
+          "xB": "103",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": -21,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "66",
+          "xB": "103",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 7,
+          "b_scalar": 49,
+          "branch": "ordinary",
+          "xA": "66",
+          "xB": "98",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 16,
+          "branch": "ordinary",
+          "xA": "151",
+          "xB": "31",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 24,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "151",
+          "xB": "155",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": -24,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "151",
+          "xB": "155",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 8,
+          "b_scalar": 56,
+          "branch": "ordinary",
+          "xA": "151",
+          "xB": "210",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 18,
+          "branch": "ordinary",
+          "xA": "201",
+          "xB": "63",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 27,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "201",
+          "xB": "118",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": -27,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "201",
+          "xB": "118",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 9,
+          "b_scalar": 63,
+          "branch": "ordinary",
+          "xA": "201",
+          "xB": "162",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 20,
+          "branch": "ordinary",
+          "xA": "190",
+          "xB": "106",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 30,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "190",
+          "xB": "170",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": -30,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "190",
+          "xB": "170",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 10,
+          "b_scalar": 70,
+          "branch": "ordinary",
+          "xA": "190",
+          "xB": "153",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 22,
+          "branch": "ordinary",
+          "xA": "140",
+          "xB": "15",
+          "psi_nonzero": true,
+          "Q_zero": false
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 33,
+          "branch": "B=3A: denominator clearing loses target-gap condition",
+          "xA": "140",
+          "xB": "137",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": -33,
+          "branch": "B=-3A: target point is infinite",
+          "xA": "140",
+          "xB": "137",
+          "psi_nonzero": true,
+          "Q_zero": true
+        },
+        {
+          "a_scalar": 11,
+          "b_scalar": 77,
+          "branch": "ordinary",
+          "xA": "140",
+          "xB": "97",
+          "psi_nonzero": true,
+          "Q_zero": false
+        }
+      ]
+    }
+  ],
+  "independent_full_size_certificates": {
+    "cases": [
+      {
+        "exponent": 0,
+        "source_sign": -1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 3,
+        "zero_degree": 6,
+        "zero_roots": 1,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 0,
+        "source_sign": -1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 0,
+        "zero_degree": 6,
+        "zero_roots": 1,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 0,
+        "source_sign": 1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 8,
+        "zero_degree": 6,
+        "zero_roots": 1,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 0,
+        "source_sign": 1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 3,
+        "zero_degree": 6,
+        "zero_roots": 1,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 1,
+        "source_sign": -1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 0,
+        "zero_degree": 6,
+        "zero_roots": 0,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 1,
+        "source_sign": -1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 1,
+        "zero_degree": 6,
+        "zero_roots": 3,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 1,
+        "source_sign": 1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 3,
+        "zero_degree": 6,
+        "zero_roots": 3,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 1,
+        "source_sign": 1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 4,
+        "zero_degree": 6,
+        "zero_roots": 0,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 2,
+        "source_sign": -1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 1,
+        "zero_degree": 6,
+        "zero_roots": 2,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 2,
+        "source_sign": -1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 0,
+        "zero_degree": 6,
+        "zero_roots": 4,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 2,
+        "source_sign": 1,
+        "target_sign": -1,
+        "H_degree": 39,
+        "H_roots": 4,
+        "zero_degree": 6,
+        "zero_roots": 4,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      },
+      {
+        "exponent": 2,
+        "source_sign": 1,
+        "target_sign": 1,
+        "H_degree": 39,
+        "H_roots": 3,
+        "zero_degree": 6,
+        "zero_roots": 2,
+        "H_divisible_by_Q_squared": true,
+        "independent_frobenius_gcds_match": true,
+        "complete_root_products_match": true,
+        "exact_source_branch_candidates": 0
+      }
+    ],
+    "independent_certificates_checked": 27,
+    "tripling_denominator_roots": 4,
+    "tripling_denominator_curve_lifts": 0,
+    "addition_denominator_cases": [
+      {
+        "source_sign": -1,
+        "Q_roots": 0,
+        "source_branch_candidates": 0
+      },
+      {
+        "source_sign": 1,
+        "Q_roots": 3,
+        "source_branch_candidates": 0
+      }
+    ]
+  },
+  "all_assertions_passed": true
+}

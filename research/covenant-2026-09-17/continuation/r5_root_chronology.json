@@ -1,0 +1,247 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "host finite-oracle accounting; no consensus or covenant claim",
+  "renewal_checks": [
+    {
+      "eligible_digest_subsets_per_round": 1,
+      "transaction_family_size": 1,
+      "finite_native_tables_enumerated": 8,
+      "success_per_root": "1/8",
+      "expected_root_plus_native_queries": "30"
+    },
+    {
+      "eligible_digest_subsets_per_round": 1,
+      "transaction_family_size": 2,
+      "finite_native_tables_enumerated": 64,
+      "success_per_root": "15/64",
+      "expected_root_plus_native_queries": "338/15"
+    },
+    {
+      "eligible_digest_subsets_per_round": 1,
+      "transaction_family_size": 3,
+      "finite_native_tables_enumerated": 512,
+      "success_per_root": "169/512",
+      "expected_root_plus_native_queries": "3390/169"
+    },
+    {
+      "eligible_digest_subsets_per_round": 2,
+      "transaction_family_size": 1,
+      "finite_native_tables_enumerated": 32,
+      "success_per_root": "9/32",
+      "expected_root_plus_native_queries": "46/3"
+    },
+    {
+      "eligible_digest_subsets_per_round": 2,
+      "transaction_family_size": 2,
+      "finite_native_tables_enumerated": 1024,
+      "success_per_root": "495/1024",
+      "expected_root_plus_native_queries": "6118/495"
+    },
+    {
+      "eligible_digest_subsets_per_round": 2,
+      "transaction_family_size": 3,
+      "finite_native_tables_enumerated": 32768,
+      "success_per_root": "20601/32768",
+      "expected_root_plus_native_queries": "234922/20601"
+    }
+  ],
+  "program_root_counterexample": {
+    "public_input": 0,
+    "claimed_output": 1,
+    "constraints": [
+      "a=x",
+      "y=a"
+    ],
+    "fixed_trace_acceptance_by_query": {
+      "0": [
+        true,
+        false
+      ],
+      "1": [
+        false,
+        true
+      ]
+    },
+    "trace_chosen_after_query_acceptance": [
+      true,
+      true
+    ],
+    "scope": "committing program wiring does not commit input-dependent wire values"
+  },
+  "estimates": {
+    "native_sha256_der_probability": "780555/2^65",
+    "optimistic_root_probability": "a=p; valid recovery and flags granted free",
+    "excluded_costs": [
+      "proof construction",
+      "proof audit",
+      "root serialization/hash blocks",
+      "EC recovery",
+      "sighash computations",
+      "subset enumeration",
+      "opening construction and verification"
+    ],
+    "configurations": [
+      {
+        "log2_subsets_per_round": 40,
+        "log2_statement_preserving_transactions_per_root": 0,
+        "round_success": 0.022993869122061875,
+        "root_family_success": 1.1186079512689714e-17,
+        "log2_expected_root_and_native_queries": 101.73693235628775,
+        "log2_native_component": 56.34461606284071
+      },
+      {
+        "log2_subsets_per_round": 40,
+        "log2_statement_preserving_transactions_per_root": 27,
+        "round_success": 0.022993869122061875,
+        "root_family_success": 1.5013701762935045e-09,
+        "log2_expected_root_and_native_queries": 74.73693655046874,
+        "log2_native_component": 56.34461606284071
+      },
+      {
+        "log2_subsets_per_round": 40,
+        "log2_statement_preserving_transactions_per_root": 32,
+        "round_success": 0.022993869122061875,
+        "root_family_success": 4.80438445233524e-08,
+        "log2_expected_root_and_native_queries": 69.73706656403276,
+        "log2_native_component": 56.34461606284071
+      },
+      {
+        "log2_subsets_per_round": 40,
+        "log2_statement_preserving_transactions_per_root": 40,
+        "round_success": 0.022993869122061875,
+        "root_family_success": 1.2299148858277749e-05,
+        "log2_expected_root_and_native_queries": 61.77088838015534,
+        "log2_native_component": 56.34461606284071
+      },
+      {
+        "log2_subsets_per_round": 40,
+        "log2_statement_preserving_transactions_per_root": 48,
+        "round_success": 0.022993869122061875,
+        "root_family_success": 0.0031436498229930887,
+        "log2_expected_root_and_native_queries": 56.5641046634247,
+        "log2_native_component": 56.34461606284071
+      },
+      {
+        "log2_subsets_per_round": 45,
+        "log2_statement_preserving_transactions_per_root": 0,
+        "round_success": 0.5249785205344861,
+        "root_family_success": 5.830917021890685e-15,
+        "log2_expected_root_and_native_queries": 92.71105786459722,
+        "log2_native_component": 48.13366110630496
+      },
+      {
+        "log2_subsets_per_round": 45,
+        "log2_statement_preserving_transactions_per_root": 27,
+        "round_success": 0.5249785205344861,
+        "root_family_success": 7.826121285936647e-07,
+        "log2_expected_root_and_native_queries": 65.7110658056198,
+        "log2_native_component": 48.13366110630496
+      },
+      {
+        "log2_subsets_per_round": 45,
+        "log2_statement_preserving_transactions_per_root": 32,
+        "round_success": 0.5249785205344861,
+        "root_family_success": 2.5043284326429826e-05,
+        "log2_expected_root_and_native_queries": 60.711311955716795,
+        "log2_native_component": 48.13366110630496
+      },
+      {
+        "log2_subsets_per_round": 45,
+        "log2_statement_preserving_transactions_per_root": 40,
+        "round_success": 0.5249785205344861,
+        "root_family_success": 0.006390653422398015,
+        "log2_expected_root_and_native_queries": 52.77469161490037,
+        "log2_native_component": 48.13366110630496
+      },
+      {
+        "log2_subsets_per_round": 45,
+        "log2_statement_preserving_transactions_per_root": 48,
+        "round_success": 0.5249785205344861,
+        "root_family_success": 0.8062636825661164,
+        "log2_expected_root_and_native_queries": 48.3844316543132,
+        "log2_native_component": 48.13366110630496
+      },
+      {
+        "log2_subsets_per_round": 50,
+        "log2_statement_preserving_transactions_per_root": 0,
+        "round_success": 0.9999999999548327,
+        "root_family_success": 2.1156985666699365e-14,
+        "log2_expected_root_and_native_queries": 90.85171846735872,
+        "log2_native_component": 47.010821734400466
+      },
+      {
+        "log2_subsets_per_round": 50,
+        "log2_statement_preserving_transactions_per_root": 27,
+        "round_success": 0.9999999999548327,
+        "root_family_success": 2.8396385157319016e-06,
+        "log2_expected_root_and_native_queries": 63.8517328058721,
+        "log2_native_component": 47.010821734400466
+      },
+      {
+        "log2_subsets_per_round": 50,
+        "log2_statement_preserving_transactions_per_root": 32,
+        "round_success": 0.9999999999548327,
+        "root_family_success": 9.086443309772799e-05,
+        "log2_expected_root_and_native_queries": 58.85217723008338,
+        "log2_native_component": 47.010821734400466
+      },
+      {
+        "log2_subsets_per_round": 50,
+        "log2_statement_preserving_transactions_per_root": 40,
+        "round_success": 0.9999999999548327,
+        "root_family_success": 0.022993869120008798,
+        "log2_expected_root_and_native_queries": 50.96470320888556,
+        "log2_native_component": 47.010821734400466
+      },
+      {
+        "log2_subsets_per_round": 50,
+        "log2_statement_preserving_transactions_per_root": 48,
+        "round_success": 0.9999999999548327,
+        "root_family_success": 0.9974075762960003,
+        "log2_expected_root_and_native_queries": 47.426796378693645,
+        "log2_native_component": 47.010821734400466
+      },
+      {
+        "log2_subsets_per_round": 56,
+        "log2_statement_preserving_transactions_per_root": 0,
+        "round_success": 1.0,
+        "root_family_success": 2.1156985668610573e-14,
+        "log2_expected_root_and_native_queries": 90.8517184672284,
+        "log2_native_component": 47.01082173433531
+      },
+      {
+        "log2_subsets_per_round": 56,
+        "log2_statement_preserving_transactions_per_root": 27,
+        "round_success": 1.0,
+        "root_family_success": 2.8396385159884188e-06,
+        "log2_expected_root_and_native_queries": 63.851732805741776,
+        "log2_native_component": 47.01082173433531
+      },
+      {
+        "log2_subsets_per_round": 56,
+        "log2_statement_preserving_transactions_per_root": 32,
+        "round_success": 1.0,
+        "root_family_success": 9.086443310593582e-05,
+        "log2_expected_root_and_native_queries": 58.85217722995308,
+        "log2_native_component": 47.01082173433531
+      },
+      {
+        "log2_subsets_per_round": 56,
+        "log2_statement_preserving_transactions_per_root": 40,
+        "round_success": 1.0,
+        "root_family_success": 0.022993869122061875,
+        "log2_expected_root_and_native_queries": 50.96470320876085,
+        "log2_native_component": 47.01082173433531
+      },
+      {
+        "log2_subsets_per_round": 56,
+        "log2_statement_preserving_transactions_per_root": 48,
+        "round_success": 1.0,
+        "root_family_success": 0.9974075762973948,
+        "log2_expected_root_and_native_queries": 47.426796378644305,
+        "log2_native_component": 47.01082173433531
+      }
+    ]
+  }
+}

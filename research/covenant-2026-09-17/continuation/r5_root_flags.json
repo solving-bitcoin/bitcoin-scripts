@@ -1,0 +1,216 @@
+{
+  "question": "Can native checks force a variable hash-derived ECDSA signature to commit all outputs?",
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "boundary": "Host serialization and secp256k1 equations only; no Bitcoin Script execution and no complete covenant.",
+  "core_revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "all_assertions_passed": true,
+  "all_output_flag_count": 240,
+  "none_flags": [
+    2,
+    34,
+    66,
+    98,
+    130,
+    162,
+    194,
+    226
+  ],
+  "single_flags": [
+    3,
+    35,
+    67,
+    99,
+    131,
+    163,
+    195,
+    227
+  ],
+  "honest_all_output_flag_fraction": "15/16",
+  "extra_honest_flag_bits_for_full_outputs": 0.09310940439148145,
+  "all_synthetic_flags_tested": 256,
+  "synthetic_curve_cases": 512,
+  "single_bug_guard": {
+    "fragment_hex": "6eadabac91",
+    "fragment_bytes": 5,
+    "static_counted_opcodes": 5,
+    "complete_entry_data_items": 2,
+    "hint_items": 0,
+    "combined_stack_peak_by_inspection": 4,
+    "hash_wrapper_hex": "7ca87c6eadabac91",
+    "hash_wrapper_bytes": 8,
+    "hash_wrapper_static_counted_opcodes": 8,
+    "hash_wrapper_entry_data_items": 2,
+    "hash_wrapper_hint_items": 0,
+    "hash_wrapper_combined_stack_peak_by_inspection": 4,
+    "script_sig_bytes": null,
+    "serialized_witness_bytes": null,
+    "serialization_note": "No complete transaction; not measured witness or scriptSig bytes.",
+    "flag_results": [
+      {
+        "input_index": 0,
+        "output_count": 1,
+        "accepted_count": 256,
+        "rejected_flags": [],
+        "none_flags_accepted": [
+          2,
+          34,
+          66,
+          98,
+          130,
+          162,
+          194,
+          226
+        ]
+      },
+      {
+        "input_index": 1,
+        "output_count": 1,
+        "accepted_count": 248,
+        "rejected_flags": [
+          3,
+          35,
+          67,
+          99,
+          131,
+          163,
+          195,
+          227
+        ],
+        "none_flags_accepted": [
+          2,
+          34,
+          66,
+          98,
+          130,
+          162,
+          194,
+          226
+        ]
+      }
+    ]
+  },
+  "known_none_hash_root": {
+    "preimage": "00000000000000000200a8013bbb8678",
+    "alpha": "301d020a7993dad81d0e10285a7e020f682a7033db72199360c2dc3599f2d302",
+    "r": "574133785192103850564222",
+    "s": "540859624094206118082341328620483283",
+    "flag": 2,
+    "x_r_lifts": false,
+    "x_r_plus_n_lifts": true,
+    "same_public_key": "03201a5e4fd4c2d21fbc8f8d685e74952c39a164d1ee2b5f93d3b9a371c62bcd90",
+    "variants": [
+      {
+        "name": "intended",
+        "digests": [
+          "25bc976a74b5ddc98d4df9a4ca8e2f76719ee94deae2100be15697554caa4e6e",
+          "e33bbfc1b2cda60c3d81107a128a79d89b093afcc35848ac20e4b0ffcbc230ef"
+        ],
+        "ecdsa_checks": [
+          true,
+          false
+        ],
+        "guard_accepts": true
+      },
+      {
+        "name": "changed_amount_script_and_count",
+        "digests": [
+          "25bc976a74b5ddc98d4df9a4ca8e2f76719ee94deae2100be15697554caa4e6e",
+          "e33bbfc1b2cda60c3d81107a128a79d89b093afcc35848ac20e4b0ffcbc230ef"
+        ],
+        "ecdsa_checks": [
+          true,
+          false
+        ],
+        "guard_accepts": true
+      }
+    ]
+  },
+  "fixed_all_companion": {
+    "synthetic_flags": [
+      {
+        "flag": 0,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 1,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 2,
+        "hash_preimage_known_for_this_alpha": true,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 3,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 4,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 129,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 130,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      },
+      {
+        "flag": 131,
+        "hash_preimage_known_for_this_alpha": false,
+        "fixed_all_companion_accepts": false,
+        "fixed_nonce_branch_equations_hold": [
+          false,
+          false
+        ],
+        "residual_equation_checked": true
+      }
+    ],
+    "degenerate_equal_r_s_one_signature_length": 9,
+    "degenerate_equal_signature_accepts": true
+  },
+  "scope": "Guard exactly rejects the out-of-range SINGLE constant; it is not a NONE/SINGLE-in-range flag filter. Companion checks impose a group equation, not merely a flag predicate."
+}

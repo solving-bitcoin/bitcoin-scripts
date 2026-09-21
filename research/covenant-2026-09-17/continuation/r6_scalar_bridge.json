@@ -1,0 +1,156 @@
+{
+  "question": "Can equality-only unary native hash graphs bridge a native 64-byte Schnorr signature to an arithmetic scalar without constructing its 64-byte serialization?",
+  "evidence": "locally-reproduced",
+  "deployment": "unclassified",
+  "scope": "Host finite-oracle experiment and raw unexecuted matcher template; not a complete covenant.",
+  "seed": "none; all 4^6 oracle tables are enumerated",
+  "finite_oracle": {
+    "oracles": 4096,
+    "first_path_accepts": 1024,
+    "second_path_accepts": 1024,
+    "either_path_accepts": 1792,
+    "both_paths_accept": 256,
+    "any_output_collision": 2560,
+    "false_first_merge_claims": 0,
+    "exact_probabilities": {
+      "fixed_first_path": "1/4",
+      "fixed_second_path": "1/4",
+      "either_path": "7/16",
+      "both_paths": "1/16",
+      "any_output_collision": "5/8",
+      "three_query_union_bound": "3/4"
+    },
+    "examples": {
+      "both": {
+        "table": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "query_inputs": [
+          4,
+          5,
+          0
+        ],
+        "query_outputs": [
+          0,
+          0,
+          0
+        ]
+      },
+      "neither": {
+        "table": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "query_inputs": [
+          4,
+          5,
+          0
+        ],
+        "query_outputs": [
+          0,
+          1,
+          0
+        ]
+      },
+      "second_only": {
+        "table": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "query_inputs": [
+          4,
+          5,
+          1
+        ],
+        "query_outputs": [
+          1,
+          0,
+          0
+        ]
+      },
+      "first_only": {
+        "table": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        "query_inputs": [
+          4,
+          5,
+          1
+        ],
+        "query_outputs": [
+          1,
+          1,
+          0
+        ]
+      }
+    }
+  },
+  "ideal_hash_graph_estimates": {
+    "minimum_output_bits": 160,
+    "total_charged_fresh_queries": "18446744073709551616",
+    "collision_union_bound": "Q*(Q-1)/2^161",
+    "success_upper_at_2_pow_64_queries": 1.1641532182693481e-10,
+    "log2_success_upper": -33.0,
+    "necessary_queries_for_half_success_via_union_bound": "Q*(Q-1) >= 2^160; approximately 2^80",
+    "known_target_extension": "add M*Q/2^160 for M independently fixed 160-bit targets; include target setup/audit in total work"
+  },
+  "raw_matcher_template": {
+    "script_hex": "6b82014088762079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ada76c63a7687c7676009388a787",
+    "locking_script_bytes": 53,
+    "compiler": "none; explicitly raw, unexecuted boundary template",
+    "entry_operand_items": 2,
+    "entry_control_hint_items": 1,
+    "total_entry_data_items": 3,
+    "complete_witness_items_single_leaf_control": 5,
+    "combined_main_alt_peak_derived": 5,
+    "signature_budget_used_if_successful": 50,
+    "witness_serialization_for_max_4_byte_operand": [
+      {
+        "path_bit_bytes": 0,
+        "item_lengths": [
+          4,
+          64,
+          0,
+          53,
+          33
+        ],
+        "serialized_witness_bytes": 160
+      },
+      {
+        "path_bit_bytes": 1,
+        "item_lengths": [
+          4,
+          64,
+          1,
+          53,
+          33
+        ],
+        "serialized_witness_bytes": 161
+      }
+    ],
+    "limitations": [
+      "No real accepting witness was mined.",
+      "No arithmetic reference verifier is supplied.",
+      "R=G is not enforced by this template; permitting arbitrary nonce only enlarges the analyzed native family.",
+      "No consensus or policy execution was performed."
+    ]
+  }
+}

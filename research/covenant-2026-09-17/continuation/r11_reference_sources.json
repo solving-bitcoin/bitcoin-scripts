@@ -1,0 +1,101 @@
+{
+  "date": "2026-09-17",
+  "question": "Does a cited or follow-up primary source instantiate a secretless intended-output-reference to native signature bridge?",
+  "result": "No new interface found; PIPEs v2 is witness-gated key release whose witness-signature correctness permits all messages",
+  "deployment": "unclassified",
+  "new_scripts_executed": false,
+  "rare_events_mined": false,
+  "field_library_tests_run": false,
+  "sources": [
+    {
+      "id": "pipes_v2",
+      "title": "Bitcoin PIPEs v2",
+      "primary_url": "https://www.allocinit.xyz/uploads/pipesv2.pdf",
+      "archive_url": "https://eprint.iacr.org/2026/186",
+      "version": "Authors copy retrieved 2026-09-17; 22 pages; PDF metadata creation and modification 2026-02-05T10:44:01+01:00",
+      "archive_metadata": {
+        "received": "2026-02-05",
+        "approved": "2026-02-06"
+      },
+      "inspected_sections": [
+        "1.1",
+        "3 Definitions 3.1–3.4",
+        "4 Setup/OutVerify/WSign",
+        "5.3.1"
+      ],
+      "evidence": "inspected",
+      "retrieval_note": "IACR PDF returned HTTP 403; byte identity of authors copy and IACR copy not verified",
+      "bytes": 685191,
+      "sha256": "f62e6c4614a2bc3989c634ad1f599b786f7f9242b463c97454a6a60f26e3f21d"
+    },
+    {
+      "id": "pipes_v2_announcement",
+      "title": "Bitcoin PIPEs v2",
+      "primary_url": "https://delvingbitcoin.org/t/bitcoin-pipes-v2/2249",
+      "version": "Author post 2026-02-12 and author follow-up 2026-02-14; retrieved 2026-09-17",
+      "evidence": "inspected",
+      "focus": "Binary authorization semantics; no transaction output restrictions after key release"
+    },
+    {
+      "id": "aadp",
+      "title": "Implementable Witness Encryption from Arithmetic Affine Determinant Programs",
+      "primary_url": "https://eprint.iacr.org/2026/175",
+      "version": "Landing page last revision 2026-05-10, original received 2026-02-03",
+      "evidence": "reported",
+      "inspected_scope": "Landing-page metadata and abstract only; revised PDF not retrieved",
+      "reported_ciphertext_scale": "hundreds of terabytes at 100-bit security"
+    },
+    {
+      "id": "binohash",
+      "title": "Binohash: Transaction Introspection Without Softforks",
+      "primary_url": "https://robinlinus.com/binohash.pdf",
+      "version": "Undated 33-page authors PDF retrieved 2026-09-17; exact content hash supplied",
+      "evidence": "inspected",
+      "inspected_sections": [
+        "1.2–1.4",
+        "2.4.3",
+        "Appendix D"
+      ],
+      "bytes": 862193,
+      "sha256": "1be2b63034a86db1f9f4a35c7963248d307583723079ff25284a9fc4affee94a"
+    },
+    {
+      "id": "qsb",
+      "title": "Quantum-Safe Bitcoin Transactions",
+      "primary_url": "https://raw.githubusercontent.com/avihu28/Quantum-Safe-Bitcoin-Transactions/2c9172051d5c150ef0a994ca6b988a08a3ef9e85/paper/QSB.tex",
+      "commit": "2c9172051d5c150ef0a994ca6b988a08a3ef9e85",
+      "version": "Repository head 2026-08-26, inspected 2026-09-17",
+      "evidence": "inspected",
+      "history_url": "https://github.com/avihu28/Quantum-Safe-Bitcoin-Transactions/commits/main",
+      "focus": "Pinning, hash-to-signature native round, polyglot optimization discussion",
+      "bytes": 88664,
+      "sha256": "10e57297cc4fdb9f08e721bd7b7634a4bac778cd5a17ad7c4f87cc7a98cad083"
+    },
+    {
+      "id": "colliderscript",
+      "title": "ColliderScript: Covenants in Bitcoin via 160-bit hash collisions",
+      "primary_url": "https://eprint.iacr.org/2024/1802",
+      "version": "2024-11-15, last of three revisions; locally available PDF from earlier research in this session",
+      "evidence": "inspected",
+      "fresh_check": "Landing-page revision checked 2026-09-17",
+      "bytes": 1033866,
+      "sha256": "a0cdb8da2ce389bb1bd24b396ae18706e4419cc6da15f978cb386061b8bd05e4"
+    },
+    {
+      "id": "collidervm",
+      "title": "ColliderVM: Stateful Computation on Bitcoin without Fraud Proofs",
+      "primary_url": "https://eprint.iacr.org/2025/591",
+      "version": "2025-04-10, last of two revisions; locally available PDF from earlier research in this session",
+      "evidence": "inspected",
+      "fresh_check": "Landing-page revision checked 2026-09-17",
+      "bytes": 590917,
+      "sha256": "b4446dbd12fb17d4be3644f95bfc235d09994645bca36df0b2268f3f3e65b18a"
+    }
+  ],
+  "own_deduction": {
+    "premise": "For valid R(x,w), WSign(wout,w,m) is correct for every message m",
+    "substitution": "Use the same valid witness with BitcoinSignatureMessage(T_bad)",
+    "cost_scope": "One valid-witness computation, one decryption, one ordinary signature; does not require retained setup state",
+    "limitation": "Not an attack on the stated binary authorization functionality, or an impossibility result for message-bound constrained signatures"
+  }
+}

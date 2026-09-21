@@ -1,0 +1,2892 @@
+{
+  "scope": "Native known-digest filter and arbitrary nonce-point extraction.\n\nSmall consensus fixtures and a DH-quartet adapter, not a full publication.\nOnly public deterministic inputs and an isolated wallet/network-disabled\nregtest are used. No independent payment authorization is provided here.\n",
+  "fixture": {
+    "cases": [
+      {
+        "derived_key_hex": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+        "derived_key_scalar_hex": "cf8ce3e6eb1794244de30d7e11521d4ad51d7960272f2386c06650ad67c6c891",
+        "index": 0,
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "script_bytes": 86,
+        "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+        "signatures": [
+          "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+          "3046022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f02210086f4f3b6231516fa14e6c4fd3469bdc3b7b92c114621a19ec91eb408cdf2cffb03"
+        ],
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f"
+      },
+      {
+        "derived_key_hex": "037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde",
+        "derived_key_scalar_hex": "dfcaefb265b1a9fc8ee189f5c92f80d5bc0f8e2b0ff45d71ca398ce9eade25d8",
+        "index": 1,
+        "scalar_hex": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "script_bytes": 86,
+        "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+        "signatures": [
+          "30440220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8402202ed4eba6ee0d27fb5af0d0ed46b64f62f438a330fa11f9ee3dbf1145df2ecfb503",
+          "30450220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84022100d12b145911f2d804a50f2f12b949b09bc67639b5b536a64d82134d46f107718c03"
+        ],
+        "target_hex": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84"
+      },
+      {
+        "derived_key_hex": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+        "derived_key_scalar_hex": "93406e7bfbd1365884cd82a8807193a9fbea86b7ece4de0641a09cb1c9335359",
+        "index": 2,
+        "scalar_hex": "1212121212121212121212121212121212121212121212121212121212121212",
+        "script_bytes": 86,
+        "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+        "signatures": [
+          "304402206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f70220587f5b5bd83a7c4110105e9e9bd6a72262383e06a3bb8a731b75db528aa613f403",
+          "304502206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7022100a780a4a427c583beefefa161642958dc58769ee00b8d15c8a45c833a45902d4d03"
+        ],
+        "target_hex": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7"
+      },
+      {
+        "derived_key_hex": "03bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7",
+        "derived_key_scalar_hex": "bc7d959f450db8fa4759fa1734a481f40060d1b20ddfcbee4d134c11b5b0a6f4",
+        "index": 3,
+        "scalar_hex": "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfab6aad8e2ab449c37bbce5a88cc323d3d",
+        "script_bytes": 86,
+        "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+        "signatures": [
+          "30440220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b0220571ee935056b74abbd1ea091b1b40dafda0bf61381c05dee2ab8e0504706546003",
+          "30450220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b022100a8e116cafa948b5442e15f6e4e4bf24ee0a2e6d32d88424d95197e3c892fece103"
+        ],
+        "target_hex": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b"
+      }
+    ],
+    "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+    "generator_hex": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+    "interpreter_commit": "702544c9a045ac4fc14846da6da6559e2b7cd9d1",
+    "quartet_script_bytes": 199,
+    "quartet_script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+    "scope": "Policy-compiled legacy nonce-point lock and correlated quartet; research fixture without independent payment authorization.",
+    "script_compilation": "compile_with_policy; unoptimized sizes below 32 KiB"
+  },
+  "bitcoin_core": {
+    "version": "30.3",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind",
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS"
+  },
+  "results": [
+    {
+      "name": "single-0-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "8cc189e5674d74802afc7ecda454c1cac4cbb94145a76d2fb7d22e654ade11d0",
+        "wtxid": "ec0def7166b3e2fc2c0eb39ac4888d6753480ccfff05f159fde01993fe109498",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 8cc189e5674d74802afc7ecda454c1cac4cbb94145a76d2fb7d22e654ade11d0 (wtxid ec0def7166b3e2fc2c0eb39ac4888d6753480ccfff05f159fde01993fe109498), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:1"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 103,
+        "block_hash": "4d91d0c96c58f28451cc3544d7362b6356fa4ef58baaaed6bd1559f2c490eff2"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 161,
+      "signature_bytes": 72,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520000000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5201000000a1483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "8cc189e5674d74802afc7ecda454c1cac4cbb94145a76d2fb7d22e654ade11d0",
+        "wtxid": "ec0def7166b3e2fc2c0eb39ac4888d6753480ccfff05f159fde01993fe109498",
+        "base_bytes": 284,
+        "total_bytes": 290,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1142
+      }
+    },
+    {
+      "name": "quartet-0-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "0a966b8bcc895d6578606fd44a0430838f7e3c8b189cadabcd3dda001730aba2",
+        "wtxid": "6fdb0c6ee51cb35fd7806143b70e6970230f73552ae1d69ab245b94c9f43eb42",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 0a966b8bcc895d6578606fd44a0430838f7e3c8b189cadabcd3dda001730aba2 (wtxid 6fdb0c6ee51cb35fd7806143b70e6970230f73552ae1d69ab245b94c9f43eb42), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:3"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 104,
+        "block_hash": "14f08f6e47996d2882c7f333a4032006011a7a8f396e2f2ca5bebf70f0a4bb2c"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520200000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5203000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371460300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "0a966b8bcc895d6578606fd44a0430838f7e3c8b189cadabcd3dda001730aba2",
+        "wtxid": "6fdb0c6ee51cb35fd7806143b70e6970230f73552ae1d69ab245b94c9f43eb42",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "single-0-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "f611c38bc4f36711b43e09e8da9565ba444dd91b823a243be248a21df734a433",
+        "wtxid": "8a82fbcee18d0182120e7ae30b38b43c7d56793c2ac6cf9219e920a87130a225",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of f611c38bc4f36711b43e09e8da9565ba444dd91b823a243be248a21df734a433 (wtxid 8a82fbcee18d0182120e7ae30b38b43c7d56793c2ac6cf9219e920a87130a225), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:5"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 105,
+        "block_hash": "0bbaa10a5425d2cd8fd2471e6ef801b63bcaf7147b07419f4d4e610c524bda84"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 162,
+      "signature_bytes": 73,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+      "entry_hex": [
+        "3046022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f02210086f4f3b6231516fa14e6c4fd3469bdc3b7b92c114621a19ec91eb408cdf2cffb03"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520400000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5205000000a2493046022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f02210086f4f3b6231516fa14e6c4fd3469bdc3b7b92c114621a19ec91eb408cdf2cffb034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724dacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "f611c38bc4f36711b43e09e8da9565ba444dd91b823a243be248a21df734a433",
+        "wtxid": "8a82fbcee18d0182120e7ae30b38b43c7d56793c2ac6cf9219e920a87130a225",
+        "base_bytes": 285,
+        "total_bytes": 291,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1146
+      }
+    },
+    {
+      "name": "quartet-0-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "08fe57967996f840db3dd0647d2b9357f69e5ed7d97e670b355dbe18a1afd6ea",
+        "wtxid": "0ec9af4254202077c32c1449a287ecc3196cb22b2b49b96e5fcd6662ff3e05ec",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of 08fe57967996f840db3dd0647d2b9357f69e5ed7d97e670b355dbe18a1afd6ea (wtxid 0ec9af4254202077c32c1449a287ecc3196cb22b2b49b96e5fcd6662ff3e05ec), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:7"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 106,
+        "block_hash": "552d5e4b7ab3b879b256c28d45061850e7669ca982e155fd9499193fc25aa063"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 277,
+      "signature_bytes": 73,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3046022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f02210086f4f3b6231516fa14e6c4fd3469bdc3b7b92c114621a19ec91eb408cdf2cffb03",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520600000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5207000000fd1501493046022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f02210086f4f3b6231516fa14e6c4fd3469bdc3b7b92c114621a19ec91eb408cdf2cffb0300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "08fe57967996f840db3dd0647d2b9357f69e5ed7d97e670b355dbe18a1afd6ea",
+        "wtxid": "0ec9af4254202077c32c1449a287ecc3196cb22b2b49b96e5fcd6662ff3e05ec",
+        "base_bytes": 402,
+        "total_bytes": 408,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1614
+      }
+    },
+    {
+      "name": "single-1-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "234c8072a2841aad8998863b822b04f6439af5ff258f5de2b7b411c2402e4823",
+        "wtxid": "37588bb4f19f6d12a6f2e223eb7cf3676a30d15108d134ab228b8c30445cbf80",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 234c8072a2841aad8998863b822b04f6439af5ff258f5de2b7b411c2402e4823 (wtxid 37588bb4f19f6d12a6f2e223eb7cf3676a30d15108d134ab228b8c30445cbf80), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:9"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 107,
+        "block_hash": "5990cf713dc807bf00d53a86e2f041db0f8a8b1524aac6329a67896f35600f01"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 160,
+      "signature_bytes": 71,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+      "entry_hex": [
+        "30440220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8402202ed4eba6ee0d27fb5af0d0ed46b64f62f438a330fa11f9ee3dbf1145df2ecfb503"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "target_hex": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+        "message": [
+          0,
+          1
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520800000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5209000000a04730440220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8402202ed4eba6ee0d27fb5af0d0ed46b64f62f438a330fa11f9ee3dbf1145df2ecfb5034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "234c8072a2841aad8998863b822b04f6439af5ff258f5de2b7b411c2402e4823",
+        "wtxid": "37588bb4f19f6d12a6f2e223eb7cf3676a30d15108d134ab228b8c30445cbf80",
+        "base_bytes": 283,
+        "total_bytes": 289,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1138
+      }
+    },
+    {
+      "name": "quartet-1-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "8d118c1d69f71115f8e1400b9b723f4c78007ad568e3bacceeeac5ec29d87c97",
+        "wtxid": "2ceb073d4e56a89131017653ac71eb2be9816f4c96c06e17ed9b4e76a98c9963",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 8d118c1d69f71115f8e1400b9b723f4c78007ad568e3bacceeeac5ec29d87c97 (wtxid 2ceb073d4e56a89131017653ac71eb2be9816f4c96c06e17ed9b4e76a98c9963), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:11"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 108,
+        "block_hash": "1be5c707b28b4663e9b167b404899ee96356da9012a18788199a8ce0ead6a97e"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 275,
+      "signature_bytes": 71,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "30440220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8402202ed4eba6ee0d27fb5af0d0ed46b64f62f438a330fa11f9ee3dbf1145df2ecfb503",
+        "01",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "target_hex": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+        "message": [
+          0,
+          1
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520a00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520b000000fd13014730440220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8402202ed4eba6ee0d27fb5af0d0ed46b64f62f438a330fa11f9ee3dbf1145df2ecfb50351004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "8d118c1d69f71115f8e1400b9b723f4c78007ad568e3bacceeeac5ec29d87c97",
+        "wtxid": "2ceb073d4e56a89131017653ac71eb2be9816f4c96c06e17ed9b4e76a98c9963",
+        "base_bytes": 400,
+        "total_bytes": 406,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1606
+      }
+    },
+    {
+      "name": "single-1-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "d8a368958386f4a6d73e3bd407fd21abf90cca4e2f44a464471e24398488b563",
+        "wtxid": "df2a76da17098af7f6d1e75b47876fcabc14033cb1ababaa88299f7d07a25a4c",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of d8a368958386f4a6d73e3bd407fd21abf90cca4e2f44a464471e24398488b563 (wtxid df2a76da17098af7f6d1e75b47876fcabc14033cb1ababaa88299f7d07a25a4c), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:13"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 109,
+        "block_hash": "068c00332f4e26a7294b9e6147777ea90299c9de0bcad8675b44792dbde6a777"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 161,
+      "signature_bytes": 72,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+      "entry_hex": [
+        "30450220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84022100d12b145911f2d804a50f2f12b949b09bc67639b5b536a64d82134d46f107718c03"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "target_hex": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+        "message": [
+          0,
+          1
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520d000000a14830450220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84022100d12b145911f2d804a50f2f12b949b09bc67639b5b536a64d82134d46f107718c034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead7521037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfdeacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "d8a368958386f4a6d73e3bd407fd21abf90cca4e2f44a464471e24398488b563",
+        "wtxid": "df2a76da17098af7f6d1e75b47876fcabc14033cb1ababaa88299f7d07a25a4c",
+        "base_bytes": 284,
+        "total_bytes": 290,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1142
+      }
+    },
+    {
+      "name": "quartet-1-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "2d6bd611052b7542765c9588849125e1a3a8fc162b31e7bd5e00147c6110c561",
+        "wtxid": "3e6897b8edae02c6cd063012a0f8cacca58ce3d7c2678e8b58c8faeb36a1e1a8",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of 2d6bd611052b7542765c9588849125e1a3a8fc162b31e7bd5e00147c6110c561 (wtxid 3e6897b8edae02c6cd063012a0f8cacca58ce3d7c2678e8b58c8faeb36a1e1a8), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:15"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 110,
+        "block_hash": "7f7035456e4bf30ddc549644fbf87292a2ad854b3c4e40c77c9db8377d972512"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "30450220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84022100d12b145911f2d804a50f2f12b949b09bc67639b5b536a64d82134d46f107718c03",
+        "01",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          },
+          {
+            "key": "037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "target_hex": "02552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84",
+        "message": [
+          0,
+          1
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520e00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab520f000000fd14014830450220552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a84022100d12b145911f2d804a50f2f12b949b09bc67639b5b536a64d82134d46f107718c0351004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "2d6bd611052b7542765c9588849125e1a3a8fc162b31e7bd5e00147c6110c561",
+        "wtxid": "3e6897b8edae02c6cd063012a0f8cacca58ce3d7c2678e8b58c8faeb36a1e1a8",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "single-2-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "4fe1c8fb8b0b80afa871b6fd4149959ed479b403dcc6befe5fac5fc8eccd2cf1",
+        "wtxid": "7e1a6d2202c9a3bcb86d39af2606fd9ddb941352612f297a09f14e0b8fcdcec1",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 4fe1c8fb8b0b80afa871b6fd4149959ed479b403dcc6befe5fac5fc8eccd2cf1 (wtxid 7e1a6d2202c9a3bcb86d39af2606fd9ddb941352612f297a09f14e0b8fcdcec1), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:17"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 111,
+        "block_hash": "651c5bb1d88c4bc1d71c43cad71866e91c239ac9667c89c560013cc20d8e2bf2"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 160,
+      "signature_bytes": 71,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+      "entry_hex": [
+        "304402206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f70220587f5b5bd83a7c4110105e9e9bd6a72262383e06a3bb8a731b75db528aa613f403"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "1212121212121212121212121212121212121212121212121212121212121212",
+        "target_hex": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+        "message": [
+          1,
+          0
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521000000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5211000000a047304402206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f70220587f5b5bd83a7c4110105e9e9bd6a72262383e06a3bb8a731b75db528aa613f4034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "4fe1c8fb8b0b80afa871b6fd4149959ed479b403dcc6befe5fac5fc8eccd2cf1",
+        "wtxid": "7e1a6d2202c9a3bcb86d39af2606fd9ddb941352612f297a09f14e0b8fcdcec1",
+        "base_bytes": 283,
+        "total_bytes": 289,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1138
+      }
+    },
+    {
+      "name": "quartet-2-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "56f90c20c3da2a1f4d004173ac06d2ae8bb069cc543d979e5287f6aaee328e3d",
+        "wtxid": "074a1219885caf499a241489d5ba55a8299c9cfe4ab76a7f31af02945c96d422",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 56f90c20c3da2a1f4d004173ac06d2ae8bb069cc543d979e5287f6aaee328e3d (wtxid 074a1219885caf499a241489d5ba55a8299c9cfe4ab76a7f31af02945c96d422), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:19"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 112,
+        "block_hash": "4081cbfe7efc81353d34fd9395bbc351d9749fbe723dc0f4673debb7fd3f579a"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 275,
+      "signature_bytes": 71,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "304402206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f70220587f5b5bd83a7c4110105e9e9bd6a72262383e06a3bb8a731b75db528aa613f403",
+        "",
+        "01"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "1212121212121212121212121212121212121212121212121212121212121212",
+        "target_hex": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+        "message": [
+          1,
+          0
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521200000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5213000000fd130147304402206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f70220587f5b5bd83a7c4110105e9e9bd6a72262383e06a3bb8a731b75db528aa613f40300514cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "56f90c20c3da2a1f4d004173ac06d2ae8bb069cc543d979e5287f6aaee328e3d",
+        "wtxid": "074a1219885caf499a241489d5ba55a8299c9cfe4ab76a7f31af02945c96d422",
+        "base_bytes": 400,
+        "total_bytes": 406,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1606
+      }
+    },
+    {
+      "name": "single-2-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "7d72b62450a63a43ad2e50ab43e12bedeef7b98d7ed5e74c91ab00441ed4d494",
+        "wtxid": "8e2d75f934d63caf4446a17744d57eaa94553ae89eb59c95dbacf1e5d49b90f5",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of 7d72b62450a63a43ad2e50ab43e12bedeef7b98d7ed5e74c91ab00441ed4d494 (wtxid 8e2d75f934d63caf4446a17744d57eaa94553ae89eb59c95dbacf1e5d49b90f5), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:21"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 113,
+        "block_hash": "6359ae325aa60f4b94ce327d0da02df4a7df3c14b51db605e60baafeb5675671"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 161,
+      "signature_bytes": 72,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+      "entry_hex": [
+        "304502206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7022100a780a4a427c583beefefa161642958dc58769ee00b8d15c8a45c833a45902d4d03"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "1212121212121212121212121212121212121212121212121212121212121212",
+        "target_hex": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+        "message": [
+          1,
+          0
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521400000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5215000000a148304502206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7022100a780a4a427c583beefefa161642958dc58769ee00b8d15c8a45c833a45902d4d034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2aacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "7d72b62450a63a43ad2e50ab43e12bedeef7b98d7ed5e74c91ab00441ed4d494",
+        "wtxid": "8e2d75f934d63caf4446a17744d57eaa94553ae89eb59c95dbacf1e5d49b90f5",
+        "base_bytes": 284,
+        "total_bytes": 290,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1142
+      }
+    },
+    {
+      "name": "quartet-2-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "fde80180d026dd1f7f559d5fa19ef357c295e2c118e1f3c1005c921e8db64478",
+        "wtxid": "bfd5460499a2e3b61b27a5e37f4999f154b4037184bcf612652a83dc90567832",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of fde80180d026dd1f7f559d5fa19ef357c295e2c118e1f3c1005c921e8db64478 (wtxid bfd5460499a2e3b61b27a5e37f4999f154b4037184bcf612652a83dc90567832), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:23"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 114,
+        "block_hash": "37a623c2c075fa08660b92ba2ab6e0a2985dece79db9e152c34abb30ae033fcb"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "304502206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7022100a780a4a427c583beefefa161642958dc58769ee00b8d15c8a45c833a45902d4d03",
+        "",
+        "01"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "026360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          },
+          {
+            "key": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "1212121212121212121212121212121212121212121212121212121212121212",
+        "target_hex": "036360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7",
+        "message": [
+          1,
+          0
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521600000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5217000000fd140148304502206360e856310ce5d294e8be33fc807077dc56ac80d95d9cd4ddbd21325eff73f7022100a780a4a427c583beefefa161642958dc58769ee00b8d15c8a45c833a45902d4d0300514cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "fde80180d026dd1f7f559d5fa19ef357c295e2c118e1f3c1005c921e8db64478",
+        "wtxid": "bfd5460499a2e3b61b27a5e37f4999f154b4037184bcf612652a83dc90567832",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "single-3-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "b0732e221691a945e9e90d9f8af1dbf5f0f49dba769fa48edfac2952f75ac7cc",
+        "wtxid": "666df502ec1c512f076e99714a3997130ec35fedeaf5c4b9608a92a98276286e",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of b0732e221691a945e9e90d9f8af1dbf5f0f49dba769fa48edfac2952f75ac7cc (wtxid 666df502ec1c512f076e99714a3997130ec35fedeaf5c4b9608a92a98276286e), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:25"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 115,
+        "block_hash": "0a8330a22d9437308a6c9fbe198d063c31822b8b21fa97507e7d6152f9da3df5"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 160,
+      "signature_bytes": 71,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+      "entry_hex": [
+        "30440220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b0220571ee935056b74abbd1ea091b1b40dafda0bf61381c05dee2ab8e0504706546003"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "03bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfab6aad8e2ab449c37bbce5a88cc323d3d",
+        "target_hex": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+        "message": [
+          1,
+          1
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521800000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5219000000a04730440220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b0220571ee935056b74abbd1ea091b1b40dafda0bf61381c05dee2ab8e05047065460034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7acffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "b0732e221691a945e9e90d9f8af1dbf5f0f49dba769fa48edfac2952f75ac7cc",
+        "wtxid": "666df502ec1c512f076e99714a3997130ec35fedeaf5c4b9608a92a98276286e",
+        "base_bytes": 283,
+        "total_bytes": 289,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1138
+      }
+    },
+    {
+      "name": "quartet-3-low",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "1b49d613c3a44b343ffca7cf582115ce37b28830d87210b74d54eadc8e9f62a4",
+        "wtxid": "acbca7e15500fe12f693008cf1a18f535f80cff795260a0f4f5a5bf0dc3e7ec5",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 1b49d613c3a44b343ffca7cf582115ce37b28830d87210b74d54eadc8e9f62a4 (wtxid acbca7e15500fe12f693008cf1a18f535f80cff795260a0f4f5a5bf0dc3e7ec5), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:27"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 116,
+        "block_hash": "5b2f19f8314061e80d040dd095d2b11d24b01cec13b12ff50b09f5e76c30d21d"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 275,
+      "signature_bytes": 71,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "30440220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b0220571ee935056b74abbd1ea091b1b40dafda0bf61381c05dee2ab8e0504706546003",
+        "01",
+        "01"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "03bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfab6aad8e2ab449c37bbce5a88cc323d3d",
+        "target_hex": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+        "message": [
+          1,
+          1
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521a00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521b000000fd13014730440220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b0220571ee935056b74abbd1ea091b1b40dafda0bf61381c05dee2ab8e050470654600351514cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "1b49d613c3a44b343ffca7cf582115ce37b28830d87210b74d54eadc8e9f62a4",
+        "wtxid": "acbca7e15500fe12f693008cf1a18f535f80cff795260a0f4f5a5bf0dc3e7ec5",
+        "base_bytes": 400,
+        "total_bytes": 406,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1606
+      }
+    },
+    {
+      "name": "single-3-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "0e94c07d7dcc1bfe0849289893320d7162ccd26e54b4815f2d5d6a545dfba51e",
+        "wtxid": "8d114ea4b64fab232a444940757c59962fc9b3d7cd752aff4b39f0e996c72373",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of 0e94c07d7dcc1bfe0849289893320d7162ccd26e54b4815f2d5d6a545dfba51e (wtxid 8d114ea4b64fab232a444940757c59962fc9b3d7cd752aff4b39f0e996c72373), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:29"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 117,
+        "block_hash": "1069e4290a4479f59910c4b9a07b3622a357c7982980f16489b2f53361913885"
+      },
+      "script_bytes": 86,
+      "script_sig_bytes": 161,
+      "signature_bytes": 72,
+      "hint_items": 0,
+      "entry_items": 1,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 2,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+      "entry_hex": [
+        "30450220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b022100a8e116cafa948b5442e15f6e4e4bf24ee0a2e6d32d88424d95197e3c892fece103"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "03bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7ac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 15
+      },
+      "extraction": {
+        "scalar_hex": "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfab6aad8e2ab449c37bbce5a88cc323d3d",
+        "target_hex": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+        "message": [
+          1,
+          1
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521d000000a14830450220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b022100a8e116cafa948b5442e15f6e4e4bf24ee0a2e6d32d88424d95197e3c892fece1034c56745188820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead752103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7acffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "0e94c07d7dcc1bfe0849289893320d7162ccd26e54b4815f2d5d6a545dfba51e",
+        "wtxid": "8d114ea4b64fab232a444940757c59962fc9b3d7cd752aff4b39f0e996c72373",
+        "base_bytes": 284,
+        "total_bytes": 290,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1142
+      }
+    },
+    {
+      "name": "quartet-3-high",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "7bb704a51fcb1974a3666e10f5cc1ffc4fc97127da8230f8ac2ba25dadf939bc",
+        "wtxid": "d92e1cab8b4332118e5f1817dc5f36b0ec99e614c79e17596fd2f92ac76fc8b6",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high)",
+        "reject-details": "mempool-script-verify-flag-failed (Non-canonical signature: S value is unnecessarily high), input 1 of 7bb704a51fcb1974a3666e10f5cc1ffc4fc97127da8230f8ac2ba25dadf939bc (wtxid d92e1cab8b4332118e5f1817dc5f36b0ec99e614c79e17596fd2f92ac76fc8b6), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:31"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 118,
+        "block_hash": "27c98818059619e267d39a3f064506396e7f928a7eebb77112896151e2ce497d"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "30450220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b022100a8e116cafa948b5442e15f6e4e4bf24ee0a2e6d32d88424d95197e3c892fece103",
+        "01",
+        "01"
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          },
+          {
+            "key": "03bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "fbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfab6aad8e2ab449c37bbce5a88cc323d3d",
+        "target_hex": "02462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b",
+        "message": [
+          1,
+          1
+        ],
+        "point_labels": [
+          "0233539b0b8c583bb14a5d866715b3d1829102120d2acc2c8ecfbfa062560f8d85",
+          "03112f697c7a95b192f1be6d920ef648ef56aacef2c9a9818dd62d6b9e09d3451b"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521e00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab521f000000fd14014830450220462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b022100a8e116cafa948b5442e15f6e4e4bf24ee0a2e6d32d88424d95197e3c892fece10351514cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "7bb704a51fcb1974a3666e10f5cc1ffc4fc97127da8230f8ac2ba25dadf939bc",
+        "wtxid": "d92e1cab8b4332118e5f1817dc5f36b0ec99e614c79e17596fd2f92ac76fc8b6",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-23",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "4cb69fbee668a32b96eb680be2091c7bb0a5e53f89a764138eba6f6614947ac8",
+        "wtxid": "2c9a676011ba3af4fcbcaccdb003c9d3c9dc9c3b853264d7f2f31e8418db75ef",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of 4cb69fbee668a32b96eb680be2091c7bb0a5e53f89a764138eba6f6614947ac8 (wtxid 2c9a676011ba3af4fcbcaccdb003c9d3c9dc9c3b853264d7f2f31e8418db75ef), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:33"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 119,
+        "block_hash": "53d8984f72ebb07a9d4641ea71941774630cbdef397d6140474f40d178baad1e"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714623",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522000000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5221000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371462300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "4cb69fbee668a32b96eb680be2091c7bb0a5e53f89a764138eba6f6614947ac8",
+        "wtxid": "2c9a676011ba3af4fcbcaccdb003c9d3c9dc9c3b853264d7f2f31e8418db75ef",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-43",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "34f12107ad02b5a8492147c5cddd3b7f9c330431728188b20c1550e0c1eb1313",
+        "wtxid": "f7b51bcd85985b06b2e57b60b1ce45f3ed2bc9567635daeef17f431fb222c823",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of 34f12107ad02b5a8492147c5cddd3b7f9c330431728188b20c1550e0c1eb1313 (wtxid f7b51bcd85985b06b2e57b60b1ce45f3ed2bc9567635daeef17f431fb222c823), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:35"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 120,
+        "block_hash": "523e729c3b125540c42e004625204330964cb721c02eafc8a0506832934ca7df"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714643",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522200000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5223000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371464300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "34f12107ad02b5a8492147c5cddd3b7f9c330431728188b20c1550e0c1eb1313",
+        "wtxid": "f7b51bcd85985b06b2e57b60b1ce45f3ed2bc9567635daeef17f431fb222c823",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-63",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "ffbd12489a6101c50046d10c1a96006929c6b75c2af048bfe4e2d7a63b3daecf",
+        "wtxid": "e5c3fcfe6612e0c50536958385dbbeb860eee332de709a7cec414456b9a1feef",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of ffbd12489a6101c50046d10c1a96006929c6b75c2af048bfe4e2d7a63b3daecf (wtxid e5c3fcfe6612e0c50536958385dbbeb860eee332de709a7cec414456b9a1feef), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:37"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 121,
+        "block_hash": "6cfd3833e820cbfc772623d3f00d7a20b337b3ae8e00fe447d68df046c64f024"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714663",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522400000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5225000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371466300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "ffbd12489a6101c50046d10c1a96006929c6b75c2af048bfe4e2d7a63b3daecf",
+        "wtxid": "e5c3fcfe6612e0c50536958385dbbeb860eee332de709a7cec414456b9a1feef",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-83",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "aa60513f2b2af497d5b7bbfe3a8a270e28afbf0f5c21d936d12186a23067a19c",
+        "wtxid": "850c57d9ae150079553d5c5cf6b76c5a8f4f9801ed9d25d954353e85d047b844",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of aa60513f2b2af497d5b7bbfe3a8a270e28afbf0f5c21d936d12186a23067a19c (wtxid 850c57d9ae150079553d5c5cf6b76c5a8f4f9801ed9d25d954353e85d047b844), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:39"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 122,
+        "block_hash": "1f0c7ecec2f1bd307e76bae26bb103d838ef1eee18743c4d22b259a81e75467d"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714683",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522600000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5227000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371468300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "aa60513f2b2af497d5b7bbfe3a8a270e28afbf0f5c21d936d12186a23067a19c",
+        "wtxid": "850c57d9ae150079553d5c5cf6b76c5a8f4f9801ed9d25d954353e85d047b844",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-a3",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "c1ed33d6e6e63bc46daa0569ef4e9c9b4dbbd49b62f4873866394a079f00edcc",
+        "wtxid": "84901d2f4977cc88b531971a7f41a7de645a02dfd3c287b2c021ace36aa2ce42",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of c1ed33d6e6e63bc46daa0569ef4e9c9b4dbbd49b62f4873866394a079f00edcc (wtxid 84901d2f4977cc88b531971a7f41a7de645a02dfd3c287b2c021ace36aa2ce42), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:41"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 123,
+        "block_hash": "41fcd3b96cc9ccd5d6a445cdc0f19cd42c03036ceb8c637ffcb670c18621f988"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146a3",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522800000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5229000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146a300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "c1ed33d6e6e63bc46daa0569ef4e9c9b4dbbd49b62f4873866394a079f00edcc",
+        "wtxid": "84901d2f4977cc88b531971a7f41a7de645a02dfd3c287b2c021ace36aa2ce42",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-c3",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "766976afadaf94f8c978e6f5217901e2ea25bb2ba47c872754358b32410e1190",
+        "wtxid": "d87c4e2a542bbf44171b46691919c402a8d606c7eed675fc70ad4c77574ddc82",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of 766976afadaf94f8c978e6f5217901e2ea25bb2ba47c872754358b32410e1190 (wtxid d87c4e2a542bbf44171b46691919c402a8d606c7eed675fc70ad4c77574ddc82), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:43"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 124,
+        "block_hash": "450e276b6092b494bb996ba19eb21c2f8428611730c9fb264374bdcda2438014"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146c3",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522a00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522b000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146c300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "766976afadaf94f8c978e6f5217901e2ea25bb2ba47c872754358b32410e1190",
+        "wtxid": "d87c4e2a542bbf44171b46691919c402a8d606c7eed675fc70ad4c77574ddc82",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "quartet-flag-e3",
+      "expected_consensus": true,
+      "policy": {
+        "txid": "f843e7ae03f2aacf5a59296a807748619da071534990a8de176f37c0c9fb277e",
+        "wtxid": "c2a6e3fdbe63c1c4a1f6267c95aeff54c0b95b9ad8ed52ca6b56f0fb68eaf848",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature hash type missing or not understood)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature hash type missing or not understood), input 1 of f843e7ae03f2aacf5a59296a807748619da071534990a8de176f37c0c9fb277e (wtxid c2a6e3fdbe63c1c4a1f6267c95aeff54c0b95b9ad8ed52ca6b56f0fb68eaf848), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:45"
+      },
+      "consensus": {
+        "accepted": true,
+        "block_height": 125,
+        "block_hash": "08180a4fc90332666e88db271311047f31cd9288f025de2f9ca4762647644a7f"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146e3",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": true,
+        "failure": null,
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "02016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": {
+        "scalar_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+        "target_hex": "02989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+        "message": [
+          0,
+          0
+        ],
+        "point_labels": [
+          "03bf05c4695f7ecf36c79d096904f1215aa48bf3ebbfd057ffc845563cb781340f",
+          "031c94456af7fcf89fa1a6ecbd046b13a31af92f6491229636729376b8b8742e1f"
+        ]
+      },
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522d000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa8402437146e300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "f843e7ae03f2aacf5a59296a807748619da071534990a8de176f37c0c9fb277e",
+        "wtxid": "c2a6e3fdbe63c1c4a1f6267c95aeff54c0b95b9ad8ed52ca6b56f0fb68eaf848",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "wrong-selection",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "0c89f7efc4aad2c5339cd943608ec774f40cb4d53307ee7e3845b67c1efae1b9",
+        "wtxid": "0200fbb8308dce53d7bb0a502b373f3edf2ebe2c42b868690c7e9fe9e937c3fa",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of 0c89f7efc4aad2c5339cd943608ec774f40cb4d53307ee7e3845b67c1efae1b9 (wtxid 0200fbb8308dce53d7bb0a502b373f3edf2ebe2c42b868690c7e9fe9e937c3fa), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:47"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 1 of 0c89f7efc4aad2c5339cd943608ec774f40cb4d53307ee7e3845b67c1efae1b9 (wtxid 0200fbb8308dce53d7bb0a502b373f3edf2ebe2c42b868690c7e9fe9e937c3fa), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:47"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        "",
+        "01"
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "terminal-stack",
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": true,
+            "nonce": "03989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f",
+            "single_bug": true
+          },
+          {
+            "key": "03289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "6ead756cac",
+            "preimage": null,
+            "accepted": false,
+            "nonce": "0232ad624846ee6ce5dd1100720a4d4e5084fdc1793951c2541c4b06e0319a4e65",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 26,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522e00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab522f000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371460300514cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "0c89f7efc4aad2c5339cd943608ec774f40cb4d53307ee7e3845b67c1efae1b9",
+        "wtxid": "0200fbb8308dce53d7bb0a502b373f3edf2ebe2c42b868690c7e9fe9e937c3fa",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "mutated-s",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "b61a570f127c49b862a3182031ca592d810934a356d8171b0ffd48e20fe76a49",
+        "wtxid": "33737707b5d137dfb853da158fcb5aed5872b30f8c2e63b04d081dd81bf57145",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 1 of b61a570f127c49b862a3182031ca592d810934a356d8171b0ffd48e20fe76a49 (wtxid 33737707b5d137dfb853da158fcb5aed5872b30f8c2e63b04d081dd81bf57145), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:49"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of b61a570f127c49b862a3182031ca592d810934a356d8171b0ffd48e20fe76a49 (wtxid 33737707b5d137dfb853da158fcb5aed5872b30f8c2e63b04d081dd81bf57145), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:49"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714703",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "checksigverify",
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0100000000000000000000000000000000000000000000000000000000000000",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": null,
+            "accepted": false,
+            "nonce": "0213c8f9b971c2eb6ceb3ec34d871f635943d1400acc9135251b08c4983ea3dd03",
+            "single_bug": true
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 17,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523000000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5231000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371470300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "b61a570f127c49b862a3182031ca592d810934a356d8171b0ffd48e20fe76a49",
+        "wtxid": "33737707b5d137dfb853da158fcb5aed5872b30f8c2e63b04d081dd81bf57145",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "size-57",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "24bcea4d651d525ec72d4556cd5e4e0e26026bcc29df48fa76e47d4c650088f4",
+        "wtxid": "ad40e8669553590f0f1a4753c4c347b31f03b55bf72e741be226276f8484b5d2",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of 24bcea4d651d525ec72d4556cd5e4e0e26026bcc29df48fa76e47d4c650088f4 (wtxid ad40e8669553590f0f1a4753c4c347b31f03b55bf72e741be226276f8484b5d2), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:51"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_VERIFY operation), input 1 of 24bcea4d651d525ec72d4556cd5e4e0e26026bcc29df48fa76e47d4c650088f4 (wtxid ad40e8669553590f0f1a4753c4c347b31f03b55bf72e741be226276f8484b5d2), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:51"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 261,
+      "signature_bytes": 57,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "verify",
+        "checks": [],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 15,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523200000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5233000000fd05013900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "24bcea4d651d525ec72d4556cd5e4e0e26026bcc29df48fa76e47d4c650088f4",
+        "wtxid": "ad40e8669553590f0f1a4753c4c347b31f03b55bf72e741be226276f8484b5d2",
+        "base_bytes": 386,
+        "total_bytes": 392,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1550
+      }
+    },
+    {
+      "name": "index-zero",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "621294131fad4e51b43de0bda730765a43c0926249601937215d04d7cee42331",
+        "wtxid": "595b5e0e93f584b8a745639306c738a22bbf91acebf20d2a5f826f10d853d82a",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 0 of 621294131fad4e51b43de0bda730765a43c0926249601937215d04d7cee42331 (wtxid 595b5e0e93f584b8a745639306c738a22bbf91acebf20d2a5f826f10d853d82a), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:53"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 0 of 621294131fad4e51b43de0bda730765a43c0926249601937215d04d7cee42331 (wtxid 595b5e0e93f584b8a745639306c738a22bbf91acebf20d2a5f826f10d853d82a), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:53"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "checksigverify",
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "fe287bcd244ff7b571c91e2df8f5b4ea923d31180242476a7484ec110f652faf",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": "02000000026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5235000000c574538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cacffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5234000000000000000001705d1e000000000016001411111111111111111111111111111111111111110000000003000000",
+            "accepted": false,
+            "nonce": "0246bed46e52d3701ba9034c09848b87f7575c7ebf50f8b2e620c19fc519fcdde4",
+            "single_bug": false
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 17,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5235000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371460300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523400000000ffffffff01705d1e000000000016001411111111111111111111111111111111111111110001015100000000",
+        "txid": "621294131fad4e51b43de0bda730765a43c0926249601937215d04d7cee42331",
+        "wtxid": "595b5e0e93f584b8a745639306c738a22bbf91acebf20d2a5f826f10d853d82a",
+        "base_bytes": 401,
+        "total_bytes": 407,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1610
+      }
+    },
+    {
+      "name": "two-outputs",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "235e89f88102693a5b1a367ad843bec7a3959947fd71365a1de27ece65805ccd",
+        "wtxid": "e76d288a697ac9ac0f9de8f07d42582b2ed4bbf8a08e63645d05f17b1743a379",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 1 of 235e89f88102693a5b1a367ad843bec7a3959947fd71365a1de27ece65805ccd (wtxid e76d288a697ac9ac0f9de8f07d42582b2ed4bbf8a08e63645d05f17b1743a379), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:55"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of 235e89f88102693a5b1a367ad843bec7a3959947fd71365a1de27ece65805ccd (wtxid e76d288a697ac9ac0f9de8f07d42582b2ed4bbf8a08e63645d05f17b1743a379), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:55"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 276,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "checksigverify",
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "755bec15d5d37ded854eee753d71c3eb2b8acc3d349d620763d3640f07aa9130",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": "02000000026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523600000000000000006ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5237000000c574538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cacffffffff02ffffffffffffffff0040420f000000000016001411111111111111111111111111111111111111110000000003000000",
+            "accepted": false,
+            "nonce": "0285d8e83a634347edb2c79533f47127713c6b3cf3e7601e71c6039f583206bea6",
+            "single_bug": false
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 17,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523600000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5237000000fd1401483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371460300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff02301b0f0000000000160014111111111111111111111111111111111111111140420f000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "235e89f88102693a5b1a367ad843bec7a3959947fd71365a1de27ece65805ccd",
+        "wtxid": "e76d288a697ac9ac0f9de8f07d42582b2ed4bbf8a08e63645d05f17b1743a379",
+        "base_bytes": 432,
+        "total_bytes": 438,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1734
+      }
+    },
+    {
+      "name": "extra-entry",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "eace4bebf1e2bf84622f854a4756f99e5415a1e75c344a06321c7f28b4ad9847",
+        "wtxid": "2ef6062f83cd76a56680bbf1a251bf00b9d53a319c3e2b4fe5d7b39933c7fa09",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of eace4bebf1e2bf84622f854a4756f99e5415a1e75c344a06321c7f28b4ad9847 (wtxid 2ef6062f83cd76a56680bbf1a251bf00b9d53a319c3e2b4fe5d7b39933c7fa09), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:57"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of eace4bebf1e2bf84622f854a4756f99e5415a1e75c344a06321c7f28b4ad9847 (wtxid 2ef6062f83cd76a56680bbf1a251bf00b9d53a319c3e2b4fe5d7b39933c7fa09), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:57"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 277,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 4,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 5,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "07",
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "equalverify",
+        "checks": [],
+        "combined_stack_peak": 6,
+        "processed_non_push_opcodes": 2,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523800000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab5239000000fd150157483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa84024371460300004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "eace4bebf1e2bf84622f854a4756f99e5415a1e75c344a06321c7f28b4ad9847",
+        "wtxid": "2ef6062f83cd76a56680bbf1a251bf00b9d53a319c3e2b4fe5d7b39933c7fa09",
+        "base_bytes": 402,
+        "total_bytes": 408,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1614
+      }
+    },
+    {
+      "name": "missing-hint",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "992c42848599594d3ecc957d1cdf4a0536f23affe7461a98b2a03151a12fc139",
+        "wtxid": "2f0df6f58764b1a18b4597517f492bd8220921cfbfd2fd49e71346b5469259fa",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 992c42848599594d3ecc957d1cdf4a0536f23affe7461a98b2a03151a12fc139 (wtxid 2f0df6f58764b1a18b4597517f492bd8220921cfbfd2fd49e71346b5469259fa), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:59"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 992c42848599594d3ecc957d1cdf4a0536f23affe7461a98b2a03151a12fc139 (wtxid 2f0df6f58764b1a18b4597517f492bd8220921cfbfd2fd49e71346b5469259fa), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:59"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 275,
+      "signature_bytes": 72,
+      "hint_items": 2,
+      "entry_items": 2,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 3,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "equalverify",
+        "checks": [],
+        "combined_stack_peak": 4,
+        "processed_non_push_opcodes": 2,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523a00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523b000000fd1301483045022100989c0b76cb563971fdc9bef31ec06c3560f3249d6ee9e5d83c57625596e05f6f0220790b0c49dceae905eb193b02cb96423b02f5b0d56926fe9cf6b3aa840243714603004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "992c42848599594d3ecc957d1cdf4a0536f23affe7461a98b2a03151a12fc139",
+        "wtxid": "2f0df6f58764b1a18b4597517f492bd8220921cfbfd2fd49e71346b5469259fa",
+        "base_bytes": 400,
+        "total_bytes": 406,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1606
+      }
+    },
+    {
+      "name": "ordinary-all-resigned",
+      "expected_consensus": false,
+      "policy": {
+        "txid": "d59bfa7198fb9c1e1e5b4b617e4bd7ae7463a9bb8fb8a6c34504d29ce23ea0f8",
+        "wtxid": "ed764242f64c83e87ca35619111a6b456c44e3aa90f72afd366411b1f9467397",
+        "allowed": false,
+        "reject-reason": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script)",
+        "reject-details": "mempool-script-verify-flag-failed (Using OP_CODESEPARATOR in non-witness script), input 1 of d59bfa7198fb9c1e1e5b4b617e4bd7ae7463a9bb8fb8a6c34504d29ce23ea0f8 (wtxid ed764242f64c83e87ca35619111a6b456c44e3aa90f72afd366411b1f9467397), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:61"
+      },
+      "consensus": {
+        "accepted": false,
+        "rpc_code": -25,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of d59bfa7198fb9c1e1e5b4b617e4bd7ae7463a9bb8fb8a6c34504d29ce23ea0f8 (wtxid ed764242f64c83e87ca35619111a6b456c44e3aa90f72afd366411b1f9467397), spending 52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c:61"
+      },
+      "script_bytes": 199,
+      "script_sig_bytes": 275,
+      "signature_bytes": 71,
+      "hint_items": 2,
+      "entry_items": 3,
+      "all_entry_items_coexist": true,
+      "complete_script_sig_pushes": 4,
+      "locked_input_witness_items": 0,
+      "helper_witness_items": 1,
+      "script_hex": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cac",
+      "entry_hex": [
+        "3044022008f4f37e2d8f74e18c1b8fde2374d5f28402fb8ab7fd1cc5b786aa40851a70cb0220483f53be2ee451f79e6ea89e8cdbd850a43c68283be7b6a6707fb5de64dfeaa201",
+        "",
+        ""
+      ],
+      "host_trace": {
+        "accepted": false,
+        "failure": "checksigverify",
+        "checks": [
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "5be6f8f43bb82ffd91938f44267e384defae39de13d1f9377fd025887a4d5319",
+            "script_code": "74538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cac",
+            "preimage": "02000000026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523d000000c574538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986ead6ead6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110000000001000000",
+            "accepted": true,
+            "nonce": "0308f4f37e2d8f74e18c1b8fde2374d5f28402fb8ab7fd1cc5b786aa40851a70cb",
+            "single_bug": false
+          },
+          {
+            "key": "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+            "digest": "0c1b45160c89a41eb0583b3a9a44c7e9eb3e6836712a883cf142f117fcef48c4",
+            "script_code": "6ead6ead756cac",
+            "preimage": "02000000026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523d000000076ead6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110000000001000000",
+            "accepted": false,
+            "nonce": "0399641b0ce23b05b83e73d78e36592d6d5396206eeab00cefdc29e46d68b817a3",
+            "single_bug": false
+          }
+        ],
+        "combined_stack_peak": 5,
+        "processed_non_push_opcodes": 20,
+        "processed_count_includes_all_flow_control": true,
+        "static_non_push_opcodes": 26
+      },
+      "extraction": null,
+      "transaction": {
+        "hex": "020000000001026ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523c00000000ffffffff6ce6cdb309a5604b660701128d16f25dc8cae77ff653d023fbae15ecdb5eab523d000000fd1301473044022008f4f37e2d8f74e18c1b8fde2374d5f28402fb8ab7fd1cc5b786aa40851a70cb0220483f53be2ee451f79e6ea89e8cdbd850a43c68283be7b6a6707fb5de64dfeaa20100004cc774538863632103bc76565f609109b90ba5e945bc5045e113bff085b3adeb576292eecc3bf2aec7672103289a04ad2542f67ac26ecba6baae8b3b183a053bb9306bd2674655ea48850c2a68676321037a34fb142aa2c740dcbf433993b7e0a59eac6f7c9859640bd2bff3af1ab5bfde672102016375894391657b9f68320c2a481e58ff8be1424e79543a249f895cdd23724d68686b820139a069210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f817986eadab6eadab6ead756cacffffffff01705d1e000000000016001411111111111111111111111111111111111111110101510000000000",
+        "txid": "d59bfa7198fb9c1e1e5b4b617e4bd7ae7463a9bb8fb8a6c34504d29ce23ea0f8",
+        "wtxid": "ed764242f64c83e87ca35619111a6b456c44e3aa90f72afd366411b1f9467397",
+        "base_bytes": 400,
+        "total_bytes": 406,
+        "witness_bytes": 4,
+        "marker_flag_bytes": 2,
+        "weight": 1606
+      }
+    }
+  ],
+  "evidence": "differentially-validated",
+  "deployment": "consensus-validated",
+  "complete_publication": false,
+  "independent_payment_authorization": false,
+  "setup_benchmark": null,
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "funding": {
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff3f40420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91466cb49a0368058e3c5f5b0c3f299e5285c2f163c8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91466cb49a0368058e3c5f5b0c3f299e5285c2f163c8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a914c4002af97928caa3ca281ad978c9f8093a6e312f8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a914c4002af97928caa3ca281ad978c9f8093a6e312f8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a9144283a268e1ed63f96b511df32a8781db98c86b5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a9144283a268e1ed63f96b511df32a8781db98c86b5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a914e837f91774499895cdcf0d4a4a9d2fd5df7bd89e8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a914e837f91774499895cdcf0d4a4a9d2fd5df7bd89e8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8740420f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326040420f000000000017a91490dad8d6fe95975436b8d8727550d26f1bc55c5a8770bf5326010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "txid": "52ab5edbec15aefb23d053f67fe7cac85df2168d120107664b60a509b3cde66c",
+    "wtxid": "f32959f77f7dc114ba2e16e11497b9d8cc14a9e489cd59f84f237465f9537c3f",
+    "weight": 9681,
+    "vsize": 2421,
+    "base_bytes": 2419,
+    "total_bytes": 2424,
+    "witness_bytes": 3
+  },
+  "all_raw_flag_host_screen": {
+    "tested": 256,
+    "accepted": [
+      3,
+      35,
+      67,
+      99,
+      131,
+      163,
+      195,
+      227
+    ],
+    "consensus_tested_separately": false
+  },
+  "source_sha256": {
+    "examples/pointlock_fixed_digest_nonce_probe.rs": "8597e4fa7c7a8839446b540bf9591d98f79e7043f23a5a705911926114bd632b",
+    "research/pointlocks-2026-09-17/fixed_digest_nonce_core_check.py": "a1564c1f8d29f49eeeb3c190482d0b420e19570363745f8e615efc2affc26f7a",
+    "research/pointlocks-2026-09-17/core_check.py": "97760a6572e23c89c1ed50db89d5ae84b816d08fae2bbc1caf32cc4d2d79ba29",
+    "research/pointlocks-2026-09-17/publication_core_check.py": "58e91767cd038a63f8208a2ef15b5f146c11521c9676e34220aa4d457c85ca57",
+    "research/pointlocks-2026-09-17/dh_quartet_label_probe.py": "e2e9c1428f5545267ae8156ec3fc6e01379d274cc9e117b17b28109c6c17a20e",
+    "research/pointlocks-2026-09-17/two_target_anchor_algebra.py": "fd8ffa17be823027a3d9c41a9e4817c1118cfb262a7c683fbfbeb2510dedd889",
+    "tests/pointlock_fixed_digest_nonce_vectors.rs": "fbca9dd0bd99b5d35353dbd979a1994ee898199b6fc8ce1ca5bbd25a67006b4f",
+    "research/covenant-2026-09-17/legacy_same_signature_counterexample.py": "a21f594e99503f8131bd18785a8924ee6b674fb16fc0596d3fb8c43a500f84f5",
+    "Cargo.lock": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471"
+  },
+  "all_expectations_met": true,
+  "positive_cases": 23,
+  "negative_cases": 8
+}

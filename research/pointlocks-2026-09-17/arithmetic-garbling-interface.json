@@ -1,0 +1,73 @@
+{
+  "scope": "Related-work interface inspection and two focused upstream correctness tests; no complete point-lock or setup benchmark.",
+  "evidence": "inspected",
+  "deployment": "unclassified",
+  "argo_mac": {
+    "url": "https://eprint.iacr.org/2026/049",
+    "metadata_revision": "2026-01-19",
+    "pdf_date": "2026-01-18",
+    "pdf_pages": 14,
+    "transport_repository": "https://github.com/zk-coins/research",
+    "transport_commit": "0534c7236fd612705c8a3fbe1d60de22a9acb768",
+    "transport_path": "argo-mac-paper.pdf",
+    "pdf_sha256": "1b31f6167607555d4aaf8329effbdd702b756606fb209f9a58098357cfdd362a",
+    "implementation_executed": false
+  },
+  "duty_free_bits_paper": {
+    "url": "https://eprint.iacr.org/2026/476",
+    "metadata_revision": "2026-03-10",
+    "inspected": "official abstract and metadata; full PDF was not obtained"
+  },
+  "duty_free_bits_implementation": {
+    "url": "https://github.com/alpenlabs/duty-free-bits",
+    "commit": "594fb4de28fac1f76a93cf9a10cee7a0262b0a52",
+    "worktree_clean": true,
+    "source_sha256": {
+      "Cargo.toml": "e2562ee5e4ff01841257e3f353b4157041e97505915417fdb45412074f4d092b",
+      "Cargo.lock": "7c00ebba3bf17ccb91a3cb722592eeb5dac5a2fc385f8b35d0601de5b5c91e57",
+      "README.md": "65b1faf90afc7d41a197fb8bccd8be0eae400b482ac2d952657131d2d0eb7173",
+      "docs/architecture.md": "5768b13d199e4b945f6eea9072e4b94fac9b3ffa38e2aa333db9b5774b43e462",
+      "src/lib.rs": "f683ea75a50e8bfe39b53d0f7412c3dff010d8013c6aa2f6bbaff5b889666c2b",
+      "src/affine.rs": "eea4c31db1937c4a5b6c272c4148b4b45eae092429361f6ef29a22ac52b19d7d",
+      "src/pgs.rs": "8cb23f9c77f4d673806032c52c4503795374c286adeb1165e7ee8b634f261af3",
+      "src/gc/body.rs": "47a665369e6b8597314bdcde0f5c5693d82f8f1f2447bf10ffee7c8b520d9c48",
+      "src/tests.rs": "00703f3c48d4e0a7140dc84a0a05e1f9cc89374adb4ca55ad37441b3d618f30a"
+    },
+    "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+    "test_profile": "debug",
+    "tests_use_fixed_seed": false,
+    "tests": [
+      {
+        "command": "cargo test --locked --offline --lib tests::test_s_aff_edge_regimes -- --exact",
+        "passed": 1,
+        "failed": 0,
+        "filtered_out": 105,
+        "test_seconds": 0.07
+      },
+      {
+        "command": "cargo test --locked --offline --lib pgs::tests::test_pgs_split_matches_oracle -- --exact",
+        "passed": 1,
+        "failed": 0,
+        "filtered_out": 105,
+        "test_seconds": 2.32
+      }
+    ],
+    "test_evidence": "locally-reproduced"
+  },
+  "host": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 15,
+    "memory_gib": 24,
+    "os": "macOS 26.6.1 arm64"
+  },
+  "native_execution": false,
+  "public_setup_verifier_supplied": false,
+  "setup_benchmark": false,
+  "script_bytes": null,
+  "witness_bytes": null,
+  "hint_items": null,
+  "entry_items": null,
+  "stack_peak": null,
+  "transaction_vbytes": null,
+  "local_repo_Cargo_lock_sha256": "39126bd00b43e782d543d634ae87a15ef9df9b006eef04826d81ad7196df1471"
+}

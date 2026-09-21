@@ -1,0 +1,1792 @@
+{
+  "evidence": "locally-reproduced",
+  "deployment_class": "unclassified",
+  "scope": "Fixed-source canonical-pair hash weights and their paired-color search.\n\nHost group identities and exact finite random-oracle games only. No Script,\nchosen Bitcoin hash, native signing witness, Core execution or field tests.\n",
+  "group": {
+    "fixed_source_r": 1,
+    "fixed_source_s": 1,
+    "R": "020000000000000000000000000000000000000000000000000000000000000001",
+    "translation_D": "03c7ffffffffffffffffffffffffffffffffffffffffffffffffffffff37fffd03",
+    "vectors": [
+      {
+        "z": "0",
+        "P": "020000000000000000000000000000000000000000000000000000000000000001",
+        "Q": "030000000000000000000000000000000000000000000000000000000000000001",
+        "a": "27686401327711714380599355570402040910641556473617943770028885595787255428124",
+        "b": "57223962767835075434223941694833472055809792576812285368703970471930096935508",
+        "u": "86254527797192834369946398884256476707669328175880562783930078265375319986953",
+        "v": "0",
+        "aggregate": "038c0df6156d06dd4cffcfedeb08081e81ba30fc454488602766acaa0b9d70503a",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "1",
+        "P": "02871e0c836ec675e07395aef58d72b646f77e0e33ce1622dfaa0fb8e131f3fe12",
+        "Q": "0357d783579d03d9ab67a8aa7ad9b75a66ebca4ebce1b5be71442db1307f9146a8",
+        "a": "43564168244368976174607419897969615015511260106582056003425790921901248712646",
+        "b": "1796754227002679904484348710782607307039138173111001796959246230670200915734",
+        "u": "41767414017366296270123071187187007708472121933471054206466544691231047796912",
+        "v": "70431166765944539344479216399935685530287165999381846582220125988946711865957",
+        "aggregate": "03ba3113db263456396790f4f12cce407faa61b5ec70a259c30910e0bcc8fd0ecf",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "2",
+        "P": "02a5498f4c9ec27a2136647aa16087d0760ce93d87a9fa60d032813e3d791469b4",
+        "Q": "025059ccb134f18eb98339f93c8a8c27889e1bce10a4a43a05659711b41cdec836",
+        "a": "34861215208484636047474719440544894452663980472389396038421856435948003809022",
+        "b": "74107249955625066676722276363720219302350024784204986481393095106771976343719",
+        "u": "76546054490175764794323428085512583003151519967259313939633924470694188959640",
+        "v": "13647248146412985398747978408845588195647118044961043725580423197596362683192",
+        "aggregate": "0204c5b92a5d39e555d93490a38bab843acffcf8824df192694d17ae748d3bde46",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+        "P": "032baf163f5e27261ab3228e61fb86dc98054abd514751fce93d7444e8fbc6a293",
+        "Q": "03784b6ebe47edcb0b81092d016c054a4375f9d0b73ca68afdf6c97614c83b83df",
+        "a": "43533939879437406017157090432352370485801937233421981463994610546194283880230",
+        "b": "80005200280753203174877045616209043152255552559787712364968226560403664691097",
+        "u": "79320828836000398265851029824831235186383948952709173481631547127308780683470",
+        "v": "41674745215943053766980873460191908051383870157590980284124290414702844900221",
+        "aggregate": "0260f143d4ce79592983ff3db517f4c3dad2002dc264cfc4cf91dd88845b4c71b0",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "115792089237316195423570985008687907852837564279074904382605163141518161494336",
+        "P": "0257d783579d03d9ab67a8aa7ad9b75a66ebca4ebce1b5be71442db1307f9146a8",
+        "Q": "03871e0c836ec675e07395aef58d72b646f77e0e33ce1622dfaa0fb8e131f3fe12",
+        "a": "103968073525400894461108859806533251150996719504526635489806280164973507594969",
+        "b": "75710804393529823294959222712114438621643036874634145416620203903282160894550",
+        "u": "28257269131871071166149637094418812529353682629892490073186076261691346700419",
+        "v": "63886788681614522332497097509959781919802192100085876523821320926737506995182",
+        "aggregate": "03bae293cd4b42b462cc444c0a25e757824ed494bfafc9342c56e18b4e42cd1d5a",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "71436155356978652133757984151373484569825772282665477030154110247082530127336",
+        "P": "031349db7e37ae46cc20595361abf67c4888a690b94cc2ef88856f175ca26a4199",
+        "Q": "03ea114c5b4cad9844a902a0ffba3562d2ba94916bbb87c411457e9d08fdb4f947",
+        "a": "97649075327249433791679252903575826434886248300049964664012456688497702263247",
+        "b": "24729179763116674878327876462457853854617416891926267930041854478353750282844",
+        "u": "72919895564132758913351376441117972580268831408123696733970602210143951980403",
+        "v": "111794311056382439120738201540616496176048317562898622198696933655881096995484",
+        "aggregate": "02367c1b8bac3d0f13cbfd3a042d37eef7285f9ddb34c9da8cd65cb8905a900de3",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "98383865634760613896350420660243707418919335291094896417050251929561613123854",
+        "P": "02e62393012aefe147f75f47293d65a5b2e2010ce85a37076e107baa0a6d322567",
+        "Q": "03c25999ecd5bcd152f8ea73dbaac10561cab8af727ce35a2ec6130fa3e003c2cb",
+        "a": "83002031602066383837572879559216959589732410039681909077220533054308897527837",
+        "b": "55743351839139926004726832522869019615546316802541904881641138944808524307582",
+        "u": "27258679762926457832846047036347939974186093237140004195579394109500373220255",
+        "v": "39761489900558544671959315449197529480083183337361635069163739455157425474601",
+        "aggregate": "0328fbeccaafef1d532ed52c1a8c0efe2c8aaf3437bd28361ca6f31e4a5c25c4a1",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "38601268000538291079612615428481050110904034231634538827495054309889622454799",
+        "P": "03da7157ee95c575368a0856c279d22137708aec2c8f42938205f518fd7e1a0e5d",
+        "Q": "02155f6f4d7ba0e8db16d266289d35573cff50d899036ef02a8b639c03233e016d",
+        "a": "44706270777408232610020082373150429030840279044158891276802128608350299923667",
+        "b": "92701005299552777127641351834274388034292490286761120410621172534799190124376",
+        "u": "67797354715171650905949715547563948849385353036472675248786119215069271293628",
+        "v": "66207931922911616832294137649113134720581024225647662523702545166478919751509",
+        "aggregate": "0347c628d89853e893be8fdc484592bf8f73cb9a0adff7ae06b0e36193c4ea77ec",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "36630529570466683377828506758346637887864389050391400055610162070949474044365",
+        "P": "031825d0b1a4c8040c18db678700b152033006c5d7cc5cac99801b5262af5c0143",
+        "Q": "02828f6e9ef3a0567bb32c729d9b2415b39984cbbc6fcc6b78d0f3fc761233c784",
+        "a": "59243976426376211866349061949074129036908230537393901859304194770253759830754",
+        "b": "43943197099097781102144892409447127720332422927187726115658107638867333736691",
+        "u": "15300779327278430764204169539627001316575807610206175743646087131386426094063",
+        "v": "65705251246175441739121565534347376524463840644770259724446295615825148251753",
+        "aggregate": "03b957d45fbfc3dd16517ab87af81e839fe97b73bd8d13c84052f6ec908935e9a6",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "76191443814434293932852049376203860351362501055882038152085178563994459198740",
+        "P": "034fefadb24f96108b83fd883da9ae7404b01a7947cbbcb7f56729b37f4fb9b810",
+        "Q": "020a54ad40cfc264bf0135aa19ca2e501de0e54f3772840cf1c08991b0e10599f6",
+        "a": "10011418888861115834038106340772252318606878383787287387526554654983429080613",
+        "b": "24568434061622488750406188389791156408846334166740199782566510455576439898097",
+        "u": "101235074064554822507202902959669003762598108496121991987565207340925150676853",
+        "v": "48231816887956878168268167949881758927579723821280604370515273284394533500977",
+        "aggregate": "0205e0aaac6fc9c42aefd823d496ad4760ddcdf66562d42d0f46064eb1bdb31cbe",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "86717444348808307294958217510133773649576464398914400244420749477019523280988",
+        "P": "0331b086ea7b7bd7ae40df9ab1ce0431720430a62a211da5a1f1f7199ae82bdd7d",
+        "Q": "03a5b64614e607020c0917f99c0d372be15c8bd10ff948a37f56a7c5e24b8e8942",
+        "a": "74466022289627326633497973724919014629742095817939485386881269920098439210846",
+        "b": "88724452634378125627905135420789545655683888270215197410241264994439933695955",
+        "u": "101533658892565396429163823312817376826895771826799192359245168067176667009228",
+        "v": "83078197133961640429319023611239464873994523320634080797009161504804580348050",
+        "aggregate": "03ca14c47f679e9ee184a992a3f58cf869c4d9196ec3704021a9f102fe019efd88",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      },
+      {
+        "z": "2016895500706640950651982716139196920974434471884077186260753432190842909679",
+        "P": "02991b21d9fa7a08352c66ad20ca0a9197eed50dbd7d253c1f013fd79248c088bc",
+        "Q": "03196dc0a2bba6370fccf1f782f3366b8df1a161a7fecb0a3e1dd644c2215b3d16",
+        "a": "24367016671134810899473744995202909608836292527117082233547425098357398545319",
+        "b": "50979447797458424434853249203694915069338202668179161951968044387569620242028",
+        "u": "89179658110992581888191480800195902392335654138012824664184543852305939797628",
+        "v": "57035493816361471326952994219661087534474018679932213558673611459028080439010",
+        "aggregate": "02ede4b75e3895a8eec0be6f2389753350d42e1a5802e602652e4f01a5eeb18937",
+        "permutation_invariant": true,
+        "unknown_point_coefficient_nonzero": true
+      }
+    ],
+    "native_transaction_claim": false,
+    "Schnorr_signer_supplied": false
+  },
+  "finite_games": [
+    {
+      "vertices": 3,
+      "uniform_colors": "2",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "2",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "2",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "2",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "3",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "3",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "2",
+        "denominator": "3",
+        "log2_probability": -0.5849625007211561
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "3",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "3",
+        "log2_probability": -1.584962500721156
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "3",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "7",
+        "denominator": "9",
+        "log2_probability": -0.362570079384708
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "16",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "16",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "8",
+        "log2_probability": -3.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "16",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "4",
+        "log2_probability": -2.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "16",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "23",
+        "denominator": "128",
+        "log2_probability": -2.476438043942987
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "8",
+        "log2_probability": -1.415037499278844
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "256",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "256",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "128",
+        "log2_probability": -7.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "256",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "256",
+        "log2_probability": -8.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "64",
+        "log2_probability": -6.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "256",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "383",
+        "denominator": "32768",
+        "log2_probability": -6.418799418075043
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "128",
+        "log2_probability": -5.415037499278844
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -159.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1461501637330902918203684832716283019655932542976",
+        "log2_probability": -160.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "365375409332725729550921208179070754913983135744",
+        "log2_probability": -158.0
+      }
+    },
+    {
+      "vertices": 3,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "2192252455996354377305527249074424529483898814463",
+        "denominator": "1067993517960455041197510853084776057301352261178326384973520803911109862890320275011481043468288",
+        "log2_probability": -158.41503749927884
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -157.41503749927884
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "3",
+        "denominator": "4",
+        "log2_probability": -0.4150374992788439
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "2",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "2",
+        "denominator": "3",
+        "log2_probability": -0.5849625007211561
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "3",
+        "log2_probability": -1.584962500721156
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "5",
+        "denominator": "9",
+        "log2_probability": -0.84799690655495
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "7",
+        "denominator": "9",
+        "log2_probability": -0.362570079384708
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "3",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "71",
+        "denominator": "81",
+        "log2_probability": -0.19010288337994208
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "8",
+        "log2_probability": -3.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "4",
+        "log2_probability": -2.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "31",
+        "denominator": "256",
+        "log2_probability": -3.045803689613125
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "8",
+        "log2_probability": -1.415037499278844
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "23",
+        "denominator": "128",
+        "log2_probability": -2.476438043942987
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "16",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "4519",
+        "denominator": "16384",
+        "log2_probability": -1.858212158328996
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "8",
+        "log2_probability": -0.6780719051126378
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "128",
+        "log2_probability": -7.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "256",
+        "log2_probability": -8.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "64",
+        "log2_probability": -6.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "511",
+        "denominator": "65536",
+        "log2_probability": -7.002820519062379
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "128",
+        "log2_probability": -5.415037499278844
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "383",
+        "denominator": "32768",
+        "log2_probability": -6.418799418075043
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "32",
+        "log2_probability": -5.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "256",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "20808319",
+        "denominator": "1073741824",
+        "log2_probability": -5.689342914123184
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "128",
+        "log2_probability": -4.678071905112638
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -159.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1461501637330902918203684832716283019655932542976",
+        "log2_probability": -160.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "365375409332725729550921208179070754913983135744",
+        "log2_probability": -158.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "2923003274661805836407369665432566039311865085951",
+        "denominator": "2135987035920910082395021706169552114602704522356652769947041607822219725780640550022962086936576",
+        "log2_probability": -159.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -157.41503749927884
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "2192252455996354377305527249074424529483898814463",
+        "denominator": "1067993517960455041197510853084776057301352261178326384973520803911109862890320275011481043468288",
+        "log2_probability": -158.41503749927884
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "182687704666362864775460604089535377456991567872",
+        "log2_probability": -157.0
+      }
+    },
+    {
+      "vertices": 5,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "3902185687894990289226996537241457882185747678325873970984143924325727119259283144863875867523476985779009387139498238516940158931602091246878719",
+        "denominator": "1140610154405548804660292901425072831223307126812139982644798129474818791802169346626478202829342849944660577393398601827672176180343859499563165329930553547062998668590066237520718548061650944",
+        "log2_probability": -157.67807190511263
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -156.67807190511263
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "3",
+        "denominator": "4",
+        "log2_probability": -0.4150374992788439
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "2",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "2",
+        "denominator": "3",
+        "log2_probability": -0.5849625007211561
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "3",
+        "log2_probability": -1.584962500721156
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "5",
+        "denominator": "9",
+        "log2_probability": -0.84799690655495
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "19",
+        "denominator": "27",
+        "log2_probability": -0.506959988719883
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "3",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "67",
+        "denominator": "81",
+        "log2_probability": -0.27376081242685224
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "8",
+        "log2_probability": -3.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "4",
+        "log2_probability": -2.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "31",
+        "denominator": "256",
+        "log2_probability": -3.045803689613125
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "8",
+        "log2_probability": -1.415037499278844
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "721",
+        "denominator": "4096",
+        "log2_probability": -2.5061445507591777
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "16",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "7463",
+        "denominator": "32768",
+        "log2_probability": -2.134460029214303
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "8",
+        "log2_probability": -0.6780719051126378
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "128",
+        "log2_probability": -7.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "256",
+        "log2_probability": -8.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "64",
+        "log2_probability": -6.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "511",
+        "denominator": "65536",
+        "log2_probability": -7.002820519062379
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "128",
+        "log2_probability": -5.415037499278844
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "195841",
+        "denominator": "16777216",
+        "log2_probability": -6.4206766957361765
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "32",
+        "log2_probability": -5.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "256",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "33358463",
+        "denominator": "2147483648",
+        "log2_probability": -6.008450518029903
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "128",
+        "log2_probability": -4.678071905112638
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 0,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 1,
+      "optimal_adaptive_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -159.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 2,
+      "optimal_adaptive_success": {
+        "numerator": "1",
+        "denominator": "1461501637330902918203684832716283019655932542976",
+        "log2_probability": -160.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "365375409332725729550921208179070754913983135744",
+        "log2_probability": -158.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 3,
+      "optimal_adaptive_success": {
+        "numerator": "2923003274661805836407369665432566039311865085951",
+        "denominator": "2135987035920910082395021706169552114602704522356652769947041607822219725780640550022962086936576",
+        "log2_probability": -159.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "3",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -157.41503749927884
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 4,
+      "optimal_adaptive_success": {
+        "numerator": "6407961107762730247185065118508656343808113567065573804929132114712048122843772801009918463180801",
+        "denominator": "3121748550315992231381597229793166305748598142664971150859156959625371738819765620120306103063491971159826931121406622895447975679288285306290176",
+        "log2_probability": -158.41503749927887
+      },
+      "degree_two_union_bound": {
+        "numerator": "1",
+        "denominator": "182687704666362864775460604089535377456991567872",
+        "log2_probability": -157.0
+      }
+    },
+    {
+      "vertices": 7,
+      "uniform_colors": "1461501637330902918203684832716283019655932542976",
+      "query_cap": 5,
+      "optimal_adaptive_success": {
+        "numerator": "6243497100631984462763194459586332611497196285323534340610551189003558412521022583896804092559917637763906064676642095825635820416056824183128063",
+        "denominator": "2281220308811097609320585802850145662446614253624279965289596258949637583604338693252956405658685699889321154786797203655344352360687718999126330659861107094125997337180132475041437096123301888",
+        "log2_probability": -158.0
+      },
+      "degree_two_union_bound": {
+        "numerator": "5",
+        "denominator": "730750818665451459101842416358141509827966271488",
+        "log2_probability": -156.67807190511263
+      }
+    }
+  ],
+  "full_color_recurrence_cross_checks": 20,
+  "fully_enumerated_hash_functions": 1398,
+  "fixed_catalogue_games": [
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 0,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 1,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "8",
+        "log2_probability": -3.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 2,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "4",
+        "log2_probability": -2.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 3,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "31",
+        "denominator": "256",
+        "log2_probability": -3.045803689613125
+      },
+      "union_bound": {
+        "numerator": "3",
+        "denominator": "8",
+        "log2_probability": -1.415037499278844
+      }
+    },
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 4,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "721",
+        "denominator": "4096",
+        "log2_probability": -2.5061445507591777
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 5,
+      "graph_degree": 2,
+      "optimal_success": {
+        "numerator": "7463",
+        "denominator": "32768",
+        "log2_probability": -2.134460029214303
+      },
+      "union_bound": {
+        "numerator": "5",
+        "denominator": "8",
+        "log2_probability": -0.6780719051126378
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 0,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 1,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "4",
+        "log2_probability": -2.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 2,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "2",
+        "log2_probability": -1.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 3,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "23",
+        "denominator": "128",
+        "log2_probability": -2.476438043942987
+      },
+      "union_bound": {
+        "numerator": "3",
+        "denominator": "4",
+        "log2_probability": -0.4150374992788439
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 4,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "289",
+        "denominator": "1024",
+        "log2_probability": -1.8250743174993218
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 5,
+      "graph_degree": 4,
+      "optimal_success": {
+        "numerator": "12293",
+        "denominator": "32768",
+        "log2_probability": -1.414450584563907
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 0,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 1,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "0",
+        "denominator": "1",
+        "log2_probability": null
+      },
+      "union_bound": {
+        "numerator": "3",
+        "denominator": "8",
+        "log2_probability": -1.415037499278844
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 2,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "1",
+        "denominator": "16",
+        "log2_probability": -4.0
+      },
+      "union_bound": {
+        "numerator": "3",
+        "denominator": "4",
+        "log2_probability": -0.4150374992788439
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 3,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "23",
+        "denominator": "128",
+        "log2_probability": -2.476438043942987
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 4,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "683",
+        "denominator": "2048",
+        "log2_probability": -1.58425823170991
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    },
+    {
+      "fixed_shifts": [
+        1,
+        2,
+        3
+      ],
+      "vertices": 7,
+      "colors": 16,
+      "query_cap": 5,
+      "graph_degree": 6,
+      "optimal_success": {
+        "numerator": "4097",
+        "denominator": "8192",
+        "log2_probability": -0.9996478225196999
+      },
+      "union_bound": {
+        "numerator": "1",
+        "denominator": "1",
+        "log2_probability": 0.0
+      }
+    }
+  ],
+  "ideal_SHA256_reduction": {
+    "order_n": "115792089237316195423570985008687907852837564279074904382605163141518161494337",
+    "double_preimage_scalars": "432420386565659656852420866394968145599",
+    "maximum_color_mass": {
+      "numerator": "1",
+      "denominator": "57896044618658097711785492504343953926634992332820282019728792003956564819968",
+      "log2_probability": -255.0
+    },
+    "independent_pair_equality_probability": {
+      "numerator": "57896044618658097711785492504343953927067412719385941676581212870351532965567",
+      "denominator": "6703903964971298549787012499102923063739682910296196688861780721860882015036773488400937149083451713845015929093243025426876941405973284973216824503042048",
+      "log2_probability": -256.0
+    },
+    "query_cap": "18446744073709551616",
+    "fixed_source_success_upper_bound": {
+      "numerator": "1",
+      "denominator": "1569275433846670190958947355801916604025588861116008628224",
+      "log2_probability": -190.0
+    },
+    "fixed_2pow32_source_catalogue_upper_bound": {
+      "numerator": "1",
+      "denominator": "365375409332725729550921208179070754913983135744",
+      "log2_probability": -158.0
+    },
+    "arbitrary_source_u_zero_collision_bound": {
+      "numerator": "18446744073709551615",
+      "denominator": "6277101735386680763835789423207666416102355444464034512896",
+      "log2_probability": -128.0
+    }
+  },
+  "ideal_160bit": {
+    "query_cap": "18446744073709551616",
+    "fixed_source_success_upper_bound": {
+      "numerator": "1",
+      "denominator": "39614081257132168796771975168",
+      "log2_probability": -95.0
+    },
+    "arbitrary_source_u_zero_collision_bound": {
+      "numerator": "18446744073709551615",
+      "denominator": "158456325028528675187087900672",
+      "log2_probability": -33.0
+    }
+  },
+  "post_query_source_selection_control": {
+    "vertices": 11,
+    "colors": 256,
+    "distinct_vertex_queries": 8,
+    "any_repeated_color_probability": {
+      "numerator": "470972626997371",
+      "denominator": "4503599627370496",
+      "log2_probability": -3.257363458963354
+    },
+    "inapplicable_fixed_source_bound": {
+      "numerator": "1",
+      "denominator": "16",
+      "log2_probability": -4.0
+    },
+    "not_a_native_transaction": true
+  },
+  "assumptions": [
+    "Point hash is an ideal fresh-answer oracle.",
+    "Source signature or finite catalogue is fixed before point-hash queries, including setup queries.",
+    "Queried point encodings are canonical compressed encodings; infinity is excluded.",
+    "The target is u=0 for the specified hash-weight aggregate, not arbitrary Schnorr signing.",
+    "Post-hash source selection, variable source scalars and different nonlinear functions are outside the fixed-source bound."
+  ],
+  "all_assertions_passed": true
+}
