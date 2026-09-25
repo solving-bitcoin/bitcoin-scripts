@@ -3,11 +3,15 @@
 Each problem has a falsifiable completion criterion. Update comparisons and
 negative results when closing one.
 
-**Next priority (2026-09-20): OP-001, Taproot commitment validation.**
+**Next priority (2026-09-25): OP-001, remaining Taproot transaction context.**
 The interpreter repairs and explicit context-free consensus/policy profiles
 are adopted. Complete-witness budgeting and annex signature context now have
 an explicit constructor and a [funded comparison](tapscript-budget-validation.md).
-Next, validate the commitment and remaining transaction context:
+The complete-witness preflight now validates the revealed script and control
+block against the P2TR output, and the parity-mutated fixture agrees with pinned
+Core when that result is combined with leaf execution. This is
+`differentially-validated` for the recorded fixture, not a complete transaction
+validator. Next, validate the remaining transaction context:
 **complete when** valid and mutated Taproot commitments, annexes and Schnorr
 signatures produce supported local verdicts that agree with pinned Core,
 including budgets initialized from the full serialized witness. Unsupported
@@ -132,9 +136,10 @@ OP-001; the funded Core harness supplies complete-spend verdicts for the
 recorded CSV fixtures.
 
 The current [44-fixture Core experiment](core-validation.md) reproduces every
-consensus/policy expectation and rejection diagnostic, with 86 applicable
-local/Core verdict comparisons. Its separate control-block mutation still
-demonstrates why local leaf execution cannot establish commitment validity.
+consensus/policy expectation and rejection diagnostic, with all 88 combined
+local commitment/profile verdicts matching Core. Its control-block mutation
+also preserves the separate leaf result, demonstrating that successful leaf
+execution alone cannot establish commitment validity.
 
 ## OP-002 — Bitcoin Core differential harness
 

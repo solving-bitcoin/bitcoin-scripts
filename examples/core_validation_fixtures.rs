@@ -12,7 +12,7 @@
 
 use bitcoin::{
     consensus::encode::serialize,
-    hex::DisplayHex,
+    hex::{DisplayHex, FromHex},
     script::Instruction,
     secp256k1::{Keypair, Secp256k1, SecretKey},
     taproot::{LeafVersion, TaprootBuilder},
@@ -24,6 +24,7 @@ use bitcoin_lab::{
         execution::execute_raw_script_with_inputs_strict,
         provenance,
         script::{script, ScriptCompilation},
+        taproot::{verify_taproot_script_path_commitment, TaprootCommitmentError},
         tapscript::{execute_tapscript, TapscriptOutcome, TapscriptProfile},
     },
 };
@@ -141,6 +142,37 @@ fn local_profile(script: &ScriptBuf, witness: &[Vec<u8>], profile: TapscriptProf
     }
 }
 
+fn local_commitment(script_pubkey: &ScriptBuf, complete_witness: &[Vec<u8>]) -> Value {
+    let witness = Witness::from_slice(complete_witness);
+    match verify_taproot_script_path_commitment(script_pubkey, &witness) {
+        Ok(leaf_version) => json!({
+            "outcome": "valid",
+            "accepted": true,
+            "leaf_version": leaf_version.to_consensus(),
+            "error": null,
+            "deployment": "unclassified",
+        }),
+        Err(
+            error @ (TaprootCommitmentError::InvalidControlBlock
+            | TaprootCommitmentError::InvalidOutputKey
+            | TaprootCommitmentError::CommitmentMismatch),
+        ) => json!({
+            "outcome": "invalid",
+            "accepted": false,
+            "leaf_version": null,
+            "error": format!("{error:?}"),
+            "deployment": "unclassified",
+        }),
+        Err(error) => json!({
+            "outcome": "unsupported",
+            "accepted": null,
+            "leaf_version": null,
+            "error": format!("{error:?}"),
+            "deployment": "unclassified",
+        }),
+    }
+}
+
 fn expectations(consensus_rejection: Option<&str>, policy_rejection: Option<&str>) -> Value {
     json!({
         "consensus": consensus_rejection.is_none(),
@@ -190,6 +222,7 @@ fn fixture(
     let mut complete_witness = witness.clone();
     complete_witness.push(script.to_bytes());
     complete_witness.push(control_bytes.clone());
+    let commitment = local_commitment(&output_script, &complete_witness);
     json!({
         "name": name,
         "description": description,
@@ -205,8 +238,9 @@ fn fixture(
             "consensus": local_profile(&script, &witness, TapscriptProfile::Consensus),
             "policy": local_profile(&script, &witness, TapscriptProfile::Policy),
         },
+        "local_commitment": commitment,
         "local_profile_comparison": {
-            "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core",
+            "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core",
             "compare_to_core": true,
             "expected": {"consensus": expected["consensus"], "policy": expected["policy"]},
         },
@@ -456,10 +490,19 @@ fn fixtures() -> Value {
     invalid_control["name"] = json!("winternitz-invalid-control-block");
     invalid_control["description"] = json!("The control-block output-key parity bit is flipped; local fragment success cannot validate the Taproot commitment.");
     invalid_control["expected"] = expectations(Some("taproot-commitment"), None);
+    let output_script = ScriptBuf::from_bytes(
+        Vec::<u8>::from_hex(invalid_control["script_pubkey_hex"].as_str().unwrap()).unwrap(),
+    );
+    let mut invalid_complete_witness = witness.clone();
+    invalid_complete_witness.push(script.to_bytes());
+    invalid_complete_witness
+        .push(Vec::<u8>::from_hex(invalid_control["control_block_hex"].as_str().unwrap()).unwrap());
+    invalid_control["local_commitment"] =
+        local_commitment(&output_script, &invalid_complete_witness);
     invalid_control["local_profile_comparison"] = json!({
-        "scope": "Taproot commitment validation is outside the local fragment API; both profiles accept the unchanged leaf while Core rejects the invalid control block",
-        "compare_to_core": false,
-        "expected": {"consensus": true, "policy": true},
+        "scope": "The local commitment preflight rejection gates the combined verdict while preserving the otherwise successful leaf profiles as separate diagnostics",
+        "compare_to_core": true,
+        "expected": {"consensus": false, "policy": false},
     });
     fixtures.push(invalid_control);
 
@@ -546,7 +589,7 @@ fn fixtures() -> Value {
             "helper": "execute_raw_script_with_inputs_strict",
             "stack_limit_enforced": true,
             "full_consensus_validation": false,
-            "limitations": "The legacy research helper retains default minimal-number policy and experimental OP_CAT. Explicit profiles use current OP_SUCCESS semantics, no experimental opcodes, consensus numeric encoding or policy MINIMALDATA, and policy's 80-byte witness-data limit. All are fragment-only: no transaction, Taproot commitment, annex or full policy validation; signature/timelock-dependent opcodes are unsupported. Execution opcode and complete-witness budget counters remain unavailable. Panics and unsupported outcomes are distinct, never converted to rejection.",
+            "limitations": "The legacy research helper retains default minimal-number policy and experimental OP_CAT. Explicit profiles use current OP_SUCCESS semantics, no experimental opcodes, consensus numeric encoding or policy MINIMALDATA, and policy's 80-byte witness-data limit. Those profiles remain fragment-only; a separate host-side preflight checks the script-path commitment before combining local verdicts. Neither layer validates the full transaction, annex policy or relay policy. Signature/timelock-dependent opcodes are unsupported by the profiles. Execution opcode and complete-witness budget counters remain unavailable. Panics and unsupported outcomes are distinct, never converted to rejection.",
             "profiles": {
                 "consensus": "support::tapscript::execute_tapscript with TapscriptProfile::Consensus",
                 "policy": "support::tapscript::execute_tapscript with TapscriptProfile::Policy; bounded script/witness policy subset",
@@ -609,10 +652,21 @@ mod tests {
         assert_eq!(success80["metrics"]["static_non_push_opcodes"], 1);
         assert_eq!(valid["control_block_hex"].as_str().unwrap().len(), 66);
         assert_eq!(valid["script_pubkey_hex"].as_str().unwrap().len(), 68);
+        assert_eq!(valid["local_commitment"]["accepted"], true);
+        let invalid_control = rows
+            .iter()
+            .find(|row| row["name"] == "winternitz-invalid-control-block")
+            .unwrap();
+        assert_eq!(invalid_control["local_commitment"]["accepted"], false);
+        assert_eq!(
+            invalid_control["local_profiles"]["consensus"]["accepted"],
+            true
+        );
         let names: std::collections::HashSet<_> = rows.iter().map(|row| &row["name"]).collect();
         assert_eq!(names.len(), rows.len());
         for row in rows {
             assert_eq!(row["local"]["stack_limit_enforced"], true);
+            assert!(row["local_commitment"]["accepted"].is_boolean());
             assert_eq!(
                 row["metrics"]["data_items"],
                 row["data_witness_hex"].as_array().unwrap().len()
@@ -623,21 +677,18 @@ mod tests {
                     "{} {profile}: panic/unsupported/init failure is not a rejection",
                     row["name"]
                 );
+                let combined = row["local_commitment"]["accepted"] == true
+                    && row["local_profiles"][profile]["accepted"] == true;
                 assert_eq!(
-                    row["local_profiles"][profile]["accepted"],
-                    row["local_profile_comparison"]["expected"][profile],
-                    "{} {profile}: profile verdict",
+                    combined, row["local_profile_comparison"]["expected"][profile],
+                    "{} {profile}: combined commitment/profile verdict",
                     row["name"]
                 );
-                if row["local_profile_comparison"]["compare_to_core"] == true {
-                    assert_eq!(
-                        row["local_profiles"][profile]["accepted"], row["expected"][profile],
-                        "{} {profile}: declared Core expectation",
-                        row["name"]
-                    );
-                } else {
-                    assert_eq!(row["name"], "winternitz-invalid-control-block");
-                }
+                assert_eq!(
+                    combined, row["expected"][profile],
+                    "{} {profile}: declared Core expectation",
+                    row["name"]
+                );
                 if row["local_profiles"][profile]["outcome"] == "op-success" {
                     assert!(row["local_profiles"][profile]["execution"].is_null());
                 }

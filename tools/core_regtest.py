@@ -150,30 +150,40 @@ def rejection_matches(result: dict, category: str | None, policy: bool = False) 
 
 
 def compare_local_profiles(fixture: dict, consensus: dict, policy: dict) -> dict:
-    """Require actual profile verdicts; None/panics must never resemble rejection."""
+    """Combine commitment and leaf verdicts; missing verdicts never resemble rejection."""
     comparison = fixture["local_profile_comparison"]
     compare_to_core = comparison["compare_to_core"]
     if type(compare_to_core) is not bool:
         raise ValueError("Local comparison mode must be boolean")
-    if not compare_to_core and fixture["name"] != "winternitz-invalid-control-block":
-        raise ValueError("Unexpected fixture excluded from local/Core comparison")
+    if not compare_to_core:
+        raise ValueError("Every supported local fixture must be compared with Core")
+    commitment = fixture.get("local_commitment", {})
+    commitment_has_verdict = (
+        (commitment.get("outcome") == "valid" and commitment.get("accepted") is True)
+        or (commitment.get("outcome") == "invalid" and commitment.get("accepted") is False)
+    )
     results = {}
     for name, core in [("consensus", consensus["accepted"]), ("policy", policy["allowed"])]:
         local = fixture["local_profiles"][name]
         expected = comparison["expected"][name]
         if type(expected) is not bool:
             raise ValueError("Local profile expectation must be boolean")
-        has_verdict = (type(local.get("accepted")) is bool
+        leaf_has_verdict = (type(local.get("accepted")) is bool
                        and local.get("outcome") in {"executed", "op-success", "policy-rejected", "invalid-script"})
-        expected_match = has_verdict and local["accepted"] == expected
-        core_match = has_verdict and local["accepted"] == core if compare_to_core else None
+        has_verdict = commitment_has_verdict and leaf_has_verdict
+        accepted = commitment["accepted"] and local["accepted"] if has_verdict else None
+        expected_match = has_verdict and accepted == expected
+        core_match = has_verdict and accepted == core
         results[name] = {
             "has_verdict": has_verdict,
+            "commitment_accepted": commitment.get("accepted"),
+            "leaf_accepted": local.get("accepted"),
+            "accepted": accepted,
             "matches_expected": expected_match,
             "matches_core": core_match,
             "status": ("no-verdict" if not has_verdict else
                        "mismatch" if not expected_match or core_match is False else
-                       "matched" if compare_to_core else "outside-local-commitment-scope"),
+                       "matched"),
         }
     return {"profiles": results,
             "matches_expected": all(row["matches_expected"] and row["matches_core"] is not False
@@ -357,7 +367,7 @@ def main() -> int:
                        "winternitz": fixtures["winternitz"], "initial_mocktime": START_TIME,
                        "consensus_method": "generateblock with raw transactions; verifies connected block contains txid",
                        "policy_method": "testmempoolaccept; -acceptnonstdtxn=0; remaining v30.3 default policy",
-                       "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. Supported local consensus/policy fragment verdicts must match Core, except the explicitly separate invalid-control-block commitment test. No mainnet broadcast, adversarial completeness, or general primitive deployment claim."})
+                       "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. Supported local commitment-plus-profile verdicts must match Core. No mainnet broadcast, adversarial completeness, or general primitive deployment claim."})
         with tempfile.TemporaryDirectory(prefix="bitcoin-lab-core-") as temporary:
             node = Node(binary, Path(temporary))
             try:

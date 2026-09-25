@@ -15,15 +15,15 @@
   },
   "consensus_method": "generateblock with raw transactions; verifies connected block contains txid",
   "fixture_count": 44,
-  "fixture_sha256": "7d343b7b3a06cceb63c539c346224fe2cc833fb10eb8df7db07fad09a751a3cb",
+  "fixture_sha256": "18396c548adc02fd9a36b3009f9b4863117147bdd8bdad4ed12e10b5a8366c0b",
   "funding_txid": "c5dc2eafc5229e872afd8cd5e2e39751c53d91f46730106a84f4bc6237a30622",
   "initial_mocktime": 1800000000,
   "local_interpreter": {
-    "commit": "4b7269a415f21be3fccee9730547f1426eb80326",
+    "commit": "a09e87af444034698697f0a2267e755cf72f9aed",
     "context": "tapscript",
     "full_consensus_validation": false,
     "helper": "execute_raw_script_with_inputs_strict",
-    "limitations": "The legacy research helper retains default minimal-number policy and experimental OP_CAT. Explicit profiles use current OP_SUCCESS semantics, no experimental opcodes, consensus numeric encoding or policy MINIMALDATA, and policy's 80-byte witness-data limit. All are fragment-only: no transaction, Taproot commitment, annex or full policy validation; signature/timelock-dependent opcodes are unsupported. Execution opcode and complete-witness budget counters remain unavailable. Panics and unsupported outcomes are distinct, never converted to rejection.",
+    "limitations": "The legacy research helper retains default minimal-number policy and experimental OP_CAT. Explicit profiles use current OP_SUCCESS semantics, no experimental opcodes, consensus numeric encoding or policy MINIMALDATA, and policy's 80-byte witness-data limit. Those profiles remain fragment-only; a separate host-side preflight checks the script-path commitment before combining local verdicts. Neither layer validates the full transaction, annex policy or relay policy. Signature/timelock-dependent opcodes are unsupported by the profiles. Execution opcode and complete-witness budget counters remain unavailable. Panics and unsupported outcomes are distinct, never converted to rejection.",
     "name": "bitcoin-scriptexec",
     "profiles": {
       "consensus": "support::tapscript::execute_tapscript with TapscriptProfile::Consensus",
@@ -51,7 +51,7 @@
   "policy_method": "testmempoolaccept; -acceptnonstdtxn=0; remaining v30.3 default policy",
   "resolved_interpreter": {
     "name": "bitcoin-scriptexec",
-    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=4b7269a415f21be3fccee9730547f1426eb80326#4b7269a415f21be3fccee9730547f1426eb80326",
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
     "version": "0.0.0"
   },
   "results": [
@@ -95,17 +95,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -118,7 +131,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -214,17 +227,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -237,7 +263,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -339,17 +365,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -362,7 +401,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -458,17 +497,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -481,7 +533,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -571,17 +623,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -594,7 +659,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -684,17 +749,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -707,7 +785,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -803,17 +881,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -826,7 +917,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -922,17 +1013,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -945,7 +1049,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1047,17 +1151,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1070,7 +1187,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1166,17 +1283,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1189,7 +1319,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1291,17 +1421,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1314,7 +1457,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1410,17 +1553,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1433,7 +1589,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1535,17 +1691,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1558,7 +1727,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1654,17 +1823,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1677,7 +1859,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1773,17 +1955,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1796,7 +1991,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -1898,17 +2093,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -1921,7 +2129,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2023,17 +2231,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2046,7 +2267,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2148,17 +2369,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2171,7 +2405,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2267,17 +2501,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2290,7 +2537,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2386,17 +2633,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2409,7 +2669,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2511,17 +2771,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2534,7 +2807,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2630,17 +2903,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2653,7 +2939,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2749,17 +3035,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2772,7 +3071,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2856,17 +3155,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2879,7 +3191,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -2963,17 +3275,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -2986,7 +3311,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3070,17 +3395,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3093,7 +3431,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3177,17 +3515,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3200,7 +3551,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3284,17 +3635,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3307,7 +3671,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3391,17 +3755,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3414,7 +3791,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3498,17 +3875,30 @@
         "outcome": "panic",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3521,7 +3911,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3605,17 +3995,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3628,7 +4031,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3712,17 +4115,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3735,7 +4151,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3819,17 +4235,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3842,7 +4271,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -3938,17 +4367,30 @@
         "outcome": "panic",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -3961,7 +4403,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4051,17 +4493,30 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4074,7 +4529,7 @@
           "consensus": true,
           "policy": true
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4170,30 +4625,43 @@
         "outcome": "success",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": false,
+        "deployment": "unclassified",
+        "error": "CommitmentMismatch",
+        "leaf_version": null,
+        "outcome": "invalid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": false,
             "has_verdict": true,
-            "matches_core": null,
+            "leaf_accepted": true,
+            "matches_core": true,
             "matches_expected": true,
-            "status": "outside-local-commitment-scope"
+            "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": false,
             "has_verdict": true,
-            "matches_core": null,
+            "leaf_accepted": true,
+            "matches_core": true,
             "matches_expected": true,
-            "status": "outside-local-commitment-scope"
+            "status": "matched"
           }
         }
       },
       "local_profile_comparison": {
-        "compare_to_core": false,
+        "compare_to_core": true,
         "expected": {
-          "consensus": true,
-          "policy": true
+          "consensus": false,
+          "policy": false
         },
-        "scope": "Taproot commitment validation is outside the local fragment API; both profiles accept the unchanged leaf while Core rejects the invalid control block"
+        "scope": "The local commitment preflight rejection gates the combined verdict while preserving the otherwise successful leaf profiles as separate diagnostics"
       },
       "local_profiles": {
         "consensus": {
@@ -4289,17 +4757,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4312,7 +4793,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4408,17 +4889,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4431,7 +4925,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4527,17 +5021,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4550,7 +5057,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4646,17 +5153,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4669,7 +5189,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4765,17 +5285,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": true,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4788,7 +5321,7 @@
           "consensus": true,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -4884,17 +5417,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -4907,7 +5453,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -5003,17 +5549,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -5026,7 +5585,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -5122,17 +5681,30 @@
         "outcome": "reject",
         "stack_limit_enforced": true
       },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
       "local_profile_checks": {
         "matches_expected": true,
         "profiles": {
           "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
           },
           "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
             "has_verdict": true,
+            "leaf_accepted": false,
             "matches_core": true,
             "matches_expected": true,
             "status": "matched"
@@ -5145,7 +5717,7 @@
           "consensus": false,
           "policy": false
         },
-        "scope": "script execution and data-witness policy; complete Taproot commitment separately validated by Core"
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
       },
       "local_profiles": {
         "consensus": {
@@ -5209,7 +5781,7 @@
     }
   ],
   "schema_version": 2,
-  "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. Supported local consensus/policy fragment verdicts must match Core, except the explicitly separate invalid-control-block commitment test. No mainnet broadcast, adversarial completeness, or general primitive deployment claim.",
+  "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. Supported local commitment-plus-profile verdicts must match Core. No mainnet broadcast, adversarial completeness, or general primitive deployment claim.",
   "winternitz": {
     "chains": 49,
     "hint_items_per_invocation": 0,

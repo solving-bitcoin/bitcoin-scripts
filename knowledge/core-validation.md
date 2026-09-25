@@ -78,16 +78,18 @@ reasons are retained. `decoderawtransaction` independently
 checks every transaction's txid, wtxid, serialized size, weight and vsize;
 Rust and Python also agree on the complete serialized witness size.
 
-## Explicit local profiles, recorded 2026-09-10
+## Explicit local profiles and commitment preflight
 
 The new `support::tapscript::execute_tapscript` API keeps the caller's exact
 policy-compiled `ScriptBuf` and requires `TapscriptProfile::Consensus` or
-`TapscriptProfile::Policy`. The recorded 44-fixture report uses the unmerged fork
+`TapscriptProfile::Policy`. The first 44-fixture profile report used the fork
 integration commit
 [`4b7269a415f21be3fccee9730547f1426eb80326`](https://github.com/adrienlacombe/rust-bitcoin-scriptexec/commit/4b7269a415f21be3fccee9730547f1426eb80326),
 which incorporates the three separately submitted interpreter corrections below.
-The later signature integration `702544c9` also passes all 44 fixtures and 86
-applicable local/Core comparisons; the committed report remains at its original pin.
+The later signature integration `702544c9` also passed all 44 fixtures and 86
+applicable local/Core fragment comparisons. The current combined report uses
+interpreter [`a09e87af444034698697f0a2267e755cf72f9aed`](https://github.com/adrienlacombe/rust-bitcoin-scriptexec/commit/a09e87af444034698697f0a2267e755cf72f9aed) and adds a separate
+Taproot commitment preflight, so all 88 local/Core comparisons are applicable.
 The runner verifies the resolved graph through `cargo metadata --locked`: exactly
 one interpreter package must match the fixture's immutable fork source and commit.
 Legacy research helpers retain their default minimal-number option and
@@ -112,15 +114,24 @@ Push encoding is checked only when a push executes, so a nonminimal push in a
 skipped branch passes both profiles.
 
 All **44 Core consensus/policy expectations and exact rejection diagnostics
-pass**. For 43 fixtures, both supported local profile verdicts also agree with
-Core. The remaining fixture changes only the control-block parity bit: both
-local profiles must accept the unchanged leaf while Core must reject its
-commitment. The runner explicitly permits only that named exception to profile
-equality. Missing verdicts, panics, initialization errors and unsupported
-opcodes fail the comparison; none can count as a consensus rejection.
+pass**. The local preflight gates acceptance on each script-path commitment
+while retaining the leaf profile verdict as a separate diagnostic. All 44
+combined local verdicts agree with Core, including the fixture that changes
+only the control-block parity bit: leaf
+execution still succeeds, while the commitment preflight and Core both reject
+the complete witness. Missing verdicts, panics, initialization errors and
+unsupported opcodes fail the comparison; none can count as a consensus
+rejection.
+The host-side preflight follows [BIP341 script-path commitment
+rules](https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0341.mediawiki)
+through rust-bitcoin's `ControlBlock::verify_taproot_commitment`: it checks the
+revealed script, Merkle branch, internal key and output-key parity against the
+selected P2TR output. This check is separate from script execution.
 There are no explicit-profile panics. The preserved legacy helper still panics
 on malformed script syntax in the two malformed-prefix/suffix fixtures; those
 historical-API outcomes remain separate from the explicit profile verdicts.
+Two fresh isolated-node runs produced byte-identical combined reports, SHA256
+`83b59980d332d8da78fe0850a9bc54aba6352bbc6f79f5f073a7210a27aa4010`.
 
 | Added boundary | Core consensus | Core policy | Explicit local profiles |
 | --- | --- | --- | --- |
@@ -141,11 +152,13 @@ malformed bytes, stack limits, branch execution and the final stack no longer
 control consensus acceptance. These ordering rules are explicit in the pinned
 [BIP342 specification](https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0342.mediawiki#specification).
 An `OpSuccess` outcome carries no fabricated execution statistics; it is not
-experimental concatenation. Complete Taproot commitments are still checked by
-Core before these leaf rules apply.
+experimental concatenation. The local preflight checks that the revealed script
+and control block commit to the P2TR output and gates the combined verdict; Core
+independently checks the same commitment in the funded transaction.
 
-These profiles are bounded fragment APIs, with local deployment `unclassified`.
-They do not establish full transaction validity, annex policy or relay acceptance.
+These profiles plus the commitment preflight remain bounded local APIs, with
+deployment `unclassified`. They do not establish full transaction validity,
+annex policy or relay acceptance.
 Signature, timelock and other unsupported context-dependent opcodes return no
 verdict; the policy profile also conservatively refuses upgradeable NOPs even
 inside dead branches. This scope contains no such unsupported fixture. All

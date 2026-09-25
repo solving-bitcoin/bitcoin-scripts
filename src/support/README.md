@@ -67,9 +67,19 @@ These are deliberately context-free fragment profiles. Signature operations,
 present in a skipped branch. Policy additionally refuses upgradeable NOPs
 (`NOP1`, `NOP4` through `NOP10`) because the dependency lacks the corresponding
 policy flag. This conservative refusal avoids claiming an unchecked verdict;
-a later `OP_SUCCESSx` still takes precedence during the pre-scan. A complete
-Taproot commitment, annex, transaction, signature budget, fee rules, transaction
-standardness and unknown-key policy require the independent Core harness.
+a later `OP_SUCCESSx` still takes precedence during the pre-scan. Complete
+transaction, fee, relay-policy and unknown-key checks require the independent
+Core harness.
+
+`support::taproot::verify_taproot_input_commitment` selects a transaction input
+from a complete, ordered prevout vector; `verify_taproot_script_path_commitment` checks a
+complete witness against a supplied P2TR output. Both remove a final annex
+before locating the revealed script and control block. They distinguish a
+verified commitment from mismatch, malformed control data, key-path witnesses
+and unsupported output types. A future leaf version may have a valid commitment
+without being executable by the local tapscript interpreter. These checks do
+not execute the leaf or establish complete-transaction validity; callers can
+combine them with a leaf profile only at the selected input and prevout.
 
 ## Existing research helpers
 

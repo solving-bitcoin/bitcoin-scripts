@@ -49,6 +49,7 @@ class CoreHarnessTests(unittest.TestCase):
     @staticmethod
     def profile_fixture(consensus=False, policy=False):
         return {"name": "ordinary-boundary",
+                "local_commitment": {"accepted": True, "outcome": "valid"},
                 "local_profile_comparison": {"compare_to_core": True,
                                              "expected": {"consensus": consensus, "policy": policy}},
                 "local_profiles": {name: {"accepted": accepted, "outcome": "executed"}
@@ -74,17 +75,39 @@ class CoreHarnessTests(unittest.TestCase):
                     self.assertFalse(comparison["matches_expected"])
                     self.assertEqual(comparison["profiles"]["consensus"]["status"], "no-verdict")
 
-    def test_only_explicit_commitment_case_may_skip_core_profile_equality(self):
+    def test_no_fixture_may_skip_core_profile_equality(self):
         fixture = self.profile_fixture(consensus=True, policy=True)
         fixture["local_profile_comparison"]["compare_to_core"] = False
         with self.assertRaises(ValueError):
             compare_local_profiles(fixture, {"accepted": False}, {"allowed": False})
-        fixture["name"] = "winternitz-invalid-control-block"
+
+    def test_commitment_rejection_gates_successful_leaf(self):
+        fixture = self.profile_fixture(consensus=False, policy=False)
+        fixture["local_commitment"] = {"accepted": False, "outcome": "invalid"}
+        fixture["local_profiles"] = {
+            name: {"accepted": True, "outcome": "executed"}
+            for name in ("consensus", "policy")
+        }
         comparison = compare_local_profiles(fixture, {"accepted": False}, {"allowed": False})
         self.assertTrue(comparison["matches_expected"])
-        self.assertIsNone(comparison["profiles"]["consensus"]["matches_core"])
-        fixture["local_profiles"]["consensus"]["accepted"] = False
-        self.assertFalse(compare_local_profiles(fixture, {"accepted": False}, {"allowed": False})["matches_expected"])
+        self.assertFalse(comparison["profiles"]["consensus"]["accepted"])
+        self.assertTrue(comparison["profiles"]["consensus"]["leaf_accepted"])
+
+    def test_missing_commitment_verdict_is_not_rejection(self):
+        fixture = self.profile_fixture()
+        fixture["local_commitment"] = {"accepted": None, "outcome": "unsupported"}
+        comparison = compare_local_profiles(fixture, {"accepted": False}, {"allowed": False})
+        self.assertFalse(comparison["matches_expected"])
+        self.assertEqual(comparison["profiles"]["consensus"]["status"], "no-verdict")
+
+    def test_inconsistent_commitment_outcome_is_not_a_verdict(self):
+        for outcome, accepted in [("valid", False), ("invalid", True)]:
+            with self.subTest(outcome=outcome, accepted=accepted):
+                fixture = self.profile_fixture()
+                fixture["local_commitment"] = {"outcome": outcome, "accepted": accepted}
+                comparison = compare_local_profiles(fixture, {"accepted": False}, {"allowed": False})
+                self.assertFalse(comparison["matches_expected"])
+                self.assertEqual(comparison["profiles"]["consensus"]["status"], "no-verdict")
 
     def test_minimal_push_and_numeric_minimality_use_distinct_diagnostics(self):
         push = {"allowed": False, "reject-reason": "mempool-script-verify-flag-failed (Data push larger than necessary)"}
