@@ -7,6 +7,24 @@ Before contributing, read [`AGENTS.md`](AGENTS.md),
 [`knowledge/cost-model.md`](knowledge/cost-model.md), and
 [`knowledge/evidence.md`](knowledge/evidence.md).
 
+Enable the repository pre-commit checks once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The hook checks Rust formatting and validates the knowledge base on every
+commit. Because these checks read the checkout, the hook requires tracked files
+to match the index and rejects every non-ignored untracked file. Ignored files
+are outside this guard. The metric suite is available by explicit opt-in:
+
+```sh
+RUN_PRIMITIVE_METRICS=1 git commit
+```
+
+It is not run automatically on every source or README change because the full
+suite is expensive.
+
 ## Minimum research contribution
 
 - State exact semantics, assumptions, and comparison objective.
