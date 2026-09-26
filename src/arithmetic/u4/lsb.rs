@@ -56,6 +56,10 @@ mod tests {
     };
     use bitcoin_scriptexec::ExecError;
 
+    fn assert_validation_error(actual: Option<ExecError>, expected: ExecError, case: &str) {
+        assert_eq!(actual, Some(expected), "{case}");
+    }
+
     #[test]
     fn projects_all_nibble_least_significant_bits_in_order() {
         let result = execute_script(script! {
@@ -83,29 +87,70 @@ mod tests {
 
     #[test]
     fn rejects_out_of_range_nibbles_at_each_position() {
-        for position in 0..3 {
-            let mut input = vec![1; 3];
-            input[position] = if position % 2 == 0 { -1 } else { 16 };
-            let result = execute_script(script! {
-                for nibble in input { { nibble } }
+        let valid_cleanup_control = execute_script_with_inputs_strict(
+            script! {
                 { u4_nibbles_to_lsb(3) }
                 OP_2DROP OP_DROP OP_TRUE
-            });
-            assert!(!result.success, "accepted invalid nibble at {position}");
-        }
+            },
+            vec![vec![1]; 3],
+        );
+        assert!(
+            valid_cleanup_control.success,
+            "valid witness failed the shared cleanup harness: {valid_cleanup_control}"
+        );
 
         for position in 0..3 {
-            let mut witness = vec![vec![1]; 3];
-            witness[position] = vec![0, 0, 0, 0, 1];
-            let result = execute_script_with_inputs_strict(
-                script! {
-                    { u4_nibbles_to_lsb(3) }
-                    OP_2DROP OP_DROP OP_TRUE
-                },
-                witness,
-            );
-            assert!(!result.success, "accepted oversized nibble at {position}");
+            for (encoded, expected) in [
+                (vec![0x81], ExecError::Verify),
+                (vec![0x10], ExecError::Verify),
+                (vec![0, 0, 0, 0, 1], ExecError::ScriptIntNumericOverflow),
+            ] {
+                let mut witness = vec![vec![1]; 3];
+                witness[position] = encoded;
+                let result = execute_script_with_inputs_strict(
+                    script! {
+                        { u4_nibbles_to_lsb(3) }
+                        OP_2DROP OP_DROP OP_TRUE
+                    },
+                    witness,
+                );
+                assert_validation_error(
+                    result.error,
+                    expected,
+                    &format!("unexpected error for malformed nibble at position {position}"),
+                );
+            }
         }
+
+        // The same exact-error assertion must reject a test-only fragment with
+        // the production range checks removed. OP_PICK(16) then reads the
+        // preserved sentinel below the table and the terminal predicate fails
+        // with EqualVerify instead of the expected Verify.
+        let lookup_bypass = execute_script_with_inputs_strict(
+            script! {
+                { push_lsb_table() }
+                16 OP_ROLL
+                OP_PICK OP_TOALTSTACK
+                { u4_drop(U4_LSB_TABLE_ITEMS) }
+                OP_FROMALTSTACK
+                0 OP_EQUALVERIFY
+                7 OP_EQUAL
+            },
+            vec![vec![7], vec![16]],
+        );
+        assert_eq!(lookup_bypass.error, Some(ExecError::EqualVerify));
+        let bypass_assertion = std::panic::catch_unwind(|| {
+            assert_validation_error(
+                lookup_bypass.error,
+                ExecError::Verify,
+                "test-only LSB range-check bypass was not detected",
+            )
+        });
+        assert!(
+            bypass_assertion.is_err(),
+            "test assertion accepted a bypass"
+        );
+
         assert!(std::panic::catch_unwind(|| u4_nibbles_to_lsb(0)).is_err());
         assert!(std::panic::catch_unwind(|| u4_nibbles_to_lsb(U4_LSB_MAX_BATCH + 1)).is_err());
     }

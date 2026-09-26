@@ -9605,14 +9605,18 @@
       "implementation": "src/arithmetic/u4/lsb.rs",
       "documentation": "src/arithmetic/u4/README.md",
       "tests": [
+        "src/arithmetic/u4/lsb.rs",
+        "tests/primitive_metrics.rs",
         "arithmetic::u4::lsb::tests::projects_all_nibble_least_significant_bits_in_order",
         "arithmetic::u4::lsb::tests::rejects_out_of_range_nibbles_at_each_position",
         "arithmetic::u4::lsb::tests::respects_stack_frontier_and_preserves_state",
-        "primitive_metrics::u4_lsb_metrics_are_current"
+        "primitive_metrics::u4_lsb_metrics_are_current",
+        "examples/core_validation_fixtures.rs"
       ],
       "references": [
         "bitcoin-script-locked",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest"
       ],
       "techniques": [
         "batch-lookup",
@@ -9646,13 +9650,52 @@
             "u4_lsb_batch32_witness",
             "u4_lsb_batch32_stack"
           ]
+        },
+        {
+          "id": "u4-lsb-0123456789abcdef",
+          "label": "Core v30.3 complete u4 LSB Taproot leaf for 0x0123456789abcdef",
+          "parameters": {
+            "nibble_count": 16,
+            "input_hex": "0123456789abcdef",
+            "table_items": 16,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0,
+            "terminal_predicate": "reversed output equality checks",
+            "core_version": "30.3",
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "data_witness_bytes": 32,
+            "complete_taproot_witness_items": 18,
+            "script_sha256": "58fcbbe71361ce2f2c80fc73f80724ad10870e97696ffcfce14cd24fa7e3f708",
+            "tapleaf_hash": "089b76bd44cf4b1a078d2605a9555dbf1391aba5bba682b48f16c48ccb2ae160",
+            "witness_items_coexist_at_entry": true,
+            "local_helper": "execute_raw_script_with_inputs_strict",
+            "local_context": "tapscript",
+            "local_stack_limit_enforced": true,
+            "local_peak_counts_main_and_alt_stack": true,
+            "local_compilation_policy": "ScriptCompilation::compile_with_policy",
+            "core_acceptance": "consensus and default relay policy"
+          },
+          "includes": "complete-leaf: u4_nibbles_to_lsb(16), terminal equality checks for all sixteen outputs, and complete serialized Taproot witness with sixteen data items, leaf script, control block, and witness framing; excludes remaining transaction overhead",
+          "script_bytes": 264,
+          "witness_bytes": 333,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 184,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 264,
+          "metric_keys": [],
+          "evidence": "differentially-validated",
+          "execution": "policy-validated"
         }
       ],
       "limitations": [
         "Numeric LSB outputs are ScriptNum bits, not raw byte elements",
         "Lookup table and outputs consume combined stack capacity",
         "Static non-push opcode count is not an executed-opcode measurement",
-        "No Bitcoin Core consensus or relay-policy validation"
+        "Only the separately scoped 0x0123456789abcdef complete-leaf Core configuration is differentially validated and policy-validated; the 32-nibble fragment retains its local evidence and deployment scope"
       ],
       "open_problems": [
         "OP-001",

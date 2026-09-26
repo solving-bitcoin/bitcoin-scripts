@@ -193,6 +193,13 @@ The square row measures only the checked reusable query; its generated
 <!-- metric:u4_mod3_batch32_witness -->65<!-- /metric:u4_mod3_batch32_witness --> serialized witness bytes for the representative modulo-three batch.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
+A separately scoped Core v30.3 run accepts a complete 16-nibble
+`0x0123456789abcdef` LSB leaf with default relay policy; this does not promote
+the 32-nibble fragment or validate larger compositions. The policy-compiled
+leaf is 264 bytes, has script SHA256
+`58fcbbe71361ce2f2c80fc73f80724ad10870e97696ffcfce14cd24fa7e3f708`, and uses
+16 data items, zero hints, and 18 total witness items. Its complete Taproot
+witness is 333 bytes; its strict local tapscript stack peak is 34 items.
 
 <!-- metric:u4_zero_mask_batch32_witness -->65<!-- /metric:u4_zero_mask_batch32_witness --> serialized witness bytes for the representative zero-mask batch.
 
