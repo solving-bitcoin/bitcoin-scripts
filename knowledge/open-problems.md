@@ -70,6 +70,9 @@ semantics and reports script, witness, hints, stack, and execution costs, or a
 machine-checkable lower-bound argument establishes that the current opcode set
 cannot bind the two 32-byte nodes without a general byte-concatenation circuit.
 The current inspected negative result is [NR-057](negative-results/index.md#nr-057-native-taproot-merkle-branch-adapter-is-not-available).
+PR #17 is a measured fixed-prefix u4 boundary, but it does not close this
+problem: ordering, native byte handling, and complete-spend validation remain
+open.
 
 ## OP-022 — Constant-composition Script decoder
 
