@@ -260,6 +260,19 @@ pub fn u32_fromaltstack() -> Script {
     }
 }
 
+/// Move `num_bytes` raw stack items to the alt stack while preserving order.
+///
+/// The top item is restored first by `OP_FROMALTSTACK`; callers must enforce
+/// byte range and canonical ScriptNum encoding when those invariants matter.
+pub fn u8_reverse_toaltstack(num_bytes: usize) -> Script {
+    script! {
+        for i in 1..=num_bytes {
+            {num_bytes - i} OP_ROLL
+            OP_TOALTSTACK
+        }
+    }
+}
+
 /// Select one complete u32 word using Script truthiness.
 ///
 /// Stack before (top first): `condition | when_true | when_false`.
@@ -454,6 +467,22 @@ mod tests {
         assert!(!result.success, "accepted noncanonical compressed word");
     }
 
+    fn assert_malformed_limb_error(
+        result: &crate::support::execution::ExecuteInfo,
+        expected: bitcoin_scriptexec::ExecError,
+        scenario: &str,
+    ) {
+        assert!(
+            !result.success,
+            "accepted malformed limb ({scenario}): {result}"
+        );
+        assert_eq!(
+            result.error.as_ref(),
+            Some(&expected),
+            "malformed limb missed its intended validation error ({scenario}): {result}"
+        );
+    }
+
     #[test]
     fn test_u32_notequal() {
         for (a, b) in [
@@ -577,16 +606,58 @@ mod tests {
             { u32_compress_canonical() }
             OP_DROP OP_TRUE
         };
+
+        let valid_control = execute_script_with_inputs_strict(script.clone(), vec![vec![1]; 4]);
+        assert!(
+            valid_control.success,
+            "valid cleanup control failed: {valid_control}"
+        );
+        assert_eq!(
+            valid_control.error, None,
+            "valid control errored: {valid_control}"
+        );
+
+        // A deliberately unchecked compressor accepts this out-of-range
+        // ScriptNum limb. The shared exact-error assertion below must reject it.
+        let bypass_control = execute_script_with_inputs_strict(
+            script! {
+                { u32_compress() }
+                OP_DROP OP_TRUE
+            },
+            vec![vec![1], vec![1], vec![1], vec![0, 1]],
+        );
+        assert!(
+            bypass_control.success,
+            "unchecked bypass control did not pass: {bypass_control}"
+        );
+        assert_eq!(
+            bypass_control.error, None,
+            "unchecked bypass errored: {bypass_control}"
+        );
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                assert_malformed_limb_error(
+                    &bypass_control,
+                    bitcoin_scriptexec::ExecError::Verify,
+                    "unchecked mutant",
+                )
+            }))
+            .is_err(),
+            "shared malformed-limb assertion accepted the unchecked mutant"
+        );
+
         for position in 0..4 {
             for replacement in [vec![1, 0], vec![0, 1], vec![0x80], vec![0xff]] {
                 let mut witness = vec![vec![1]; 4];
+                let expected_error = match replacement.as_slice() {
+                    [1, 0] | [0x80] => bitcoin_scriptexec::ExecError::MinimalData,
+                    [0, 1] | [0xff] => bitcoin_scriptexec::ExecError::Verify,
+                    _ => unreachable!("unexpected malformed-limb fixture"),
+                };
                 witness[position] = replacement;
-                let result =
-                    crate::support::execution::execute_script_with_inputs(script.clone(), witness);
-                assert!(
-                    !result.success,
-                    "accepted malformed limb at {position}: {result}"
-                );
+                let scenario = format!("encoding {position}");
+                let result = execute_script_with_inputs_strict(script.clone(), witness);
+                assert_malformed_limb_error(&result, expected_error, &scenario);
             }
         }
     }
@@ -605,6 +676,48 @@ mod tests {
             vec![vec![77], vec![1], vec![2], vec![3], vec![4]],
         );
         assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn reverse_byte_batch_preserves_order_state_and_raw_items() {
+        let result = execute_script(script! {
+            99 OP_TOALTSTACK
+            0x44 0x33 0x22 0x11
+            { u8_reverse_toaltstack(4) }
+            OP_FROMALTSTACK 0x11 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x22 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x33 OP_EQUALVERIFY
+            OP_FROMALTSTACK 0x44 OP_EQUALVERIFY
+            OP_FROMALTSTACK 99 OP_EQUAL
+        });
+        assert!(result.success, "{result}");
+
+        let raw_items = execute_script_with_inputs_strict(
+            script! {
+            { u8_reverse_toaltstack(2) }
+            OP_FROMALTSTACK OP_SIZE 2 OP_EQUALVERIFY OP_DROP
+            OP_FROMALTSTACK OP_SIZE 1 OP_EQUALVERIFY OP_DROP
+            OP_TRUE
+            },
+            vec![vec![0x80], vec![0x01, 0x00]],
+        );
+        assert!(raw_items.success, "{raw_items}");
+
+        let empty = execute_script(script! {
+            42
+            { u8_reverse_toaltstack(0) }
+            42 OP_EQUAL
+        });
+        assert!(empty.success, "{empty}");
+
+        let underflow = execute_script(script! {
+            0x11
+            { u8_reverse_toaltstack(2) }
+        });
+        assert_eq!(
+            underflow.error,
+            Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+        );
     }
     fn compressed_scriptnum(value: u32) -> Vec<u8> {
         let mut bytes = [0u8; 8];

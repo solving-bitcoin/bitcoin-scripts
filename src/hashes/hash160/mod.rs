@@ -1,7 +1,7 @@
 //! HASH160 composition: RIPEMD-160(SHA-256(message)).
 
 use crate::{
-    arithmetic::u32::stack::{u32_fromaltstack, u32_toaltstack},
+    arithmetic::u32::stack::{u32_fromaltstack, u32_toaltstack, u8_reverse_toaltstack},
     arithmetic::u32::xor::{u8_drop_xor_table, u8_push_xor_table},
     hashes::{ripemd160, sha256::sha2_u32},
     support::script::{script, Script},
@@ -22,7 +22,7 @@ pub fn hash160(num_bytes: usize) -> Script {
 /// the SHA-256 and RIPEMD-160 stages.
 pub fn hash160_shared_table(num_bytes: usize) -> Script {
     script! {
-        { sha2_u32::push_reverse_bytes_to_alt(num_bytes) }
+        { u8_reverse_toaltstack(num_bytes) }
         { u8_push_xor_table() }
         { sha2_u32::sha256_without_table_after_input(num_bytes) }
         { ripemd160::ripemd160_without_table(32) }
