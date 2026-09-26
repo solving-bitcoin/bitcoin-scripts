@@ -1760,17 +1760,19 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-26",
       "knowledge_page": "knowledge/primitives/u32-popcount.md",
       "implementation": "src/arithmetic/u32/popcount.rs",
       "documentation": "src/arithmetic/u32/README.md",
       "tests": [
         "src/arithmetic/u32/popcount.rs",
-        "tests/primitive_metrics.rs"
+        "tests/primitive_metrics.rs",
+        "examples/core_validation_fixtures.rs"
       ],
       "references": [
         "bitcoin-script-locked",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest"
       ],
       "techniques": [
         "batch-lookup",
@@ -1804,13 +1806,42 @@
             "u32_popcount_witness",
             "u32_popcount_stack"
           ]
+        },
+        {
+          "id": "u32-popcount-0x12345678",
+          "label": "Core v30.3 complete u32 popcount Taproot leaf for 0x12345678",
+          "parameters": {
+            "input_hex": "12345678",
+            "expected_count": 13,
+            "data_items": 4,
+            "hint_items": 0,
+            "terminal_predicate": "13 OP_EQUAL",
+            "core_version": "30.3",
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "data_witness_bytes": 9,
+            "complete_taproot_witness_items": 6,
+            "core_acceptance": "consensus and default relay policy"
+          },
+          "includes": "complete-leaf: u32_popcount(), terminal 13 OP_EQUAL, and complete serialized Taproot witness with four data items, leaf script, control block, and witness framing; excludes remaining transaction overhead",
+          "script_bytes": 457,
+          "witness_bytes": 503,
+          "witness_bytes_max": null,
+          "max_stack_items": 262,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 172,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 457,
+          "metric_keys": [],
+          "evidence": "differentially-validated",
+          "execution": "policy-validated"
         }
       ],
       "limitations": [
         "The byte table consumes 256 persistent stack items",
         "Numeric result is a ScriptNum count, not a packed byte vector",
         "Static non-push opcode count is not an executed-opcode measurement",
-        "No Bitcoin Core consensus or relay-policy validation"
+        "Only the separately scoped 0x12345678 complete-leaf Core configuration is differentially validated and policy-validated; the fragment configuration retains its local evidence and deployment scope"
       ],
       "open_problems": [
         "OP-001",

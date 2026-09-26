@@ -21,6 +21,22 @@ fn drop_popcount_table() -> Script {
     }
 }
 
+#[cfg(test)]
+fn popcount_without_range_checks_for_test() -> Script {
+    script! {
+        { push_popcount_table() }
+        for _ in 0..4 {
+            { U8_POPCOUNT_TABLE_ITEMS } OP_ROLL
+            OP_PICK OP_TOALTSTACK
+        }
+        { drop_popcount_table() }
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK OP_ADD
+        OP_FROMALTSTACK OP_ADD
+        OP_FROMALTSTACK OP_ADD
+    }
+}
+
 /// Count the set bits in the top u32 word and replace it with one integer.
 ///
 /// The input is `byte[0] | byte[1] | byte[2] | byte[3]`, with the least
@@ -72,11 +88,29 @@ mod tests {
     use crate::{
         arithmetic::u32::stack::u32_push,
         support::{
-            execution::{execute_script, execute_script_with_inputs_strict},
+            execution::{
+                execute_raw_script_with_inputs_strict, execute_script,
+                execute_script_with_inputs_strict,
+            },
             script::script,
         },
     };
+    use bitcoin::ScriptBuf;
     use bitcoin_scriptexec::ExecError;
+
+    fn popcount_cleanup_harness(fragment: Script) -> ScriptBuf {
+        script! {
+            { fragment }
+            OP_DROP OP_TRUE
+        }
+        .compile_with_policy()
+    }
+
+    fn assert_rejected_with(harness: &ScriptBuf, witness: Vec<Vec<u8>>, expected: ExecError) {
+        let result = execute_raw_script_with_inputs_strict(harness.to_bytes(), witness);
+        assert_eq!(result.error, Some(expected), "{result}");
+        assert!(!result.success, "malformed byte was accepted: {result}");
+    }
 
     #[test]
     fn counts_boundary_and_representative_words() {
@@ -98,29 +132,52 @@ mod tests {
 
     #[test]
     fn rejects_non_byte_limbs() {
-        for position in 0..4 {
-            let mut input = vec![0; 4];
-            input[position] = if position % 2 == 0 { -1 } else { 256 };
-            let result = execute_script(script! {
-                for byte in input { { byte } }
-                { u32_popcount() }
-                OP_DROP OP_TRUE
-            });
-            assert!(!result.success, "accepted invalid byte at {position}");
+        let harness = popcount_cleanup_harness(u32_popcount());
+
+        // This valid control uses the same cleanup and terminal predicate as
+        // the malformed-witness cases below.
+        let valid = execute_raw_script_with_inputs_strict(
+            harness.to_bytes(),
+            vec![vec![], vec![], vec![], vec![]],
+        );
+        assert!(valid.success, "valid zero word failed: {valid}");
+
+        for encoded in [vec![0x81], vec![0x00, 0x01]] {
+            for position in 0..4 {
+                let mut witness = vec![vec![]; 4];
+                witness[position] = encoded.clone();
+                assert_rejected_with(&harness, witness, ExecError::Verify);
+            }
         }
 
         for position in 0..4 {
             let mut witness = vec![vec![]; 4];
             witness[position] = vec![0, 0, 0, 0, 1];
-            let result = execute_script_with_inputs_strict(
-                script! {
-                    { u32_popcount() }
-                    OP_DROP OP_TRUE
-                },
-                witness,
-            );
-            assert!(!result.success, "accepted oversized byte at {position}");
+            assert_rejected_with(&harness, witness, ExecError::ScriptIntNumericOverflow);
         }
+    }
+
+    #[test]
+    fn malformed_byte_assertion_detects_test_only_validator_bypass() {
+        let bypassed = popcount_cleanup_harness(popcount_without_range_checks_for_test());
+        let mut witness = vec![vec![]; 4];
+        witness[0] = vec![0x81];
+        let result = execute_raw_script_with_inputs_strict(bypassed.to_bytes(), witness);
+        assert_eq!(
+            result.error,
+            Some(ExecError::InvalidStackOperation),
+            "{result}"
+        );
+
+        let caught = std::panic::catch_unwind(|| {
+            let mut witness = vec![vec![]; 4];
+            witness[0] = vec![0x81];
+            assert_rejected_with(&bypassed, witness, ExecError::Verify);
+        });
+        assert!(
+            caught.is_err(),
+            "the exact rejection assertion missed the bypass"
+        );
     }
 
     #[test]
