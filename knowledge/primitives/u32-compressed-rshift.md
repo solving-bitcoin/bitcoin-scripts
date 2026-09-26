@@ -42,6 +42,11 @@ decode-shift-reencode baseline at shift 8, while saving two live stack items.
 It is a representation and stack-shape result, not a general byte reduction;
 script size varies with the generated shift ladder.
 
+The separate [historical PR #3 comparison](../negative-results/index.md#historical-pr-3-rotate-and-mask-loses-on-the-tested-compressed-input-shifts)
+archives reported evidence that the rotate-and-mask alternative loses for the
+tested compressed inputs. It does not settle the four-byte input/output case
+or change the local measurements above.
+
 ## Evidence and limitations
 
 Evidence is `locally-reproduced`; deployment is `unclassified`. Boundary and

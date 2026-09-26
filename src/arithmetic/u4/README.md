@@ -16,6 +16,9 @@ these operations, but this module contains no hash-specific round logic.
   `1..=742` and reduces the batch to one nibble with the full XOR table.
 - `popcount::u4_nibbles_to_popcount(nibble_count)` takes a checked batch size
   in `1..=982` and returns one Hamming weight in `0..=4` per input nibble.
+- `popcount::u4_popcount(nibble_count)` takes the same checked batch (up to 982
+  items without unrelated live state) and returns one total Hamming weight in
+  `0..=4*nibble_count`.
 - `pack::u4_nibbles_to_bytes(nibble_count)` takes an even checked batch size in
   `2..=664` and returns one byte per high/low nibble pair.
 - `adjacent_delta::u4_nibbles_to_adjacent_delta(nibble_count)` takes a checked
@@ -37,7 +40,8 @@ these operations, but this module contains no hash-specific round logic.
 - `power_of_two::u4_nibbles_to_power_of_two(nibble_count)` maps checked nibbles
   to a bit indicating whether each is a nonzero power of two.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
-  `1..=982` and returns one bit per input nibble.
+  `1..=982` and returns one bit per input nibble; the range check does not
+  establish canonical ScriptNum encoding.
 - `sum::u4_nibbles_to_sum_mod16(nibble_count)` takes a checked batch size in
   `1..=965` and returns the batch sum modulo 16.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
@@ -135,6 +139,7 @@ each input with the same output-restoration boundary.
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
 | Checked popcount batch, 32 nibbles | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> bytes | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack --> items | <!-- metric:u4_popcount_batch32_opcodes -->328<!-- /metric:u4_popcount_batch32_opcodes --> |
+| Checked total popcount, 32 nibbles | <!-- metric:u4_popcount_total_batch32 -->471<!-- /metric:u4_popcount_total_batch32 --> bytes | <!-- metric:u4_popcount_total_batch32_stack -->50<!-- /metric:u4_popcount_total_batch32_stack --> items | <!-- metric:u4_popcount_total_batch32_opcodes -->359<!-- /metric:u4_popcount_total_batch32_opcodes --> |
 | Checked 32-nibble zero bitmask batch | <!-- metric:u4_zero_bitmask_batch32 -->482<!-- /metric:u4_zero_bitmask_batch32 --> bytes | <!-- metric:u4_zero_bitmask_batch32_stack -->36<!-- /metric:u4_zero_bitmask_batch32_stack --> items | <!-- metric:u4_zero_bitmask_batch32_opcodes -->382<!-- /metric:u4_zero_bitmask_batch32_opcodes --> |
 | Checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_batch16 -->776<!-- /metric:u4_bit_planes_batch16 --> bytes | <!-- metric:u4_bit_planes_batch16_stack -->125<!-- /metric:u4_bit_planes_batch16_stack --> items | <!-- metric:u4_bit_planes_batch16_opcodes -->573<!-- /metric:u4_bit_planes_batch16_opcodes --> |
 | Canonical checked 16-nibble bit-plane transpose | <!-- metric:u4_bit_planes_canonical_batch16 -->966<!-- /metric:u4_bit_planes_canonical_batch16 --> bytes | <!-- metric:u4_bit_planes_canonical_batch16_stack -->125<!-- /metric:u4_bit_planes_canonical_batch16_stack --> items | <!-- metric:u4_bit_planes_canonical_batch16_opcodes -->715<!-- /metric:u4_bit_planes_canonical_batch16_opcodes --> |
@@ -153,6 +158,8 @@ The square row measures only the checked reusable query; its generated
 <!-- metric:u4_square_mod16_witness -->3<!-- /metric:u4_square_mod16_witness --> serialized bytes for one input item and has zero incremental hint items.
 
 <!-- metric:u4_popcount_batch32_witness -->65<!-- /metric:u4_popcount_batch32_witness --> serialized witness bytes for the representative checked popcount batch.
+
+<!-- metric:u4_popcount_total_batch32_witness -->65<!-- /metric:u4_popcount_total_batch32_witness --> serialized witness bytes for the representative checked total-popcount batch.
 
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative parity batch.
@@ -200,6 +207,7 @@ representative left witness is <!-- metric:u4_lexicographic_le_constant_128_witn
 <!-- metric:u4_bit_reverse_canonical_batch32_witness -->65<!-- /metric:u4_bit_reverse_canonical_batch32_witness --> serialized witness bytes for the representative canonical bit-reversal batch.
 
 <!-- metric:u4_bit_planes_canonical_batch16_witness -->33<!-- /metric:u4_bit_planes_canonical_batch16_witness --> serialized witness bytes for the representative canonical bit-plane batch.
+<!-- metric:u4_bit_planes_batch16_witness -->33<!-- /metric:u4_bit_planes_batch16_witness --> serialized witness bytes for the representative checked bit-plane batch.
 
 <!-- metric:u4_bits_canonical_batch32_witness -->65<!-- /metric:u4_bits_canonical_batch32_witness --> serialized witness bytes for the representative canonical big-endian batch.
 <!-- metric:u4_bits_be_alt_canonical_batch32_witness -->65<!-- /metric:u4_bits_be_alt_canonical_batch32_witness --> serialized witness bytes for the representative canonical altstack batch.
@@ -344,7 +352,10 @@ small-radix representation for ternary accumulators without a general modulo
 interpreter.
 The bit-plane transpose reuses the 61-item checked bit table and adds a static
 stack permutation. It has no new witness or hint items; the representative
-16-nibble row above includes the reused decomposition and the transpose.
+16-nibble row above includes the reused decomposition and the transpose. Its
+standalone peak is `4*n + 61` items; with surrounding state the applicable
+bound is `4*n + 61 + preserved_main + preserved_alt <= 1000`, so callers must
+reduce the 234-nibble generator ceiling for live state.
 The bit-reversal primitive installs 16 table items, checks each nibble, and
 uses no witness hints beyond its input nibbles. Its 32-nibble row above is the
 representative batch; callers with unrelated live state must reduce the 981
@@ -389,8 +400,10 @@ the reusable altstack boundary.
 
 `compare::lexicographic_le(n)` range-checks two `n`-nibble big-endian vectors,
 compares the first differing nibble, consumes both vectors, and returns one
-truth value. For the representative 128-nibble vectors, the complete witness
-is <!-- metric:u4_lexicographic_le_128_witness -->259<!-- /metric:u4_lexicographic_le_128_witness --> bytes across <!-- metric:u4_lexicographic_le_128_witness_items -->256<!-- /metric:u4_lexicographic_le_128_witness_items --> data items and <!-- metric:u4_lexicographic_le_128_hints -->0<!-- /metric:u4_lexicographic_le_128_hints --> hint items; all data items coexist at entry. Numeric range validation does not make non-minimal raw ScriptNum encodings byte-unique under consensus.
+truth value. It accepts widths `1..=498`: the standalone combined peak is
+`2*n + 3`, leaving one item at the 498-nibble frontier for surrounding state.
+For the representative 128-nibble vectors, the complete witness is
+<!-- metric:u4_lexicographic_le_128_witness -->259<!-- /metric:u4_lexicographic_le_128_witness --> bytes across <!-- metric:u4_lexicographic_le_128_witness_items -->256<!-- /metric:u4_lexicographic_le_128_witness_items --> data items and <!-- metric:u4_lexicographic_le_128_hints -->0<!-- /metric:u4_lexicographic_le_128_hints --> hint items; all data items coexist at entry. Numeric range validation does not make non-minimal raw ScriptNum encodings byte-unique under consensus.
 Parity uses the same numeric range proof before its `OP_PICK` lookup. Its
 output is a ScriptNum bit, not a raw byte or a terminal truth value.
 Adjacent delta uses the same numeric range proof before subtraction. The

@@ -7,12 +7,7 @@
 use core::fmt;
 
 use crate::support::script::{self, ScriptCompilation};
-use bitcoin::{
-    hashes::Hash,
-    hex::DisplayHex,
-    taproot::{LeafVersion, TAPROOT_ANNEX_PREFIX},
-    Opcode, Script, ScriptBuf, TapLeafHash, Transaction, TxOut,
-};
+use bitcoin::{hashes::Hash, hex::DisplayHex, Opcode, ScriptBuf, TapLeafHash, Transaction, TxOut};
 use bitcoin_scriptexec::{Exec, ExecCtx, ExecError, ExecStats, Options, Stack, TxTemplate};
 
 pub struct FmtStack(pub Stack);
@@ -252,44 +247,42 @@ pub fn execute_script_with_inputs_strict(
     execute_raw_script_with_inputs_strict(script.compile_with_policy().to_bytes(), witness)
 }
 
-pub fn dry_run_taproot_input(
+/// Execute a Taproot script-path input with complete-witness budget accounting.
+///
+/// This derives the script, data stack, leaf hash and optional annex from the
+/// selected witness. It requires one prevout per input, but does not verify the
+/// output commitment, transaction validity or relay policy. Research options
+/// (including experimental OP_CAT) are retained; this is not a consensus API.
+/// Malformed or unsupported witness/context shapes return an initialization
+/// error, distinct from an executed script rejection.
+pub fn try_dry_run_taproot_input(
     tx: &Transaction,
     input_index: usize,
     prevouts: &[TxOut],
-) -> ExecuteInfo {
-    let script = tx.input[input_index].witness.tapscript().unwrap();
-    let stack = {
-        let witness_items = tx.input[input_index].witness.to_vec();
-        let last = witness_items.last().unwrap();
-        let script_index =
-            if witness_items.len() >= 3 && last.first() == Some(&TAPROOT_ANNEX_PREFIX) {
-                witness_items.len() - 3
-            } else {
-                witness_items.len() - 2
-            };
-        witness_items[0..script_index].to_vec()
-    };
-
-    let leaf_hash = TapLeafHash::from_script(
-        Script::from_bytes(script.as_bytes()),
-        LeafVersion::TapScript,
-    );
-
-    let exec = Exec::new(
-        ExecCtx::Tapscript,
+) -> Result<ExecuteInfo, bitcoin_scriptexec::Error> {
+    let exec = Exec::new_tapscript(
         Options::default(),
         TxTemplate {
             tx: tx.clone(),
             prevouts: prevouts.into(),
             input_idx: input_index,
-            taproot_annex_scriptleaf: Some((leaf_hash, None)),
+            taproot_annex_scriptleaf: None,
         },
-        ScriptBuf::from_bytes(script.to_bytes()),
-        stack,
-    )
-    .expect("error creating exec");
+    )?;
+    Ok(run_exec(exec, true))
+}
 
-    run_exec(exec, true)
+/// Convenience wrapper for [`try_dry_run_taproot_input`].
+///
+/// Panics on malformed or unsupported input context. Use the fallible variant
+/// when transaction inputs are untrusted. Script execution failures are returned
+/// in `ExecuteInfo`, as with the other research helpers.
+pub fn dry_run_taproot_input(
+    tx: &Transaction,
+    input_index: usize,
+    prevouts: &[TxOut],
+) -> ExecuteInfo {
+    try_dry_run_taproot_input(tx, input_index, prevouts).expect("error creating tapscript executor")
 }
 
 pub fn run(script: script::Script) {

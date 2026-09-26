@@ -93,17 +93,86 @@ mod tests {
         }
     }
 
-    #[test]
-    fn rejects_invalid_nibbles_at_every_position() {
-        for position in 0..4 {
-            let mut input = vec![1; 4];
-            input[position] = if position % 2 == 0 { -1 } else { 16 };
-            let result = execute_script(script! {
-                for nibble in input { { nibble } }
-                { u4_nibbles_to_bytes(4) }
-            });
-            assert!(!result.success, "accepted invalid position {position}");
+    fn assert_nibble_range_error(
+        result: &crate::support::execution::ExecuteInfo,
+        expected: ExecError,
+        scenario: &str,
+    ) {
+        assert!(
+            !result.success,
+            "accepted malformed nibble ({scenario}): {result}"
+        );
+        assert_eq!(
+            result.error.as_ref(),
+            Some(&expected),
+            "rejected malformed nibble for the wrong reason ({scenario}): {result}"
+        );
+    }
+
+    fn unchecked_batch_for_mutation_test(nibble_count: u32) -> Script {
+        assert!(nibble_count >= 2 && nibble_count % 2 == 0);
+        script! {
+            for pair in (0..nibble_count / 2).rev() {
+                { nibble_count - 1 - pair * 2 } OP_PICK
+                { nibble_count - 1 - pair * 2 } OP_PICK
+                { u4_pair_to_u8(false) }
+                OP_TOALTSTACK
+            }
+            { u4_drop(nibble_count) }
+            for _ in 0..nibble_count / 2 {
+                OP_FROMALTSTACK
+            }
         }
+    }
+
+    #[test]
+    fn rejects_runtime_malformed_nibbles_at_every_position() {
+        let valid_control = execute_script_with_inputs_strict(
+            script! { { u4_nibbles_to_bytes(4) } OP_2DROP OP_TRUE },
+            vec![vec![1], vec![2], vec![3], vec![4]],
+        );
+        assert!(
+            valid_control.success,
+            "valid control failed: {valid_control}"
+        );
+
+        for position in 0..4 {
+            for (label, encoded, expected_error) in [
+                ("negative", vec![0x81], ExecError::Verify),
+                ("sixteen", vec![0x10], ExecError::Verify),
+                (
+                    "oversized",
+                    vec![0x01, 0x00, 0x00, 0x00, 0x00],
+                    ExecError::ScriptIntNumericOverflow,
+                ),
+            ] {
+                let mut witness = vec![vec![1]; 4];
+                witness[position] = encoded;
+                let scenario = format!("{label} encoding at position {position}");
+                let result = execute_script_with_inputs_strict(
+                    script! { { u4_nibbles_to_bytes(4) } OP_2DROP OP_TRUE },
+                    witness,
+                );
+                assert_nibble_range_error(&result, expected_error, &scenario);
+            }
+        }
+
+        let malformed = vec![vec![0x81], vec![1], vec![1], vec![1]];
+        let mutant = execute_script_with_inputs_strict(
+            script! { { unchecked_batch_for_mutation_test(4) } OP_2DROP OP_TRUE },
+            malformed,
+        );
+        assert!(
+            mutant.success,
+            "unchecked mutant should expose the missing range check: {mutant}"
+        );
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                assert_nibble_range_error(&mutant, ExecError::Verify, "unchecked mutant")
+            }))
+            .is_err(),
+            "shared range-error contract accepted the unchecked mutant"
+        );
     }
 
     #[test]

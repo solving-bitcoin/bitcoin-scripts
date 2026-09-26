@@ -31,7 +31,11 @@ boundary is not comparable evidence.
   optional `static_non_push_opcodes` catalog field; it must not populate
   `executed_opcodes` when dynamic counting is unavailable.
 - **Validation weight:** tapscript validation budget consumed under the stated
-  interpreter and transaction context.
+  interpreter and transaction context. Record initial and remaining budget: the
+  initial value is `50 + serialized complete witness bytes`, including its item
+  count, every item length, the leaf, control block and optional annex. Each
+  executed nonempty signature consumes 50 units; an empty signature consumes
+  none. A data-only witness size is not a complete-transaction budget.
 - **Generation/execution time:** wall time is diagnostic, not a consensus
   property. Record CPU, build profile, sample count, and dispersion.
 
@@ -98,7 +102,9 @@ Every measured result must identify:
 - script context (legacy, P2WSH, or tapscript);
 - enabled consensus checks;
 - policy rules, if claimed;
-- transaction context, if signature or validation-weight behavior matters.
+- transaction context, if signature, timelock or validation-weight behavior matters.
+  For CSV, record transaction version, selected input `nSequence`, and whether
+  relative height/median-time maturity is checked or delegated to Core.
 
 New Rust experiment generators should obtain resolved Git identities from
 [`support::provenance`](../src/support/provenance.rs), which embeds `Cargo.lock`
@@ -128,8 +134,11 @@ reported as ordinary interpreter rejection or silently assigned a measured peak.
 Earlier strict-helper success alone did not exclude entry or transient-push
 overflow; see [NR-043](negative-results/index.md#nr-043-upstream-stack-limit-enforcement-misses-entry-and-data-pushes).
 Even after this repair, local stack enforcement does not establish full
-consensus or policy validity, executed-opcode counts, or correctly framed
-Taproot signature budgets. Revalidate the specific configuration before
+consensus or policy validity or executed-opcode counts. The transaction-aware
+`Exec::new_tapscript` and `try_dry_run_taproot_input` now derive budgets from the
+complete selected-input witness; older fragment constructors retain data-only
+accounting. See the [budget experiment](tapscript-budget-validation.md).
+Revalidate the specific configuration before
 strengthening its evidence or deployment class.
 
 ## Ordering objectives

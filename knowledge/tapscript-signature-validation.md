@@ -11,6 +11,11 @@ diagnostics**, eliminating all 13 baseline disagreements and six panics. Two
 fresh Core runs produce byte-identical reports. The transactions, scripts,
 witnesses, signatures and Core results are unchanged between baseline and repair.
 
+The later [complete-witness budget experiment](tapscript-budget-validation.md)
+adds an explicit transaction-aware constructor and annex handling. This page
+and its two stored reports retain their original interpreter pins and data-only
+constructor boundary; they do not measure signature-budget exhaustion.
+
 ## Reproduce
 
 ```sh

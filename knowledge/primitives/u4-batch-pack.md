@@ -26,6 +26,19 @@ surrounding main/alt-stack preservation. It is a fragment, not a complete
 locking script, and makes no consensus, policy, or cryptographic-security
 claim.
 
+Malformed-input coverage uses four runtime witness items and exercises `-1`,
+`16`, and a five-byte ScriptNum encoding at every position. The generated
+fragment is compiled through `ScriptCompilation::compile_with_policy()` and run
+with `execute_script_with_inputs_strict()`; the harness uses `OP_2DROP OP_TRUE`
+to consume the two hypothetical outputs from a successful pack, so leftover
+outputs cannot hide a missing range check. It distinguishes `OP_VERIFY`
+failures from ScriptNum overflow. The valid control uses the same cleanup.
+This helper runs in the repository's
+pinned tapscript interpreter and enforces stack and witness-element limits, but
+does not establish full consensus or relay-policy validity. Compiler and
+interpreter commits are pinned in `Cargo.lock` and are available through
+[`support::provenance`](../../src/support/provenance.rs).
+
 ## Limitations
 
 The standalone batch ceiling is 664 nibbles before accounting for unrelated
