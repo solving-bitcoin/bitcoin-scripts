@@ -151,6 +151,11 @@ fn taproot_dry_run_uses_the_same_resource_checks() {
         witness.push(drop_items(count));
         let mut control = vec![0; 33];
         control[0] = 0xc0;
+        let key = bitcoin::secp256k1::Keypair::from_secret_key(
+            &bitcoin::secp256k1::Secp256k1::new(),
+            &bitcoin::secp256k1::SecretKey::from_slice(&[1; 32]).unwrap(),
+        );
+        control[1..].copy_from_slice(&key.x_only_public_key().0.serialize());
         witness.push(control);
         let tx = bitcoin::Transaction {
             version: bitcoin::transaction::Version::TWO,
@@ -161,7 +166,11 @@ fn taproot_dry_run_uses_the_same_resource_checks() {
             }],
             output: vec![],
         };
-        let result = dry_run_taproot_input(&tx, 0, &[]);
+        let prevout = bitcoin::TxOut {
+            value: bitcoin::Amount::ZERO,
+            script_pubkey: bitcoin::ScriptBuf::new(),
+        };
+        let result = dry_run_taproot_input(&tx, 0, &[prevout]);
         assert_eq!(result.success, expected_error.is_none());
         assert_eq!(result.error, expected_error);
         assert!(result.stack_limit_enforced);

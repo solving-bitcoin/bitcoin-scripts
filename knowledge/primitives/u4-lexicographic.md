@@ -42,12 +42,15 @@ transaction context.
 | One 128-nibble vector plus embedded right vector | 7,628 bytes | 257 bytes | 128 | 0 (none) | 259 | 4,354 |
 
 The strict local executor enforces the combined 1,000-item stack limit for the
-measurement. Deployment remains `unclassified`: the fragment is below the
-10,000-byte script-size ceiling but has more than 201 non-push opcodes and has
-not been differentially validated against Bitcoin Core.
+measurement. The fragment supports widths `1..=498`; its standalone peak is
+`2*n + 3`, so width 498 reaches 999 items and leaves one item for surrounding
+state. Deployment remains `unclassified`: the fragment is below the legacy /
+P2WSH 10,000-byte script-size limit but has more than the legacy / P2WSH
+201-opcode consensus limit. Neither legacy limit applies to tapscript; complete
+spend validation and policy validation remain open.
 
 For the all-`0x0f` representative, the fixed-right form uses 257 serialized
-witness bytes for one vector versus 513 bytes for two vectors, removing 128
+witness bytes for one vector versus 515 bytes for two vectors, removing 128
 entry items and 256 witness bytes for 128 additional locking bytes. The
 embedded vector is still pushed before the comparison, so the attained strict
 peak remains 259 items.
@@ -61,6 +64,7 @@ rejects an out-of-range nibble, and rejects zero-width generation. Run:
 cargo test --locked arithmetic::u4::compare::tests::compares_against_embedded_constant --lib
 cargo test --locked arithmetic::u4::compare::tests::preserves_surrounding_main_and_alt_stack_items --lib
 cargo test --locked arithmetic::u4::compare::tests::rejects_out_of_range_constant --lib
+cargo test --locked arithmetic::u4::compare::tests::maximum_width_stays_within_combined_stack_budget --lib
 cargo test --locked --test primitive_metrics u4_lexicographic_constant_metrics_are_current -- --exact
 python3 tools/kb.py validate
 ```

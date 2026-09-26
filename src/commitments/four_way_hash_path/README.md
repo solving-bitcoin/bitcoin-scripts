@@ -15,13 +15,15 @@ Metrics are fragment-only: input pushes and the caller's output predicate are
 excluded; witness bytes include CompactSize item counts and lengths. Sizes use
 `compile_with_policy()` with optimization enabled. Stack peaks combine main
 and alt stacks. Metric execution uses bitcoin-scriptexec
-`702544c9a045ac4fc14846da6da6559e2b7cd9d1` in tapscript mode with the stack limit
-disabled (`research-unlimited`); evidence is `locally-reproduced`, not Core
-consensus or relay-policy validation.
+`702544c9a045ac4fc14846da6da6559e2b7cd9d1` in tapscript mode with the stack
+limit disabled (`research-unlimited`). The retained-digit row uses strict local
+stack checks (`unclassified`); neither row is Core consensus or relay-policy
+validation.
 
 | Fragment | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | `verify_four_way_hash_path_to_integer(31, commitment)` | <!-- metric:four_way_hash_path_integer_31 -->438<!-- /metric:four_way_hash_path_integer_31 --> bytes | <!-- metric:four_way_hash_path_integer_witness_31 -->61<!-- /metric:four_way_hash_path_integer_witness_31 --> bytes (32-byte nonce, 16 digits) | <!-- metric:four_way_hash_path_integer_stack_31 -->19<!-- /metric:four_way_hash_path_integer_stack_31 --> |
+| `verify_four_way_hash_path_to_altstack(16, commitment)` | <!-- metric:four_way_hash_path_altstack_16 -->360<!-- /metric:four_way_hash_path_altstack_16 --> bytes | <!-- metric:four_way_hash_path_altstack_witness_16 -->61<!-- /metric:four_way_hash_path_altstack_witness_16 --> bytes, 17 data items, 0 hints (<!-- metric:four_way_hash_path_altstack_witness_max_16 -->66<!-- /metric:four_way_hash_path_altstack_witness_max_16 --> maximum) | <!-- metric:four_way_hash_path_altstack_stack_16 -->20<!-- /metric:four_way_hash_path_altstack_stack_16 --> |
 
 ## Security
 
@@ -51,7 +53,7 @@ digit values, not unique bytes absent MINIMALDATA. There are **0 hint items**,
 ## Stack contract
 
 The raw script returns the digest; verification returns true, optionally
-retaining digits on altstack. The integer adapter returns the integer and
+retaining the original digit bytes on altstack. The integer adapter returns the integer and
 cleans up its accumulator. Append a terminal predicate for clean truthy
 success. Generic retained digits leave the last digit on top of altstack.
 

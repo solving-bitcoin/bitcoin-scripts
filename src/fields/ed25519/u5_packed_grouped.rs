@@ -8,10 +8,10 @@
 //! It validates the zero padding bit and the nineteen-value canonical gap.
 //! It requires zero auxiliary hint items, including when invoked repeatedly.
 //! The sixteen script-built power constants are included in its 62-item local
-//! combined-stack peak and are removed before returning. A 937-item preserved
-//! prefix therefore composes at a strict peak of 999 items.
+//! combined-stack peak and are removed before returning. A 938-item preserved
+//! prefix therefore composes at a strict peak of 1,000 items.
 //! The digit decoder uses the same sixteen powers and has a 93-item local
-//! peak, so its corresponding 999-item frontier preserves 906 items.
+//! peak, so its corresponding 1,000-item frontier preserves 907 items.
 //!
 //! Every numeric input to arithmetic is within signed four-byte ScriptNum
 //! range. Word normalization reaches at most `2^31-1`; all twenty-bit limb
@@ -202,4 +202,149 @@ pub fn decode_digits_with_table_cutoff(preserved_items: u32, table_cutoff: usize
 /// combined main/alt-stack bound.
 pub fn decode_digits(preserved_items: u32) -> Script {
     decode_digits_with_table_cutoff(preserved_items, 15)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        fields::ed25519::u5_packed, support::execution::execute_raw_script_with_inputs_strict,
+    };
+
+    fn item(value: i64) -> Vec<u8> {
+        let mut bytes = [0u8; 8];
+        let length = bitcoin::script::write_scriptint(&mut bytes, value);
+        bytes[..length].to_vec()
+    }
+
+    fn witness(words: &[u32; 8]) -> Vec<Vec<u8>> {
+        words
+            .iter()
+            .rev()
+            .map(|word| item(i64::from(*word as i32)))
+            .collect()
+    }
+
+    fn frontier_words() -> [u32; 8] {
+        let mut words = [u32::MAX; 8];
+        words[0] = 0xffff_ffec;
+        words[7] = 0x7fff_ffff;
+        words
+    }
+
+    fn expected_limbs(words: &[u32; 8]) -> Vec<Vec<u8>> {
+        let digits = u5_packed::digits_from_packed_words(words).unwrap();
+        let mut start = 0;
+        LIMB_DIGITS
+            .iter()
+            .map(|width| {
+                let result = digits[start..start + width]
+                    .iter()
+                    .rev()
+                    .fold(0i64, |value, digit| 32 * value + i64::from(*digit) - 16);
+                start += width;
+                item(result)
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect()
+    }
+
+    #[test]
+    fn generator_accepts_maximum_preserved_item_counts() {
+        assert!(std::panic::catch_unwind(|| decode(938)).is_ok());
+        assert!(std::panic::catch_unwind(|| decode_digits(907)).is_ok());
+    }
+
+    #[test]
+    fn generator_rejects_next_preserved_item_counts() {
+        assert!(std::panic::catch_unwind(|| decode(939)).is_err());
+        assert!(std::panic::catch_unwind(|| decode_digits(908)).is_err());
+    }
+
+    #[test]
+    fn strict_execution_reaches_and_overflows_the_preserved_item_frontiers() {
+        let words = frontier_words();
+        let grouped = execute_raw_script_with_inputs_strict(
+            decode(938).compile_with_policy().to_bytes(),
+            [
+                (0..938)
+                    .map(|index| item(10_000 + index as i64))
+                    .collect::<Vec<_>>(),
+                witness(&words),
+            ]
+            .concat(),
+        );
+        assert!(
+            grouped.error.is_none(),
+            "grouped frontier failed: {grouped}"
+        );
+        assert_eq!(grouped.stats.max_nb_stack_items, 1_000);
+        for index in 0..938 {
+            assert_eq!(grouped.final_stack.get(index), item(10_000 + index as i64));
+        }
+        for (index, expected) in expected_limbs(&words).into_iter().enumerate() {
+            assert_eq!(grouped.final_stack.get(938 + index), expected);
+        }
+
+        let digits = u5_packed::digits_from_packed_words(&words).unwrap();
+        let digit_result = execute_raw_script_with_inputs_strict(
+            decode_digits(907).compile_with_policy().to_bytes(),
+            [
+                (0..907)
+                    .map(|index| item(20_000 + index as i64))
+                    .collect::<Vec<_>>(),
+                witness(&words),
+            ]
+            .concat(),
+        );
+        assert!(
+            digit_result.error.is_none(),
+            "digit frontier failed: {digit_result}"
+        );
+        assert_eq!(digit_result.stats.max_nb_stack_items, 1_000);
+        for index in 0..907 {
+            assert_eq!(
+                digit_result.final_stack.get(index),
+                item(20_000 + index as i64)
+            );
+        }
+        for (index, digit) in digits.iter().rev().enumerate() {
+            assert_eq!(
+                digit_result.final_stack.get(907 + index),
+                item(i64::from(*digit))
+            );
+        }
+
+        let grouped_overflow = execute_raw_script_with_inputs_strict(
+            decode(938).compile_with_policy().to_bytes(),
+            [
+                (0..939)
+                    .map(|index| item(30_000 + index as i64))
+                    .collect::<Vec<_>>(),
+                witness(&words),
+            ]
+            .concat(),
+        );
+        assert_eq!(
+            grouped_overflow.error,
+            Some(bitcoin_scriptexec::ExecError::StackSize)
+        );
+
+        let digit_overflow = execute_raw_script_with_inputs_strict(
+            decode_digits(907).compile_with_policy().to_bytes(),
+            [
+                (0..908)
+                    .map(|index| item(40_000 + index as i64))
+                    .collect::<Vec<_>>(),
+                witness(&words),
+            ]
+            .concat(),
+        );
+        assert_eq!(
+            digit_overflow.error,
+            Some(bitcoin_scriptexec::ExecError::StackSize)
+        );
+    }
 }
