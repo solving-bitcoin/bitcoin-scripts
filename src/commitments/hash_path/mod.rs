@@ -266,6 +266,69 @@ mod tests {
     }
 
     #[test]
+    fn retained_bits_preserve_order_and_unrelated_state() {
+        let bits = [true, false, true, false, false];
+        let preimage = [0x42; 32];
+        let commitment = hash_path_commitment(&preimage, &bits);
+        let mut witness = vec![vec![77]];
+        witness.extend(
+            bits.iter()
+                .rev()
+                .map(|bit| if *bit { vec![1] } else { vec![] }),
+        );
+        witness.push(preimage.to_vec());
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { verify_hash_path_to_altstack(bits.len(), commitment) }
+                OP_1 OP_EQUALVERIFY
+                77 OP_EQUALVERIFY
+                for bit in bits.iter().rev() {
+                    OP_FROMALTSTACK { if *bit { 1 } else { 0 } } OP_EQUALVERIFY
+                }
+                OP_FROMALTSTACK 99 OP_EQUAL
+            },
+            witness,
+        );
+        assert!(result.success, "retained bit contract changed: {result}");
+    }
+
+    #[test]
+    fn retained_bit_verifier_rejects_wrong_opening_and_malformed_input() {
+        let preimage = [0x42; 32];
+        let commitment = hash_path_commitment(&preimage, &[true, false, true]);
+        let wrong = crate::support::execution::execute_script_with_inputs_strict(
+            script! { { verify_hash_path_to_altstack(3, commitment) } },
+            vec![vec![1], vec![], vec![1], vec![0x43; 32]],
+        );
+        assert!(matches!(
+            wrong.error,
+            Some(bitcoin_scriptexec::ExecError::EqualVerify)
+        ));
+
+        let malformed = crate::support::execution::execute_script_with_inputs_strict(
+            script! { { verify_hash_path_to_altstack(1, commitment) } },
+            vec![vec![2], preimage.to_vec()],
+        );
+        assert!(!malformed.success);
+
+        let missing = crate::support::execution::execute_script_with_inputs_strict(
+            script! { { verify_hash_path_to_altstack(1, commitment) } },
+            vec![preimage.to_vec()],
+        );
+        assert!(matches!(
+            missing.error,
+            Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+        ));
+    }
+
+    #[test]
+    #[should_panic(expected = "bit_width must be non-zero")]
+    fn retained_bit_verifier_rejects_zero_width() {
+        let _ = verify_hash_path_to_altstack(0, [0; 20]);
+    }
+
+    #[test]
     fn noncanonical_legacy_selectors_are_normalized_but_tapscript_rejects() {
         for (selector, bit) in [
             (vec![0], false),

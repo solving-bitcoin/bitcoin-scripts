@@ -15,6 +15,9 @@ and reconstructs a 1–31-bit non-negative Script integer.
 - **Representative result:** 31 bits use a 438-byte fragment, 61-byte
   serialized witness, and 19 stack items. The binary path uses 457 bytes, 78
   witness bytes, and 33 items under the same metric boundary.
+- **Retained-digit variant:** the generic 16-digit path uses a 360-byte
+  fragment, 61-byte witness, and 20-item strict local stack peak; it preserves
+  the original digit bytes on the altstack rather than reconstructing an integer.
 - **Security:** hiding requires a secret high-entropy preimage. The final
   160-bit digest caps generic collision resistance at 80 bits, and binding
   additionally relies on the non-standard mixed-hash schedule.

@@ -7,6 +7,7 @@
 use std::{env, fs, path::Path};
 
 use bitcoin::consensus::encode::serialize;
+use bitcoin::hashes::{sha256 as bitcoin_sha256, Hash};
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
@@ -16,8 +17,9 @@ use bitcoin_lab::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
         hash_path_commitment as compute_hash_path_commitment, hash_path_integer_commitment,
         hash_path_integer_witness, preimage_length_commitment, tapbranch_hash_u4,
-        tapbranch_hash_u4_witness, verify_four_way_hash_path_to_integer, verify_hash_path_chain,
-        verify_hash_path_to_integer, verify_preimage_length,
+        tapbranch_hash_u4_witness, verify_four_way_hash_path_to_altstack,
+        verify_four_way_hash_path_to_integer, verify_hash_path_chain, verify_hash_path_to_altstack,
+        verify_hash_path_to_integer, verify_preimage_length, verify_preimage_length_with_offset,
     },
     curves::bn254::groups::{g1::G1Affine, g2::G2Affine},
     fields::{
@@ -52,6 +54,35 @@ use num_traits::One;
 
 // FullWidth comparison rows remain stable when the public default changes.
 type FullWidthWots32 = FastWinternitz<32, Hash160, FullWidth>;
+
+const SHA256_MIDSTATE_42X64: [u32; 8] = [
+    0x8aab60bc, 0xcc769b35, 0x02b9786a, 0x434e707f, 0x943ce9ea, 0xd219ae8e, 0xdd54f002, 0xdc7dbb82,
+];
+
+fn sha256_midstate_u4_witness() -> Vec<Vec<u8>> {
+    (0u8..16)
+        .flat_map(|byte| [byte >> 4, byte & 0x0f])
+        .map(|nibble| {
+            if nibble == 0 {
+                Vec::new()
+            } else {
+                vec![nibble]
+            }
+        })
+        .collect()
+}
+
+fn sha256_midstate_u32_witness() -> Vec<Vec<u8>> {
+    (0u8..16).map(|byte| vec![byte]).collect()
+}
+
+fn bip340_challenge_tag_hash() -> [u8; 32] {
+    bitcoin_sha256::Hash::hash(b"BIP0340/challenge").to_byte_array()
+}
+
+fn sha256_tagged_hash_witness() -> Vec<Vec<u8>> {
+    vec![vec![0x42]; 32]
+}
 
 struct Metric {
     readme: &'static str,
@@ -1551,14 +1582,32 @@ fn commitment_metrics() -> Vec<Metric> {
     let hash_path_commitment =
         hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let hash_path_witness = hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+    let hash_path_altstack = verify_hash_path_to_altstack(31, hash_path_commitment);
+    let hash_path_altstack_witness = hash_path_witness.clone();
+    let hash_path_altstack_witness_max = {
+        let mut witness = vec![vec![1]; 31];
+        witness.push(vec![0; 32]);
+        witness
+    };
 
     let four_way_hash_path_commitment =
         four_way_hash_path_integer_commitment(&hash_path_preimage, hash_path_value, 31);
     let four_way_hash_path_witness =
         four_way_hash_path_integer_witness(&hash_path_preimage, hash_path_value, 31);
+    let four_way_hash_path_altstack =
+        verify_four_way_hash_path_to_altstack(16, four_way_hash_path_commitment);
+    let four_way_hash_path_altstack_witness = four_way_hash_path_witness.clone();
+    let four_way_hash_path_altstack_witness_max = {
+        let mut witness = vec![vec![3]; 16];
+        witness.push(vec![0; 32]);
+        witness
+    };
 
     let length_preimage = vec![0x24; 32];
     let length_commitment = preimage_length_commitment(&length_preimage);
+    let length_zero_commitment = preimage_length_commitment(&[]);
+    let length_max_preimage = vec![0x24; 520];
+    let length_max_commitment = preimage_length_commitment(&length_max_preimage);
 
     vec![
         Metric {
@@ -1580,6 +1629,34 @@ fn commitment_metrics() -> Vec<Metric> {
             ),
         },
         Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_31",
+            value: script_len(hash_path_altstack.clone()),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_witness_31",
+            value: witness_size(&hash_path_altstack_witness),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_witness_max_31",
+            value: witness_size(&hash_path_altstack_witness_max),
+        },
+        Metric {
+            readme: "src/commitments/hash_path/README.md",
+            key: "hash_path_altstack_stack_31",
+            value: max_stack_items_strict(
+                script! {
+                    { hash_path_altstack }
+                    OP_VERIFY
+                    for _ in 0..31 { OP_FROMALTSTACK OP_DROP }
+                    OP_TRUE
+                },
+                hash_path_altstack_witness,
+            ),
+        },
+        Metric {
             readme: "src/commitments/four_way_hash_path/README.md",
             key: "four_way_hash_path_integer_31",
             value: script_len(verify_four_way_hash_path_to_integer(
@@ -1598,6 +1675,34 @@ fn commitment_metrics() -> Vec<Metric> {
             value: max_stack_items(
                 verify_four_way_hash_path_to_integer(31, four_way_hash_path_commitment),
                 four_way_hash_path_witness,
+            ),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_16",
+            value: script_len(four_way_hash_path_altstack.clone()),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_witness_16",
+            value: witness_size(&four_way_hash_path_altstack_witness),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_witness_max_16",
+            value: witness_size(&four_way_hash_path_altstack_witness_max),
+        },
+        Metric {
+            readme: "src/commitments/four_way_hash_path/README.md",
+            key: "four_way_hash_path_altstack_stack_16",
+            value: max_stack_items_strict(
+                script! {
+                    { four_way_hash_path_altstack }
+                    OP_VERIFY
+                    for _ in 0..16 { OP_FROMALTSTACK OP_DROP }
+                    OP_TRUE
+                },
+                four_way_hash_path_altstack_witness,
             ),
         },
         Metric {
@@ -1623,10 +1728,66 @@ fn commitment_metrics() -> Vec<Metric> {
                 vec![length_preimage],
             ),
         },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0",
+            value: script_len(verify_preimage_length_with_offset(
+                length_zero_commitment,
+                0,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0_witness",
+            value: witness_size(&[Vec::new()]),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset0_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { verify_preimage_length_with_offset(length_zero_commitment, 0) }
+                    OP_0 OP_EQUAL
+                },
+                vec![Vec::new()],
+            ),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520",
+            value: script_len(verify_preimage_length_with_offset(
+                length_max_commitment,
+                520,
+            )),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520_witness",
+            value: witness_size(&[length_max_preimage.clone()]),
+        },
+        Metric {
+            readme: "src/commitments/preimage_length/README.md",
+            key: "preimage_length_offset520_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { verify_preimage_length_with_offset(length_max_commitment, 520) }
+                    OP_0 OP_EQUAL
+                },
+                vec![length_max_preimage],
+            ),
+        },
     ]
 }
 
 fn metrics() -> Vec<Metric> {
+    let sha2_u4_midstate_script =
+        sha256::sha2_u4::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let sha2_u4_midstate_witness = sha256_midstate_u4_witness();
+    let sha2_u4_midstate_boundary = script! {
+        { sha2_u4_midstate_script.clone() }
+        { u4::stack::u4_drop(64) }
+        OP_TRUE
+    };
     let blake3_message: [u8; 64] = std::array::from_fn(|index| index as u8);
     let blake3_expected = *::blake3::hash(&blake3_message).as_bytes();
     let blake3_push = blake3::blake3_push_message_script_with_limb(&blake3_message, 29);
@@ -2148,6 +2309,11 @@ fn metrics() -> Vec<Metric> {
     };
     let u4_bits_inputs = vec![scriptnum(15); U4_BITS_BATCH as usize];
     let aes_zero_key = [0u8; 16];
+    let aes_all_ones_key = [0xffu8; 16];
+    let aes_fips_key = [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+        0x0f,
+    ];
     let aes_stack_script = script! {
         { aes::aes128_encrypt(aes_zero_key) }
         for _ in 0..16 {
@@ -3880,8 +4046,80 @@ fn metrics() -> Vec<Metric> {
         },
         Metric {
             readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate",
+            value: script_len(sha256::sha2_u32::sha256_80bytes_from_midstate(
+                SHA256_MIDSTATE_42X64,
+            )),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_witness",
+            value: witness_size(&sha256_midstate_u32_witness()),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_stack",
+            value: max_stack_items(
+                script! {
+                    { sha256::sha2_u32::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64) }
+                    for _ in 0..32 {
+                        OP_DROP
+                    }
+                    OP_TRUE
+                },
+                vec![Vec::new(); 16],
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32",
+            value: script_len(sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                bip340_challenge_tag_hash(),
+            )),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_witness",
+            value: witness_size(&sha256_tagged_hash_witness()),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { sha256::sha2_u32::sha256_tagged_hash_32bytes(
+                        bip340_challenge_tag_hash(),
+                    ) }
+                    for _ in 0..32 { OP_DROP }
+                    OP_TRUE
+                },
+                vec![Vec::new(); 32],
+            ),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
             key: "sha2_u4_32",
             value: script_len(sha256::sha2_u4::sha256(32)),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate",
+            value: script_len(sha2_u4_midstate_script),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_witness",
+            value: witness_size(&sha2_u4_midstate_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_stack",
+            value: max_stack_items(sha2_u4_midstate_boundary.clone(), vec![Vec::new(); 32]),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_opcodes",
+            value: static_non_push_opcodes(sha2_u4_midstate_boundary),
         },
         Metric {
             readme: "src/hashes/shake256/README.md",
@@ -4086,6 +4324,16 @@ fn metrics() -> Vec<Metric> {
             readme: "src/ciphers/aes/README.md",
             key: "aes128_stack",
             value: max_stack_items(aes_stack_script, vec![Vec::new(); 32]),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_all_ones_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_all_ones_key)),
+        },
+        Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: "aes128_fips_encrypt",
+            value: script_len(aes::aes128_encrypt(aes_fips_key)),
         },
         Metric {
             readme: "src/ciphers/aes/README.md",
@@ -4336,6 +4584,36 @@ fn aes128_shift_rows_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+#[test]
+fn aes_key_profile_metrics_are_current() {
+    let profiles = [
+        ([0u8; 16], "aes128_encrypt"),
+        (
+            [
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                0x0e, 0x0f,
+            ],
+            "aes128_fips_encrypt",
+        ),
+        ([0xffu8; 16], "aes128_all_ones_encrypt"),
+    ];
+    let witness = vec![Vec::new(); 32];
+    let witness_max = vec![vec![1]; 32];
+    let mut metrics = Vec::new();
+
+    assert_eq!(witness_size(&witness), 33);
+    assert_eq!(witness_size(&witness_max), 65);
+    for (key, metric_key) in profiles {
+        let fragment = aes::aes128_encrypt(key);
+        metrics.push(Metric {
+            readme: "src/ciphers/aes/README.md",
+            key: metric_key,
+            value: script_len(fragment),
+        });
+    }
+    check_readme_metrics(metrics);
 }
 
 /// Exercise every Winternitz profile without the ignored repository-wide suite.
@@ -4593,6 +4871,44 @@ fn ed25519_packed_decoder_metrics_are_current() {
             readme: "src/fields/ed25519/README.md",
             key: "ed25519_packed_decoder_witness_max",
             value: witness_size(&witness),
+        },
+    ]);
+}
+
+#[test]
+fn u32_byte_planes_metrics_are_current() {
+    const WORD_COUNT: u32 = 8;
+    let fragment = u32::byte_planes::u32_words_to_byte_planes(WORD_COUNT, true);
+    let witness = vec![scriptnum(0xff); (4 * WORD_COUNT) as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            for _ in 0..4 * WORD_COUNT { OP_DROP }
+            OP_1
+        },
+        witness.clone(),
+    );
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_byte_planes_words8_opcodes",
+            value: static_non_push_opcodes(fragment),
         },
     ]);
 }
@@ -5840,6 +6156,11 @@ fn u4_bit_planes_metrics_are_current() {
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
+            key: "u4_bit_planes_batch16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
             key: "u4_bit_planes_batch16_stack",
             value: stack,
         },
@@ -6407,6 +6728,62 @@ fn u32_iszero_metrics_are_current() {
 #[test]
 fn commitment_metrics_are_current() {
     check_readme_metrics(commitment_metrics());
+}
+
+#[test]
+fn hors_index_boundary_metrics_are_current() {
+    let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+    let public_keys = hors::hors_public_keys(&preimages);
+    let locking = hors::hors_locking_script(&public_keys, 1);
+    let witness_127 = hors::hors_unlocking_witness(&preimages, &[127]);
+    let witness_128 = hors::hors_unlocking_witness(&preimages, &[128]);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_lock_n129_t1",
+            value: script_len(locking.clone()),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index127",
+            value: witness_size(&witness_127),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n129_t1_index128",
+            value: witness_size(&witness_128),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_stack_n129_t1",
+            value: max_stack_items_strict(locking, witness_127),
+        },
+    ]);
+}
+
+#[test]
+fn hors_witness_boundary_metrics_are_current() {
+    let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+    let public_keys = hors::hors_public_keys(&preimages);
+    let locking = hors::hors_locking_script(&public_keys, 8);
+    let witness = hors::hors_unlocking_witness(&preimages, &(1..=8).collect::<Vec<_>>());
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_lock_n32_t8",
+            value: script_len(locking.clone()),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_witness_n32_t8_max",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_stack_n32_t8",
+            value: max_stack_items_strict(locking, witness),
+        },
+    ]);
 }
 
 fn u254_sub_noborrow_metrics() -> Vec<Metric> {
@@ -7121,6 +7498,42 @@ fn u4_popcount_metrics_are_current() {
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_popcount_batch32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+#[test]
+fn u4_total_popcount_metrics_are_current() {
+    const NIBBLE_COUNT: u32 = 32;
+    let fragment = u4::popcount::u4_popcount(NIBBLE_COUNT);
+    let witness = vec![scriptnum(15); NIBBLE_COUNT as usize];
+    let stack = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            128 OP_EQUALVERIFY OP_TRUE
+        },
+        witness.clone(),
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_stack",
+            value: stack,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_popcount_total_batch32_opcodes",
             value: static_non_push_opcodes(fragment),
         },
     ]);
@@ -8321,6 +8734,99 @@ fn sha2_u4_shared_lookup_metrics() -> Vec<Metric> {
 #[test]
 fn sha2_u4_shared_lookup_metrics_are_current() {
     check_readme_metrics(sha2_u4_shared_lookup_metrics());
+}
+
+#[test]
+fn sha256_midstate_metrics_are_current() {
+    let u32_fragment = sha256::sha2_u32::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let u32_witness = sha256_midstate_u32_witness();
+    let u4_fragment = sha256::sha2_u4::sha256_80bytes_from_midstate(SHA256_MIDSTATE_42X64);
+    let u4_witness = sha256_midstate_u4_witness();
+    let u32_stack = max_stack_items(
+        script! {
+            { u32_fragment.clone() }
+            for _ in 0..32 { OP_DROP }
+            OP_TRUE
+        },
+        vec![Vec::new(); 16],
+    );
+    let u4_boundary = script! {
+        { u4_fragment.clone() }
+        { u4::stack::u4_drop(64) }
+        OP_TRUE
+    };
+    let u4_stack = max_stack_items_strict(u4_boundary.clone(), vec![Vec::new(); 32]);
+    assert_eq!(witness_size(&u32_witness), 33);
+    assert_eq!(witness_size(&vec![vec![0x80, 0]; 16]), 49);
+    assert_eq!(witness_size(&u4_witness), 48);
+    assert_eq!(witness_size(&vec![vec![0x0f]; 32]), 65);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate",
+            value: script_len(u32_fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_witness",
+            value: witness_size(&u32_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_80_midstate_stack",
+            value: u32_stack,
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate",
+            value: script_len(u4_fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_witness",
+            value: witness_size(&u4_witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_stack",
+            value: u4_stack,
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u4_80_midstate_opcodes",
+            value: static_non_push_opcodes(u4_boundary),
+        },
+    ]);
+}
+
+#[test]
+fn sha256_tagged_hash_metrics_are_current() {
+    let fragment = sha256::sha2_u32::sha256_tagged_hash_32bytes(bip340_challenge_tag_hash());
+    let boundary = script! {
+        { fragment.clone() }
+        for _ in 0..32 { OP_DROP }
+        OP_TRUE
+    };
+    let witness = sha256_tagged_hash_witness();
+    assert_eq!(witness_size(&witness), 65);
+    assert_eq!(witness_size(&vec![vec![0x80, 0]; 32]), 97);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32",
+            value: script_len(fragment),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/hashes/sha256/README.md",
+            key: "sha2_u32_tagged_32_stack",
+            value: max_stack_items_strict(boundary, vec![Vec::new(); 32]),
+        },
+    ]);
 }
 
 /// This isolated fixture measures only the checked u32 zero predicate.

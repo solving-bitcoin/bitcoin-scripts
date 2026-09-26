@@ -262,8 +262,9 @@
       "limitations": [
         "Fixed-width u4 vectors only",
         "Numeric nibble checks do not prove unique raw ScriptNum byte encodings",
-        "4,354 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH policy boundary",
-        "Bitcoin Core consensus and relay-policy validation have not been performed"
+        "4,354 static non-push opcodes exceed the 201-opcode legacy/P2SH/P2WSH consensus boundary",
+        "Legacy/P2WSH 10,000-byte and 201-opcode limits do not apply to tapscript; Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Widths are limited to 1..=498 because the standalone combined stack peak is 2*n + 3"
       ],
       "open_problems": [
         "OP-001",
@@ -300,7 +301,7 @@
         "tracked-stack"
       ],
       "security": "No independent cryptographic claim. Checked bit conversion, bit-plane transposition, and bit reversal enforce numeric nibble range before table indexing; the zero-mask projection performs canonical-nibble checks without a lookup table; unchecked conversion and other u4 operations require callers to supply certified canonical nibbles. Byte-unique ScriptNum encoding remains a protocol obligation where applicable.",
-      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
+      "stack_contract": "Values are expanded into four-bit stack digits. The batch bit converter consumes contiguous nibbles, uses a temporary 61-item table, and returns four bits per input on the main or altstack as selected by the API; the API chooses big- or little-endian bit order within each nibble. The bit-plane adapter preserves unrelated state and groups those bits by bit position. The bit-reversal adapter preserves nibble order while replacing each value with its four-bit reversal. The zero-mask projection consumes canonical nibbles and returns one numeric zero predicate per input without resident table memory. The per-nibble popcount projection returns one checked weight per input, while u4_popcount folds those weights to one total. The modulo-16 sum reducer consumes a checked batch and returns one accumulator while using a temporary 31-item table.",
       "configurations": [
         {
           "id": "addition-memory",
@@ -432,6 +433,7 @@
           "per_use_script_bytes": null,
           "metric_keys": [
             "u4_bit_planes_batch16",
+            "u4_bit_planes_batch16_witness",
             "u4_bit_planes_batch16_stack",
             "u4_bit_planes_batch16_opcodes"
           ],
@@ -490,6 +492,34 @@
             "u4_popcount_batch32_opcodes"
           ],
           "static_non_push_opcodes": 328
+        },
+        {
+          "id": "nibble-popcount-total-batch32-checked",
+          "label": "Checked total popcount of 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "check_inputs": true,
+            "table_items": 16,
+            "data_items": 32,
+            "hint_items": 0,
+            "output_range": "0..=128"
+          },
+          "includes": "fragment-only: shared 16-item popcount table, 32 range-checked queries, table cleanup, output folding, and one returned total; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 471,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 50,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 16,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_popcount_total_batch32",
+            "u4_popcount_total_batch32_witness",
+            "u4_popcount_total_batch32_stack",
+            "u4_popcount_total_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 359
         },
         {
           "id": "nibble-to-le-bits-batch32-checked",
@@ -772,7 +802,7 @@
       "id": "arithmetic/u4-parity",
       "name": "Checked u4 parity projection",
       "class": "arithmetic/word",
-      "summary": "Range-checked batch projection from canonical u4 nibbles to numeric parity bits.",
+      "summary": "Range-checked batch projection from numeric u4 nibbles to numeric parity bits.",
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
@@ -923,7 +953,13 @@
         "arithmetic::u32::shift_left::tests::checked_shift_accepts_boundaries",
         "arithmetic::u32::shift_left::tests::checked_shift_rejects_malformed_bytes",
         "arithmetic::u32::shift_left::tests::checked_shift_preserves_surrounding_stacks",
-        "primitive_metrics::u32_lshift8_checked_metrics_are_current"
+        "primitive_metrics::u32_lshift8_checked_metrics_are_current",
+        "arithmetic::u32::byte_planes::tests::transposes_words_in_msb_first_order",
+        "arithmetic::u32::byte_planes::tests::preserves_unrelated_main_and_alt_stack_items",
+        "arithmetic::u32::byte_planes::tests::checked_mode_rejects_malformed_byte_items_at_every_position",
+        "arithmetic::u32::byte_planes::tests::unchecked_mode_preserves_hostile_items_for_certified_callers",
+        "arithmetic::u32::byte_planes::tests::batch_guard_matches_the_strict_peak",
+        "primitive_metrics::u32_byte_planes_metrics_are_current"
       ],
       "references": [
         "bitcoin-script-locked",
@@ -933,8 +969,8 @@
         "digit-arithmetic",
         "lookup-table"
       ],
-      "security": "No independent cryptographic claim; every byte item must be canonical and in range. The canonical rrot8 adapter performs that byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
-      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
+      "security": "No independent cryptographic claim; every checked byte-plane input is constrained to numeric 0..=255, while the unchecked form preserves hostile items and requires a caller-proven byte invariant. The canonical rrot8 adapter performs its byte boundary before rotation. The canonical rrot16 adapter performs that byte boundary before rotation.",
+      "stack_contract": "A u32 occupies four byte-valued items; ordering varies only through documented stack helpers. The checked byte-plane transposition consumes contiguous MSB-first words and returns byte-major planes while preserving unrelated main-stack and altstack state. The zero predicate consumes four limbs and returns one boolean. The checked byte-equality mask consumes two words and returns one four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane. The checked MSB mask consumes one word and returns a four-bit numeric mask with bit 3 for the most-significant lane and bit 0 for the least-significant lane.",
       "configurations": [
         {
           "id": "add-drop",
@@ -1610,6 +1646,32 @@
             "u32_byte_reorder_witness_3",
             "u32_byte_reorder_stack_3"
           ]
+        },
+        {
+          "id": "byte-planes-words8-checked",
+          "label": "Checked 8-word byte-plane transposition",
+          "parameters": {
+            "word_count": 8,
+            "check_inputs": true,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: internal delimiter, byte range checks, generated stack permutation, and output restoration; representative witness supplies 32 minimally encoded byte data items; accepted four-byte numeric aliases can reach 161 witness bytes; static non-push opcode count is 252; excludes terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 411,
+          "witness_bytes": 97,
+          "witness_bytes_max": 161,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u32_byte_planes_words8",
+            "u32_byte_planes_words8_witness",
+            "u32_byte_planes_words8_stack",
+            "u32_byte_planes_words8_opcodes"
+          ],
+          "static_non_push_opcodes": 252
         }
       ],
       "limitations": [
@@ -1964,6 +2026,7 @@
       "tests": [
         "fields::ed25519::u5_balanced_table::tests",
         "fields::ed25519::bigint9::tests",
+        "fields::ed25519::u5_packed_grouped::tests",
         "examples/ed25519_packed_grouped_decode_probe.rs",
         "tests/primitive_metrics.rs"
       ],
@@ -2094,6 +2157,9 @@
             "temporary_powers_removed_before_return": true,
             "preserved_items_at_999_item_frontier": 937,
             "strict_combined_peak_at_preserved_frontier": 999,
+            "generator_max_preserved_items": 938,
+            "strict_combined_peak_at_generator_frontier": 1000,
+            "runtime_overflow_preserved_items": 939,
             "witness_fixture": "word0..6=0x80000000, word7=0x7ffffffe; minimal signed compressed-u32 encodings",
             "witness_serialization_boundary": "complete eight-item vector: one count byte, eight length bytes, seven five-byte words and one four-byte top word",
             "terminal_predicate_included": false
@@ -2144,6 +2210,9 @@
             "temporary_powers_removed_before_return": true,
             "preserved_items_at_999_item_frontier": 906,
             "strict_combined_peak_at_preserved_frontier": 999,
+            "generator_max_preserved_items": 907,
+            "strict_combined_peak_at_generator_frontier": 1000,
+            "runtime_overflow_preserved_items": 908,
             "witness_fixture": "word0..6=0x80000000, word7=0x7ffffffe; minimal signed compressed-u32 encodings",
             "witness_serialization_boundary": "complete eight-item vector: one count byte, eight length bytes, seven five-byte words and one four-byte top word",
             "terminal_predicate_included": false
@@ -3179,7 +3248,8 @@
       "implementation": "src/commitments/four_way_hash_path/mod.rs",
       "documentation": "src/commitments/four_way_hash_path/README.md",
       "tests": [
-        "commitments::four_way_hash_path::tests"
+        "commitments::four_way_hash_path::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342"
@@ -3212,6 +3282,26 @@
             "four_way_hash_path_integer_witness_31",
             "four_way_hash_path_integer_stack_31"
           ]
+        },
+        {
+          "id": "retained-digits-16",
+          "label": "16 retained four-way hash-path digits",
+          "parameters": { "digit_count": 16, "bit_width": 31, "preimage_bytes": 32, "retained_items": 16 },
+          "includes": "fragment-only: four-way verifier retaining raw digit encodings on altstack; excludes staging, retained-digit cleanup, and terminal predicate; witness has 16 digit items and one preimage, zero hints",
+          "script_bytes": 360,
+          "witness_bytes": 61,
+          "witness_bytes_max": 66,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 360,
+          "metric_keys": [
+            "four_way_hash_path_altstack_16",
+            "four_way_hash_path_altstack_witness_16",
+            "four_way_hash_path_altstack_witness_max_16",
+            "four_way_hash_path_altstack_stack_16"
+          ]
         }
       ],
       "limitations": [
@@ -3237,7 +3327,7 @@
       "documentation": "src/commitments/README.md",
       "tests": [
         "commitments::tapbranch::tests::matches_bip341_tagged_hash_for_ordered_nodes",
-        "commitments::tapbranch::tests::rejects_out_of_range_witness_nibbles_at_every_position",
+        "commitments::tapbranch::tests::rejects_runtime_malformed_nibbles_at_every_position",
         "commitments::tapbranch::tests::rejects_short_witness",
         "commitments::tapbranch::tests::wrong_node_order_changes_the_digest",
         "commitments::tapbranch::tests::preserves_surrounding_main_and_alt_stack_items",
@@ -3313,7 +3403,8 @@
       "implementation": "src/commitments/hash_path/mod.rs",
       "documentation": "src/commitments/hash_path/README.md",
       "tests": [
-        "commitments::hash_path::tests"
+        "commitments::hash_path::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342",
@@ -3324,7 +3415,7 @@
         "nested-hash-state"
       ],
       "security": "Starting preimage must be independently bound: (x, 1) and (SHA256(x), 0) otherwise open the same state. Hiding depends on opening entropy; mixed-hash binding remains experimental, with at most 80-bit generic collision resistance.",
-      "stack_contract": "... bitN-1 ... bit0 preimage -> ... value",
+      "stack_contract": "... bitN-1 ... bit0 preimage -> ... value; retained verification leaves true on main and normalized bitN-1 ... bit0 on altstack, with the starting preimage still caller-bound",
       "configurations": [
         {
           "id": "integer-31",
@@ -3346,6 +3437,26 @@
             "hash_path_integer_31",
             "hash_path_integer_witness_31",
             "hash_path_integer_stack_31"
+          ]
+        },
+        {
+          "id": "retained-bits-31",
+          "label": "31-bit retained hash-path bits",
+          "parameters": { "bit_width": 31, "preimage_bytes": 32, "retained_items": 31 },
+          "includes": "fragment-only: hash-path verifier retaining normalized bits on altstack; excludes staging, initial-state binding, retained-bit cleanup, and terminal predicate; witness has 31 selector items and one preimage, zero hints",
+          "script_bytes": 302,
+          "witness_bytes": 78,
+          "witness_bytes_max": 96,
+          "max_stack_items": 33,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 302,
+          "metric_keys": [
+            "hash_path_altstack_31",
+            "hash_path_altstack_witness_31",
+            "hash_path_altstack_witness_max_31",
+            "hash_path_altstack_stack_31"
           ]
         },
         {
@@ -3402,7 +3513,8 @@
       "implementation": "src/commitments/preimage_length/mod.rs",
       "documentation": "src/commitments/preimage_length/README.md",
       "tests": [
-        "commitments::preimage_length::tests"
+        "commitments::preimage_length::tests",
+        "primitive_metrics::commitment_metrics_are_current"
       ],
       "references": [
         "bip-342",
@@ -3412,7 +3524,7 @@
         "constant-embedding"
       ],
       "security": "Binding uses SHA-256; hiding depends on unpredictable preimage bytes and the length is revealed on opening.",
-      "stack_contract": "... preimage -> ... len(preimage)-offset",
+      "stack_contract": "... preimage -> ... len(preimage)-offset; the result is a non-negative integer, not a success Boolean, and the caller supplies any terminal predicate",
       "configurations": [
         {
           "id": "offset-16",
@@ -3436,6 +3548,44 @@
             "preimage_length_witness_min",
             "preimage_length_witness_max",
             "preimage_length_stack"
+          ]
+        },
+        {
+          "id": "offset-0-boundary",
+          "label": "Empty preimage at offset 0",
+          "parameters": { "offset": 0, "preimage_bytes": 0 },
+          "includes": "fragment-only: preimage hash and zero-length result; excludes terminal predicate; one empty data item and zero hints",
+          "script_bytes": 42,
+          "witness_bytes": 2,
+          "witness_bytes_max": 2,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 42,
+          "metric_keys": [
+            "preimage_length_offset0",
+            "preimage_length_offset0_witness",
+            "preimage_length_offset0_stack"
+          ]
+        },
+        {
+          "id": "offset-520-boundary",
+          "label": "520-byte preimage at offset 520",
+          "parameters": { "offset": 520, "preimage_bytes": 520 },
+          "includes": "fragment-only: consensus-size preimage hash and zero-length result; excludes terminal predicate; one 520-byte data item and zero hints; no relay-policy claim",
+          "script_bytes": 46,
+          "witness_bytes": 524,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 46,
+          "metric_keys": [
+            "preimage_length_offset520",
+            "preimage_length_offset520_witness",
+            "preimage_length_offset520_stack"
           ]
         }
       ],
@@ -3769,7 +3919,9 @@
       "implementation": "src/hashes/sha256/sha2_u32.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u32::tests::test_sha256"
+        "hashes::sha256::sha2_u32::tests::test_sha256",
+        "hashes::sha256::sha2_u32::tests::test_sha256_80bytes_from_midstate",
+        "hashes::sha256::sha2_u32::tests::test_sha256_tagged_hash_matches_multiple_vectors"
       ],
       "references": [
         "fips-180-4",
@@ -3800,10 +3952,61 @@
           "metric_keys": [
             "sha2_u32_32"
           ]
+        },
+        {
+          "id": "midstate-16-suffix",
+          "label": "64-byte prefix midstate plus 16-byte suffix",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16,
+            "total_message_bytes": 80
+          },
+          "includes": "fragment-only: one-block continuation; excludes midstate generation, prefix binding, message pushes, and digest comparison",
+          "script_bytes": 530686,
+          "witness_bytes": 33,
+          "witness_bytes_max": 49,
+          "max_stack_items": 856,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 530686,
+          "metric_keys": [
+            "sha2_u32_80_midstate",
+            "sha2_u32_80_midstate_witness",
+            "sha2_u32_80_midstate_stack"
+          ]
+        },
+        {
+          "id": "bip340-tagged-32",
+          "label": "BIP340-style tagged hash over a 32-byte message",
+          "parameters": {
+            "tag_hash_bytes": 32,
+            "message_bytes": 32,
+            "total_message_bytes": 96,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: host-precomputed tag block plus one Script continuation block; excludes message pushes and digest comparison",
+          "script_bytes": 530755,
+          "witness_bytes": 65,
+          "witness_bytes_max": 97,
+          "max_stack_items": 856,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 530755,
+          "execution_class": "research-unlimited",
+          "strict_stack_limit_test": true,
+          "metric_keys": [
+            "sha2_u32_tagged_32",
+            "sha2_u32_tagged_32_witness",
+            "sha2_u32_tagged_32_stack"
+          ]
         }
       ],
       "limitations": [
         "Larger than local u4 configuration",
+        "Caller must bind the supplied midstate to the fixed prefix",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [
@@ -3824,7 +4027,9 @@
       "implementation": "src/hashes/sha256/sha2_u4.rs",
       "documentation": "src/hashes/sha256/README.md",
       "tests": [
-        "hashes::sha256::sha2_u4::tests::test_sha256_strs"
+        "hashes::sha256::sha2_u4::tests::test_sha256_strs",
+        "hashes::sha256::sha2_u4::tests::test_sha256_80bytes_from_midstate",
+        "hashes::sha256::sha2_u4::tests::test_sha256_80bytes_from_midstate_has_strict_stack_profile"
       ],
       "references": [
         "fips-180-4",
@@ -3883,10 +4088,41 @@
           "metric_keys": [
             "sha2_u4_32"
           ]
+        },
+        {
+          "id": "midstate-16-suffix",
+          "label": "64-byte prefix midstate plus 16-byte suffix",
+          "parameters": {
+            "prefix_bytes": 64,
+            "suffix_bytes": 16,
+            "total_message_bytes": 80,
+            "suffix_witness_items": 32,
+            "midstate_fixture": "SHA-256 compress of 64 bytes of 0x42"
+          },
+          "includes": "fragment-only: one-block continuation from a caller-supplied midstate; excludes midstate generation, prefix binding, suffix pushes, and digest comparison",
+          "script_bytes": 332830,
+          "witness_bytes": 48,
+          "witness_bytes_max": 65,
+          "max_stack_items": 969,
+          "executed_opcodes": 195219,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 332830,
+          "opcode_measurement": "static non-push opcode count",
+          "execution_class": "research-unlimited",
+          "strict_stack_limit_test": true,
+          "hint_stack_items": 0,
+          "metric_keys": [
+            "sha2_u4_80_midstate",
+            "sha2_u4_80_midstate_witness",
+            "sha2_u4_80_midstate_stack",
+            "sha2_u4_80_midstate_opcodes"
+          ]
         }
       ],
       "limitations": [
         "Table configuration affects stack peak",
+        "Caller must bind the supplied midstate to the fixed 64-byte prefix",
         "Strict complete-leaf feasibility unclassified"
       ],
       "open_problems": [
@@ -4329,6 +4565,44 @@
             "aes128_witness_min",
             "aes128_witness_max",
             "aes128_stack"
+          ]
+        },
+        {
+          "id": "fips-key",
+          "label": "Embedded FIPS-197 key 00..0f",
+          "parameters": {
+            "key_hex": "000102030405060708090a0b0c0d0e0f"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25449,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25449,
+          "metric_keys": [
+            "aes128_fips_encrypt"
+          ]
+        },
+        {
+          "id": "all-ones-key",
+          "label": "Embedded all-ones key",
+          "parameters": {
+            "key_hex": "ffffffffffffffffffffffffffffffff"
+          },
+          "includes": "fragment-with-memory: full encryption including shared table memory; witness serializes plaintext nibbles",
+          "script_bytes": 25520,
+          "witness_bytes": 33,
+          "witness_bytes_max": 65,
+          "max_stack_items": 908,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 25520,
+          "metric_keys": [
+            "aes128_all_ones_encrypt"
           ]
         },
         {
@@ -5133,7 +5407,9 @@
       "implementation": "src/signatures/hors/mod.rs",
       "documentation": "src/signatures/hors/README.md",
       "tests": [
-        "signatures::hors::tests"
+        "signatures::hors::tests",
+        "primitive_metrics::hors_index_boundary_metrics_are_current",
+        "primitive_metrics::hors_witness_boundary_metrics_are_current"
       ],
       "references": [
         "binohash-paper"
@@ -5142,7 +5418,7 @@
         "hash-chain"
       ],
       "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160.",
-      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true.",
+      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true. Host indices are minimally serialized, but the verifier clamps with OP_MIN and does not independently require canonical index bytes.",
       "configurations": [
         {
           "id": "n32-t8",
@@ -5155,15 +5431,37 @@
           "includes": "fragment-only: locking verifier and serialized subset witness",
           "script_bytes": 809,
           "witness_bytes": 280,
-          "witness_bytes_max": 280,
-          "max_stack_items": null,
+          "witness_bytes_max": 281,
+          "max_stack_items": 50,
           "executed_opcodes": null,
           "validation_weight": null,
           "setup_script_bytes": 0,
           "per_use_script_bytes": 809,
           "metric_keys": [
             "hors_lock_n32_t8",
-            "hors_witness_n32_t8"
+            "hors_witness_n32_t8",
+            "hors_witness_n32_t8_max",
+            "hors_stack_n32_t8"
+          ]
+        },
+        {
+          "id": "n129-t1-index-boundary",
+          "label": "n=129, t=1 HORS index serialization boundary",
+          "parameters": { "n": 129, "t": 1, "preimage_bytes": 32, "indices": [127, 128] },
+          "includes": "fragment-only: locking verifier and canonical index boundary witnesses; index 127 is one byte and index 128 is two bytes; zero hints; verifier clamps out-of-range indices with OP_MIN",
+          "script_bytes": 2792,
+          "witness_bytes": 36,
+          "witness_bytes_max": 37,
+          "max_stack_items": 133,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2792,
+          "metric_keys": [
+            "hors_lock_n129_t1",
+            "hors_witness_n129_t1_index127",
+            "hors_witness_n129_t1_index128",
+            "hors_stack_n129_t1"
           ]
         }
       ],
@@ -9375,17 +9673,19 @@
       "id": "arithmetic/u4-lsb",
       "name": "Checked u4 least-significant-bit projection",
       "class": "arithmetic/word",
-      "summary": "Range-checked batch projection from canonical u4 nibbles to their least-significant bits.",
+      "summary": "Range-checked batch projection from numeric u4 nibbles to their least-significant bits.",
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-18",
       "knowledge_page": "knowledge/primitives/u4-lsb.md",
       "implementation": "src/arithmetic/u4/lsb.rs",
       "documentation": "src/arithmetic/u4/README.md",
       "tests": [
-        "src/arithmetic/u4/lsb.rs",
-        "tests/primitive_metrics.rs"
+        "arithmetic::u4::lsb::tests::projects_all_nibble_least_significant_bits_in_order",
+        "arithmetic::u4::lsb::tests::rejects_out_of_range_nibbles_at_each_position",
+        "arithmetic::u4::lsb::tests::respects_stack_frontier_and_preserves_state",
+        "primitive_metrics::u4_lsb_metrics_are_current"
       ],
       "references": [
         "bitcoin-script-locked",

@@ -67,6 +67,7 @@ mod tests {
         script::script,
     };
     use bitcoin::hex::DisplayHex;
+    use bitcoin_scriptexec::ExecError;
 
     fn expected(left: [u8; 32], right: [u8; 32]) -> String {
         let tag_hash = sha256::Hash::hash(b"TapBranch");
@@ -103,30 +104,107 @@ mod tests {
         assert_digest([0xff; 32], [0xff; 32]);
     }
 
-    #[test]
-    fn rejects_out_of_range_witness_nibbles_at_every_position() {
-        for position in 0..128 {
-            for invalid in [vec![0x10], vec![0x81], vec![0xff, 0x00]] {
-                let mut witness = tapbranch_hash_u4_witness([0; 32], [1; 32]);
-                witness[position] = invalid.clone();
-                let result = execute_script_with_inputs_strict(
-                    script! {
-                        { validate_u4_nodes() } OP_TRUE
-                    },
-                    witness,
-                );
-                assert!(!result.success, "accepted position {position}: {invalid:?}");
-            }
+    fn assert_range_error(
+        result: &crate::support::execution::ExecuteInfo,
+        expected: ExecError,
+        scenario: &str,
+    ) {
+        assert!(
+            !result.success,
+            "accepted malformed nibble ({scenario}): {result}"
+        );
+        assert_eq!(
+            result.error.as_ref(),
+            Some(&expected),
+            "rejected malformed nibble for the wrong reason ({scenario}): {result}"
+        );
+    }
+
+    fn consume_all_node_items() -> Script {
+        script! {
+            for _ in 0..128 { OP_DROP }
+            OP_TRUE
         }
     }
 
     #[test]
+    fn rejects_runtime_malformed_nibbles_at_every_position() {
+        let valid_control = execute_script_with_inputs_strict(
+            script! { { validate_u4_nodes() } { consume_all_node_items() } },
+            vec![Vec::new(); 128],
+        );
+        assert!(
+            valid_control.success,
+            "valid control failed: {valid_control}"
+        );
+
+        for position in 0..128 {
+            for (label, encoded, expected_error) in [
+                ("negative", vec![0x81], ExecError::Verify),
+                ("sixteen", vec![0x10], ExecError::Verify),
+                (
+                    "script-number overflow",
+                    vec![0, 0, 0, 0, 1],
+                    ExecError::ScriptIntNumericOverflow,
+                ),
+            ] {
+                let mut witness = vec![Vec::new(); 128];
+                witness[position] = encoded;
+                let scenario = format!("{label} encoding at position {position}");
+                let result = execute_script_with_inputs_strict(
+                    script! { { validate_u4_nodes() } { consume_all_node_items() } },
+                    witness,
+                );
+                assert_range_error(&result, expected_error, &scenario);
+            }
+        }
+
+        let malformed = {
+            let mut witness = vec![Vec::new(); 128];
+            witness[0] = vec![0x81];
+            witness
+        };
+        let unchecked =
+            execute_script_with_inputs_strict(script! { { consume_all_node_items() } }, malformed);
+        assert!(
+            unchecked.success,
+            "validator-bypass mutant should expose the missing range check: {unchecked}"
+        );
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                assert_range_error(&unchecked, ExecError::Verify, "validator-bypass mutant")
+            }))
+            .is_err(),
+            "shared range-error assertion accepted the successful validator-bypass mutant"
+        );
+    }
+
+    #[test]
     fn rejects_short_witness() {
+        let valid_control = execute_script_with_inputs_strict(
+            script! {
+                { tapbranch_hash_u4() }
+                for _ in 0..64 { OP_DROP }
+                OP_TRUE
+            },
+            tapbranch_hash_u4_witness([0; 32], [1; 32]),
+        );
+        assert!(
+            valid_control.success,
+            "valid control failed: {valid_control}"
+        );
+
         let mut witness = tapbranch_hash_u4_witness([0; 32], [1; 32]);
         witness.pop();
-        let result =
-            execute_script_with_inputs_strict(script! { { tapbranch_hash_u4() } }, witness);
-        assert!(!result.success);
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { tapbranch_hash_u4() }
+                for _ in 0..64 { OP_DROP }
+                OP_TRUE
+            },
+            witness,
+        );
+        assert_range_error(&result, ExecError::InvalidStackOperation, "short witness");
     }
 
     #[test]
@@ -145,7 +223,7 @@ mod tests {
             },
             tapbranch_hash_u4_witness(right, left),
         );
-        assert!(!result.success);
+        assert_range_error(&result, ExecError::EqualVerify, "wrong node order");
     }
 
     #[test]

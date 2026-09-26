@@ -1,0 +1,2019 @@
+{
+  "active_consensus_deployments": [
+    "segwit",
+    "taproot"
+  ],
+  "all_core_expectations_met": true,
+  "all_local_consensus_comparisons_matched": true,
+  "all_local_policy_comparisons_matched": true,
+  "allow_local_mismatches": false,
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "compiler": {
+    "commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+    "name": "bitcoin-script",
+    "policy": "repository-policy",
+    "source": "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180"
+  },
+  "consensus_method": "generateblock with funded raw transactions",
+  "destination_script_pubkey_hex": "00204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+  "expected_bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+  "expected_bitcoin_core_version": "30.3",
+  "experiment": "funded-tapscript-csv-five-byte",
+  "fee_sat": 10000,
+  "fixture_count": 19,
+  "funded_fixture_sha256": "e9137eebed52e851269b3e97ed44cbd87e5cd1fa63a1cedafc6f97d1325c6be7",
+  "funding_transaction": {
+    "base_bytes": 911,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff1440420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce340420f00000000002251200fa120932d79e2749d77812b207a788c51c5313a9b900573f1a1108938781b5e30e0e328010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "total_bytes": 916,
+    "txid": "2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb",
+    "vsize": 913,
+    "weight": 3649,
+    "witness_bytes": 3,
+    "wtxid": "ad190685d9d15c2042a9217270f264612a62a057563c7626f0430c2b889e7c06"
+  },
+  "funding_value_sat": 1000000,
+  "initial_mocktime": 1800000000,
+  "internal_seed_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+  "local_consensus_mismatch_count": 0,
+  "local_interpreter": {
+    "commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+    "constructor": "Exec::new_tapscript",
+    "context": "tapscript",
+    "experimental_op_cat": false,
+    "limitations": "Local leaf execution does not verify Taproot commitment, full transaction or relay policy. Numeric-policy options do not implement all Core standardness. Dynamic executed-opcode count unavailable.",
+    "name": "bitcoin-scriptexec",
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+    "stack_limit_enforced": true
+  },
+  "local_policy_mismatch_count": 0,
+  "manifest_sha256": "d96bdd4deabf5878e6e0af9ab7bf9d7273d40d6e4f92987f37f6ab83417a9403",
+  "maturity_blocks_after_funding": 16,
+  "mining_address": "bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85",
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "policy_method": "testmempoolaccept with -acceptnonstdtxn=0; Core v30.3 defaults",
+  "resolved_interpreter": {
+    "name": "bitcoin-scriptexec",
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+    "version": "0.0.0"
+  },
+  "results": [
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "2112a067db15397d1fb43e634db5e3ea41b7f9ff56fb87113d3870285705fd5e",
+          "block_height": 119
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00095238,
+            "effective-includes": [
+              "8690938a33bf40d5b585668dbe4d4ea48b8204b186672222cce75e0bae4725a8"
+            ]
+          },
+          "txid": "38986c6997681fa5bba842b6468b72696138156638995ce88f8b4f7909a4d529",
+          "vsize": 105,
+          "wtxid": "8690938a33bf40d5b585668dbe4d4ea48b8204b186672222cce75e0bae4725a8"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        ""
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 0,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 90,
+          "remaining_validation_weight": 90
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 90,
+          "remaining_validation_weight": 90
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 2,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 90,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 90,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 40,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-zero-control",
+      "operand_hex": "",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832600000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260030003b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 136,
+        "txid": "38986c6997681fa5bba842b6468b72696138156638995ce88f8b4f7909a4d529",
+        "vsize": 105,
+        "weight": 418,
+        "witness_bytes": 40,
+        "wtxid": "8690938a33bf40d5b585668dbe4d4ea48b8204b186672222cce75e0bae4725a8"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "23eeff4269bdac33b687a65544a601f36904fa058946284f693050b0c34fff5b",
+          "block_height": 120
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "bd60c62533d617ce2271555d05fc8333a8a17a9ba7b7eb9c56bef56a1343de91"
+            ]
+          },
+          "txid": "8ef7251f323cb557c9e613d6dc2a4a4c422121145a635653f69efb9d13172424",
+          "vsize": 106,
+          "wtxid": "bd60c62533d617ce2271555d05fc8333a8a17a9ba7b7eb9c56bef56a1343de91"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000000001"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 1,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-zero",
+      "operand_hex": "0000000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832601000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "8ef7251f323cb557c9e613d6dc2a4a4c422121145a635653f69efb9d13172424",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "bd60c62533d617ce2271555d05fc8333a8a17a9ba7b7eb9c56bef56a1343de91"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "40db53f3c0473786f01c9202d3f63944f30e969068df9751844d2c8ab6da8e06",
+          "block_height": 121
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "0a3fb4fd5bcc536a60cfe4ff8df579d24c3913888eed527e23c9d22e5688c190"
+            ]
+          },
+          "txid": "383c01bcdf42063d908a12fc62d9fff78527c9f8e7cdd54403e19101edc6f15c",
+          "vsize": 106,
+          "wtxid": "0a3fb4fd5bcc536a60cfe4ff8df579d24c3913888eed527e23c9d22e5688c190"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000000040"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 2,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-bit-38",
+      "operand_hex": "0000000040",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832602000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000004003b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "383c01bcdf42063d908a12fc62d9fff78527c9f8e7cdd54403e19101edc6f15c",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "0a3fb4fd5bcc536a60cfe4ff8df579d24c3913888eed527e23c9d22e5688c190"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "204018733aeac0f1f1e8903aa6bca58aa300b8dc889f3c40aa38ef37bb535f30",
+          "block_height": 122
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "75ebe9ba95d9b222923cf53670b51d5e054c97130795526dc7de2863398e95d6"
+            ]
+          },
+          "txid": "010d1548ffcd552d41f75bd9b2729d5e11321c0650e7f916787641d2b01f8e0e",
+          "vsize": 106,
+          "wtxid": "75ebe9ba95d9b222923cf53670b51d5e054c97130795526dc7de2863398e95d6"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0500000001"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 3,
+      "hint_items": 0,
+      "input_sequence": 5,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-height-exact",
+      "operand_hex": "0500000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832603000000000500000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305050000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "010d1548ffcd552d41f75bd9b2729d5e11321c0650e7f916787641d2b01f8e0e",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "75ebe9ba95d9b222923cf53670b51d5e054c97130795526dc7de2863398e95d6"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 4a143a43c61b7debd0c28e4f15e3f9b76ad6efdad8b1ac5039097303df30fe71 (wtxid 0aaf72c03fa3a80be1d238aa1716ac98118be3f98a0659b1c60badc8a6cf8cce), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:4",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 4a143a43c61b7debd0c28e4f15e3f9b76ad6efdad8b1ac5039097303df30fe71 (wtxid 0aaf72c03fa3a80be1d238aa1716ac98118be3f98a0659b1c60badc8a6cf8cce), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:4",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "4a143a43c61b7debd0c28e4f15e3f9b76ad6efdad8b1ac5039097303df30fe71",
+          "wtxid": "0aaf72c03fa3a80be1d238aa1716ac98118be3f98a0659b1c60badc8a6cf8cce"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0600000001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 4,
+      "hint_items": 0,
+      "input_sequence": 5,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-height-short",
+      "operand_hex": "0600000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832604000000000500000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305060000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "4a143a43c61b7debd0c28e4f15e3f9b76ad6efdad8b1ac5039097303df30fe71",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "0aaf72c03fa3a80be1d238aa1716ac98118be3f98a0659b1c60badc8a6cf8cce"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "24b6da7806784fee6284714cdc483769bd4d3d80d95ac84dc9e523e02775d3f6",
+          "block_height": 123
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "be3475da129044c5a0ae18511b8cc1b682b076b02c92d46900605f32a2f8f9f4"
+            ]
+          },
+          "txid": "ebfd22b7683100855702f04e153e4de7995cebabfd70dfd2d4d08a8d1ac9e727",
+          "vsize": 106,
+          "wtxid": "be3475da129044c5a0ae18511b8cc1b682b076b02c92d46900605f32a2f8f9f4"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0500400001"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 5,
+      "hint_items": 0,
+      "input_sequence": 4194309,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-time-exact",
+      "operand_hex": "0500400001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832605000000000500400001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305050040000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "ebfd22b7683100855702f04e153e4de7995cebabfd70dfd2d4d08a8d1ac9e727",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "be3475da129044c5a0ae18511b8cc1b682b076b02c92d46900605f32a2f8f9f4"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 3649601f2b0a15d2e87eba1f402cd28fa8ca63ed16da81dc388ebe2944c49f1c (wtxid bb2c637c87dbf35d6855ad311c50649ae3cb7358a4a41215d5136a9e6d002f41), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:6",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 3649601f2b0a15d2e87eba1f402cd28fa8ca63ed16da81dc388ebe2944c49f1c (wtxid bb2c637c87dbf35d6855ad311c50649ae3cb7358a4a41215d5136a9e6d002f41), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:6",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "3649601f2b0a15d2e87eba1f402cd28fa8ca63ed16da81dc388ebe2944c49f1c",
+          "wtxid": "bb2c637c87dbf35d6855ad311c50649ae3cb7358a4a41215d5136a9e6d002f41"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0600400001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 6,
+      "hint_items": 0,
+      "input_sequence": 4194309,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-high-time-short",
+      "operand_hex": "0600400001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832606000000000500400001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305060040000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "3649601f2b0a15d2e87eba1f402cd28fa8ca63ed16da81dc388ebe2944c49f1c",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "bb2c637c87dbf35d6855ad311c50649ae3cb7358a4a41215d5136a9e6d002f41"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 90533705998bbb090bfdd07664121ca9dfacab685ecf52d89a277815cad65138 (wtxid 59441673be13434abbbbbddf057696f9fd93fc8d2571f73a4e1f53351902389b), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:7",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 90533705998bbb090bfdd07664121ca9dfacab685ecf52d89a277815cad65138 (wtxid 59441673be13434abbbbbddf057696f9fd93fc8d2571f73a4e1f53351902389b), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:7",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "90533705998bbb090bfdd07664121ca9dfacab685ecf52d89a277815cad65138",
+          "wtxid": "59441673be13434abbbbbddf057696f9fd93fc8d2571f73a4e1f53351902389b"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0100000001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 7,
+      "hint_items": 0,
+      "input_sequence": 4194305,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-height-to-time",
+      "operand_hex": "0100000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832607000000000100400001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305010000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "90533705998bbb090bfdd07664121ca9dfacab685ecf52d89a277815cad65138",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "59441673be13434abbbbbddf057696f9fd93fc8d2571f73a4e1f53351902389b"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 0fb5a77aa6e0a47321c5a6db185440b0584fcb809e9d17777098ddef09ffff56 (wtxid cfee04a743f61bef39f129715a94e77716f8dfdf79e9d7f6a53f667e33d84b83), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:8",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of 0fb5a77aa6e0a47321c5a6db185440b0584fcb809e9d17777098ddef09ffff56 (wtxid cfee04a743f61bef39f129715a94e77716f8dfdf79e9d7f6a53f667e33d84b83), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:8",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "0fb5a77aa6e0a47321c5a6db185440b0584fcb809e9d17777098ddef09ffff56",
+          "wtxid": "cfee04a743f61bef39f129715a94e77716f8dfdf79e9d7f6a53f667e33d84b83"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0100400001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 8,
+      "hint_items": 0,
+      "input_sequence": 1,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-time-to-height",
+      "operand_hex": "0100400001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832608000000000100000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305010040000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "0fb5a77aa6e0a47321c5a6db185440b0584fcb809e9d17777098ddef09ffff56",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "cfee04a743f61bef39f129715a94e77716f8dfdf79e9d7f6a53f667e33d84b83"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "521877e75e45720e3b2c041784b03ebfdbadb0ec78303df6e92ec10daa9d422e",
+          "block_height": 124
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "41d31d2e40dd3ba1b4fafd95e17d0b44edca1c8c7add88e5bb40b3bf8afc5b35"
+            ]
+          },
+          "txid": "6dd4dcb34f93d4577f7720862edcb755845f8c85fedf99c6bc16dca7bd4096d6",
+          "vsize": 106,
+          "wtxid": "41d31d2e40dd3ba1b4fafd95e17d0b44edca1c8c7add88e5bb40b3bf8afc5b35"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0500004001"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 9,
+      "hint_items": 0,
+      "input_sequence": 5,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-reserved-middle-bits",
+      "operand_hex": "0500004001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832609000000000500000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305050000400103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "6dd4dcb34f93d4577f7720862edcb755845f8c85fedf99c6bc16dca7bd4096d6",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "41d31d2e40dd3ba1b4fafd95e17d0b44edca1c8c7add88e5bb40b3bf8afc5b35"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of cf0aea68fdc119ab95019f061d80ea206178e36a3e6839e33c5e55664e6e3ff6 (wtxid 5c2d0468f414d68a751d59d43ff343ed22df46386f70f147eac43cf33875e44b), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:10",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of cf0aea68fdc119ab95019f061d80ea206178e36a3e6839e33c5e55664e6e3ff6 (wtxid 5c2d0468f414d68a751d59d43ff343ed22df46386f70f147eac43cf33875e44b), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:10",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "cf0aea68fdc119ab95019f061d80ea206178e36a3e6839e33c5e55664e6e3ff6",
+          "wtxid": "5c2d0468f414d68a751d59d43ff343ed22df46386f70f147eac43cf33875e44b"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000000001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 10,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-version-one",
+      "operand_hex": "0000000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "01000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260a000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "cf0aea68fdc119ab95019f061d80ea206178e36a3e6839e33c5e55664e6e3ff6",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "5c2d0468f414d68a751d59d43ff343ed22df46386f70f147eac43cf33875e44b"
+      },
+      "transaction_version": 1,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of a8283d8ad1dec3e691776ec299120e66b1821c5d0d7197d9115ec23e6cabcb81 (wtxid f936fc61373f963d30bac0e749fd640e22e1af6b1628be9fda8fbf312dfbb5c9), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:11",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of a8283d8ad1dec3e691776ec299120e66b1821c5d0d7197d9115ec23e6cabcb81 (wtxid f936fc61373f963d30bac0e749fd640e22e1af6b1628be9fda8fbf312dfbb5c9), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:11",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "a8283d8ad1dec3e691776ec299120e66b1821c5d0d7197d9115ec23e6cabcb81",
+          "wtxid": "f936fc61373f963d30bac0e749fd640e22e1af6b1628be9fda8fbf312dfbb5c9"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000000001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 11,
+      "hint_items": 0,
+      "input_sequence": 2147483648,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-input-disabled",
+      "operand_hex": "0000000001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260b000000000000008001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000000103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "a8283d8ad1dec3e691776ec299120e66b1821c5d0d7197d9115ec23e6cabcb81",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "f936fc61373f963d30bac0e749fd640e22e1af6b1628be9fda8fbf312dfbb5c9"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "3752096275f806106a4ed744897a5e128bb0b6a2f2d3db66028d9c2136d95aa5",
+          "block_height": 125
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "2e6a0a6aca9a994ab8de3b3f13a15d96bd72243a181df4fdafc3c59129aeeda6"
+            ]
+          },
+          "txid": "f7c8ae095953226e8b5be55a712e6ca3cb481946c7279074ea0b9311d26257e1",
+          "vsize": 106,
+          "wtxid": "2e6a0a6aca9a994ab8de3b3f13a15d96bd72243a181df4fdafc3c59129aeeda6"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000008001"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 12,
+      "hint_items": 0,
+      "input_sequence": 4294967295,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-operand-disabled",
+      "operand_hex": "0000008001",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "01000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260c00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000800103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "f7c8ae095953226e8b5be55a712e6ca3cb481946c7279074ea0b9311d26257e1",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "2e6a0a6aca9a994ab8de3b3f13a15d96bd72243a181df4fdafc3c59129aeeda6"
+      },
+      "transaction_version": 1,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "33b8f7d057034ebc50d8e6a56f5f3c38b5520f0a1a9fc8a91fe807a00c5363bb",
+          "block_height": 126
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00094339,
+            "effective-includes": [
+              "530b552311640e651a001de227e2af62e5e4e7d0bf508f46194b42cfee3a01fa"
+            ]
+          },
+          "txid": "f6fca98c2dc98ef8e6740bdf07861d49200cdbdb844a001fc49cad585cb805d3",
+          "vsize": 106,
+          "wtxid": "530b552311640e651a001de227e2af62e5e4e7d0bf508f46194b42cfee3a01fa"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "ffffffff7f"
+      ],
+      "deployment": "policy-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "funding_vout": 13,
+      "hint_items": 0,
+      "input_sequence": 4294967295,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-max-five-byte-disabled",
+      "operand_hex": "ffffffff7f",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "01000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260d00000000ffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305ffffffff7f03b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "f6fca98c2dc98ef8e6740bdf07861d49200cdbdb844a001fc49cad585cb805d3",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "530b552311640e651a001de227e2af62e5e4e7d0bf508f46194b42cfee3a01fa"
+      },
+      "transaction_version": 1,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Negative locktime), input 0 of c43e98f402222cd95411d20dfc2df6897ae99131252907552a63b4197e452b68 (wtxid cefee91f1135e527cce0e272428fef42780b94a1f28d1aeb4ca3e8c563346463), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:14",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Negative locktime), input 0 of c43e98f402222cd95411d20dfc2df6897ae99131252907552a63b4197e452b68 (wtxid cefee91f1135e527cce0e272428fef42780b94a1f28d1aeb4ca3e8c563346463), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:14",
+          "reject-reason": "mempool-script-verify-flag-failed (Negative locktime)",
+          "txid": "c43e98f402222cd95411d20dfc2df6897ae99131252907552a63b4197e452b68",
+          "wtxid": "cefee91f1135e527cce0e272428fef42780b94a1f28d1aeb4ca3e8c563346463"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "81"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "negative-locktime",
+        "policy": false,
+        "policy_rejection": "negative-locktime"
+      },
+      "funding_vout": 14,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": false,
+        "error": "NegativeLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 91,
+          "remaining_validation_weight": 91
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "NegativeLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "NegativeLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 91,
+          "remaining_validation_weight": 91
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "NegativeLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 3,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 91,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 91,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 41,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-negative",
+      "operand_hex": "81",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260e000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326003018103b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 137,
+        "txid": "c43e98f402222cd95411d20dfc2df6897ae99131252907552a63b4197e452b68",
+        "vsize": 105,
+        "weight": 419,
+        "witness_bytes": 41,
+        "wtxid": "cefee91f1135e527cce0e272428fef42780b94a1f28d1aeb4ca3e8c563346463"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (unknown error), input 0 of 1ecd3d6ca500e5fac90ecf1ef65e97f056b4da2baa145415c80ed212cef5d0af (wtxid aa1a2cc733d17e0d9003c13cad3575094399e78e05a6a1c45f698ba7d00ab1ac), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:15",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (unknown error), input 0 of 1ecd3d6ca500e5fac90ecf1ef65e97f056b4da2baa145415c80ed212cef5d0af (wtxid aa1a2cc733d17e0d9003c13cad3575094399e78e05a6a1c45f698ba7d00ab1ac), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:15",
+          "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+          "txid": "1ecd3d6ca500e5fac90ecf1ef65e97f056b4da2baa145415c80ed212cef5d0af",
+          "wtxid": "aa1a2cc733d17e0d9003c13cad3575094399e78e05a6a1c45f698ba7d00ab1ac"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "000000008000"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "numeric-overflow",
+        "policy": false,
+        "policy_rejection": "numeric-overflow"
+      },
+      "funding_vout": 15,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": false,
+        "error": "ScriptIntNumericOverflow",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 96,
+          "remaining_validation_weight": 96
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "ScriptIntNumericOverflow",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "ScriptIntNumericOverflow",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 96,
+          "remaining_validation_weight": 96
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "ScriptIntNumericOverflow",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 8,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 96,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 96,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 46,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-six-byte",
+      "operand_hex": "000000008000",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd83260f000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260030600000000800003b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 142,
+        "txid": "1ecd3d6ca500e5fac90ecf1ef65e97f056b4da2baa145415c80ed212cef5d0af",
+        "vsize": 106,
+        "weight": 424,
+        "witness_bytes": 46,
+        "wtxid": "aa1a2cc733d17e0d9003c13cad3575094399e78e05a6a1c45f698ba7d00ab1ac"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "24108b1bce7727e0f16e814a9c79c0425790bdfe1eb1e5c220d9d97912e8b3da",
+          "block_height": 127
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (unknown error), input 0 of 27ce349523d721bf7dde7b22a12aac464f111a11a54c16df1da00a09bb9fd0a2 (wtxid f03087e51ec35119bb2c062786b89066bdafcc6db8afb7009e58e5c8844fadde), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:16",
+          "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+          "txid": "27ce349523d721bf7dde7b22a12aac464f111a11a54c16df1da00a09bb9fd0a2",
+          "wtxid": "f03087e51ec35119bb2c062786b89066bdafcc6db8afb7009e58e5c8844fadde"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "00"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "minimaldata"
+      },
+      "funding_vout": 16,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 91,
+          "remaining_validation_weight": 91
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "MinimalData",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 91,
+          "remaining_validation_weight": 91
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "MinimalData",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 3,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 91,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 91,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 41,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-nonminimal-zero",
+      "operand_hex": "00",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832610000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326003010003b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 137,
+        "txid": "27ce349523d721bf7dde7b22a12aac464f111a11a54c16df1da00a09bb9fd0a2",
+        "vsize": 105,
+        "weight": 419,
+        "witness_bytes": 41,
+        "wtxid": "f03087e51ec35119bb2c062786b89066bdafcc6db8afb7009e58e5c8844fadde"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "59fa84002adfc5e7f7fd47c4f2b6dc22d06dd85ef05b8b8e13097967c7f47c7f",
+          "block_height": 128
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (unknown error), input 0 of 2429ca812abc28f93f11dba78a7708a86264737be79be8270ef2715f2a542a6a (wtxid 5387b2c9d88abb3c7605381918c6c96e9a1b3e67c4d63bfec2d174db7be6bb76), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:17",
+          "reject-reason": "mempool-script-verify-flag-failed (unknown error)",
+          "txid": "2429ca812abc28f93f11dba78a7708a86264737be79be8270ef2715f2a542a6a",
+          "wtxid": "5387b2c9d88abb3c7605381918c6c96e9a1b3e67c4d63bfec2d174db7be6bb76"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0100"
+      ],
+      "deployment": "consensus-validated",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": false,
+        "policy_rejection": "minimaldata"
+      },
+      "funding_vout": 17,
+      "hint_items": 0,
+      "input_sequence": 1,
+      "local_consensus": {
+        "accepted": true,
+        "error": null,
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 92,
+          "remaining_validation_weight": 92
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": null,
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "MinimalData",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 92,
+          "remaining_validation_weight": 92
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "MinimalData",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 4,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 92,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 92,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 42,
+        "taproot_witness_items": 3
+      },
+      "name": "csv-nonminimal-one",
+      "operand_hex": "0100",
+      "script_hex": "b27551",
+      "script_pubkey_hex": "51202c4ffe4e4b86bd2fc93723f9ef9be51bb13c29a0798e4f7c5afd487f54eabce3",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832611000000000100000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600302010003b2755121c01b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 138,
+        "txid": "2429ca812abc28f93f11dba78a7708a86264737be79be8270ef2715f2a542a6a",
+        "vsize": 105,
+        "weight": 420,
+        "witness_bytes": 42,
+        "wtxid": "5387b2c9d88abb3c7605381918c6c96e9a1b3e67c4d63bfec2d174db7be6bb76"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    },
+    {
+      "compilation": "repository-policy",
+      "control_block_hex": "c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of d1192e033c4359498ebfd26c74395b1ab2936c1988de7b9b7ed47b19ea985b19 (wtxid 2163581edf1c29f1141d1cdd1b03f45a65c9efcd9b7347351866fbcf95324510), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:18",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Locktime requirement not satisfied), input 0 of d1192e033c4359498ebfd26c74395b1ab2936c1988de7b9b7ed47b19ea985b19 (wtxid 2163581edf1c29f1141d1cdd1b03f45a65c9efcd9b7347351866fbcf95324510), spending 2683dd27ee7a94804bce56db83d581d6c8b9025deabdf9b0bb02b4fc94d035eb:18",
+          "reject-reason": "mempool-script-verify-flag-failed (Locktime requirement not satisfied)",
+          "txid": "d1192e033c4359498ebfd26c74395b1ab2936c1988de7b9b7ed47b19ea985b19",
+          "wtxid": "2163581edf1c29f1141d1cdd1b03f45a65c9efcd9b7347351866fbcf95324510"
+        }
+      },
+      "core_matches_expected": true,
+      "data_witness_hex": [
+        "0000000001"
+      ],
+      "deployment": "consensus-incompatible",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "unsatisfied-locktime",
+        "policy": false,
+        "policy_rejection": "unsatisfied-locktime"
+      },
+      "funding_vout": 18,
+      "hint_items": 0,
+      "input_sequence": 0,
+      "local_consensus": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_consensus_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "local_policy": {
+        "accepted": false,
+        "error": "UnsatisfiedLocktime",
+        "outcome": "executed",
+        "stats": {
+          "combined_stack_peak": 1,
+          "initial_validation_weight": 95,
+          "remaining_validation_weight": 95
+        }
+      },
+      "local_policy_comparison": {
+        "expected_error": "UnsatisfiedLocktime",
+        "has_verdict": true,
+        "matches_core": true,
+        "status": "matched"
+      },
+      "metrics": {
+        "control_block_bytes": 33,
+        "data_items": 1,
+        "data_witness_bytes": 7,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "initial_validation_weight": 95,
+        "local_deployment": "unclassified",
+        "local_execution_context": "tapscript",
+        "locking_script_bytes": 3,
+        "remaining_validation_weight": 95,
+        "stack_limit_enforced": true,
+        "stack_peak": 1,
+        "static_non_push_opcodes": 2,
+        "taproot_witness_bytes": 45,
+        "taproot_witness_items": 3
+      },
+      "name": "cltv-five-byte-overflow-control",
+      "operand_hex": "0000000001",
+      "script_hex": "b17551",
+      "script_pubkey_hex": "51200fa120932d79e2749d77812b207a788c51c5313a9b900573f1a1108938781b5e",
+      "transaction": {
+        "base_bytes": 94,
+        "hex": "02000000000101eb35d094fcb402bbb0f9bdea5d02b9c8d681d583db56ce4b80947aee27dd832612000000000000000001301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600305000000000103b1755121c11b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f00000000",
+        "total_bytes": 141,
+        "txid": "d1192e033c4359498ebfd26c74395b1ab2936c1988de7b9b7ed47b19ea985b19",
+        "vsize": 106,
+        "weight": 423,
+        "witness_bytes": 45,
+        "wtxid": "2163581edf1c29f1141d1cdd1b03f45a65c9efcd9b7347351866fbcf95324510"
+      },
+      "transaction_version": 2,
+      "witness_data_items_coexist_at_entry": true
+    }
+  ],
+  "run_passed": true,
+  "schema_version": 1,
+  "scope": "Exact funded Taproot script-path CSV operands with complete transaction/prevout context. Local leaf execution uses strict resource limits, but Core alone checks commitment, BIP68 finality and relay policy.",
+  "test_key_warning": "Public deterministic test key; never use for real funds"
+}

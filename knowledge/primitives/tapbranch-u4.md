@@ -20,10 +20,13 @@ add output comparison and a clean-stack terminal predicate.
 
 ## Evidence and cost
 
-Evidence is `locally-reproduced` for deterministic BIP341 vectors, reversed
-order mismatch, hostile range inputs, short witnesses, and surrounding stack
-state in the strict local tapscript-context executor. Deployment is
-`unclassified`: no complete Bitcoin Core spend has been validated.
+Evidence is `locally-reproduced`. Range-rejection, short-witness, and
+surrounding-stack tests use the strict local tapscript-context helper, which
+enforces stack and element limits but does not establish consensus or policy
+validity. Digest vectors and reversed-order mismatch use the stack-disabled
+`execute_script_with_inputs` helper and are `research-unlimited` execution
+checks. Deployment is `unclassified`: no complete Bitcoin Core spend has been
+validated.
 
 | Fragment | Script bytes | Witness bytes | Witness items | Hints | Peak items |
 | --- | ---: | ---: | ---: | ---: | ---: |
