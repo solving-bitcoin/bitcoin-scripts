@@ -459,9 +459,15 @@ mod tests {
     use crate::{
         arithmetic::u32::xor::u8_push_xor_table,
         support::execution::{
-            execute_script_with_inputs_strict, execute_script_without_stack_limit,
+            execute_script_with_inputs_strict, execute_script_without_stack_limit, ExecuteInfo,
         },
+        support::script::ScriptCompilation,
     };
+    use bitcoin_scriptexec::ExecError;
+
+    fn is_strict_stack_size_rejection(result: &ExecuteInfo) -> bool {
+        result.stack_limit_enforced && !result.success && result.error == Some(ExecError::StackSize)
+    }
 
     fn push_message(message: &[u8]) -> Script {
         script! {
@@ -658,8 +664,59 @@ mod tests {
     }
 
     #[test]
+    fn funded_prefix_leaf_stays_below_the_stack_limit() {
+        use bitcoin::hashes::Hash;
+
+        let leaf = script! {
+            { shake256_prefix(32, 32) }
+            for _ in 0..16 { OP_2DROP }
+            OP_TRUE
+        };
+        let compiled = leaf.clone().compile_with_policy();
+        assert_eq!(compiled.len(), 2_000_144);
+        assert_eq!(
+            bitcoin::hashes::sha256::Hash::hash(compiled.as_bytes()).to_string(),
+            "e1072cc7b403840fc7fa9b2794afe3e73f70c498f4699f14e7514432434e9bde",
+        );
+
+        let result = execute_script_with_inputs_strict(leaf, vec![vec![0x42]; 32]);
+        assert!(result.success, "{result}");
+        assert_eq!(result.stats.max_nb_stack_items, 813);
+    }
+
+    #[test]
+    fn rate_boundary_prefix_stays_below_the_stack_limit() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { shake256_prefix(32, 137) }
+                for _ in 0..137 { OP_DROP }
+                OP_TRUE
+            },
+            vec![vec![0x42]; 32],
+        );
+        assert!(result.success, "{result}");
+        assert!(result.stats.max_nb_stack_items <= 1_000);
+    }
+
+    #[test]
     fn rejects_invalid_prefix_lengths() {
         assert!(std::panic::catch_unwind(|| shake256_prefix(0, 0)).is_err());
         assert!(std::panic::catch_unwind(|| shake256_prefix(0, OUTPUT_LEN + 1)).is_err());
+    }
+    #[test]
+    fn raw_output_exceeds_strict_stack_limit() {
+        let strict = execute_script_with_inputs_strict(script! {{ shake256(0) }}, vec![]);
+        assert!(
+            is_strict_stack_size_rejection(&strict),
+            "raw output did not fail specifically at the enforced stack limit: {strict}"
+        );
+        assert!(strict.stats.max_nb_stack_items >= 1_000);
+
+        let stack_limit_disabled = execute_script_without_stack_limit(script! {{ shake256(0) }});
+        assert!(stack_limit_disabled.stats.max_nb_stack_items >= 1_000);
+        assert!(
+            !is_strict_stack_size_rejection(&stack_limit_disabled),
+            "stack-limit-disabled execution was misclassified as a stack-size rejection"
+        );
     }
 }

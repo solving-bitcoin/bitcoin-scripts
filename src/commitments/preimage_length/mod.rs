@@ -48,7 +48,10 @@ pub fn verify_preimage_length_with_offset(commitment: [u8; 32], offset: usize) -
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::{execution::execute_script_with_inputs, script::script};
+    use crate::support::{
+        execution::{execute_script_with_inputs, execute_script_with_inputs_strict},
+        script::script,
+    };
 
     #[test]
     fn verifies_default_offset() {
@@ -76,6 +79,61 @@ mod tests {
             vec![preimage],
         );
         assert!(result.success, "{result}");
+    }
+
+    #[test]
+    fn offset_zero_and_520_boundaries_preserve_the_integer_contract() {
+        let empty_commitment = preimage_length_commitment(&[]);
+        let zero = execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { verify_preimage_length_with_offset(empty_commitment, 0) }
+                0 OP_EQUALVERIFY
+                77 OP_EQUALVERIFY
+                OP_FROMALTSTACK 99 OP_EQUAL
+            },
+            vec![vec![77], vec![]],
+        );
+        assert!(zero.success, "offset-zero boundary failed: {zero}");
+
+        let preimage = vec![0x24; 520];
+        let commitment = preimage_length_commitment(&preimage);
+        let maximum = execute_script_with_inputs_strict(
+            script! {
+                { verify_preimage_length_with_offset(commitment, 520) }
+                0 OP_EQUAL
+            },
+            vec![preimage],
+        );
+        assert!(maximum.success, "offset-520 boundary failed: {maximum}");
+    }
+
+    #[test]
+    fn offset_520_rejects_a_519_byte_opening_after_hash_match() {
+        let preimage = vec![0x11; 519];
+        let commitment = preimage_length_commitment(&preimage);
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { verify_preimage_length_with_offset(commitment, 520) }
+                0 OP_EQUAL
+            },
+            vec![preimage],
+        );
+        assert!(matches!(
+            result.error,
+            Some(bitcoin_scriptexec::ExecError::Verify)
+        ));
+    }
+
+    #[test]
+    fn a_521_byte_opening_is_rejected_by_the_stack_element_limit() {
+        let preimage = vec![0x11; 521];
+        let commitment = preimage_length_commitment(&preimage);
+        let result = execute_script_with_inputs_strict(
+            script! { { verify_preimage_length_with_offset(commitment, 520) } },
+            vec![preimage],
+        );
+        assert!(!result.success);
     }
 
     #[test]

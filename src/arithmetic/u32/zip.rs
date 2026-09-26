@@ -60,3 +60,38 @@ pub fn _u32_zip_copy(mut a: u32, mut b: u32) -> Script {
         {a+3} OP_ROLL {b} OP_PICK
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::support::execution::execute_script;
+
+    #[test]
+    fn zip_and_copy_zip_preserve_documented_byte_order() {
+        let zipped = execute_script(script! {
+            { super::super::stack::u32_push(0x1122_3344) }
+            { super::super::stack::u32_push(0xaabb_ccdd) }
+            { u32_zip(0, 1) }
+            0x44 OP_EQUALVERIFY
+            0xdd OP_EQUALVERIFY
+            0x33 OP_EQUALVERIFY
+            0xcc OP_EQUALVERIFY
+            0x22 OP_EQUALVERIFY
+            0xbb OP_EQUALVERIFY
+            0x11 OP_EQUALVERIFY
+            0xaa OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(zipped.success, "zip order failed: {zipped}");
+
+        let copy = execute_script(script! {
+            { super::super::stack::u32_push(0x1122_3344) }
+            { super::super::stack::u32_push(0xaabb_ccdd) }
+            { u32_copy_zip(0, 1) }
+            OP_DEPTH 12 OP_EQUALVERIFY
+            for _ in 0..12 { OP_DROP }
+            OP_TRUE
+        });
+        assert!(copy.success, "copy_zip output shape failed: {copy}");
+    }
+}

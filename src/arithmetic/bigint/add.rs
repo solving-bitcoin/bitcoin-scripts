@@ -63,6 +63,25 @@ impl<const N_BITS: u32, const LIMB_SIZE: u32> BigIntImpl<N_BITS, LIMB_SIZE> {
         }
     }
 
+    /// Add two canonical BigInts when no limb carry is possible.
+    ///
+    /// Each corresponding pair must sum to less than its limb radix. The
+    /// inputs are consumed and the exact sum is returned in the same layout.
+    pub fn add_nocarry(a: u32, b: u32) -> Script {
+        script! {
+            { Self::zip(a, b) }
+            for _ in 0..Self::N_LIMBS - 1 {
+                { limb_add_nocarry_checked(1 << LIMB_SIZE) }
+                OP_TOALTSTACK
+            }
+            { limb_add_nocarry_checked(Self::HEAD_OFFSET) }
+            OP_TOALTSTACK
+            for _ in 0..Self::N_LIMBS {
+                OP_FROMALTSTACK
+            }
+        }
+    }
+
     /// add one
     pub fn add1() -> Script {
         script! {
@@ -390,6 +409,13 @@ pub fn limb_add_nocarry(head_offset: u32) -> Script {
     }
 }
 
+fn limb_add_nocarry_checked(head_offset: u32) -> Script {
+    script! {
+        OP_ADD
+        OP_DUP { head_offset } OP_LESSTHAN OP_VERIFY
+    }
+}
+
 fn limb_add_with_carry_prevent_overflow(head_offset: u32) -> Script {
     script! {
         // {a} {b} {c:carry}
@@ -540,7 +566,7 @@ fn limb_lshift_with_carry_prevent_overflow(bits: u32, head: u32) -> Script {
 #[cfg(test)]
 mod test {
     use crate::arithmetic::bigint::{U254, U64};
-    use crate::support::execution::run;
+    use crate::support::execution::{execute_script, run};
     use crate::support::script::*;
     use core::ops::{Rem, Shl};
     use num_bigint::{BigUint, RandomBits};
@@ -602,6 +628,105 @@ mod test {
             };
             run(script);
         }
+    }
+
+    #[test]
+    fn test_add_nocarry() {
+        println!("U254.add_nocarry: {} bytes", U254::add_nocarry(1, 0).len());
+        let mut prng = ChaCha20Rng::seed_from_u64(1);
+        for _ in 0..100 {
+            let mut a = BigUint::from(0u32);
+            let mut b = BigUint::from(0u32);
+            for i in 0..U254::N_LIMBS {
+                let bits = if i == U254::N_LIMBS - 1 {
+                    U254::HEAD
+                } else {
+                    U254::LIMB_SIZE
+                };
+                let half = 1u32 << (bits - 1);
+                a += BigUint::from(prng.gen_range(0..half)) << (i * U254::LIMB_SIZE);
+                b += BigUint::from(prng.gen_range(0..half)) << (i * U254::LIMB_SIZE);
+            }
+            let c = a.clone() + b.clone();
+
+            let script = script! {
+                { U254::push_biguint(a) }
+                { U254::push_biguint(b) }
+                { U254::add_nocarry(1, 0) }
+                { U254::push_biguint(c) }
+                { U254::equalverify(1, 0) }
+                OP_TRUE
+            };
+            run(script);
+        }
+
+        let mut a = BigUint::from(0u32);
+        let mut b = BigUint::from(0u32);
+        for i in 0..U254::N_LIMBS {
+            let bits = if i == U254::N_LIMBS - 1 {
+                U254::HEAD
+            } else {
+                U254::LIMB_SIZE
+            };
+            let radix = 1u32 << bits;
+            a += BigUint::from((radix - 1) / 2) << (i * U254::LIMB_SIZE);
+            b += BigUint::from(radix / 2) << (i * U254::LIMB_SIZE);
+        }
+        let c = a.clone() + b.clone();
+        run(script! {
+            { U254::push_biguint(a) }
+            { U254::push_biguint(b) }
+            { U254::add_nocarry(1, 0) }
+            { U254::push_biguint(c) }
+            { U254::equalverify(1, 0) }
+            OP_TRUE
+        });
+    }
+
+    #[test]
+    fn test_add_nocarry_boundaries_and_hostile_limbs() {
+        let a = 0x7fff_7fff_7fff_7fffu64;
+        let b = 0x8000_8000_8000_8000u64;
+        run(script! {
+            { U64::push_u64_le(&[a]) }
+            { U64::push_u64_le(&[b]) }
+            { U64::add_nocarry(1, 0) }
+            { U64::push_u64_le(&[u64::MAX]) }
+            { U64::equalverify(1, 0) }
+            OP_TRUE
+        });
+
+        let carry = execute_script(script! {
+            { U64::push_u64_le(&[0xffff]) }
+            { U64::push_u64_le(&[1]) }
+            { U64::add_nocarry(1, 0) }
+            OP_TRUE
+        });
+        assert!(!carry.success);
+
+        let hostile = execute_script(script! {
+            0 0 0 -1
+            0 0 0 0
+            { U64::copy(0) }
+            { U64::check_validity() }
+            { U64::copy(1) }
+            { U64::check_validity() }
+            { U64::add_nocarry(1, 0) }
+            OP_TRUE
+        });
+        assert!(!hostile.success);
+
+        let oversized = execute_script(script! {
+            0 0 0 65536
+            0 0 0 0
+            { U64::copy(0) }
+            { U64::check_validity() }
+            { U64::copy(1) }
+            { U64::check_validity() }
+            { U64::add_nocarry(1, 0) }
+            OP_TRUE
+        });
+        assert!(!oversized.success);
     }
 
     #[test]

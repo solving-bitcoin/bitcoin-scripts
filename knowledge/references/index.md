@@ -37,7 +37,7 @@ experiments; adoption does not rewrite that attribution. The
 [support guide](../../src/support/README.md) records the new profiles, supported
 scope, regression tests and acceptance criterion for returning upstream.
 
-The current local interpreter uses `bitcoin-scriptexec-signatures-20260910` at
+The signature experiment uses `bitcoin-scriptexec-signatures-20260910` at
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`. It retains those resource repairs,
 adopts Sander Bosma's CODESEPARATOR fix (`4c9bf94`) with additional regression
 tests (`474a6b6`), and adds unknown-key empty-signature handling (`f4e05a4`),
@@ -46,8 +46,25 @@ invalid-key/multisig errors (`2efd48f`) and SIGHASH_SINGLE error ordering
 preserves a `4b7269a4` baseline separately from the repaired integration.
 Older catalog configurations and report artifacts retain their recorded pins.
 
-The [checked PRINCE experiment](../prince-core-validation.md) combines the same
-Core and interpreter pins with `bitcoin-script-locked` and the independent
+The budget experiment uses `bitcoin-scriptexec-witness-budget-20260920` at
+`f678467784475b1072557de70166514e52753f66`. It retains the signature integration
+and adds the standalone complete-witness constructor repair `9b1eddeb`
+([upstream PR #23](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/23)).
+The [budget experiment](../tapscript-budget-validation.md) compares this explicit
+API with Core and with the preserved legacy data-only constructor on the same
+revision. It does not relabel historical evidence.
+
+The current interpreter uses `bitcoin-scriptexec-csv-20260920` at
+`a09e87af444034698697f0a2267e755cf72f9aed`. It retains the budget integration and adds the CSV
+mask-before-narrowing repair `6bb5e342` ([upstream PR #24](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/24)).
+The [funded CSV comparison](../tapscript-csv-validation.md) ties the repair to
+BIP112 and pinned Core v30.3. Older budget, signature and PRINCE reports remain
+at their original interpreter revisions.
+
+The [checked PRINCE experiment](../prince-core-validation.md) records
+`bitcoin-core-v30.3-regtest` and the historical
+`bitcoin-scriptexec-signatures-20260910` pin (`702544c9`), together with
+`bitcoin-script-locked` and the independent
 `princev2-reference` C vectors at `0c6172dc`. Its three exact valid complete
 spends are `policy-validated`. New Rust generator metadata comes from
 `support::provenance`, using the lockfile embedded in the binary; the source

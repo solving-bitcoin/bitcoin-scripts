@@ -36,8 +36,7 @@ full 1,024-byte output remains 15,927,814 bytes and exceeds the combined stack
 limit. Prefix correctness matches the independent reference across lengths
 that include the 136-byte sponge-rate boundary.
 
-The local tapscript opcode counter reports zero because it only counts legacy
-execution; no executed-opcode total is inferred from static instructions. The
+Executed-opcode count was not measured in this experiment and is not claimed. The
 complete deterministic Taproot spend is accepted by pinned Core v30.3 via
 `generateblock`; its terminal consumer discards the 32 hash outputs and checks
 `OP_TRUE`, so this is complete-spend acceptance rather than independent hash

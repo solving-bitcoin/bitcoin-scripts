@@ -104,6 +104,14 @@ mod tests {
         assert_eq!(first["metrics"]["data_witness_bytes"], 65);
         assert_eq!(first["metrics"]["taproot_witness_bytes"], 2_000_248);
         assert_eq!(first["metrics"]["locking_script_bytes"], 2_000_144);
+        assert_eq!(
+            first["script_sha256"],
+            "e1072cc7b403840fc7fa9b2794afe3e73f70c498f4699f14e7514432434e9bde"
+        );
+        assert_eq!(
+            first["tapleaf_hash"],
+            "b4962e553d23074c9de05d85a5f94c0bad5e455c1fbeba77713b20e0c9c66525"
+        );
         assert_eq!(first["metrics"]["witness_items_coexist_at_entry"], true);
         assert_eq!(first["oracle"]["policy_checked"], false);
     }

@@ -12,9 +12,14 @@ Two input profiles are public:
 - `blake3_compute_script_with_limb` supports `0..=1024` bytes with two
   selected-limb 256-bit groups per block. Limb width is `4..=31`; the
   compatibility wrapper uses 29-bit limbs.
+- `blake3_short_compute_script_truncated_128` is the short-input direct-u4
+  profile when only the first 128 output bits are needed.
 
-Both profiles implement unkeyed 32-byte hashing only. Keyed mode, derive-key
-mode, XOF output, and the multi-chunk tree API are not implemented.
+The profiles implement unkeyed BLAKE3 with either the standard 32-byte output
+or its short-input 128-bit prefix. Keyed mode, derive-key mode, XOF output, and
+the multi-chunk tree API are not implemented.
+The independent [XOF boundary result](../../../knowledge/negative-results/blake3-xof-output.md)
+records the 64-byte reference boundary and the missing output-block schedule.
 
 The experimental `ed25519_challenge` module also exposes custom-signature
 transcript shapes. These are not stable hash APIs and do not implement RFC
@@ -162,7 +167,8 @@ measurement-boundary correction.
 | --- | ---: |
 | Empty message, 29-bit API | <!-- metric:blake3_empty_limb29 -->64<!-- /metric:blake3_empty_limb29 --> bytes |
 | 1 byte, direct checked u4 | <!-- metric:blake3_short_1 -->56124<!-- /metric:blake3_short_1 --> bytes |
-| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->59529<!-- /metric:blake3_short_32 --> bytes |
+| 32 bytes, direct checked u4 | <!-- metric:blake3_short_32 -->59534<!-- /metric:blake3_short_32 --> bytes |
+| 32 bytes, direct checked u4, low 128 bits | <!-- metric:blake3_short_truncated_128_32 -->59105<!-- /metric:blake3_short_truncated_128_32 --> bytes |
 | 32 bytes, selected 4-bit limbs | <!-- metric:blake3_32_limb4 -->61204<!-- /metric:blake3_32_limb4 --> bytes |
 | 64 bytes, 4-bit limbs | <!-- metric:blake3_64_limb4 -->64095<!-- /metric:blake3_64_limb4 --> bytes |
 | 64 bytes, 29-bit limbs | <!-- metric:blake3_64_limb29 -->72293<!-- /metric:blake3_64_limb29 --> bytes |
@@ -174,21 +180,34 @@ BLAKE3-specific fixed-point pass.
 For the deterministic 32-byte message `00 01 ... 1f`, direct host-side message
 pushes are <!-- metric:blake3_push_short_32 -->64<!-- /metric:blake3_push_short_32 -->
 bytes. The push, compute fragment, and 128-byte digest comparison compose to
-<!-- metric:blake3_complete_short_32 -->59721<!-- /metric:blake3_complete_short_32 -->
+<!-- metric:blake3_complete_short_32 -->59726<!-- /metric:blake3_complete_short_32 -->
 bytes. Encoding the same nibbles as canonical witness items takes
 <!-- metric:blake3_witness_short_32 -->111<!-- /metric:blake3_witness_short_32 -->
 serialized bytes; the valid 64-item maximum is
 <!-- metric:blake3_witness_short_32_max -->129<!-- /metric:blake3_witness_short_32_max -->
 bytes. The compute fragment contains
-<!-- metric:blake3_opcodes_short_32 -->41134<!-- /metric:blake3_opcodes_short_32 -->
+<!-- metric:blake3_opcodes_short_32 -->41135<!-- /metric:blake3_opcodes_short_32 -->
 static non-push opcodes, and the executable composition peaks at
 <!-- metric:blake3_stack_short_32 -->527<!-- /metric:blake3_stack_short_32 -->
 combined main/altstack items.
 
 The corresponding 32-byte selected-limb helper composition peaks at
 <!-- metric:blake3_stack_32_limb4 -->527<!-- /metric:blake3_stack_32_limb4 -->
-items. Direct u4 therefore saves 1,673 compute bytes on the final shared core and
+items. Direct u4 therefore saves 1,670 compute bytes on the final shared core and
 uses 64 rather than 128 host-push bytes.
+
+`blake3_short_compute_script_truncated_128` runs the same checked short-input
+compression but materializes only the first four output words. It is useful for
+protocols that commit to a 128-bit BLAKE3 prefix; the output uses the standard
+little-endian byte order and contains 32 u4 items. The 32-byte profile's
+truncated compute fragment is
+<!-- metric:blake3_short_truncated_128_32_compute -->59105<!-- /metric:blake3_short_truncated_128_32_compute --> bytes, with
+<!-- metric:blake3_short_truncated_128_32_opcodes -->40816<!-- /metric:blake3_short_truncated_128_32_opcodes --> static non-push opcodes and a strict
+composition peak of
+<!-- metric:blake3_short_truncated_128_32_stack -->527<!-- /metric:blake3_short_truncated_128_32_stack --> items including the prefix verifier. It saves
+429 compute bytes versus the full 32-byte output at the same
+64-item checked input boundary. The empty-message specialization rejects
+extra stack input and returns the first 16 bytes of the standard empty digest.
 
 For the deterministic 64-byte message `00 01 ... 3f`, host-side 29-bit message
 packing is <!-- metric:blake3_push_64_limb29 -->87<!-- /metric:blake3_push_64_limb29 -->

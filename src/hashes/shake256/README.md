@@ -96,8 +96,7 @@ truthy predicate.
 Tests differentially validate all 1,024 output bytes for empty input, `abc`,
 and an exact 136-byte rate block, plus prefix lengths crossing the 136-byte
 rate boundary. The 32-byte and 137-byte prefixes pass the strict combined-
-stack check. A
-separately scoped complete deterministic Taproot spend is accepted by pinned
-Bitcoin Core v30.3 consensus; the full output remains `research-unlimited` and
-`consensus-incompatible`, while the reusable prefix fragment remains
-`unclassified` with relay policy intentionally unmeasured.
+stack check. A separately scoped complete deterministic Taproot spend is
+accepted by pinned Bitcoin Core v30.3 consensus; the full output remains
+`research-unlimited` and `consensus-incompatible`, while the reusable prefix
+fragment remains `unclassified` with relay policy intentionally unmeasured.

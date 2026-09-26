@@ -40,25 +40,25 @@ strict local combined-stack check. The reusable fragment remains
 | 32-byte input, 32-byte prefix | 2,000,127 | 65 | 813 |
 | 32-byte input, 137-byte prefix | 3,989,612 | 65 | 893 |
 
-The local tapscript interpreter reports `opcode_count=0` for this execution
-because its legacy opcode counter is unavailable in tapscript; executed-opcode
-count is therefore left unclaimed. A separately scoped complete deterministic
-Taproot spend of the same 32-byte prefix was accepted by pinned Bitcoin Core
-v30.3 consensus via `generateblock`. That fixture drops all 32 hash outputs
-and checks only the terminal `OP_TRUE`, so it establishes complete-spend
-acceptance, not hash-output correctness; independent prefix comparisons remain
-the hash-output evidence. Relay policy was not measured; the 2 MB witness is
-not presented as standard or broadly deployable.
+Executed-opcode count was not measured in this experiment and is not claimed.
+A separately scoped complete
+deterministic Taproot spend of the same 32-byte prefix was accepted by pinned
+Bitcoin Core v30.3 consensus via `generateblock`. That fixture drops all 32
+hash outputs and checks only the terminal `OP_TRUE`, so it establishes
+complete-spend acceptance, not hash-output correctness; independent prefix
+comparisons remain the hash-output evidence. Relay policy was not measured;
+the 2 MB witness is not presented as standard or broadly deployable.
 
 ## Limitations
 
 The prefix avoids the raw output's stack overflow, but the 2 MB representative
 fragment is still unsuitable for ordinary script-size and relay-policy limits.
-Only small prefixes have been strict-executed; callers must measure larger
-prefixes because the live Keccak state, lookup table, and altstack output all
-count toward the 1,000-item limit. The Core result covers only the exact
-32-byte deterministic complete-leaf fixture; it does not promote the reusable
-local fragment configuration.
+The 32-byte and rate-crossing 137-byte prefixes have been strict-executed; the
+137-byte case peaks at 893 items, leaving 107 items under the combined limit.
+Callers must measure larger prefixes because the live Keccak state, lookup
+table, and altstack output all count toward the 1,000-item limit. Core covers
+only the exact 32-byte deterministic complete-leaf fixture; it does not promote
+the reusable local fragment configuration.
 
 See the [implementation README](../../src/hashes/shake256/README.md), the
 [hash comparison](../comparisons/hashes.md), and research record

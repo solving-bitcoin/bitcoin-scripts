@@ -5,6 +5,7 @@
 //! input nibble, which is the layout used by bit-sliced consumers.
 
 use super::bits::{u4_nibbles_to_be_bits_toaltstack, U4_BITS_MAX_BATCH};
+use super::stack::verify_canonical_nibble;
 use crate::support::script::*;
 
 /// Reorder the four bits of each nibble into four contiguous bit planes.
@@ -59,10 +60,30 @@ pub fn u4_nibbles_to_bit_planes(nibble_count: u32, check_inputs: bool) -> Script
     }
 }
 
+/// Consume minimally encoded nibbles and return their bits grouped by plane.
+pub fn u4_nibbles_to_bit_planes_canonical(nibble_count: u32) -> Script {
+    assert!(nibble_count > 0, "nibble batch must not be empty");
+    assert!(
+        nibble_count <= U4_BITS_MAX_BATCH,
+        "nibble-to-bit-plane batch exceeds Bitcoin Script's stack limit"
+    );
+    script! {
+        for _ in 0..nibble_count {
+            { verify_canonical_nibble() }
+            OP_TOALTSTACK
+        }
+        for _ in 0..nibble_count {
+            OP_FROMALTSTACK
+        }
+        { u4_nibbles_to_bit_planes(nibble_count, true) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::execute_script;
+    use crate::support::execution::{execute_script, execute_script_with_inputs_strict};
+    use bitcoin_scriptexec::ExecError;
 
     fn verify(inputs: &[u32], expected_planes: &[u32]) {
         let result = execute_script(script! {
@@ -97,7 +118,7 @@ mod tests {
             for bit in [1, 0, 0, 1, 0, 0, 0, 0].iter().rev() {
                 { *bit } OP_EQUALVERIFY
             }
-            OP_DROP
+            9 OP_EQUALVERIFY
             OP_FROMALTSTACK OP_7 OP_EQUALVERIFY
             OP_TRUE
         });
@@ -106,13 +127,30 @@ mod tests {
 
     #[test]
     fn rejects_out_of_range_nibbles() {
-        for invalid in [-1, 16] {
+        for position in 0..4 {
+            let mut input = vec![1; 4];
+            input[position] = if position % 2 == 0 { -1 } else { 16 };
             let result = execute_script(script! {
-                { invalid }
-                { u4_nibbles_to_bit_planes(1, true) }
+                for nibble in input { { nibble } }
+                { u4_nibbles_to_bit_planes(4, true) }
+                for _ in 0..16 { OP_DROP }
                 OP_TRUE
             });
-            assert!(!result.success, "accepted invalid nibble {invalid}");
+            assert!(!result.success, "accepted invalid nibble at {position}");
+        }
+
+        for position in 0..4 {
+            let mut witness = vec![vec![1]; 4];
+            witness[position] = vec![0, 0, 0, 0, 1];
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { u4_nibbles_to_bit_planes(4, true) }
+                    for _ in 0..16 { OP_DROP }
+                    OP_TRUE
+                },
+                witness,
+            );
+            assert!(!result.success, "accepted oversized nibble at {position}");
         }
     }
 
@@ -123,5 +161,110 @@ mod tests {
             u4_nibbles_to_bit_planes(U4_BITS_MAX_BATCH + 1, true)
         })
         .is_err());
+    }
+
+    #[test]
+    fn strict_range_only_frontier_and_preservation() {
+        let maximum = execute_script_with_inputs_strict(
+            script! {
+                { u4_nibbles_to_bit_planes(U4_BITS_MAX_BATCH, true) }
+                for _ in 0..4 * U4_BITS_MAX_BATCH { OP_DROP }
+                OP_TRUE
+            },
+            vec![vec![1]; U4_BITS_MAX_BATCH as usize],
+        );
+        assert!(maximum.success, "maximum bit-plane batch failed: {maximum}");
+        assert_eq!(maximum.stats.max_nb_stack_items, 997);
+
+        let mut preserved = vec![vec![77], vec![88]];
+        preserved.extend(vec![vec![1]; U4_BITS_MAX_BATCH as usize]);
+        let with_state = execute_script_with_inputs_strict(
+            script! {
+                OP_9 OP_TOALTSTACK
+                { u4_nibbles_to_bit_planes(U4_BITS_MAX_BATCH, true) }
+                for _ in 0..4 * U4_BITS_MAX_BATCH { OP_DROP }
+                88 OP_EQUALVERIFY
+                77 OP_EQUALVERIFY
+                OP_FROMALTSTACK 9 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            preserved,
+        );
+        assert!(with_state.success, "preserved state failed: {with_state}");
+
+        let mut over_budget = vec![vec![77], vec![88], vec![99]];
+        over_budget.extend(vec![vec![1]; U4_BITS_MAX_BATCH as usize]);
+        let rejected = execute_script_with_inputs_strict(
+            script! { OP_9 OP_TOALTSTACK { u4_nibbles_to_bit_planes(U4_BITS_MAX_BATCH, true) } },
+            over_budget,
+        );
+        assert_eq!(rejected.error, Some(ExecError::StackSize));
+    }
+
+    #[test]
+    fn strict_canonical_frontier() {
+        let maximum = execute_script_with_inputs_strict(
+            script! {
+                { u4_nibbles_to_bit_planes_canonical(U4_BITS_MAX_BATCH) }
+                for _ in 0..4 * U4_BITS_MAX_BATCH { OP_DROP }
+                OP_TRUE
+            },
+            vec![vec![1]; U4_BITS_MAX_BATCH as usize],
+        );
+        assert!(maximum.success, "maximum canonical batch failed: {maximum}");
+        assert_eq!(maximum.stats.max_nb_stack_items, 997);
+    }
+
+    #[test]
+    fn canonical_bit_planes_match_reference_values() {
+        let result = execute_script(script! {
+            1 10 12
+            { u4_nibbles_to_bit_planes_canonical(3) }
+            for bit in [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1].iter().rev() {
+                { *bit } OP_EQUALVERIFY
+            }
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "canonical bit-plane conversion failed: {result}"
+        );
+    }
+
+    #[test]
+    fn canonical_bit_planes_reject_malformed_nibbles() {
+        let script = script! {
+            { u4_nibbles_to_bit_planes_canonical(4) }
+            for _ in 0..16 { OP_DROP }
+            OP_TRUE
+        };
+        for position in 0..4 {
+            for replacement in [vec![1, 0], vec![0, 1], vec![0x80]] {
+                let mut witness = vec![vec![1]; 4];
+                witness[position] = replacement;
+                let result =
+                    crate::support::execution::execute_script_with_inputs(script.clone(), witness);
+                assert!(
+                    !result.success,
+                    "accepted malformed nibble at {position}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn canonical_bit_planes_preserve_surrounding_stacks() {
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { u4_nibbles_to_bit_planes_canonical(2) }
+                for _ in 0..8 { OP_DROP }
+                77 OP_EQUALVERIFY
+                OP_FROMALTSTACK 99 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            vec![vec![77], vec![1], vec![2]],
+        );
+        assert!(result.success, "{result}");
     }
 }

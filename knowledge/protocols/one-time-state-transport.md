@@ -226,3 +226,17 @@ rejection and validates one complete isolated HASH160 leaf (703 vbytes,
 `differentially-validated`, `policy-validated` publication-leaf evidence; it
 does not validate a complete state-transport or BitVM transaction protocol. See
 [NR-042](../negative-results/index.md#nr-042-constant-composition-search-and-endpoint-sharing-limits).
+
+The [mixed-stage constant-sum construction](../primitives/winternitz-constant-sum-mixed20.md)
+further reduces the same terminal boundary to 2,335 bytes with an entry guard,
+or 2,334 bytes with isolation checked after staging. It uses 45 alternating
+SHA256/RIPEMD160 chains, 33 selector/node openings, twelve implicit endpoints,
+and fifteen local equal-sum pair relations. The exactly counted union carries
+all 160 input bits and needs no branch hints. Its 66 data items coexist at entry
+and the fragment peaks at 111 combined stack items.
+
+The representation remains terminal: Script checks and consumes the selected
+union codeword but does not reconstruct the source bytes or reject unused ranks.
+The same BitVM3 binding obligations therefore apply. These measurements are
+`locally-reproduced`, `research-unlimited`; strict local execution is
+`unclassified`, and the heuristic parameter search is not an optimum proof.

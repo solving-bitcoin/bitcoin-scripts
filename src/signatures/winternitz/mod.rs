@@ -2,6 +2,7 @@
 pub mod base16;
 pub mod constant_composition;
 pub mod constant_sum;
+pub mod constant_sum_mixed;
 pub mod legacy;
 pub mod shared;
 
@@ -17,6 +18,10 @@ pub use constant_composition::{
 pub use constant_sum::{
     ConstantSumPublicKey20, ConstantSumSignature20, ConstantSumSigningKey20,
     ConstantSumWinternitz20, InvalidConstantSumEncoding,
+};
+pub use constant_sum_mixed::{
+    InvalidMixedConstantSumEncoding, MixedChainValue, MixedConstantSumPublicKey20,
+    MixedConstantSumSignature20, MixedConstantSumSigningKey20, MixedConstantSumWinternitz20,
 };
 pub use legacy::verification::*;
 pub use legacy::{
