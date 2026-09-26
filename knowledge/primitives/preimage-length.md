@@ -9,6 +9,10 @@ offset as a small integer.
   failures.
 - **Representative result:** default offset 16 uses a 44-byte script, 18–524
   witness bytes, and three stack items.
+- **Boundaries:** strict local checks measure 42 bytes and a one-item empty
+  witness at offset 0, and 46 bytes with a 520-byte witness item at offset 520.
+  The latter is a consensus stack-item boundary; relay policy may impose a
+  smaller witness-item limit.
 - **Security:** binding is inherited from SHA-256; hiding depends on unpredictable
   preimage bytes and leaks the length when opened.
 - **Limitation:** the value range is coupled to Bitcoin's 520-byte item limit.

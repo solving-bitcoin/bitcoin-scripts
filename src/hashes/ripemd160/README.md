@@ -18,7 +18,7 @@ digest comparison.
 
 | Configuration | Hashing script |
 | --- | ---: |
-| 32-byte input | <!-- metric:ripemd160_u32_32 -->244063<!-- /metric:ripemd160_u32_32 --> bytes |
+| 32-byte input | <!-- metric:ripemd160_u32_32 -->240223<!-- /metric:ripemd160_u32_32 --> bytes |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.

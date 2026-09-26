@@ -22,7 +22,10 @@ when a protocol needs parity but not the four expanded bits.
 This is a projection fragment, not a complete locking script: callers still
 need a terminal predicate and any required clean-stack or encoding binding.
 The range check protects the lookup index but does not establish a byte-unique
-ScriptNum encoding.
+ScriptNum encoding. The standalone combined stack peak is `n + 18`, so the
+generator accepts `1..=982`; unrelated main/alt-stack state reduces that
+frontier. Focused tests cover asymmetric ordering, oversized numeric inputs at
+each position, the 1,000-item frontier, and preserved main/alt-stack state.
 
 See the [implementation README](../../src/arithmetic/u4/README.md),
 [arithmetic comparison](../comparisons/arithmetic.md), and catalog record

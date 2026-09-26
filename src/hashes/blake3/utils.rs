@@ -1282,9 +1282,11 @@ pub(crate) fn compress_short_digits(
     block_len: u32,
     mut message: HashMap<u8, DigitWord>,
     tables: &TablesVars,
+    output_words: u8,
 ) {
     // This backend is called only for a single root block with eight live
     // message words (29..=32 bytes).
+    assert!((1..=8).contains(&output_words));
     let initial = [
         IV[0], IV[1], IV[2], IV[3], IV[4], IV[5], IV[6], IV[7], IV[0], IV[1], IV[2], IV[3], 0, 0,
         block_len, 0b1011,
@@ -1374,11 +1376,11 @@ pub(crate) fn compress_short_digits(
         }
     }
 
-    for word in (0..8_u8).rev() {
+    for word in (0..output_words).rev() {
         for digit in 0..8 {
             let y = state[&(word + 8)];
             let x = state.get_mut(&word).unwrap();
-            if block_len == 32 && word == 0 && digit == 7 {
+            if output_words == 8 && block_len == 32 && word == 0 && digit == 7 {
                 digit_xor_final_query(stack, x, digit, &y, digit);
             } else {
                 digit_xor(stack, x, digit, &y, digit);

@@ -22,6 +22,15 @@ cases after the shared helper repair documented in
 The helper's explicit stack-limit flag is local execution evidence, not a
 complete consensus-validation result.
 
+Budget repeated signature checks against the serialized complete witness,
+including the leaf, control path, annex and CompactSize prefixes. Data-only
+fragment accounting can falsely reject a valid complete spend; byte boundaries
+can also change a repeated check from exact exhaustion to failure. The
+[funded budget experiment](../tapscript-budget-validation.md) records these
+boundaries with zero hints and all data items present at entry. Reusing a
+signature in Script does not remove the 50-unit charge for each executed
+nonempty check.
+
 Certificate provenance is part of that edge trust status. The prime-RNS
 composable multiplier, for example, is globally sound only when each operand
 vector is a verified-path output of its shared-integer field binder or a prior

@@ -31,11 +31,13 @@ one-byte message items; there are zero hint items.
 
 Evidence is `locally-reproduced`. Prefixes of 1, 32, 135, 136, 137, and 256
 bytes match an independent 1,024-byte SHAKE256 reference, including the rate
-boundary. A 32-byte prefix passes the strict local combined-stack check.
+boundary. A 32-byte prefix and the rate-crossing 137-byte prefix pass the
+strict local combined-stack check.
 
 | Configuration | Script bytes | Witness bytes | Peak items |
 | --- | ---: | ---: | ---: |
 | 32-byte input, 32-byte prefix | 2,000,127 | 65 | 813 |
+| 32-byte input, 137-byte prefix | 3,989,612 | 65 | 893 |
 
 The local tapscript interpreter reports `opcode_count=0` for this execution
 because its legacy opcode counter is unavailable in tapscript; executed-opcode
@@ -44,11 +46,11 @@ Bitcoin Core consensus and policy validation.
 
 ## Limitations
 
-The prefix avoids the raw output's stack overflow, but the 2 MB representative
-fragment is still unsuitable for ordinary script-size and relay-policy limits.
-Only small prefixes have been strict-executed; callers must measure larger
-prefixes because the live Keccak state, lookup table, and altstack output all
-count toward the 1,000-item limit.
+The prefix avoids the raw output's stack overflow, but the representative
+fragments remain unsuitable for ordinary script-size and relay-policy limits.
+The 137-byte row crosses the one-rate-block boundary with 107 combined stack
+items of headroom. Larger prefixes require a fresh stack check because the live
+Keccak state, lookup table, and altstack output all count toward the limit.
 
 See the [implementation README](../../src/hashes/shake256/README.md), the
 [hash comparison](../comparisons/hashes.md), and research record

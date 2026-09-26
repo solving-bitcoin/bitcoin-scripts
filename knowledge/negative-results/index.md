@@ -185,6 +185,27 @@ The lab now pins integration revision `4b7269a`, and the shared driver delegates
 these checks to the repaired dependency; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Earlier measurements
 keep their original tool provenance and evidence classes.
+## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
+
+The local BLAKE3 backend implements the unkeyed mode with the fixed BLAKE3 IV,
+unkeyed flags, and one message-hashing schedule. The reference specification
+defines derive-key mode as two distinct phases: hash the context under
+`DERIVE_KEY_CONTEXT`, then hash the material under `DERIVE_KEY_MATERIAL` using
+the context digest as the chaining key. Prepending the context to the material
+or merely changing the final flags therefore does not implement the mode.
+
+An inspection of `src/hashes/blake3/mod.rs` and its compression helper found no
+API for a runtime context, a derived chaining value, or mode-specific flags;
+the README explicitly limits the implementation to unkeyed 32-byte output.
+No partial derive-key port is retained because it would either silently claim
+the wrong domain or duplicate the full compression schedule without a measured
+stack boundary. Evidence: `inspected`, against the
+[BLAKE3 specification and reference implementation](https://github.com/BLAKE3-team/BLAKE3).
+
+This is a scope boundary, not a claim that derive-key mode cannot fit. A future
+implementation must match official context/material vectors, report both
+compression phases and their mode flags, and measure the derived-key boundary
+under the combined 1,000-item stack limit.
 
 ## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
 
@@ -901,6 +922,14 @@ and consuming its 64 nibbles before a constant-word compressor instead gives a
 match ordinary host BLAKE3. The invalid 63,766-byte number is not a composable
 optimization result.
 
+An isolated 2026-09-16 generator probe also removed the temporary
+park/restore around table cleanup, leaving the 337-item prefix above the 330
+table items. Generation stopped at the stack tracker assertion that a tracked
+variable must be topmost before `TablesVars::drop` can remove it. This is a
+generator boundary, not a Script execution result, and does not establish a
+lower bound for a hand-written `OP_ROLL` linker; the existing park/restore is
+still required by the current tracked-variable API.
+
 The optimized G29 `[s]B` fragment and the key-specialized hash total 3,946,610
 raw bytes before transcript routing, digest use, `R` binding, the `[h]A` side,
 or a terminal predicate. They cannot merely be concatenated under the stack
@@ -1501,3 +1530,157 @@ The older binary path with explicit selector checks is also opcode-dominated:
 its 9/11 counted opcodes per bit can be replaced by 5/7 with changed digests.
 Keeping its old hash function permits 7 counted opcodes for saved normalized
 bits, plus the old terminal hash. These alternatives must not share digests.
+
+## NR-057: Native Taproot Merkle-branch adapter is not available
+
+Taproot `TapBranch` requires tagged SHA256 over the lexicographically ordered
+concatenation of two hostile 32-byte nodes. Current Script can hash one stack
+item but has no enabled native byte concatenation/splitting boundary, so a
+compact adapter cannot bind separately supplied nodes to a 64-byte witness
+blob. The repository's mixed-hash path commits to nested SHA256/RIPEMD160
+outputs and is not TapBranch. A full u4 SHA256 circuit remains possible but is
+not a compact native primitive; this inspected result is tracked under OP-021.
+## NR-058: Constant-composition byte recovery is not yet a composable Script primitive
+
+The fixed-composition Winternitz verifier locally authenticates 49 digit slots,
+but its 20-byte decoder remains host-side. Exact rank recovery needs dynamic
+multinomial buckets and 160-bit arithmetic; a static replacement would need a
+large position/count/digit table whose Script lifetime and stack cost are not
+yet established. Treating the host `decode_message` helper as Script evidence
+would overstate the construction. The boundary remains under OP-022.
+## NR-059: The current BLAKE3 fragment stops at one chunk
+
+The public BLAKE3 generator accepts at most 1,024 bytes. Its existing block
+flags implement chunk compression but expose no `PARENT` compression or binary
+tree scheduler, so a 1,025-byte message is rejected rather than priced as a
+multi-chunk tree. The existing boundary tests reproduce acceptance at exactly
+1,024 bytes and rejection at 1,025 bytes. This is a
+`locally-reproduced` API boundary and `inspected` missing-construction result,
+not an impossibility claim; the follow-up criterion is recorded in OP-023.
+## NR-060: BLAKE3 XOF output is outside the current generator contract
+
+The local BLAKE3 generators stop at the unkeyed 32-byte digest and do not
+implement the root-output block counter needed for XOF continuation. A
+deterministic probe over the 32-byte message `00 01 ... 1f` obtains 64 bytes
+from the independent `blake3` crate while the local generator exposes only the
+32-byte output contract. The existing 32-byte compute profile remains the
+priced baseline; this is a missing-composition boundary, not an impossibility
+proof. Reproducing a longer output requires pricing the extra compression,
+routing, cleanup, and combined stack peak. Evidence is `locally-reproduced`;
+see [the probe](../../examples/blake3_xof_boundary.rs) and [OP-024](../open-problems.md#op-024--blake3-xof-output-frontier).
+
+## NR-062: Direct compressed u32 right shift is a stack-shape tradeoff
+
+`u32_compressed_rshift(8)` avoids four-byte expansion but measures 500 locking
+bytes versus 499 for a local decode-byte-shift-reencode baseline. It does save
+two live stack items, peaking at 5 instead of 7, with the same one-item witness.
+It is therefore not a general byte win. Evidence is `locally-reproduced` and
+deployment is `unclassified`; the result does not close OP-014.
+
+## NR-063: Direct compressed u32 left shift is not a byte win
+
+`u32_compressed_lshift(8)` performs a total-domain modulo-`2^32` left shift
+directly over one canonical ScriptNum, but costs 492 locking bytes versus 490
+for a local decode-byte-shift-reencode baseline. It saves two live stack items,
+peaking at 5 instead of 7, with the same one-item witness. The construction is
+retained as a stack-shape primitive and a complete-width correctness result,
+not as a general script-byte optimization. Evidence is `locally-reproduced`;
+deployment is `unclassified`; OP-026 remains open.
+
+## Historical PR #3: rotate-and-mask loses on the tested compressed-input shifts
+
+The question is whether the rotate-and-mask construction proposed in
+[PR #3](https://github.com/solving-bitcoin/bitcoin-scripts/pull/3) improves
+logical right shifts when both alternatives consume the same canonical
+compressed u32 input. The
+[review published on 2026-09-18](https://github.com/solving-bitcoin/bitcoin-scripts/pull/3#issuecomment-5725210260)
+reports that PR #8 is smaller at each tested shift: `1, 7, 8, 16, 24, 31`.
+The review provides the following exact measurements for input `0xa5c319e7`:
+
+| Shift | PR #3 script bytes | PR #8 script bytes | PR #3 combined peak | PR #8 combined peak |
+| --- | ---: | ---: | ---: | ---: |
+| 7 | 1,141 | 519 | 272 | 5 |
+| 31 | 1,136 | 58 | 272 | 5 |
+
+Boundary: `fragment-only:` policy-compiled operation size excludes input
+pushes and terminal checks on both sides; combined main/alt-stack peaks
+include identical result checks. Each isolated invocation has one entry data
+item, zero hint items, and six serialized data-witness bytes, excluding script
+and control block. No repeated configuration is reported. Executed-opcode,
+validation-budget, and complete-transaction measurements are unavailable.
+
+Provenance: PR #3's reviewed implementation is pinned at
+[`e9cbd4788962a727945eb8d8dc618a8696693fdb`](https://github.com/solving-bitcoin/bitcoin-scripts/blob/e9cbd4788962a727945eb8d8dc618a8696693fdb/src/arithmetic/u32/rshift.rs);
+PR #8's implementation is pinned at
+[`e6159c65edd10f57a77833888dfb3e14a4fa66b2`](https://github.com/solving-bitcoin/bitcoin-scripts/blob/e6159c65edd10f57a77833888dfb3e14a4fa66b2/src/arithmetic/u32/shift.rs).
+These are historical measurements, separate from NR-062's shift-by-eight
+decode/re-encode comparison. They must not replace current metric snapshots.
+
+Evidence for this archived comparison is `reported`: the reviewer labels the
+probes `locally-reproduced` using strict local execution, but this documentation
+change does not rerun them. Deployment remains `unclassified`. The review
+does not supply the exact comparison harness or interpreter revision; a fresh
+reproduction must pin those, compile both fragments through
+`compile_with_policy()`, and use identical witness and result-check boundaries.
+It must also test malformed encodings and semantic boundaries before extending
+the claim beyond the reported input and shifts.
+
+The measured compressed-input configurations justify retiring PR #3 as a
+competing implementation. They do not establish dominance over its standalone
+four-byte `u32_bytes_rshift()` API. That remains an open comparison under
+[OP-014](../open-problems.md#op-014--total-domain-scriptnum-right-shift-frontier):
+for an identified byte-oriented caller, compare direct byte shifting with
+compression, PR #8's shift, and conversion back, including validation,
+table setup/cleanup, routing, and the same output checks on both sides.
+
+## NR-064: Data-only signature budgets falsely reject complete spends
+
+The [complete-witness budget experiment](../tapscript-budget-validation.md)
+compares `Exec::new` and `Exec::new_tapscript` at the same immutable interpreter
+revision `f678467784475b1072557de70166514e52753f66`, against funded Bitcoin Core
+v30.3 spends. Data-only initialization disagrees on 16 of 32 cases: 15 false
+rejections and one wrong rejection category. The full-witness path agrees on
+all 32. This is a same-revision constructor counterexample, not a historical
+before/after report.
+
+An 11-byte leaf repeats CHECKSIGVERIFY four times. It has three data items,
+five complete witness items, zero hint items/bytes per invocation and across all
+four checks, and a measured combined stack peak of four. All data coexist at
+entry under the 1,000-item limit. Data serialize to 104 bytes; script and control
+raise the full witness to 150 bytes. The legacy budget is 154, below the 200-unit
+cost; the complete-witness budget is exactly 200. Core accepts this spend under
+consensus and default policy. Evidence is `differentially-validated`; the exact
+funded fixture is `policy-validated`. Legacy local rejection does not establish
+consensus incompatibility of the transaction.
+
+Composition lesson: include the complete witness count, item prefixes, script,
+control block and annex when pricing repeated signature checks. Reusing a
+signature does not remove its per-check charge. The additive constructor fixes
+this boundary while legacy fragment APIs intentionally retain compatibility;
+commitment and complete-transaction validation remain separate obligations.
+
+
+## NR-065: Narrowing five-byte CSV operands before masking panics
+
+BIP112 accepts a positive five-byte ScriptNum even when it exceeds `u32`. The
+original `bitcoin-scriptexec` converted that full operand to `u32` with `expect`
+in `check_sequence`, after which a valid `2^32` operand panicked. This was
+`locally-reproduced` on upstream `ba96bc2` with transaction version 2 and
+input sequence zero. Under BIP68 the operand's type bit and low 16 bits are
+zero, and the high bit 32 has no meaning. Pinned Core v30.3 accepts the funded
+spend under consensus and default policy.
+
+The [funded CSV experiment](../tapscript-csv-validation.md) measures the fixed
+interpreter integration `a09e87af444034698697f0a2267e755cf72f9aed` on 19
+cases: all local consensus/numeric-policy results and rejection categories
+match Core. The smallest direct counterexample has a three-byte locking leaf,
+one five-byte data item, three complete witness items, a 45-byte serialized
+complete witness and a combined one-item stack peak. It uses zero hint items
+per invocation and in total; all data coexist at entry under the 1,000-item
+limit. Evidence for this exact spend is `differentially-validated`; deployment
+is `policy-validated` for the pinned funded transaction.
+
+Mask the type bit and low 16 bits in a wide integer before narrowing. Do not
+mask before checking the negative, overlong or operand-disable cases. A local
+leaf verdict still does not establish BIP68 maturity or complete transaction
+validity.

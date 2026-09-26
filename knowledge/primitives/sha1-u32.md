@@ -7,7 +7,7 @@ bytes.
   collision resistance is required.
 - **Evidence:** differentially validated against standard reference digests and
   internal round checks.
-- **Representative result:** a 32-byte hashing fragment is 209,726 bytes.
+- **Representative result:** a 32-byte hashing fragment is 205,558 bytes.
 - **Deployment:** operation-heavy research fragment; complete consensus and
   policy feasibility are configuration-dependent and not established here.
 - **Stack contract:** one byte item per input byte; 20 byte items returned.

@@ -4,13 +4,20 @@ use crate::support::script::{script, Script};
 
 use super::stack::u4_drop;
 
+const MAX_NIBBLE_COUNT: u32 = 498;
+
 /// Return whether `left <= right` for two fixed-width big-endian u4 vectors.
 ///
 /// Stack before: `left[0] ... left[n-1] right[0] ... right[n-1]`.
 /// Stack after: `result`, where both vectors are consumed. Every input is
-/// range-checked as a numeric nibble before the first comparison.
+/// range-checked as a numeric nibble before the first comparison. The input
+/// vectors and three transient items must fit the combined 1,000-item stack
+/// limit, so `n` is limited to 498.
 pub fn lexicographic_le(nibble_count: u32) -> Script {
-    assert!(nibble_count > 0, "comparison width must be nonzero");
+    assert!(
+        (1..=MAX_NIBBLE_COUNT).contains(&nibble_count),
+        "comparison width must be in 1..={MAX_NIBBLE_COUNT}"
+    );
     let input_count = nibble_count * 2;
 
     script! {
@@ -60,6 +67,25 @@ pub fn lexicographic_le(nibble_count: u32) -> Script {
     }
 }
 
+/// Return whether a fixed-width u4 vector is less than or equal to an embedded
+/// big-endian constant vector.
+pub fn lexicographic_le_constant(constant: &[u8]) -> Script {
+    assert!(
+        (1..=MAX_NIBBLE_COUNT as usize).contains(&constant.len()),
+        "comparison constant width must be in 1..={MAX_NIBBLE_COUNT}"
+    );
+    assert!(
+        constant.iter().all(|&nibble| nibble < 16),
+        "comparison constant must contain only u4 nibbles"
+    );
+    script! {
+        for &nibble in constant {
+            { nibble }
+        }
+        { lexicographic_le(constant.len() as u32) }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -99,8 +125,87 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "comparison width must be nonzero")]
+    #[should_panic(expected = "comparison width must be in 1..=498")]
     fn rejects_zero_width() {
         let _ = lexicographic_le(0);
+    }
+
+    #[test]
+    #[should_panic(expected = "comparison width must be in 1..=498")]
+    fn rejects_width_above_combined_stack_budget() {
+        let _ = lexicographic_le(499);
+    }
+
+    #[test]
+    #[should_panic(expected = "comparison width must be in 1..=498")]
+    fn rejects_width_before_u32_multiplication() {
+        let _ = lexicographic_le(u32::MAX);
+    }
+
+    #[test]
+    fn maximum_width_stays_within_combined_stack_budget() {
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            lexicographic_le(MAX_NIBBLE_COUNT),
+            vec![Vec::new(); (MAX_NIBBLE_COUNT * 2) as usize],
+        );
+        assert!(result.success, "maximum width failed: {result}");
+        assert_eq!(result.stats.max_nb_stack_items, 999);
+    }
+
+    #[test]
+    fn compares_against_embedded_constant() {
+        let constant = [0x0a, 0x0b];
+        for value in 0..=0xffu16 {
+            let left = [(value >> 4) as u8, (value & 0x0f) as u8];
+            let result = execute_script(script! {
+                for nibble in left {
+                    { nibble }
+                }
+                { lexicographic_le_constant(&constant) }
+                { (left <= constant) as u32 }
+                OP_EQUAL
+            });
+            assert!(
+                result.success,
+                "embedded comparison failed for {left:02x?} <= {constant:02x?}: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn preserves_surrounding_main_and_alt_stack_items() {
+        let constant = [0x0a, 0x0b];
+        let result = execute_script(script! {
+            77 OP_TOALTSTACK
+            99
+            10 10
+            { lexicographic_le_constant(&constant) }
+            OP_1 OP_EQUALVERIFY
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "embedded comparison changed surrounding state: {result}"
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "comparison constant must contain only u4 nibbles")]
+    fn rejects_out_of_range_constant() {
+        let _ = lexicographic_le_constant(&[0x10]);
+    }
+
+    #[test]
+    #[should_panic(expected = "comparison constant width must be in 1..=498")]
+    fn rejects_empty_constant() {
+        let _ = lexicographic_le_constant(&[]);
+    }
+
+    #[test]
+    #[should_panic(expected = "comparison constant width must be in 1..=498")]
+    fn rejects_constant_above_combined_stack_budget() {
+        let _ = lexicographic_le_constant(&[0; 499]);
     }
 }

@@ -2,7 +2,7 @@
 
 The lab and `bitcoin-script-stack` use the same repaired `bitcoin-scriptexec`
 revision, selected by an immutable Cargo patch:
-[`702544c9a045ac4fc14846da6da6559e2b7cd9d1`](https://github.com/adrienlacombe/rust-bitcoin-scriptexec/commit/702544c9a045ac4fc14846da6da6559e2b7cd9d1).
+[`a09e87af444034698697f0a2267e755cf72f9aed`](https://github.com/adrienlacombe/rust-bitcoin-scriptexec/commit/a09e87af444034698697f0a2267e755cf72f9aed).
 It retains three resource repairs on upstream `ba96bc2`: entry/per-step
 resource checks ([PR #18](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/18)),
 `OP_PICK`/`OP_ROLL` bounds ([PR #19](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/19)),
@@ -12,8 +12,12 @@ It additionally adopts Sander Bosma's existing
 [CODESEPARATOR fix #16](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/16)
 with extended regression tests, preserves empty signatures for unknown key types,
 and returns script errors for invalid x-only keys, missing SIGHASH_SINGLE outputs
-and executed Tapscript multisig. All **57 upstream tests** pass at this integration
-revision. The [signature experiment](../../knowledge/tapscript-signature-validation.md)
+and executed Tapscript multisig. It adds complete-witness budget accounting
+([PR #23](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/23), standalone
+commit `9b1eddeb4735d1c607fc066aa5290c23b9d8baa1`). It also repairs five-byte
+`OP_CHECKSEQUENCEVERIFY` operands ([PR #24](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/24),
+standalone commit `6bb5e342fabc3780bd2b83cba237275892844bcc`). All **74 upstream tests**
+pass at this integration revision. The [signature experiment](../../knowledge/tapscript-signature-validation.md)
 records the exact comparison scope and original commits. The fork is temporary
 while the upstream PRs are reviewed; compiler and other dependency pins remain
 unchanged. Historical reports retain their original interpreter provenance.
@@ -78,7 +82,7 @@ in `strict` refer to resource enforcement, not complete consensus validation.
 | --- | --- | --- |
 | `execute_script`, `execute_script_buf` | 1,000 after every instruction | No witness |
 | `execute_*_with_inputs_strict` | 1,000 at entry and after every instruction | 520 bytes |
-| `dry_run_taproot_input` | 1,000 at leaf entry and after every instruction | 520 bytes for data items |
+| `dry_run_taproot_input`, `try_dry_run_taproot_input` | 1,000 at leaf entry and after every instruction | 520 bytes for data items |
 | `execute_*_without_stack_limit` | Disabled | No witness |
 | `execute_script_with_inputs`, `execute_raw_script_with_inputs` | Disabled | 520 bytes |
 
@@ -92,12 +96,25 @@ out-of-stack indices now return `InvalidStackOperation` rather than panicking.
 
 Research helper limitations remain: malformed script construction can panic,
 experimental opcode behavior differs from current consensus, and transaction
-context is a dummy template except in the Taproot dry run. The dry run extracts
-a leaf but does not validate its commitment or full transaction and does not
-pass the annex into signature checks. Upstream validation-weight initialization
-and opcode counters are not complete Taproot transaction measurements. Use the
-new typed profiles for the supported context-free subset and Core for complete
-transaction evidence.
+context is a dummy template except in the Taproot dry run. The dry run uses `Exec::new_tapscript` to derive the leaf, data stack and annex
+from the selected transaction witness. It starts the signature budget at
+`50 + complete witness serialized bytes`, including all CompactSize prefixes,
+script, control block and annex. Each executed nonempty signature is charged
+50 units, including a failing check; empty signatures cost zero. The fallible
+`try_dry_run_taproot_input` returns malformed or unsupported witness/context
+shapes as initialization errors. The convenience wrapper still panics on these
+errors. Both require one prevout per transaction input and pass the annex into
+signature hashing.
+
+This is a research execution API: it does not verify the Taproot output
+commitment, full transaction or relay policy, and it retains the research
+opcode options above. Unsupported leaf versions are constructor errors, not
+consensus rejection verdicts. `Exec::new`/`with_stack` and the other fragment
+helpers retain historical data-only budget accounting. Opcode counters are
+not complete transaction measurements. The [budget experiment](../../knowledge/tapscript-budget-validation.md)
+compares the explicit complete-witness path and legacy fragment path on the
+same funded transactions; Core remains the source of complete-transaction
+evidence.
 
 Signature repairs are submitted as [#21](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/21)
 and [#22](https://github.com/BitVM/rust-bitcoin-scriptexec/pull/22). Additional
@@ -118,7 +135,7 @@ utility replaces copied pins in Core fixtures and PRINCE differential output;
 historical artifacts retain their original metadata.
 
 ```sh
-cargo test --locked --test execution_limits --test tapscript_profiles
+cargo test --locked --test execution_limits --test tapscript_profiles --test tapscript_budget
 cargo test --locked signatures::winternitz::constant_composition::tests::signature
 ```
 
@@ -131,10 +148,9 @@ Evidence for these local tests is `locally-reproduced`, deployment
 `unclassified`. [Core comparisons](../../knowledge/core-validation.md) supply
 separate `differentially-validated` complete-transaction evidence.
 
-The full non-field suite passes 460 tests (24 existing ignores, 143 field tests
-filtered). All six active primitive metric tests pass: the five historical
-baselines are unchanged, and the new checked-PRINCE test adds three complete-leaf
-rows with 15 explicit measurements:
+The full non-field suite passes 826 tests, including all 105 active primitive
+metric tests (24 existing ignores, 143 field tests filtered). Metric baselines
+are unchanged, including the checked-PRINCE complete-leaf rows:
 
 ```sh
 CARGO_PROFILE_TEST_OPT_LEVEL=1 CARGO_TARGET_DIR=target/nonfield-opt1 cargo test --locked -- --skip fields::
@@ -152,6 +168,20 @@ extends the supported subset to a computation leaf with consensus-enforced
 input validation. Its 20 funded cases and 40 local profile comparisons pass,
 with three exact valid spends accepted by default Core policy. This adds
 primitive-specific evidence without widening the context-free API's claims.
+
+The [funded CSV experiment](../../knowledge/tapscript-csv-validation.md) checks
+19 exact leaves with five-byte operands, high and reserved bits, height/time
+comparisons, disabled inputs, numeric boundaries and a CLTV control. All local
+consensus and numeric-policy comparisons match Core. The local helper still
+checks only script execution; Core independently enforces relative maturity
+under BIP68.
+
+The [complete-witness budget experiment](../../knowledge/tapscript-budget-validation.md)
+adds 32 funded cases with exact exhaustion, empty signatures, annexes, control
+paths and CompactSize boundaries. All local verdicts and rejection categories
+match Core; 15 spends pass consensus and 10 pass default policy. Two fresh nodes
+produce identical reports. All 84 earlier resource/signature/PRINCE cases also
+pass at the CSV integration pin. All seven stored historical data artifacts are unchanged.
 
 Return to an immutable upstream revision when it contains all adopted repairs or
 equivalent implementations and passes these regressions, Core comparisons,

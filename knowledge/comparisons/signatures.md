@@ -102,7 +102,7 @@ and nodes. Optional `Preimage16` comparisons follow the hash comparison.
 | Construction | Authenticated object | Script bytes | Witness bytes (zero / upper bound) | Stack peak | Verification work / missing protocol work |
 | --- | --- | ---: | ---: | ---: | --- |
 | Lamport 2-bit | One value in 0..3 | 96 | 11 | not recorded | Reject rather than clamp invalid values |
-| HORS-like n32/t8 | Explicit subset | 809 | 280 | not recorded | Message-to-index derivation |
+| HORS-like n32/t8 | Explicit subset | 809 | 280 / 281 max | 50 (strict local) | 16 data items / 0 hints; message-to-index derivation |
 | Legacy Wots32 list-pick | 32-byte message | 4,908 | 1,477 / 1,542 | 143 | 15 hashes for digits below 8, seven otherwise; clamps above-range digits |
 | Legacy Wots32 list-pick + clear | 32-byte message | 4,844 | 1,477 / 1,542 | 143 | Direct checksum reduction; consumes message; terminal predicate excluded |
 | FastWots32 clamped lookup | 32-byte message | 4,465 | 1,476 / 1,542 | 143 | Legacy-style upper saturation; recovers authenticated clamped digits |
@@ -292,7 +292,24 @@ HASH160, 128 for SHA-256) or make the two security profiles interchangeable.
 
 ### Terminal verification of unchanged 20-byte messages
 
-The current smaller construction is
+The current smallest measured fragment-plus-signature construction is
+[mixed-stage constant-sum Winternitz](../primitives/winternitz-constant-sum-mixed20.md).
+It uses 45 alternating SHA256/RIPEMD160 chains, 33 openings, twelve implicit
+endpoints, three fixed slots, and fifteen equal-sum pair relations. Its exact
+union of 32,768 distinct composition classes contains more than `2^160` words.
+
+| Mixed-stage constant-sum profile | Script bytes | Attained maximum signer witness | Maximum combined bytes | Entry items / hints | Combined peak |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Staged isolation check | 1,490 | 844 | **2,334** | 66 / 0 | 111 |
+| Entry isolation check | 1,491 | 844 | **2,335** | 66 / 0 | 111 |
+
+These are `locally-reproduced`, `research-unlimited` metrics at the same
+terminal boundary as the table below. Strict local executions are
+`unclassified`; no Core consensus or policy validation is claimed. The
+candidate was found heuristically and exactly rechecked, so the result improves
+the frontier without proving a global constant-sum or Script optimum.
+
+The previous smaller construction was
 [constant-composition Winternitz](../primitives/winternitz-constant-composition20.md).
 It assigns 49 independent keys to a radix-25 digit multiset with counts
 `[1 × 15, 2 × 7, 3 × 2, 14]`. Fixed digit slots replace per-chain digit
@@ -395,3 +412,8 @@ See the [constant-sum primitive](../primitives/winternitz-constant-sum20.md)
 for exact code capacity, public API, proof scope, hash alternatives,
 independent Python reproduction, and [NR-041](../negative-results/index.md#nr-041-20-byte-winternitz-search-and-overflow-relation-boundaries)
 for the restricted radix search and rejected zero-fixture-only improvements.
+
+The constant-composition verifier intentionally has no Script byte-recovery
+row. Its host-side rank decoder is not included in the authentication costs;
+the missing consumer boundary is tracked by [NR-058](../negative-results/index.md#nr-058-constant-composition-byte-recovery-is-not-yet-a-composable-script-primitive)
+and [OP-022](../open-problems.md#op-022--constant-composition-script-decoder).

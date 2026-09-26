@@ -4,19 +4,25 @@ set -euo pipefail
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
+# These checks run against the checkout. Require it to match the index so a
+# partially staged change cannot be validated using different bytes. Reject
+# every non-ignored untracked file because repository-wide checks read beyond
+# the staged path list. Ignored files are outside this guard.
+if ! git diff --quiet --ignore-submodules --; then
+    echo "pre-commit: tracked working-tree changes differ from the index; stage or discard them before committing" >&2
+    exit 1
+fi
+
+untracked="$(git ls-files --others --exclude-standard)"
+if [[ -n "$untracked" ]]; then
+    echo "pre-commit: non-ignored untracked files are not checked; stage or remove them before committing:" >&2
+    printf '%s\n' "$untracked" >&2
+    exit 1
+fi
+
 python3 tools/kb.py validate
 cargo fmt --all -- --check
 
-needs_metrics=0
-while IFS= read -r path; do
-    case "$path" in
-        src/*|tests/primitive_metrics.rs|knowledge/catalog.json|README.md|*/README.md|Cargo.toml|Cargo.lock)
-            needs_metrics=1
-            break
-            ;;
-    esac
-done < <(git diff --cached --name-only --diff-filter=ACMR)
-
-if ((needs_metrics)); then
+if [[ "${RUN_PRIMITIVE_METRICS:-0}" == "1" ]]; then
     cargo test --locked --test primitive_metrics
 fi
