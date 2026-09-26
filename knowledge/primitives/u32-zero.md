@@ -9,7 +9,7 @@ whether the word is zero. It uses no lookup table.
 - **Output:** one numeric Boolean ScriptNum.
 - **Evidence:** `locally-reproduced` by zero, nonzero, boundary, and malformed
   byte tests plus a strict metric fixture.
-- **Representative result:** 61 locking-script bytes, 13 serialized witness
+- **Representative result:** 53 locking-script bytes, 13 serialized witness
   bytes across four data items, 6 combined stack items, and no hints. The
   fragment contains 37 static non-push opcodes; this is not an executed-opcode
   or deployment claim.

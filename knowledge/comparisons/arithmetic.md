@@ -95,7 +95,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | Consuming u32 XOR | `u32_xor_drop(0, 1, 3)` | 202 | Destructive two-word routing; 268-item peak with shared table |
 | Consuming u32 AND | `u32_and_drop(0, 1, 3)` | 169 | Destructive two-word routing; 268-item peak with shared table |
 | Consuming u32 OR | `u32_or_drop(0, 1, 3)` | 326 | Destructive two-word routing; 268-item peak with shared table |
-| Checked u32 zero predicate | `zero::u32_iszero()` | 61 | 6-item peak; no lookup table; range-checks all four limbs |
+| Checked u32 zero predicate | `zero::u32_iszero()` | 53 | 6-item peak; no lookup table; range-checks all four limbs |
 | Stack-preserving u32 copy | `u32_pick(2)` | 8 | 16-item peak; 24-byte witness; copies a word at depth two |
 | Wide add | U254 add | 176 | Nine limbs |
 | Wide add with bounded limbs | U254 carry-free add | 142 | Nine limbs; each corresponding sum must stay below radix |

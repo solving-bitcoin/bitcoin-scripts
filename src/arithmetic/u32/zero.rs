@@ -12,8 +12,7 @@ pub fn u32_iszero() -> Script {
         for _ in 0..4 {
             OP_DUP OP_0 OP_GREATERTHANOREQUAL OP_VERIFY
             OP_DUP 256 OP_LESSTHAN OP_VERIFY
-            OP_DUP OP_NOT OP_TOALTSTACK
-            OP_DROP
+            OP_NOT OP_TOALTSTACK
         }
         OP_FROMALTSTACK
         OP_FROMALTSTACK OP_BOOLAND
@@ -34,6 +33,72 @@ mod tests {
     };
     use bitcoin_scriptexec::ExecError;
 
+    fn check_checked_zero_contract(predicate: Script) -> Result<(), String> {
+        let zero = execute_script_with_inputs_strict(
+            script! { { predicate.clone() } OP_1 OP_EQUAL },
+            vec![vec![]; 4],
+        );
+        if !zero.success || zero.final_stack.len() != 1 {
+            return Err(format!("zero control failed: {zero}"));
+        }
+
+        let cleanup_control = execute_script_with_inputs_strict(
+            script! { { predicate.clone() } OP_DROP OP_TRUE },
+            vec![vec![]; 4],
+        );
+        if !cleanup_control.success {
+            return Err(format!(
+                "valid OP_DROP OP_TRUE control failed: {cleanup_control}"
+            ));
+        }
+
+        for position in 0..4 {
+            let mut nonzero = vec![vec![]; 4];
+            nonzero[position] = vec![1];
+            let result = execute_script_with_inputs_strict(
+                script! { { predicate.clone() } OP_0 OP_EQUAL },
+                nonzero,
+            );
+            if !result.success || result.final_stack.len() != 1 {
+                return Err(format!("nonzero limb at {position} failed: {result}"));
+            }
+
+            for invalid in [-1, 256] {
+                let mut malformed = vec![vec![]; 4];
+                malformed[position] = if invalid < 0 {
+                    vec![0x81]
+                } else {
+                    vec![0x00, 0x01]
+                };
+                let result = execute_script_with_inputs_strict(
+                    script! { { predicate.clone() } OP_DROP OP_TRUE },
+                    malformed,
+                );
+                if result.success || result.error != Some(ExecError::Verify) {
+                    return Err(format!(
+                        "invalid limb {invalid} at position {position}: expected Verify, got {result}"
+                    ));
+                }
+            }
+        }
+
+        for position in 0..4 {
+            let mut oversized = vec![vec![]; 4];
+            oversized[position] = vec![0, 0, 0, 0, 1];
+            let result = execute_script_with_inputs_strict(
+                script! { { predicate.clone() } OP_DROP OP_TRUE },
+                oversized,
+            );
+            if result.success || result.error != Some(ExecError::ScriptIntNumericOverflow) {
+                return Err(format!(
+                    "five-byte limb at position {position}: expected ScriptIntNumericOverflow, got {result}"
+                ));
+            }
+        }
+
+        Ok(())
+    }
+
     #[test]
     fn recognizes_zero_and_nonzero_words() {
         for (word, expected) in [
@@ -52,6 +117,28 @@ mod tests {
             });
             assert!(result.success, "word={word:#010x}: {result}");
         }
+    }
+
+    #[test]
+    fn satisfies_checked_zero_contract_for_runtime_limbs() {
+        assert_eq!(check_checked_zero_contract(u32_iszero()), Ok(()));
+
+        // This validation-bypass mutation must fail the same contract check:
+        // it omits both byte-range VERIFY operations from each iteration.
+        let mutation = script! {
+            for _ in 0..4 { OP_NOT OP_TOALTSTACK }
+            OP_FROMALTSTACK
+            OP_FROMALTSTACK OP_BOOLAND
+            OP_FROMALTSTACK OP_BOOLAND
+            OP_FROMALTSTACK OP_BOOLAND
+        };
+        let mutation = check_checked_zero_contract(mutation);
+        assert!(
+            mutation
+                .as_ref()
+                .is_err_and(|error| error.contains("invalid limb -1 at position 0")),
+            "validation-bypass mutation escaped the malformed-limb assertion: {mutation:?}"
+        );
     }
 
     #[test]
