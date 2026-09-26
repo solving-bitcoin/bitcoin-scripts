@@ -18,7 +18,7 @@ Measured fragments exclude input pushes and output comparison.
 | SHA-256 u32 midstate | 64-byte fixed prefix + 16-byte suffix | 530,686 | differentially-validated | 16 byte witness items (33-byte fixture, 49-byte maximum); caller must bind the supplied midstate |
 | SHA-256 u32 BIP340 tagged | 32-byte message | 530,755 | differentially-validated | 32 message items (65-byte fixture, 97-byte maximum); tag block is host-precomputed |
 | SHAKE256 byte | 32-byte input, 1,024-byte output | 15,927,814 | locally-reproduced | Raw output exceeds 1,000 items |
-| SHAKE256 byte prefix | 32-byte input, 32-byte output | 2,000,127 | locally-reproduced | Strict stack-compatible locally; still a 2 MB fragment |
+| SHAKE256 byte prefix | 32-byte input, 32-byte output | 2,000,127 | locally-reproduced | Strict local fragment; a separately scoped complete Taproot leaf is Core consensus-validated; relay policy remains unmeasured |
 | SHAKE256 byte prefix | 32-byte input, 137-byte output | 3,989,612 | locally-reproduced | Rate-crossing prefix; 893-item strict peak |
 
 BLAKE3's 64-byte row is not directly comparable with the 32-byte hash rows
@@ -43,7 +43,9 @@ its separately documented pinned peephole pass before the repository
 compilation policy.
 
 The prefix row is a distinct cost point, not a claim that the full XOF is
-deployable: it only materializes the requested output blocks. Its 813-item
-strict local peak stays below the 1,000-item limit for the representative
-32-byte prefix, but Bitcoin Core and relay policy have not been run and the
-2,000,127-byte fragment remains impractical as a standard script.
+deployable: it only materializes the requested output blocks. The 32-byte and
+137-byte local prefixes peak at 813 and 893 items, respectively.
+A separate complete-leaf fixture was accepted by pinned Bitcoin Core consensus;
+that fixture drops the digest, so independent vectors remain the digest-
+correctness evidence. Relay policy was not measured, and the 2,000,127-byte
+fragment remains impractical as a standard script.

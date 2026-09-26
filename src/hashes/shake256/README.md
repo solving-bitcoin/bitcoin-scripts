@@ -36,11 +36,10 @@ predicate after the measured peak so execution can finish successfully.
 | 32-byte input, 137-byte prefix | <!-- metric:shake256_prefix_32_137 -->3989612<!-- /metric:shake256_prefix_32_137 --> bytes | <!-- metric:shake256_prefix_witness_32 -->65<!-- /metric:shake256_prefix_witness_32 --> bytes | <!-- metric:shake256_prefix_stack_32_137 -->893<!-- /metric:shake256_prefix_stack_32_137 --> |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
-reported unoptimized.
+reported unoptimized. The 137-byte prefix crosses the sponge-rate boundary
+and remains below the combined 1,000-item limit.
 
-The 137-byte prefix crosses the sponge-rate boundary and still remains below
-the combined 1,000-item limit. The
-full-output script reflects eight Keccak-f[1600] permutations for the
+The full-output script reflects eight Keccak-f[1600] permutations for the
 fixed output length, in addition to message absorption. A prefix uses only the
 permutations needed to cover its requested output blocks.
 
@@ -61,12 +60,16 @@ avoids this failure for small outputs; both the 32-byte and rate-crossing
 require a measured stack check after accounting for the live state and lookup
 table.
 
-The implementation does not rely on disabled opcodes or transaction context,
-but the output shape makes the standalone primitive non-standard and
-non-consensus-executable under current limits. The 15.9 MB fragment is also
-unsuitable for bare script, P2SH, and P2WSH size limits. Tapscript does not make
-the raw construction deployable because its 1,709-item measured peak still
-violates the combined-stack consensus rule. See
+The implementation does not rely on disabled opcodes or transaction context.
+The 1,024-byte output remains consensus-incompatible because its 1,709-item
+peak exceeds the combined-stack limit. A separately scoped complete Taproot
+spend of the representative 32-byte prefix was accepted by pinned Bitcoin
+Core v30.3 consensus via `generateblock`; that exact spend uses a 2,000,248-byte
+witness and drops the hash outputs before checking `OP_TRUE`. This validates
+complete-spend acceptance, while the independent hash-output tests validate
+the digest. Relay-policy acceptance was not measured, and no general
+deployment claim is made. The raw fragments are unsuitable for bare script,
+P2SH, and P2WSH size limits. See
 [`docs/script-types.md`](../../../docs/script-types.md) and
 [`docs/standardness.md`](../../../docs/standardness.md).
 
@@ -93,7 +96,7 @@ truthy predicate.
 Tests differentially validate all 1,024 output bytes for empty input, `abc`,
 and an exact 136-byte rate block, plus prefix lengths crossing the 136-byte
 rate boundary. The 32-byte and 137-byte prefixes pass the strict combined-
-stack check.
-These executions use `bitcoin-scriptexec` in a tapscript context; the full
-output remains `research-unlimited` and `consensus-incompatible`, while the
-prefixes have `unclassified` deployment evidence pending Core validation.
+stack check. A separately scoped complete deterministic Taproot spend is
+accepted by pinned Bitcoin Core v30.3 consensus; the full output remains
+`research-unlimited` and `consensus-incompatible`, while the reusable prefix
+fragment remains `unclassified` with relay policy intentionally unmeasured.

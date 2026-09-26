@@ -9511,20 +9511,24 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-26",
       "knowledge_page": "knowledge/primitives/shake256-prefix.md",
       "implementation": "src/hashes/shake256/mod.rs",
       "documentation": "src/hashes/shake256/README.md",
       "tests": [
         "hashes::shake256::tests::hashes_prefixes_to_the_standard_output",
         "hashes::shake256::tests::small_prefix_stays_below_the_stack_limit",
+        "hashes::shake256::tests::funded_prefix_leaf_stays_below_the_stack_limit",
         "hashes::shake256::tests::rejects_invalid_prefix_lengths",
         "primitive_metrics::shake256_prefix_metrics_are_current",
-        "examples/shake256_prefix_benchmark.rs"
+        "examples/shake256_prefix_benchmark.rs",
+        "examples/shake256_prefix_consensus_fixture.rs",
+        "tools/shake256_prefix_regtest.py"
       ],
       "references": [
         "fips-202",
-        "bitcoin-scriptexec-locked"
+        "bitcoin-scriptexec-locked",
+        "bitcoin-core-v30.3-regtest"
       ],
       "techniques": [
         "sponge",
@@ -9577,13 +9581,40 @@
             "shake256_prefix_witness_32",
             "shake256_prefix_stack_32_137"
           ]
+        },
+        {
+          "id": "complete-leaf-core-v30.3",
+          "label": "Core v30.3 complete SHAKE256 prefix Taproot leaf",
+          "parameters": {
+            "message_bytes": 32,
+            "output_bytes": 32,
+            "terminal_consumer": "drop all 32 hash outputs and OP_TRUE",
+            "core_version": "30.3",
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "data_witness_bytes": 65,
+            "complete_taproot_witness_items": 34,
+            "local_stack_limit_enforced": true,
+            "core_acceptance": "complete funded Taproot spend via generateblock"
+          },
+          "includes": "complete-leaf: generated 32-byte prefix, terminal consumer, OP_TRUE, complete Taproot witness with 32 data items, leaf script, control block, and witness framing; excludes funding transaction and transaction-envelope costs",
+          "script_bytes": 2000144,
+          "witness_bytes": 2000248,
+          "witness_bytes_max": null,
+          "max_stack_items": 813,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2000144,
+          "metric_keys": [],
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated"
         }
       ],
       "limitations": [
         "Only the 32-byte and rate-crossing 137-byte prefixes have strict local stack measurements",
-        "The prefix fragments remain impractical for ordinary script-size and relay-policy limits",
-        "Executed-opcode counter is unavailable in the local tapscript interpreter",
-        "Bitcoin Core consensus and policy validation not performed"
+        "The 2,000,127-byte fragment is not suitable for bare script, P2SH, or P2WSH and relay policy was not measured",
+        "Executed-opcode count was not measured and is not claimed",
+        "Only the separately scoped complete-leaf Core configuration is differentially validated and consensus-validated; local fragment evidence remains locally-reproduced / unclassified"
       ],
       "open_problems": [
         "OP-001",
