@@ -33,11 +33,14 @@ predicate after the measured peak so execution can finish successfully.
 | --- | ---: | ---: | ---: |
 | 32-byte input, 1024-byte output | <!-- metric:shake256_32_1024 -->15927814<!-- /metric:shake256_32_1024 --> bytes | <!-- metric:shake256_witness_32 -->65<!-- /metric:shake256_witness_32 --> bytes | <!-- metric:shake256_stack_32_1024 -->1709<!-- /metric:shake256_stack_32_1024 --> |
 | 32-byte input, 32-byte prefix | <!-- metric:shake256_prefix_32_32 -->2000127<!-- /metric:shake256_prefix_32_32 --> bytes | <!-- metric:shake256_prefix_witness_32 -->65<!-- /metric:shake256_prefix_witness_32 --> bytes | <!-- metric:shake256_prefix_stack_32_32 -->813<!-- /metric:shake256_prefix_stack_32_32 --> |
+| 32-byte input, 137-byte prefix | <!-- metric:shake256_prefix_32_137 -->3989612<!-- /metric:shake256_prefix_32_137 --> bytes | <!-- metric:shake256_prefix_witness_32 -->65<!-- /metric:shake256_prefix_witness_32 --> bytes | <!-- metric:shake256_prefix_stack_32_137 -->893<!-- /metric:shake256_prefix_stack_32_137 --> |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.
 
-The full-output script reflects eight Keccak-f[1600] permutations for the
+The 137-byte prefix crosses the sponge-rate boundary and still remains below
+the combined 1,000-item limit. The
+full-output script reflects eight Keccak-f[1600] permutations for the
 fixed output length, in addition to message absorption. A prefix uses only the
 permutations needed to cover its requested output blocks.
 
@@ -53,9 +56,10 @@ terminal output predicate required by their protocol.
 
 The raw 1,024-byte output contains 1,024 stack items and exceeds Bitcoin's
 consensus limit of 1,000 combined main- and alt-stack items. The prefix form
-avoids this failure for small outputs; the representative 32-byte prefix is
-strictly executed below the limit. Larger prefixes still require a measured
-stack check after accounting for the live state and lookup table.
+avoids this failure for small outputs; both the 32-byte and rate-crossing
+137-byte prefixes are strictly executed below the limit. Larger prefixes still
+require a measured stack check after accounting for the live state and lookup
+table.
 
 The implementation does not rely on disabled opcodes or transaction context,
 but the output shape makes the standalone primitive non-standard and
@@ -88,7 +92,8 @@ truthy predicate.
 
 Tests differentially validate all 1,024 output bytes for empty input, `abc`,
 and an exact 136-byte rate block, plus prefix lengths crossing the 136-byte
-rate boundary. A 32-byte prefix also passes the strict combined-stack check.
+rate boundary. The 32-byte and 137-byte prefixes pass the strict combined-
+stack check.
 These executions use `bitcoin-scriptexec` in a tapscript context; the full
 output remains `research-unlimited` and `consensus-incompatible`, while the
-small prefix has `unclassified` deployment evidence pending Core validation.
+prefixes have `unclassified` deployment evidence pending Core validation.

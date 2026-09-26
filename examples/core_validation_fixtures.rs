@@ -593,6 +593,10 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bitcoin::{
+        hashes::{sha256, Hash},
+        hex::FromHex,
+    };
 
     #[test]
     fn fixtures_are_deterministic_and_complete() {
@@ -627,8 +631,33 @@ mod tests {
             .find(|row| row["name"] == "u32-popcount-0x12345678")
             .unwrap();
         assert_eq!(popcount["expected"]["consensus"], true);
+        assert_eq!(popcount["expected"]["policy"], true);
+        assert_eq!(popcount["metrics"]["locking_script_bytes"], 457);
+        assert_eq!(popcount["metrics"]["data_witness_bytes"], 9);
+        assert_eq!(popcount["metrics"]["taproot_witness_bytes"], 503);
         assert_eq!(popcount["metrics"]["data_items"], 4);
         assert_eq!(popcount["metrics"]["hint_items"], 0);
+        assert_eq!(
+            popcount["data_witness_hex"].as_array().unwrap().len() + 2,
+            6,
+            "four data items plus script and control block coexist at entry"
+        );
+        assert_eq!(popcount["local"]["max_stack_items"], 262);
+        assert_eq!(popcount["local"]["stack_limit_enforced"], true);
+        assert_eq!(
+            popcount["script_hex"].as_str().unwrap().ends_with("5d87"),
+            true
+        );
+        let popcount_script =
+            Vec::<u8>::from_hex(popcount["script_hex"].as_str().unwrap()).unwrap();
+        assert_eq!(
+            sha256::Hash::hash(&popcount_script).to_string(),
+            "1b8ab8196913a01232d0605cbf133f3ba24640bc9eafca1fc6400e0e0fd0293f"
+        );
+        assert_eq!(
+            popcount["tapleaf_hash"],
+            "023dd87652952b54b0007275b6692874e16d2964f8ceccb19e8ae599d6474459"
+        );
         assert_eq!(valid["control_block_hex"].as_str().unwrap().len(), 66);
         assert_eq!(valid["script_pubkey_hex"].as_str().unwrap().len(), 68);
         let names: std::collections::HashSet<_> = rows.iter().map(|row| &row["name"]).collect();

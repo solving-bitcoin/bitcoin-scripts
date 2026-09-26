@@ -176,11 +176,24 @@ pub fn u32_compressed_lessthan() -> Script {
     }
 }
 
+/// Compare one canonical compressed u32 ScriptNum with an embedded threshold.
+///
+/// The witness value is the left operand and `value` is the right operand.
+/// Values with the high bit set are embedded as their signed ScriptNum
+/// representation, matching the compressed-u32 wire format.
+pub fn u32_compressed_lessthan_constant(value: u32) -> Script {
+    let constant = i64::from(value as i32);
+    script! {
+        { constant }
+        { u32_compressed_lessthan() }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::arithmetic::u32::stack::u32_push;
-    use crate::support::execution::{execute_script_with_inputs_strict, run};
+    use crate::support::execution::{execute_script, execute_script_with_inputs_strict, run};
     use rand::Rng;
     use rand::SeedableRng;
     use rand_chacha::ChaCha20Rng;
@@ -271,6 +284,69 @@ mod tests {
                 "accepted malformed compressed input: {result}"
             );
         }
+    }
+
+    #[test]
+    fn test_u32_compressed_lessthan_constant_boundaries() {
+        let boundaries = [
+            0,
+            1,
+            0xff,
+            0x100,
+            0x7fff_ffff,
+            0x8000_0000,
+            0xffff_fffe,
+            u32::MAX,
+        ];
+        for &input in &boundaries {
+            for &threshold in &boundaries {
+                let result = execute_script_with_inputs_strict(
+                    script! {
+                        { u32_compressed_lessthan_constant(threshold) }
+                        { (input < threshold) as u32 }
+                        OP_EQUAL
+                    },
+                    vec![scriptnum(input)],
+                );
+                assert!(
+                    result.success,
+                    "constant compressed less-than failed for {input:08x} < {threshold:08x}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_u32_compressed_lessthan_constant_rejects_malformed_input() {
+        for raw in [vec![1, 0], vec![0, 0, 0, 0x80], vec![1, 0, 0, 0, 0]] {
+            let result = execute_script_with_inputs_strict(
+                script! { { u32_compressed_lessthan_constant(0x1234_5678) } },
+                vec![raw],
+            );
+            assert!(
+                result.error.is_some(),
+                "accepted malformed compressed input: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_u32_compressed_lessthan_constant_preserves_surrounding_state() {
+        let input = i64::from(0x1234_5678u32 as i32);
+        let result = execute_script(script! {
+            77 OP_TOALTSTACK
+            99
+            { input }
+            { u32_compressed_lessthan_constant(0x8000_0000) }
+            OP_1 OP_EQUALVERIFY
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "constant compressed less-than changed surrounding state: {result}"
+        );
     }
 
     fn check_comparisons(a: u32, b: u32) {

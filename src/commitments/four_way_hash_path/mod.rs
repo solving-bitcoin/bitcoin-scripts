@@ -403,6 +403,29 @@ mod tests {
     }
 
     #[test]
+    fn retained_digits_preserve_order_and_raw_bytes() {
+        let digits = [0, 1, 2, 3, 1];
+        let preimage = [0x42; 32];
+        let commitment = four_way_hash_path_commitment(&preimage, &digits);
+        let mut witness = vec![vec![77]];
+        witness.extend(four_way_hash_path_witness(&preimage, &digits));
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { verify_four_way_hash_path_to_altstack(digits.len(), commitment) }
+                OP_1 OP_EQUALVERIFY
+                77 OP_EQUALVERIFY
+                for digit in digits.iter().rev() {
+                    OP_FROMALTSTACK { if *digit == 0 { 0 } else { *digit } } OP_EQUALVERIFY
+                }
+                OP_FROMALTSTACK 99 OP_EQUAL
+            },
+            witness,
+        );
+        assert!(result.success, "retained digit contract changed: {result}");
+    }
+
+    #[test]
     #[should_panic(expected = "four-way hash-path digits must be in 0..=3")]
     fn host_commitment_rejects_out_of_range_digit() {
         let _ = four_way_hash_path_commitment(b"nonce", &[4]);

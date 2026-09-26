@@ -2,10 +2,10 @@
 
 Choose the construction by what Script must do with the authenticated data.
 [Base-16](base16/README.md) signs the actual message nibbles and can return
-them to a Script consumer. [Constant-composition](constant_composition/README.md)
+them to a Script consumer. [Mixed-stage constant-sum](constant_sum_mixed/README.md)
 has the smallest measured script-plus-witness cost for a reversibly encoded
-20-byte message. It and [constant-sum](constant_sum/README.md) verify and consume
-the signature.
+20-byte message. It, [constant-composition](constant_composition/README.md), and
+[constant-sum](constant_sum/README.md) verify and consume the signature.
 **BitVM3 can handle constant-sum encoding**; it does not require the publication
 script to reconstruct the original proof bytes. Integrations that do require
 Script to recover or consume those bytes must include that conversion cost.
@@ -19,6 +19,8 @@ Rows are ordered by maximum combined cost.
 
 | Terminal profile | Script bytes | Varied witness | Maximum signer witness | Script + maximum witness |
 | --- | ---: | ---: | ---: | ---: |
+| Mixed-stage constant-sum, staged guard | <!-- metric:w20_mixed_sum_staged_script -->1490<!-- /metric:w20_mixed_sum_staged_script --> | <!-- metric:w20_mixed_sum_staged_witness_varied -->844<!-- /metric:w20_mixed_sum_staged_witness_varied --> | <!-- metric:w20_mixed_sum_staged_witness_max -->844<!-- /metric:w20_mixed_sum_staged_witness_max --> | <!-- metric:w20_mixed_sum_staged_total_max -->2334<!-- /metric:w20_mixed_sum_staged_total_max --> |
+| Mixed-stage constant-sum, entry guard | <!-- metric:w20_mixed_sum_isolated_script -->1491<!-- /metric:w20_mixed_sum_isolated_script --> | <!-- metric:w20_mixed_sum_isolated_witness_varied -->844<!-- /metric:w20_mixed_sum_isolated_witness_varied --> | <!-- metric:w20_mixed_sum_isolated_witness_max -->844<!-- /metric:w20_mixed_sum_isolated_witness_max --> | <!-- metric:w20_mixed_sum_isolated_total_max -->2335<!-- /metric:w20_mixed_sum_isolated_total_max --> |
 | Constant-composition HASH160, isolated | <!-- metric:w20_composition_isolated_hash160_script -->1598<!-- /metric:w20_composition_isolated_hash160_script --> | <!-- metric:w20_composition_isolated_hash160_witness_varied -->796<!-- /metric:w20_composition_isolated_hash160_witness_varied --> | <!-- metric:w20_composition_isolated_hash160_witness_max -->802<!-- /metric:w20_composition_isolated_hash160_witness_max --> | <!-- metric:w20_composition_isolated_hash160_total_max -->2400<!-- /metric:w20_composition_isolated_hash160_total_max --> |
 | Constant-composition HASH160, composable | <!-- metric:w20_composition_clamped_hash160_script -->1696<!-- /metric:w20_composition_clamped_hash160_script --> | <!-- metric:w20_composition_clamped_hash160_witness_varied -->796<!-- /metric:w20_composition_clamped_hash160_witness_varied --> | <!-- metric:w20_composition_clamped_hash160_witness_max -->802<!-- /metric:w20_composition_clamped_hash160_witness_max --> | <!-- metric:w20_composition_clamped_hash160_total_max -->2498<!-- /metric:w20_composition_clamped_hash160_total_max --> |
 | Constant-composition HASH160, bounded | <!-- metric:w20_composition_bounded_hash160_script -->1767<!-- /metric:w20_composition_bounded_hash160_script --> | <!-- metric:w20_composition_bounded_hash160_witness_varied -->796<!-- /metric:w20_composition_bounded_hash160_witness_varied --> | <!-- metric:w20_composition_bounded_hash160_witness_max -->802<!-- /metric:w20_composition_bounded_hash160_witness_max --> | <!-- metric:w20_composition_bounded_hash160_total_max -->2569<!-- /metric:w20_composition_bounded_hash160_total_max --> |
@@ -30,18 +32,24 @@ Rows are ordered by maximum combined cost.
 | Constant-sum hybrid | <!-- metric:w20_sum_hybrid_script -->2381<!-- /metric:w20_sum_hybrid_script --> | <!-- metric:w20_sum_hybrid_witness_varied -->1430<!-- /metric:w20_sum_hybrid_witness_varied --> | <!-- metric:w20_sum_hybrid_witness_max -->1517<!-- /metric:w20_sum_hybrid_witness_max --> | <!-- metric:w20_sum_hybrid_total_max -->3898<!-- /metric:w20_sum_hybrid_total_max --> |
 | Constant-sum SHA-256 | <!-- metric:w20_sum_sha256_script -->2832<!-- /metric:w20_sum_sha256_script --> | <!-- metric:w20_sum_sha256_witness_varied -->1430<!-- /metric:w20_sum_sha256_witness_varied --> | <!-- metric:w20_sum_sha256_witness_max -->1517<!-- /metric:w20_sum_sha256_witness_max --> | <!-- metric:w20_sum_sha256_total_max -->4349<!-- /metric:w20_sum_sha256_total_max --> |
 
-The smallest tested combined maximum is **2,400 bytes**: constant-composition
-HASH160's **1,598-byte script + 802-byte witness**, a **33.8%** reduction from
-the previous 3,624-byte result. It uses radix-25 digits with a fixed composition
-and omits fourteen public endpoint openings. The original 20 bytes are preserved.
+The smallest tested combined maximum is **2,334 bytes** with the staged
+mixed-stage constant-sum guard, or **2,335 bytes** with the original entry
+guard. The latter is a 65-byte reduction from the 2,400-byte
+constant-composition result. It uses an exactly counted union of 32,768
+constant-composition classes, 33 openings, and twelve implicit endpoints. The
+original 20 bytes are preserved.
 
-**Isolated** requires exactly the 70 signature items on the main stack and
-preserves unrelated altstack state. **Composable** preserves unrelated main
-and altstack state and totals **2,498 bytes**. Both enforce the full composition;
-the bounded composable option also rejects upper selector aliases. Uniform-message
-mean totals are **2,398.70** isolated and **2,496.70** composable. The hybrid's
-smaller 1,468-byte script has larger openings and totals **2,678 bytes**.
+Both mixed-stage guard placements require exactly 66 signature items on the
+main stack and preserve unrelated altstack state. For constant composition,
+**isolated** requires exactly 70 signature items; **composable** preserves
+unrelated main and altstack state and totals **2,498 bytes**. Both
+constant-composition modes enforce the full composition; the bounded composable
+option also rejects upper selector aliases. Its uniform-message mean totals are
+**2,398.70** isolated and **2,496.70** composable. The hybrid's smaller
+1,468-byte script has larger openings and totals **2,678 bytes**.
 These costs exclude a separate decoder and the rest of a BitVM3 transaction.
+The mixed-stage result is a heuristic-search improvement with exact retained
+capacity and execution checks, not a global optimum proof.
 
 The fragments include embedded commitments, chain verification, checksum
 or encoding checks, and cleanup. The terminal predicate, script-item framing,
@@ -71,6 +79,11 @@ are in the construction READMEs.
   argument for an honest canonical signer. A malicious publisher can
   create accepted encodings that host decoding rejects; the bounded mode
   checks digit ranges but still omits the encoder-image check.
+- **Mixed-stage constant-sum:** a fixed union of composition classes uses local
+  two-chain equal-sum relations and alternating SHA256/RIPEMD160 stages. It has
+  the smallest measured terminal total and zero branch hints. Its fixed
+  parameters are an experimental search result, and Script still omits the
+  host encoder's unused-rank check and onchain byte recovery.
 - **Hash and initial-secret width:** HASH160 makes nodes and commitments
   small; hybrid SHA-256/HASH160 shortens commitments while keeping
   32-byte chain nodes. Pure SHA-256 has larger commitments. Initial
@@ -97,6 +110,10 @@ winternitz/
     README.md           encoding, accepted relation, and BitVM3 integration
     mod.rs, chain.rs    implementation
     tests/              Rust tests, overflow cases, and exact Python costs
+  constant_sum_mixed/   optimized union of fixed-composition classes
+    README.md           relation verifier, exact capacity, costs and boundary
+    mod.rs, tests.rs    signer, rank/unrank, verifier and strict local tests
+    tests/vectors.py    independent exact capacity and cost check
   legacy/               original HASH160 API and converters
     README.md
     api.rs, signing.rs, verification.rs, utils.rs
@@ -107,8 +124,9 @@ winternitz/
 ```
 
 Existing high-level types such as `FastWinternitz`, `ConstantSumWinternitz20`,
-`ConstantCompositionWinternitz20`, `Wots32`, `Hash160`, and `Preimage16` are available from
-`signatures::winternitz`. Low-level legacy modules now live under
+`ConstantCompositionWinternitz20`, `MixedConstantSumWinternitz20`, `Wots32`,
+`Hash160`, and `Preimage16` are available from `signatures::winternitz`.
+Low-level legacy modules now live under
 `signatures::winternitz::legacy`. Implementation tests live with their
 construction; the repository-wide metric harness remains in
 [`tests/primitive_metrics.rs`](../../../tests/primitive_metrics.rs).
@@ -122,7 +140,8 @@ Sixteen-byte starts cap initial-secret search at 128 bits before multi-target
 losses. These are custom unkeyed chains, not WOTS+ security claims.
 
 All table rows have **zero auxiliary hints**, and all signature items coexist
-at entry. Constant-composition uses 70 data items and peaks at 119 combined
+at entry. Mixed-stage constant-sum uses 66 data items and peaks at 111 combined
+items. Constant-composition uses 70 data items and peaks at 119 combined
 main/altstack items isolated, 120 clamped, or 121 bounded.
 HASH160 constant-sum uses 82 data items and peaks at 93 combined
 main/alt-stack items; base-16 uses 86/95; SHA-256 constant-sum uses 123/133.

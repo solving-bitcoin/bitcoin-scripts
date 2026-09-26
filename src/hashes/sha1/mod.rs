@@ -2,11 +2,11 @@
 
 use crate::arithmetic::u32::{
     add::u32_add_drop,
-    and::u32_and,
-    or::u32_or,
+    and::u32_and_drop,
+    or::u32_or_drop,
     rotate::u32_rrot,
     stack::{u32_drop, u32_fromaltstack, u32_pick, u32_push, u32_roll, u32_toaltstack},
-    xor::{u32_xor, u8_drop_xor_table, u8_push_xor_table},
+    xor::{u32_xor_drop, u8_drop_xor_table, u8_push_xor_table},
 };
 use crate::support::script::{script, Script};
 use crate::support::script_ops::push_to_stack;
@@ -231,33 +231,17 @@ const fn round_constant(round: usize) -> u32 {
     }
 }
 
-// Each bitwise primitive preserves its first input. These wrappers consume
-// that preserved copy so their stack contract is simply (x, y) -> op(x, y).
+// Round helpers consume both operands and leave only the bitwise result.
 fn xor_top_drop(words_above_table: usize) -> Script {
-    script! {
-        { u32_xor(0, 1, words_above_table as u32 + 1) }
-        { u32_toaltstack() }
-        { u32_drop() }
-        { u32_fromaltstack() }
-    }
+    u32_xor_drop(0, 1, words_above_table as u32 + 1)
 }
 
 fn and_top_drop(words_above_table: usize) -> Script {
-    script! {
-        { u32_and(0, 1, words_above_table as u32 + 1) }
-        { u32_toaltstack() }
-        { u32_drop() }
-        { u32_fromaltstack() }
-    }
+    u32_and_drop(0, 1, words_above_table as u32 + 1)
 }
 
 fn or_top_drop(words_above_table: usize) -> Script {
-    script! {
-        { u32_or(0, 1, words_above_table as u32 + 1) }
-        { u32_toaltstack() }
-        { u32_drop() }
-        { u32_fromaltstack() }
-    }
+    u32_or_drop(0, 1, words_above_table as u32 + 1)
 }
 
 // d ^ (b & (c ^ d))

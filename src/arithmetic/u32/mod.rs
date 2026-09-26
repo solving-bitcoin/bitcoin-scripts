@@ -1,11 +1,24 @@
 pub mod add;
 pub mod and;
 pub mod bits;
+pub mod byte_eq_mask;
+pub mod byte_less_mask;
+pub mod byte_parity;
+pub mod byte_planes;
 pub mod cmp;
+pub mod msb_mask;
+pub mod nand;
+pub mod nor;
 pub mod or;
 pub mod popcount;
 pub mod rotate;
+pub mod shift;
+pub mod shift_left;
+
 pub mod stack;
 pub mod sub;
+pub mod xnor;
 pub mod xor;
+pub mod zero;
+pub mod zero_byte_mask;
 pub mod zip;

@@ -658,8 +658,34 @@ mod tests {
     }
 
     #[test]
+    fn rate_boundary_prefix_stays_below_the_stack_limit() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { shake256_prefix(32, 137) }
+                for _ in 0..137 { OP_DROP }
+                OP_TRUE
+            },
+            vec![vec![0x42]; 32],
+        );
+        assert!(result.success, "{result}");
+        assert!(result.stats.max_nb_stack_items <= 1_000);
+    }
+
+    #[test]
     fn rejects_invalid_prefix_lengths() {
         assert!(std::panic::catch_unwind(|| shake256_prefix(0, 0)).is_err());
         assert!(std::panic::catch_unwind(|| shake256_prefix(0, OUTPUT_LEN + 1)).is_err());
+    }
+    #[test]
+    fn raw_output_exceeds_strict_stack_limit() {
+        let result = execute_script_with_inputs_strict(script! {{ shake256(0) }}, vec![]);
+        assert!(
+            !result.success,
+            "raw SHAKE256 output unexpectedly passed: {result}"
+        );
+        assert!(
+            result.stats.max_nb_stack_items >= 1_000,
+            "strict execution stopped before the stack boundary: {result}"
+        );
     }
 }

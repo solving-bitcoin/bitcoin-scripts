@@ -95,7 +95,7 @@ pub fn hors_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
         //
         // Steps each iteration:
         //   1. Roll index_i from depth n+1 → top
-        //   2. Sanitize: clamp to [0, n-1] with OP_MIN
+        //   2. Sanitize: upper-clamp to n-1 with OP_MIN
         //   3. OP_DUP to keep a copy (we need to OP_DROP it after EQUALVERIFY)
         //   4. Compute pick depth: after OP_DUP, stack is idx_copy(0)|idx_orig(1)|hash[0](2)|…
         //      `{1} OP_ADD` CONSUMES idx_copy and produces (idx+1) on top.
@@ -119,7 +119,7 @@ pub fn hors_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
             { (n + 1) as u32 } OP_ROLL
             // Stack: idx_i(0) | hash[0](1) | … | hash[n-1](n) | preimage_i(n+1)
 
-            // Step 2: sanitize index (clamp to [0, n-1])
+            // Step 2: sanitize index (upper-clamp to n-1; OP_MIN does not reject negatives)
             { (n - 1) as u32 } OP_MIN
 
             // Step 3: duplicate index
@@ -203,7 +203,9 @@ fn encode_script_int(v: i64) -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::{execute_script, execute_script_with_inputs};
+    use crate::support::execution::{
+        execute_script, execute_script_with_inputs, execute_script_with_inputs_strict,
+    };
     use crate::support::script::script;
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
@@ -246,6 +248,67 @@ mod tests {
             "witness ordering check failed: {:?}",
             result
         );
+    }
+
+    #[test]
+    fn index_serialization_boundary_at_128_is_canonical() {
+        let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_locking_script(&public_keys, 1);
+        for index in [127usize, 128] {
+            let result = execute_script_with_inputs_strict(
+                locking.clone(),
+                hors_unlocking_witness(&preimages, &[index]),
+            );
+            assert!(result.success, "index {index} failed: {result}");
+            assert_eq!(result.final_stack.len(), 1);
+            assert_eq!(result.final_stack.get(0), vec![1]);
+        }
+    }
+
+    #[test]
+    fn index_129_is_clamped_to_the_last_commitment() {
+        let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let result = execute_script_with_inputs_strict(
+            hors_locking_script(&public_keys, 1),
+            vec![encode_script_int(129), preimages[128].clone()],
+        );
+        assert!(result.success, "clamped index was rejected: {result}");
+    }
+
+    #[test]
+    fn n32_t8_witness_boundary_is_strict() {
+        let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_locking_script(&public_keys, 8);
+        let witness = hors_unlocking_witness(&preimages, &(1..=8).collect::<Vec<_>>());
+
+        let result = execute_script_with_inputs_strict(locking.clone(), witness.clone());
+        assert!(result.success, "valid witness failed: {result}");
+        assert_eq!(witness.len(), 16);
+        assert_eq!(result.stats.max_nb_stack_items, 50);
+        assert_eq!(result.final_stack.len(), 1);
+        assert_eq!(result.final_stack.get(0), vec![1]);
+
+        let mut missing = witness.clone();
+        missing.remove(0);
+        let result = execute_script_with_inputs_strict(locking.clone(), missing);
+        assert_eq!(
+            result.error,
+            Some(bitcoin_scriptexec::ExecError::InvalidStackOperation)
+        );
+
+        let mut excess = vec![vec![0x55]];
+        excess.extend(witness);
+        let result = execute_script_with_inputs_strict(locking, excess);
+        assert!(
+            !result.success,
+            "excess witness unexpectedly passed: {result}"
+        );
+        assert_eq!(result.final_stack.len(), 2);
+        assert_eq!(result.final_stack.get(0), vec![0x55]);
+        assert_eq!(result.final_stack.get(1), vec![1]);
     }
 
     /// Check exact stack layout as locking script starts.

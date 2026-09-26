@@ -75,11 +75,15 @@ jobs:
           path: target/core-regtest/*.tar.gz
           key: bitcoin-core-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/bitcoin_core_release.json') }}
       - name: Test fixture determinism and local execution contracts
-        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures
+        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures --example tapscript_budget_fixtures --example tapscript_csv_fixtures
       - name: Compare Tapscript resource and policy profiles
         run: python3 tools/core_regtest.py --download-core --output target/ci-reports/core-profiles.json
       - name: Compare transaction-aware signature behavior
         run: python3 tools/tapscript_signature_regtest.py --download-core --output target/ci-reports/tapscript-signatures.json
+      - name: Compare complete-witness signature budgets
+        run: python3 tools/tapscript_budget_regtest.py --download-core --output target/ci-reports/tapscript-budget.json
+      - name: Compare five-byte CSV semantics
+        run: python3 tools/tapscript_csv_regtest.py --download-core --output target/ci-reports/tapscript-csv.json
       - name: Validate checked PRINCEv2 spends
         run: python3 tools/prince_regtest.py --download-core --output target/ci-reports/prince.json
       - name: Upload Core comparison reports

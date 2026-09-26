@@ -109,6 +109,80 @@ pub fn u4_pair_to_u8(check_inputs: bool) -> Script {
         OP_ADD
     }
 }
+
+/// Pack `high | middle | low` nibbles into one 12-bit ScriptNum.
+///
+/// With `check_inputs`, all three inputs are constrained to `0..=15`. Without
+/// it, the caller must already have established that invariant.
+pub fn u4_triplet_to_u12(check_inputs: bool) -> Script {
+    script! {
+        if check_inputs {
+            OP_DUP 0 16 OP_WITHIN OP_VERIFY
+            1 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+            2 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+        }
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+    }
+}
+/// Pack `high | high_middle | low_middle | low` into one 16-bit ScriptNum.
+///
+/// With `check_inputs`, all four inputs are constrained to `0..=15`. Without
+/// it, the caller must already have established that invariant.
+pub fn u4_quad_to_u16(check_inputs: bool) -> Script {
+    script! {
+        if check_inputs {
+            OP_DUP 0 16 OP_WITHIN OP_VERIFY
+            1 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+            2 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+            3 OP_PICK 0 16 OP_WITHIN OP_VERIFY
+        }
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+        OP_SWAP
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_DUP OP_ADD
+        OP_ADD
+    }
+}
 /// Split one byte-valued ScriptNum into `high | low` nibbles.
 ///
 /// With `check_inputs`, the byte is constrained to `0..=255`. Without it,
@@ -184,6 +258,7 @@ mod tests {
     use super::*;
     use super::{u4_hex_to_nibbles, u4_repeat_number};
     use crate::arithmetic::u4::stack::u4_number_to_nibble;
+    use bitcoin_scriptexec::ExecError;
 
     #[test]
     fn test_repeat() {
@@ -250,15 +325,20 @@ mod tests {
     }
 
     #[test]
-    fn packs_all_checked_nibble_pairs() {
-        for byte in 0..=u8::MAX {
-            let result = crate::support::execution::execute_script(script! {
-                { (byte >> 4) as u32 }
-                { (byte & 0x0f) as u32 }
-                { u4_pair_to_u8(true) }
-                { byte as u32 } OP_EQUAL
-            });
-            assert!(result.success, "failed to pack byte {byte:#x}: {result}");
+    fn packs_all_nibble_pairs() {
+        for check_inputs in [true, false] {
+            for byte in 0..=u8::MAX {
+                let result = crate::support::execution::execute_script(script! {
+                    { (byte >> 4) as u32 }
+                    { (byte & 0x0f) as u32 }
+                    { u4_pair_to_u8(check_inputs) }
+                    { byte as u32 } OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "failed to pack byte {byte:#x}, checked {check_inputs}: {result}"
+                );
+            }
         }
     }
 
@@ -269,9 +349,10 @@ mod tests {
                 { high }
                 { low }
                 { u4_pair_to_u8(true) }
+                OP_DROP
                 OP_TRUE
             });
-            assert!(!result.success, "accepted malformed pair {high}, {low}");
+            assert_eq!(result.error, Some(ExecError::Verify));
         }
 
         let result = crate::support::execution::execute_script(script! {
@@ -285,6 +366,124 @@ mod tests {
         assert!(
             result.success,
             "pair packing changed preserved state: {result}"
+        );
+    }
+
+    #[test]
+    fn checked_triplet_packs_boundaries_and_preserves_state() {
+        for (high, middle, low, expected) in [
+            (0, 0, 0, 0),
+            (1, 2, 3, 0x123),
+            (15, 0, 1, 0xf01),
+            (15, 15, 15, 0xfff),
+        ] {
+            let result = crate::support::execution::execute_script(script! {
+                { high }
+                { middle }
+                { low }
+                { u4_triplet_to_u12(true) }
+                { expected } OP_EQUAL
+            });
+            assert!(
+                result.success,
+                "failed to pack triplet {high:x}{middle:x}{low:x}: {result}"
+            );
+        }
+
+        for (high, middle, low) in [(-1, 0, 0), (0, 16, 0), (0, 0, 16)] {
+            let result = crate::support::execution::execute_script(script! {
+                { high }
+                { middle }
+                { low }
+                { u4_triplet_to_u12(true) }
+                OP_TRUE
+            });
+            assert!(
+                !result.success,
+                "accepted malformed triplet {high}, {middle}, {low}"
+            );
+        }
+
+        let result = crate::support::execution::execute_script(script! {
+            77 OP_TOALTSTACK
+            99
+            1 2 3
+            { u4_triplet_to_u12(true) }
+            0x123 OP_EQUALVERIFY
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "triplet packing changed preserved state: {result}"
+        );
+    }
+
+    #[test]
+    fn unchecked_triplet_requires_the_caller_invariant() {
+        let result = crate::support::execution::execute_script(script! {
+            0 -1 2
+            { u4_triplet_to_u12(false) }
+            -14 OP_EQUAL
+        });
+        assert!(
+            result.success,
+            "unchecked triplet did not preserve arithmetic semantics: {result}"
+        );
+    }
+    #[test]
+    fn checked_quad_packs_boundaries_and_preserves_state() {
+        for (high, high_middle, low_middle, low, expected) in [
+            (0, 0, 0, 0, 0),
+            (1, 2, 3, 4, 0x1234),
+            (15, 0, 1, 2, 0xf012),
+            (15, 15, 15, 15, 0xffff),
+        ] {
+            let result = crate::support::execution::execute_script(script! {
+                { high }
+                { high_middle }
+                { low_middle }
+                { low }
+                { u4_quad_to_u16(true) }
+                { expected } OP_EQUAL
+            });
+            assert!(
+                result.success,
+                "failed to pack quad {high:x}{high_middle:x}{low_middle:x}{low:x}: {result}"
+            );
+        }
+
+        for (high, high_middle, low_middle, low) in
+            [(-1, 0, 0, 0), (0, 16, 0, 0), (0, 0, 16, 0), (0, 0, 0, 16)]
+        {
+            let result = crate::support::execution::execute_script(script! {
+                { high }
+                { high_middle }
+                { low_middle }
+                { low }
+                { u4_quad_to_u16(true) }
+                OP_TRUE
+            });
+            assert!(
+                !result.success,
+                "accepted malformed quad {high}, {high_middle}, {low_middle}, {low}"
+            );
+        }
+
+        let result = crate::support::execution::execute_script(script! {
+            77 OP_TOALTSTACK
+            99
+            1 2 3 4
+            { u4_quad_to_u16(true) }
+            0x1234 OP_EQUALVERIFY
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "quad packing changed preserved state: {result}"
         );
     }
 

@@ -18,7 +18,7 @@ digest comparison.
 
 | Configuration | Hashing script |
 | --- | ---: |
-| 32-byte input | <!-- metric:sha1_u32_32 -->209726<!-- /metric:sha1_u32_32 --> bytes |
+| 32-byte input | <!-- metric:sha1_u32_32 -->205558<!-- /metric:sha1_u32_32 --> bytes |
 
 This fragment exceeds the repository optimizer's 32 KiB input cutoff and is
 reported unoptimized.

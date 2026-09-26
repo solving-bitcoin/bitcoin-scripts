@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-01",
+  "as_of": "2026-09-20",
   "sources": [
     {
       "id": "bip-16",
@@ -29,6 +29,13 @@
       "kind": "specification",
       "url": "https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki",
       "revision": "final specification"
+    },
+    {
+      "id": "bip-112",
+      "title": "BIP 112: CHECKSEQUENCEVERIFY",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0112.mediawiki",
+      "revision": "24e96e870fffaa257b465ce1f0370c14aac588e8; accepted specification"
     },
     {
       "id": "bip-341",
@@ -113,6 +120,20 @@
       "kind": "execution-tool",
       "url": "https://github.com/adrienlacombe/rust-bitcoin-scriptexec/tree/702544c9a045ac4fc14846da6da6559e2b7cd9d1",
       "revision": "702544c9a045ac4fc14846da6da6559e2b7cd9d1; retains 4b7269a4 resource repairs and integrates Sander Bosma's PR16 (4c9bf94e1508df9c77a579dde1831c88ab24cabb), additional CODESEPARATOR tests (474a6b6f0a67338ea61287cabf06c92fb0b7a3e0), empty-signature repair (f4e05a47dbdb465e8dbe970531825a973f0836d1), signature errors (2efd48f793b972edda33cdcf39b47d99ab6e6547), and SIGHASH_SINGLE error ordering (47e080651a1df90e67cce7c05a846f8befd8c08b). Adopted 2026-09-10; historical measurements retain their original pins."
+    },
+    {
+      "id": "bitcoin-scriptexec-witness-budget-20260920",
+      "title": "Immutable integration of complete-witness tapscript signature budgets",
+      "kind": "execution-tool",
+      "url": "https://github.com/adrienlacombe/rust-bitcoin-scriptexec/tree/f678467784475b1072557de70166514e52753f66",
+      "revision": "f678467784475b1072557de70166514e52753f66; retains 702544c9 resource and signature repairs, adds Exec::new_tapscript and failing-opcode budget statistics from standalone commit 9b1eddeb4735d1c607fc066aa5290c23b9d8baa1 (upstream PR23). Adopted 2026-09-20; old constructors retain data-only budgets and historical artifacts retain their original pins."
+    },
+    {
+      "id": "bitcoin-scriptexec-csv-20260920",
+      "title": "Immutable integration of five-byte CSV operand repair",
+      "kind": "execution-tool",
+      "url": "https://github.com/adrienlacombe/rust-bitcoin-scriptexec/tree/a09e87af444034698697f0a2267e755cf72f9aed",
+      "revision": "a09e87af444034698697f0a2267e755cf72f9aed; retains f6784677 resource, signature and complete-witness budget repairs; adds standalone CSV mask-before-narrowing commit 6bb5e342fabc3780bd2b83cba237275892844bcc (upstream PR24). Adopted 2026-09-20; historical artifacts retain their original pins."
     },
     {
       "id": "coins-bitcoin-scripts-8f442e4b",
