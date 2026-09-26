@@ -124,7 +124,12 @@ and digit decoding 47 times, with **zero cumulative hints** for either set.
 The grouped contract is `preserved | word7..word0 -> preserved | limb15..limb0`;
 the digit contract ends in `digit50..digit0`. Their respective 62/93-item peaks
 include inputs, outputs, temporary powers, and both stacks. Preserved combined
-prefixes of 937/906 items have separately tested strict peaks of 999. Existing
+The generators accept preserved prefixes of 938/907 items; strict runtime tests
+reach exactly 1,000 combined items with the boundary fixture and verify every
+preserved sentinel and decoder output. One extra runtime item fails with
+StackSize, while the generators reject 939/908. The probe's existing 937/906
+fixtures remain separately tested strict peaks of 999 and are headroom-one
+fixtures, not the maximum. Existing
 altstack contents are restored, and neither decoder appends a terminal
 predicate. Raw ScriptNum alias semantics match `decode_fast`; the padding bit
 and semantic 19-value gap are always checked from the decoded value.

@@ -18,13 +18,15 @@ Metrics are fragment-only: input pushes and the caller's output predicate are
 excluded; witness bytes include CompactSize item counts and lengths. Sizes use
 `compile_with_policy()` with optimization enabled. Stack peaks combine main
 and alt stacks. Metric execution uses bitcoin-scriptexec
-`702544c9a045ac4fc14846da6da6559e2b7cd9d1` in tapscript mode with the stack limit
-disabled (`research-unlimited`); evidence is `locally-reproduced`, not Core
-consensus or relay-policy validation.
+`702544c9a045ac4fc14846da6da6559e2b7cd9d1` in tapscript mode with the stack
+limit disabled (`research-unlimited`). The retained-bit row uses strict local
+stack checks (`unclassified`); neither row is Core consensus or relay-policy
+validation.
 
 | Fragment | Locking script | Unlocking witness | Maximum stack items |
 | --- | ---: | ---: | ---: |
 | `verify_hash_path_to_integer(31, commitment)` | <!-- metric:hash_path_integer_31 -->457<!-- /metric:hash_path_integer_31 --> bytes | <!-- metric:hash_path_integer_witness_31 -->78<!-- /metric:hash_path_integer_witness_31 --> bytes (32-byte nonce, 31 bits) | <!-- metric:hash_path_integer_stack_31 -->33<!-- /metric:hash_path_integer_stack_31 --> |
+| `verify_hash_path_to_altstack(31, commitment)` | <!-- metric:hash_path_altstack_31 -->302<!-- /metric:hash_path_altstack_31 --> bytes | <!-- metric:hash_path_altstack_witness_31 -->78<!-- /metric:hash_path_altstack_witness_31 --> bytes, 32 data items, 0 hints (<!-- metric:hash_path_altstack_witness_max_31 -->96<!-- /metric:hash_path_altstack_witness_max_31 --> maximum) | <!-- metric:hash_path_altstack_stack_31 -->33<!-- /metric:hash_path_altstack_stack_31 --> |
 
 The raw path uses exactly `5n` static legacy-counted opcodes. Retaining bits
 uses `7n`; OP_0/OP_1 are pushes and do not count. The verification comparison

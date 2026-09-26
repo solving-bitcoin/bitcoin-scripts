@@ -3,6 +3,11 @@
 The table is a navigation aid, not a single benchmark: semantics and boundaries
 differ. Follow each catalog configuration before comparing numbers.
 
+The [archived PR #3 right-shift comparison](../negative-results/index.md#historical-pr-3-rotate-and-mask-loses-on-the-tested-compressed-input-shifts)
+records reported dominance of PR #8 over rotate-and-mask for the tested
+compressed-input shifts. Its historical numbers have a separate boundary from
+the current byte-oriented and decode/re-encode configurations below.
+
 | Need | Local construction | Representative script bytes | Main constraint |
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
@@ -18,6 +23,7 @@ differ. Follow each catalog configuration before comparing numbers.
 | 32 checked nibbles to 128 bits | u4 staggered batch table | 924 | 189-item peak; tapscript-oriented |
 | 32 canonical checked nibbles to 128 bits | u4 canonical big-endian table adapter | 1,306 | 189-item peak; 65-byte witness; rejects raw aliases |
 | 32 canonical checked nibbles to 128 big-endian bits on altstack | u4 canonical altstack table adapter | 1,178 | 189-item peak; 65-byte witness; rejects raw aliases |
+| 8 checked u32 words to byte planes | u32 stack permutation | 411 | 35-item combined peak; 97-byte minimal witness |
 | Canonical compressed-u32 decode | u32 raw-encoding boundary | 431 | 7-item peak; 7-byte maximum witness; rejects aliases |
 | Canonical nonnegative compressed-u32 decode | u32 narrow raw-encoding boundary | 405 | 7-item peak; 6-byte maximum witness; rejects negative values and aliases |
 | Canonical u32 byte-word compression | `u32_compress_canonical()` | 130 | 7-item peak; 9-byte representative/13-byte maximum witness; rejects raw limb aliases |
@@ -27,13 +33,14 @@ differ. Follow each catalog configuration before comparing numbers.
 | Checked u4 nibble triplet to u12 | `u4_triplet_to_u12(true)` | <!-- metric:u4_triplet_to_u12_checked -->44<!-- /metric:u4_triplet_to_u12_checked --> | <!-- metric:u4_triplet_to_u12_checked_stack -->6<!-- /metric:u4_triplet_to_u12_checked_stack -->-item peak; 3 data items; 12-bit ScriptNum |
 | Checked u4 nibble quad to u16 | `u4_quad_to_u16(true)` | <!-- metric:u4_quad_to_u16_checked -->76<!-- /metric:u4_quad_to_u16_checked --> | <!-- metric:u4_quad_to_u16_checked_stack -->7<!-- /metric:u4_quad_to_u16_checked_stack -->-item peak; 4 data items; 16-bit ScriptNum |
 | Checked u4 nibble popcount batch, 32 inputs | `u4_nibbles_to_popcount(32)` | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack -->-item peak; 65-byte witness; 32 data items; no hints; bit-plane expansion is 924 bytes and 189 items |
+| Checked u4 total popcount, 32 inputs | `u4_popcount(32)` | <!-- metric:u4_popcount_total_batch32 -->471<!-- /metric:u4_popcount_total_batch32 --> | <!-- metric:u4_popcount_total_batch32_stack -->50<!-- /metric:u4_popcount_total_batch32_stack -->-item peak; 65-byte witness; one output; no hints |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
 | Checked u8 high-bit extraction | `u8_extract_hbit_checked(4)` | 73 | 5-item peak; 4-byte witness; rejects non-byte ScriptNums |
 | Canonical checked nibble boundary | `verify_canonical_nibble()` | 10 | 4-item peak; 3-byte witness; rejects noncanonical ScriptNums |
 | 32 checked signed radix-32 digits to sign/magnitude bits | signed-window staggered table | 1,866 | 348-item peak; wins bytes only after 8–16 digit crossover |
 | Compressed total-domain u32 addition | two-item compressed wire | 1,016 | 11-byte representative witness; byte baseline is 78 bytes and 20-byte witness |
 | Fixed-width u4 ordering | `lexicographic_le(128)` | 7,500 | 256 data items; 4,354 non-push opcodes |
-| Fixed-width u4 ordering with embedded right vector | `lexicographic_le_constant(128)` | <!-- metric:u4_lexicographic_le_constant_128 -->0<!-- /metric:u4_lexicographic_le_constant_128 --> | <!-- metric:u4_lexicographic_le_constant_128_witness_items -->0<!-- /metric:u4_lexicographic_le_constant_128_witness_items --> witness data items; <!-- metric:u4_lexicographic_le_constant_128_stack -->0<!-- /metric:u4_lexicographic_le_constant_128_stack -->-item peak; embedded vector |
+| Fixed-width u4 ordering with embedded right vector | `lexicographic_le_constant(128)` | <!-- metric:u4_lexicographic_le_constant_128 -->7628<!-- /metric:u4_lexicographic_le_constant_128 --> | <!-- metric:u4_lexicographic_le_constant_128_witness_items -->128<!-- /metric:u4_lexicographic_le_constant_128_witness_items --> witness data items; <!-- metric:u4_lexicographic_le_constant_128_stack -->259<!-- /metric:u4_lexicographic_le_constant_128_stack -->-item peak; embedded vector |
 | 32 checked nibbles to leading-zero counts | `u4_nibbles_to_leading_zeros(32)` | 440 | 50-item peak; one output count per input |
 | 32 checked nibbles to intra-nibble bit-transition counts | `u4_nibbles_to_bit_transitions(32)` | 440 | 50-item peak; one count per input |
 | 32 checked nibbles to trailing-zero counts | `u4_nibbles_to_trailing_zeros(32)` | 440 | 50-item peak; one output count per input |

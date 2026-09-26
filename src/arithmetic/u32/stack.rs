@@ -467,6 +467,22 @@ mod tests {
         assert!(!result.success, "accepted noncanonical compressed word");
     }
 
+    fn assert_malformed_limb_error(
+        result: &crate::support::execution::ExecuteInfo,
+        expected: bitcoin_scriptexec::ExecError,
+        scenario: &str,
+    ) {
+        assert!(
+            !result.success,
+            "accepted malformed limb ({scenario}): {result}"
+        );
+        assert_eq!(
+            result.error.as_ref(),
+            Some(&expected),
+            "malformed limb missed its intended validation error ({scenario}): {result}"
+        );
+    }
+
     #[test]
     fn test_u32_notequal() {
         for (a, b) in [
@@ -588,18 +604,60 @@ mod tests {
     fn canonical_compress_rejects_malformed_limbs() {
         let script = script! {
             { u32_compress_canonical() }
-            OP_TRUE
+            OP_DROP OP_TRUE
         };
+
+        let valid_control = execute_script_with_inputs_strict(script.clone(), vec![vec![1]; 4]);
+        assert!(
+            valid_control.success,
+            "valid cleanup control failed: {valid_control}"
+        );
+        assert_eq!(
+            valid_control.error, None,
+            "valid control errored: {valid_control}"
+        );
+
+        // A deliberately unchecked compressor accepts this out-of-range
+        // ScriptNum limb. The shared exact-error assertion below must reject it.
+        let bypass_control = execute_script_with_inputs_strict(
+            script! {
+                { u32_compress() }
+                OP_DROP OP_TRUE
+            },
+            vec![vec![1], vec![1], vec![1], vec![0, 1]],
+        );
+        assert!(
+            bypass_control.success,
+            "unchecked bypass control did not pass: {bypass_control}"
+        );
+        assert_eq!(
+            bypass_control.error, None,
+            "unchecked bypass errored: {bypass_control}"
+        );
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                assert_malformed_limb_error(
+                    &bypass_control,
+                    bitcoin_scriptexec::ExecError::Verify,
+                    "unchecked mutant",
+                )
+            }))
+            .is_err(),
+            "shared malformed-limb assertion accepted the unchecked mutant"
+        );
+
         for position in 0..4 {
             for replacement in [vec![1, 0], vec![0, 1], vec![0x80], vec![0xff]] {
                 let mut witness = vec![vec![1]; 4];
+                let expected_error = match replacement.as_slice() {
+                    [1, 0] | [0x80] => bitcoin_scriptexec::ExecError::MinimalData,
+                    [0, 1] | [0xff] => bitcoin_scriptexec::ExecError::Verify,
+                    _ => unreachable!("unexpected malformed-limb fixture"),
+                };
                 witness[position] = replacement;
-                let result =
-                    crate::support::execution::execute_script_with_inputs(script.clone(), witness);
-                assert!(
-                    !result.success,
-                    "accepted malformed limb at {position}: {result}"
-                );
+                let scenario = format!("encoding {position}");
+                let result = execute_script_with_inputs_strict(script.clone(), witness);
+                assert_malformed_limb_error(&result, expected_error, &scenario);
             }
         }
     }

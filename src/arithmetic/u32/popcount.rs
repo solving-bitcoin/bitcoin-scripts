@@ -71,8 +71,12 @@ mod tests {
     use super::*;
     use crate::{
         arithmetic::u32::stack::u32_push,
-        support::{execution::execute_script, script::script},
+        support::{
+            execution::{execute_script, execute_script_with_inputs_strict},
+            script::script,
+        },
     };
+    use bitcoin_scriptexec::ExecError;
 
     #[test]
     fn counts_boundary_and_representative_words() {
@@ -94,14 +98,85 @@ mod tests {
 
     #[test]
     fn rejects_non_byte_limbs() {
-        for invalid in [-1, 256] {
+        for position in 0..4 {
+            let mut input = vec![0; 4];
+            input[position] = if position % 2 == 0 { -1 } else { 256 };
             let result = execute_script(script! {
-                0 0 0 { invalid }
+                for byte in input { { byte } }
                 { u32_popcount() }
-                OP_TRUE
+                OP_DROP OP_TRUE
             });
-            assert!(!result.success, "accepted invalid byte {invalid}");
+            assert!(!result.success, "accepted invalid byte at {position}");
         }
+
+        for position in 0..4 {
+            let mut witness = vec![vec![]; 4];
+            witness[position] = vec![0, 0, 0, 0, 1];
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { u32_popcount() }
+                    OP_DROP OP_TRUE
+                },
+                witness,
+            );
+            assert!(!result.success, "accepted oversized byte at {position}");
+        }
+    }
+
+    #[test]
+    fn counts_boundary_bytes_in_every_limb_position() {
+        for position in 0..4 {
+            for value in [0u32, 1, 127, 128, 255] {
+                let mut input = [0; 4];
+                input[position] = value;
+                let result = execute_script(script! {
+                    for byte in input { { byte } }
+                    { u32_popcount() }
+                    { value.count_ones() } OP_EQUAL
+                });
+                assert!(
+                    result.success,
+                    "position={position} value={value:#04x}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn preserves_surrounding_main_and_alt_stack_items() {
+        let result = execute_script(script! {
+            OP_9 OP_TOALTSTACK
+            77
+            { u32_push(0) }
+            { u32_popcount() }
+            OP_0 OP_EQUALVERIFY
+            77 OP_EQUALVERIFY
+            OP_FROMALTSTACK 9 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(result.success, "preserved state changed: {result}");
+    }
+
+    #[test]
+    fn respects_combined_stack_frontier() {
+        let maximum_witness = vec![vec![]; 738 + 4];
+        let maximum = execute_script_with_inputs_strict(
+            script! {
+                { u32_popcount() }
+                OP_DROP
+                for _ in 0..738 { OP_DROP }
+                OP_TRUE
+            },
+            maximum_witness,
+        );
+        assert!(maximum.success, "maximum preserved state failed: {maximum}");
+        assert_eq!(maximum.stats.max_nb_stack_items, 1000);
+
+        let over_budget = execute_script_with_inputs_strict(
+            script! { { u32_popcount() } },
+            vec![vec![]; 739 + 4],
+        );
+        assert_eq!(over_budget.error, Some(ExecError::StackSize));
     }
 
     #[test]
@@ -134,13 +209,15 @@ mod tests {
 
     #[test]
     fn rejects_non_byte_limbs_for_per_byte_counts() {
-        for invalid in [-1, 256] {
+        for position in 0..4 {
+            let mut input = vec![0; 4];
+            input[position] = if position % 2 == 0 { -1 } else { 256 };
             let result = execute_script(script! {
-                0 0 0 { invalid }
+                for byte in input { { byte } }
                 { u32_byte_popcounts() }
-                OP_TRUE
+                OP_2DROP OP_2DROP OP_TRUE
             });
-            assert!(!result.success, "accepted invalid byte {invalid}");
+            assert!(!result.success, "accepted invalid byte at {position}");
         }
     }
 }
