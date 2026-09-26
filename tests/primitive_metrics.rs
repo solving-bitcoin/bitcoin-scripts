@@ -7983,6 +7983,16 @@ fn u4_pack_metrics_are_current() {
             key: "u4_pack_batch32_opcodes",
             value: static_non_push_opcodes(fragment),
         },
+        Metric {
+            readme: "knowledge/comparisons/arithmetic.md",
+            key: "u4_pack_batch32",
+            value: script_len(u4::pack::u4_nibbles_to_bytes(NIBBLE_COUNT)),
+        },
+        Metric {
+            readme: "knowledge/comparisons/arithmetic.md",
+            key: "u4_pack_batch32_stack",
+            value: peak,
+        },
     ]);
 }
 

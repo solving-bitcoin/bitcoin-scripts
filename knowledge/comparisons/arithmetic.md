@@ -55,7 +55,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | Checked u4 square modulo 16 | `u4_square_mod16()` | 6 | 20-item peak; 16-item table; one data item; zero hints |
 | 32 checked nibbles nondecreasing predicate | `u4_nibbles_nondecreasing(32)` | 478 | 35-item peak; one output bit; no table |
 | 32 checked nibbles to an exact sum | `u4_nibbles_sum_exact(32)` | 497 | 34-item peak; no table; full sum rather than modulo 16 |
-| 32 checked nibbles to 16 bytes | `u4_nibbles_to_bytes(32)` | 448 | 50-item peak; checked pair packing; no hints |
+| 32 checked nibbles to 16 bytes | `u4_nibbles_to_bytes(32)` | <!-- metric:u4_pack_batch32 -->442<!-- /metric:u4_pack_batch32 --> | <!-- metric:u4_pack_batch32_stack -->52<!-- /metric:u4_pack_batch32_stack -->-item peak; checked pair packing; 65-byte witness; no hints |
 | 32 checked nibbles to forward modulo-16 deltas | `u4_nibbles_to_adjacent_delta(32)` | 760 | 64-item peak; 31 output nibbles; no hints |
 | 32 checked nibbles cyclically rotated left | `u4_nibbles_rotate_left(32)` | 432 | 64-item peak; no hints; stack permutation |
 | 32-wide checked u4 vector interleave | `u4_nibbles_interleave(32)` | 954 | 128-item peak; 129-byte witness; no hints |
