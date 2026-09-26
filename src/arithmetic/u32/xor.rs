@@ -1,4 +1,5 @@
 use crate::arithmetic::u32::zip::u32_copy_zip;
+use crate::arithmetic::u32::zip::u32_zip;
 use crate::support::script::*;
 
 /// Bitwise XOR of two u8 elements, i denoting how many values are there in the stack after the table (including the input numbers A and B)
@@ -100,6 +101,26 @@ pub fn u32_xor(a: u32, b: u32, stack_size: u32) -> Script {
         {u8_xor(2 + (stack_size - 2) * 4)}
 
 
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+    }
+}
+
+/// Bitwise XOR of two a-th and b-th u32 values, consuming both inputs.
+/// `stack_size` is one plus the number of u32 words above the shared table.
+pub fn u32_xor_drop(a: u32, b: u32, stack_size: u32) -> Script {
+    assert_ne!(a, b);
+    assert!(stack_size >= 3);
+    script! {
+        { u32_zip(a, b) }
+        { u8_xor(4 + (stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_xor(2 + (stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_xor((stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_xor((stack_size - 2) * 4 - 2) }
         OP_FROMALTSTACK
         OP_FROMALTSTACK
         OP_FROMALTSTACK
@@ -333,7 +354,7 @@ mod tests {
     use super::*;
     use crate::arithmetic::test_helpers::{run_with_witness, word_witness};
     use crate::arithmetic::u32::stack::*;
-    use crate::support::execution::run;
+    use crate::support::execution::{execute_script_with_inputs_strict, run};
     use rand::{rngs::StdRng, Rng, SeedableRng};
 
     #[test]
@@ -385,6 +406,56 @@ mod tests {
                     .chain(word_witness(y)),
             );
         }
+    }
+
+    #[test]
+    fn test_u32_xor_drop() {
+        let script = script! {
+            { u32_toaltstack() }
+            { u32_toaltstack() }
+            { u8_push_xor_table() }
+            { u32_fromaltstack() }
+            { u32_fromaltstack() }
+            { u32_xor_drop(0, 1, 3) }
+            { u32_toaltstack() }
+            { u8_drop_xor_table() }
+            { u32_fromaltstack() }
+            { u32_equal() }
+        };
+        let compiled = script.clone().compile_with_policy().to_bytes();
+        let mut rng = StdRng::seed_from_u64(0x7533325f64726f70);
+        for _ in 0..100 {
+            let x: u32 = rng.gen();
+            let y: u32 = rng.gen();
+            run_with_witness(
+                &compiled,
+                word_witness(x ^ y)
+                    .chain(word_witness(x))
+                    .chain(word_witness(y)),
+            );
+        }
+
+        let malformed = execute_script_with_inputs_strict(
+            script,
+            vec![
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+                vec![0, 1],
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+            ],
+        );
+        assert!(
+            !malformed.success,
+            "out-of-range byte unexpectedly accepted"
+        );
     }
 
     #[test]

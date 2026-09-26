@@ -12,6 +12,7 @@
 
 use bitcoin::{
     consensus::encode::serialize,
+    hashes::{sha256, Hash},
     hex::DisplayHex,
     script::Instruction,
     secp256k1::{Keypair, Secp256k1, SecretKey},
@@ -195,6 +196,7 @@ fn fixture(
         "name": name,
         "description": description,
         "script_hex": script.as_bytes().to_lower_hex_string(),
+        "script_sha256": sha256::Hash::hash(script.as_bytes()).to_string(),
         "data_witness_hex": witness.iter().map(|item| item.to_lower_hex_string()).collect::<Vec<_>>(),
         "control_block_hex": control_bytes.to_lower_hex_string(),
         "script_pubkey_hex": output_script.as_bytes().to_lower_hex_string(),
@@ -644,8 +646,27 @@ mod tests {
             .find(|row| row["name"] == "u4-lsb-0123456789abcdef")
             .unwrap();
         assert_eq!(lsb["expected"]["consensus"], true);
+        assert_eq!(lsb["expected"]["policy"], true);
+        assert_eq!(lsb["compilation"], POLICY);
+        assert_eq!(lsb["metrics"]["locking_script_bytes"], 264);
+        assert_eq!(lsb["metrics"]["data_witness_bytes"], 32);
+        assert_eq!(lsb["metrics"]["taproot_witness_bytes"], 333);
         assert_eq!(lsb["metrics"]["data_items"], 16);
         assert_eq!(lsb["metrics"]["hint_items"], 0);
+        assert_eq!(lsb["data_witness_hex"].as_array().unwrap().len() + 2, 18);
+        assert_eq!(lsb["metrics"]["static_non_push_opcodes"], 184);
+        assert_eq!(
+            lsb["script_sha256"],
+            "58fcbbe71361ce2f2c80fc73f80724ad10870e97696ffcfce14cd24fa7e3f708"
+        );
+        assert_eq!(
+            lsb["tapleaf_hash"],
+            "089b76bd44cf4b1a078d2605a9555dbf1391aba5bba682b48f16c48ccb2ae160"
+        );
+        assert_eq!(lsb["local"]["context"], "tapscript");
+        assert_eq!(lsb["local"]["stack_limit_enforced"], true);
+        assert_eq!(lsb["local"]["max_stack_items"], 34);
+        assert_eq!(lsb["local"]["final_main_stack_items"], 1);
         assert_eq!(valid["control_block_hex"].as_str().unwrap().len(), 66);
         assert_eq!(valid["script_pubkey_hex"].as_str().unwrap().len(), 68);
         let names: std::collections::HashSet<_> = rows.iter().map(|row| &row["name"]).collect();

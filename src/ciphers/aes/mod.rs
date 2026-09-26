@@ -8,8 +8,9 @@
 use bitcoin::{
     opcodes::{
         all::{
-            OP_2DROP, OP_2DUP, OP_2OVER, OP_3DUP, OP_ADD, OP_DUP, OP_FROMALTSTACK, OP_GREATERTHAN,
-            OP_OVER, OP_PICK, OP_SUB, OP_SWAP, OP_TOALTSTACK,
+            OP_2DROP, OP_2DUP, OP_2OVER, OP_3DUP, OP_ADD, OP_DUP, OP_EQUALVERIFY, OP_FROMALTSTACK,
+            OP_GREATERTHAN, OP_OVER, OP_PICK, OP_ROLL, OP_SUB, OP_SWAP, OP_TOALTSTACK, OP_VERIFY,
+            OP_WITHIN,
         },
         Opcode,
     },
@@ -148,6 +149,37 @@ pub fn bytes_to_nibbles(bytes: [u8; 16]) -> [u8; 32] {
             byte & 0xf
         }
     })
+}
+
+/// Permute one AES state from column-major order into the ShiftRows order.
+///
+/// The input and output are 32 nibbles with byte 0's high nibble on top. The
+/// caller must supply canonical nibbles in `0..=15`; this fragment only moves
+/// stack items and does not validate their numeric values.
+pub fn aes128_shift_rows() -> Script {
+    let desired: Vec<usize> = SHIFT_ROWS
+        .into_iter()
+        .flat_map(|byte| [2 * byte, 2 * byte + 1])
+        .collect();
+    let mut remaining: Vec<usize> = (0..STATE_NIBBLES).collect();
+    let mut out = Program::default();
+
+    for source in desired.into_iter().rev() {
+        let position = remaining
+            .iter()
+            .position(|&item| item == source)
+            .expect("every AES state nibble is selected once");
+        if position > 0 {
+            out.push(position as i32);
+            out.op(OP_ROLL);
+        }
+        out.op(OP_TOALTSTACK);
+        remaining.remove(position);
+    }
+    for _ in 0..STATE_NIBBLES {
+        out.op(OP_FROMALTSTACK);
+    }
+    out.into_script("AES-128 ShiftRows")
 }
 
 #[derive(Clone, Copy)]
@@ -400,6 +432,40 @@ impl AesScript {
         out
     }
 
+    fn initialize_checked_tables() -> Program {
+        let mut out = Program::default();
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_DUP);
+            out.push(0);
+            out.push(16);
+            out.op(OP_WITHIN);
+            out.op(OP_VERIFY);
+            out.op(OP_DUP);
+            out.op(OP_DUP);
+            out.push(0);
+            out.op(OP_ADD);
+            out.op(OP_EQUALVERIFY);
+            out.op(OP_TOALTSTACK);
+        }
+        out.extend(table_pushes());
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_FROMALTSTACK);
+        }
+        out
+    }
+
+    fn cleanup_tables(out: &mut Program) {
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_TOALTSTACK);
+        }
+        for _ in 0..TABLE_ITEMS / 2 {
+            out.op(OP_2DROP);
+        }
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_FROMALTSTACK);
+        }
+    }
+
     /// Fused AddRoundKey(input) + SubBytes + ShiftRows + AddRoundKey(output).
     /// Only the first invocation has an input key and only the final one has
     /// an output key.
@@ -448,6 +514,39 @@ impl AesScript {
         out
     }
 
+    fn sub_bytes_only() -> Program {
+        let mut out = Self::initialize_checked_tables();
+        for byte in 0..BLOCK_BYTES {
+            out.extend(Self::copy_state(2 * byte, 0));
+            out.extend(Self::copy_state(2 * byte + 1, 1));
+            out.op(OP_SWAP);
+            out.extend(Self::lookup(XOR_SHIFT_ADDR, 1));
+            out.op(OP_ADD);
+            out.op(OP_DUP);
+
+            out.push(XOR_ADDR - (SBOX_HI_ADDR + 1));
+            out.op(OP_SUB);
+            out.op(OP_PICK);
+            out.op(OP_TOALTSTACK);
+
+            out.push(XOR_ADDR - SBOX_LO_ADDR);
+            out.op(OP_SUB);
+            out.op(OP_PICK);
+            out.op(OP_TOALTSTACK);
+        }
+        Self::finish_state_transform(&mut out);
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_TOALTSTACK);
+        }
+        for _ in 0..TABLE_ITEMS / 2 {
+            out.op(OP_2DROP);
+        }
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_FROMALTSTACK);
+        }
+        out
+    }
+
     fn xtime_high(byte: usize, scratch_below: usize) -> Program {
         let mut out = Self::copy_state(2 * byte, scratch_below);
         out.extend(Self::lookup(XTIME_HI_ADDR, scratch_below));
@@ -468,11 +567,10 @@ impl AesScript {
     }
 
     fn mix_output_from_xtimes(
-        &self,
         column: usize,
         row: usize,
         high: bool,
-        key_nibble: u8,
+        key_nibble: Option<u8>,
     ) -> Program {
         let byte = |row: usize| 4 * column + (row & 3);
         let current = byte(row);
@@ -493,13 +591,13 @@ impl AesScript {
         out.extend(Self::xor_top_two(10));
         out.extend(Self::copy_scratch(if high { 10 } else { 9 }));
         out.extend(Self::xor_top_two(10));
-        out.extend(Self::xor_constant(key_nibble, 10));
+        if let Some(key_nibble) = key_nibble {
+            out.extend(Self::xor_constant(key_nibble, 10));
+        }
         out
     }
 
-    /// Fused MixColumns + AddRoundKey for a full AES round.
-    fn mix_columns_add_key(&self, round: usize) -> Program {
-        let key = bytes_to_nibbles(self.round_keys[round]);
+    fn mix_columns(key: Option<&[u8; STATE_NIBBLES]>) -> Program {
         let mut out = Program::default();
         for column in 0..4 {
             // t = a ^ b ^ c ^ d, once for each nibble.
@@ -525,9 +623,19 @@ impl AesScript {
             }
             for row in 0..4 {
                 let byte = 4 * column + row;
-                out.extend(self.mix_output_from_xtimes(column, row, true, key[2 * byte]));
+                out.extend(Self::mix_output_from_xtimes(
+                    column,
+                    row,
+                    true,
+                    key.map(|key| key[2 * byte]),
+                ));
                 out.op(OP_TOALTSTACK);
-                out.extend(self.mix_output_from_xtimes(column, row, false, key[2 * byte + 1]));
+                out.extend(Self::mix_output_from_xtimes(
+                    column,
+                    row,
+                    false,
+                    key.map(|key| key[2 * byte + 1]),
+                ));
                 out.op(OP_TOALTSTACK);
             }
             for _ in 0..5 {
@@ -535,6 +643,42 @@ impl AesScript {
             }
         }
         Self::finish_state_transform(&mut out);
+        out
+    }
+
+    /// Fused MixColumns + AddRoundKey for a full AES round.
+    fn mix_columns_add_key(&self, round: usize) -> Program {
+        let key = bytes_to_nibbles(self.round_keys[round]);
+        Self::mix_columns(Some(&key))
+    }
+
+    fn add_round_key(&self, round: usize, check_inputs: bool) -> Program {
+        let key = bytes_to_nibbles(self.round_keys[round]);
+        let mut out = Self::initialize_tables();
+        for nibble in 0..STATE_NIBBLES {
+            out.extend(Self::copy_state(nibble, 0));
+            if check_inputs {
+                verify_canonical_nibble(&mut out);
+            }
+            out.extend(Self::xor_constant(key[nibble], 0));
+            out.op(OP_TOALTSTACK);
+        }
+        Self::finish_state_transform(&mut out);
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_TOALTSTACK);
+        }
+        for _ in 0..TABLE_ITEMS / 2 {
+            out.op(OP_2DROP);
+        }
+        for _ in 0..STATE_NIBBLES {
+            out.op(OP_FROMALTSTACK);
+        }
+        out
+    }
+    fn mix_columns_only() -> Program {
+        let mut out = Self::initialize_checked_tables();
+        out.extend(Self::mix_columns(None));
+        Self::cleanup_tables(&mut out);
         out
     }
 
@@ -561,6 +705,19 @@ impl AesScript {
     }
 }
 
+fn verify_canonical_nibble(out: &mut Program) {
+    out.op(OP_DUP);
+    out.push(0);
+    out.push(16);
+    out.op(OP_WITHIN);
+    out.op(OP_VERIFY);
+    out.op(OP_DUP);
+    out.op(OP_DUP);
+    out.push(0);
+    out.op(OP_ADD);
+    out.op(OP_EQUALVERIFY);
+}
+
 /// AES-128 encryption with a generation-time key.
 ///
 /// Input and output are 32 canonical nibbles. Byte 0's high nibble is on top;
@@ -573,13 +730,131 @@ pub fn aes128_encrypt(key: [u8; 16]) -> Script {
     .into_script("AES-128 encryption")
 }
 
+/// XOR a generation-time AES-128 round key with a 32-nibble state.
+///
+/// Input and output use the encryption layout: byte 0's high nibble is on top
+/// and byte 15's low nibble is deepest. Every input nibble is checked for a
+/// canonical ScriptNum encoding in `0..=15` before table lookup.
+pub fn aes128_add_round_key(round_key: [u8; 16]) -> Script {
+    AesScript {
+        round_keys: [
+            round_key, [0; 16], [0; 16], [0; 16], [0; 16], [0; 16], [0; 16], [0; 16], [0; 16],
+            [0; 16], [0; 16],
+        ],
+    }
+    .add_round_key(0, true)
+    .into_script("AES-128 AddRoundKey")
+}
+/// Checked AES S-box substitution for one 128-bit block.
+///
+/// Input and output are 32 canonical nibbles in AES state order. The key is
+/// not involved; the shared AES lookup memory is initialized and removed by
+/// this fragment.
+pub fn aes128_sub_bytes() -> Script {
+    AesScript::sub_bytes_only().into_script("AES-128 SubBytes")
+}
+/// Checked AES MixColumns for one 128-bit block.
+///
+/// Input and output are 32 canonical nibbles in AES state order. The key is
+/// not involved; the shared AES lookup memory is initialized and removed by
+/// this fragment.
+pub fn aes128_mix_columns() -> Script {
+    AesScript::mix_columns_only().into_script("AES-128 MixColumns")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::support::{
-        execution::execute_script,
+        execution::execute_raw_script_with_inputs_strict,
+        execution::{
+            execute_script, execute_script_with_inputs, execute_script_with_inputs_strict,
+        },
         script::{script, ScriptCompilation},
     };
+
+    fn add_round_key_script(round_key: [u8; 16], state: [u8; 16]) -> Script {
+        let key = bytes_to_nibbles(round_key);
+        let state = bytes_to_nibbles(state);
+        script! {
+            for i in (0..STATE_NIBBLES).rev() {
+                { state[i] as u32 }
+            }
+            { aes128_add_round_key(round_key) }
+            for (state_nibble, key_nibble) in state.into_iter().zip(key) {
+                { (state_nibble ^ key_nibble) as u32 }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        }
+    }
+
+    fn sub_bytes_witness(bytes: [u8; 16]) -> Vec<Vec<u8>> {
+        bytes_to_nibbles(bytes)
+            .into_iter()
+            .rev()
+            .map(|nibble| {
+                if nibble == 0 {
+                    Vec::new()
+                } else {
+                    vec![nibble]
+                }
+            })
+            .collect()
+    }
+
+    fn sub_bytes_expected(bytes: [u8; 16]) -> [u8; 16] {
+        std::array::from_fn(|index| SBOX[bytes[index] as usize])
+    }
+
+    fn execute_sub_bytes(bytes: [u8; 16]) -> crate::support::execution::ExecuteInfo {
+        let expected = bytes_to_nibbles(sub_bytes_expected(bytes));
+        execute_script(script! {
+            for i in (0..STATE_NIBBLES).rev() {
+                { bytes_to_nibbles(bytes)[i] as u32 }
+            }
+            { aes128_sub_bytes() }
+            for expected_nibble in expected {
+                { expected_nibble as u32 }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        })
+    }
+    fn mix_columns_witness(bytes: [u8; 16]) -> Vec<Vec<u8>> {
+        bytes_to_nibbles(bytes)
+            .into_iter()
+            .rev()
+            .map(|nibble| {
+                if nibble == 0 {
+                    Vec::new()
+                } else {
+                    vec![nibble]
+                }
+            })
+            .collect()
+    }
+
+    fn mix_columns_expected(bytes: [u8; 16]) -> [u8; 16] {
+        let mut state = bytes;
+        mix_columns(&mut state);
+        state
+    }
+
+    fn execute_mix_columns(bytes: [u8; 16]) -> crate::support::execution::ExecuteInfo {
+        let expected = bytes_to_nibbles(mix_columns_expected(bytes));
+        execute_script(script! {
+            for i in (0..STATE_NIBBLES).rev() {
+                { bytes_to_nibbles(bytes)[i] as u32 }
+            }
+            { aes128_mix_columns() }
+            for expected_nibble in expected {
+                { expected_nibble as u32 }
+                OP_EQUALVERIFY
+            }
+            OP_TRUE
+        })
+    }
 
     fn execute_vector(key: [u8; 16], plaintext: [u8; 16], ciphertext: [u8; 16]) -> usize {
         let plaintext = bytes_to_nibbles(plaintext);
@@ -646,6 +921,173 @@ mod tests {
     }
 
     #[test]
+    fn add_round_key_projects_known_states() {
+        for (key, state) in [([0u8; 16], [0u8; 16]), ([0x0f; 16], [0xa5; 16])] {
+            let result = execute_script(add_round_key_script(key, state));
+            assert!(result.success, "AddRoundKey failed: {result}");
+        }
+    }
+
+    #[test]
+    fn add_round_key_rejects_malformed_nibbles() {
+        for (index, raw) in [(0, vec![16]), (7, vec![0x81]), (31, vec![1, 0])] {
+            let mut witness = vec![vec![0u8]; STATE_NIBBLES];
+            witness[index] = raw;
+            let result = execute_raw_script_with_inputs_strict(
+                aes128_add_round_key([0; 16])
+                    .compile_with_policy()
+                    .to_bytes(),
+                witness,
+            );
+            assert!(
+                !result.success,
+                "accepted malformed nibble {index}: {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn add_round_key_preserves_surrounding_stacks() {
+        let key = [0x0f; 16];
+        let state = [0xa5; 16];
+        let state_nibbles = bytes_to_nibbles(state);
+        let key_nibbles = bytes_to_nibbles(key);
+        let result = execute_script(script! {
+            77 OP_TOALTSTACK
+            99
+            for i in (0..STATE_NIBBLES).rev() {
+                { state_nibbles[i] as u32 }
+            }
+            { aes128_add_round_key(key) }
+            for (state_nibble, key_nibble) in state_nibbles.into_iter().zip(key_nibbles) {
+                { (state_nibble ^ key_nibble) as u32 }
+                OP_EQUALVERIFY
+            }
+            99 OP_EQUALVERIFY
+            OP_FROMALTSTACK 77 OP_EQUALVERIFY
+            OP_TRUE
+        });
+        assert!(
+            result.success,
+            "stack-preserving AddRoundKey failed: {result}"
+        );
+    }
+    #[test]
+    fn sub_bytes_matches_reference_vectors() {
+        let vectors = [
+            [0; 16],
+            [
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                0x0e, 0x0f,
+            ],
+            [0xff; 16],
+            std::array::from_fn(|index| (index as u8).wrapping_mul(37).wrapping_add(11)),
+        ];
+
+        for bytes in vectors {
+            let result = execute_sub_bytes(bytes);
+            assert!(result.success, "AES-128 SubBytes failed: {result}");
+        }
+    }
+
+    #[test]
+    fn sub_bytes_rejects_noncanonical_and_out_of_range_nibbles() {
+        let script = script! {
+            { aes128_sub_bytes() }
+            for _ in 0..STATE_NIBBLES { OP_DROP }
+            OP_TRUE
+        };
+
+        for (position, replacement) in [(0, vec![0, 0]), (7, vec![0x10]), (31, vec![0x81])] {
+            let mut witness = sub_bytes_witness([0; 16]);
+            witness[position] = replacement;
+            let result = execute_script_with_inputs(script.clone(), witness);
+            assert!(
+                !result.success,
+                "hostile nibble at position {position} was accepted"
+            );
+        }
+    }
+
+    #[test]
+    fn sub_bytes_preserves_surrounding_stack_state() {
+        let mut witness = vec![vec![42]];
+        witness.extend(sub_bytes_witness([0; 16]));
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { 99 } OP_TOALTSTACK
+                { aes128_sub_bytes() }
+                for _ in 0..STATE_NIBBLES { OP_DROP }
+                { 42 } OP_EQUALVERIFY
+                OP_FROMALTSTACK { 99 } OP_EQUALVERIFY
+                OP_TRUE
+            },
+            witness,
+        );
+        assert!(
+            result.success,
+            "AES-128 SubBytes changed surrounding state: {result}"
+        );
+    }
+    #[test]
+    fn mix_columns_matches_reference_vectors() {
+        let vectors = [
+            [0; 16],
+            [
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                0x0e, 0x0f,
+            ],
+            [0xff; 16],
+            std::array::from_fn(|index| (index as u8).wrapping_mul(37).wrapping_add(11)),
+        ];
+
+        for bytes in vectors {
+            let result = execute_mix_columns(bytes);
+            assert!(result.success, "AES-128 MixColumns failed: {result}");
+        }
+    }
+
+    #[test]
+    fn mix_columns_rejects_noncanonical_and_out_of_range_nibbles() {
+        let script = script! {
+            { aes128_mix_columns() }
+            for _ in 0..STATE_NIBBLES { OP_DROP }
+            OP_TRUE
+        };
+
+        for (position, replacement) in [(0, vec![0, 0]), (7, vec![0x10]), (31, vec![0x81])] {
+            let mut witness = mix_columns_witness([0; 16]);
+            witness[position] = replacement;
+            let result = execute_script_with_inputs(script.clone(), witness);
+            assert!(
+                !result.success,
+                "hostile nibble at position {position} was accepted"
+            );
+        }
+    }
+
+    #[test]
+    fn mix_columns_preserves_surrounding_stack_state() {
+        let mut witness = vec![vec![42]];
+        witness.extend(mix_columns_witness([0; 16]));
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { 99 } OP_TOALTSTACK
+                { aes128_mix_columns() }
+                for _ in 0..STATE_NIBBLES { OP_DROP }
+                { 42 } OP_EQUALVERIFY
+                OP_FROMALTSTACK { 99 } OP_EQUALVERIFY
+                OP_TRUE
+            },
+            witness,
+        );
+        assert!(
+            result.success,
+            "AES-128 MixColumns changed surrounding state: {result}"
+        );
+    }
+
+    #[test]
     fn script_vectors_and_metrics() {
         let key = [
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
@@ -667,11 +1109,73 @@ mod tests {
                 0x2b, 0x2e,
             ],
         );
+        let all_ones_key = [0xff; 16];
+        let all_ones_plaintext = [0x00; 16];
+        let all_ones_ciphertext = aes128_encrypt_ref(all_ones_key, all_ones_plaintext);
+        let all_ones_stack = execute_vector(all_ones_key, all_ones_plaintext, all_ones_ciphertext);
+        let all_ones_size = aes128_encrypt(all_ones_key).compile_with_policy().len();
         eprintln!(
-            "AES-128 script size: {size} bytes ({zero_key_size} with zero key); max stack: {max_stack}/{zero_stack}"
+            "AES-128 script size: {size} bytes ({zero_key_size} zero-key, {all_ones_size} all-ones); max stack: {max_stack}/{zero_stack}/{all_ones_stack}"
         );
         assert_eq!(zero_key_size, 25_388);
+        assert_eq!(size, 25_449);
         assert_eq!(max_stack, 908);
         assert_eq!(zero_stack, 908);
+        assert_eq!(all_ones_size, 25_520);
+        assert_eq!(all_ones_stack, 908);
+    }
+
+    #[test]
+    fn shift_rows_reorders_state_and_preserves_stacks() {
+        let witness = std::iter::once(vec![99])
+            .chain((0..STATE_NIBBLES).rev().map(|value| vec![value as u8]))
+            .collect();
+        let result = execute_script_with_inputs_strict(
+            script! {
+                77 OP_TOALTSTACK
+                { aes128_shift_rows() }
+                for byte in SHIFT_ROWS.into_iter().rev() {
+                    { vec![(2 * byte + 1) as u8] } OP_EQUALVERIFY
+                    { vec![(2 * byte) as u8] } OP_EQUALVERIFY
+                }
+                99 OP_EQUALVERIFY
+                OP_FROMALTSTACK 77 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            witness,
+        );
+        assert!(result.success, "ShiftRows permutation failed: {result}");
+    }
+
+    #[test]
+    fn shift_rows_preserves_malformed_items_for_caller_validation() {
+        let mut state: Vec<Vec<u8>> = (0..STATE_NIBBLES).map(|value| vec![value as u8]).collect();
+        state[0] = vec![0x80];
+        state[5] = vec![1, 0];
+        state[10] = vec![0, 1];
+        let expected = SHIFT_ROWS
+            .into_iter()
+            .flat_map(|byte| [state[2 * byte].clone(), state[2 * byte + 1].clone()])
+            .collect::<Vec<_>>();
+        let witness = std::iter::once(vec![99])
+            .chain(state.into_iter().rev())
+            .collect();
+        let result = execute_script_with_inputs_strict(
+            script! {
+                77 OP_TOALTSTACK
+                { aes128_shift_rows() }
+                for item in expected.into_iter().rev() {
+                    { item } OP_EQUALVERIFY
+                }
+                99 OP_EQUALVERIFY
+                OP_FROMALTSTACK 77 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            witness,
+        );
+        assert!(
+            result.success,
+            "ShiftRows changed hostile raw items: {result}"
+        );
     }
 }

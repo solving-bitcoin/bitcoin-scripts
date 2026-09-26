@@ -1,4 +1,4 @@
-use crate::arithmetic::u32::zip::u32_copy_zip;
+use crate::arithmetic::u32::zip::{u32_copy_zip, u32_zip};
 use crate::support::script::*;
 
 /// Bitwise AND of two u8 elements, i denoting how many values are there in the stack after the table (including the input numbers A and B)
@@ -92,6 +92,26 @@ pub fn u32_and(a: u32, b: u32, stack_size: u32) -> Script {
     }
 }
 
+/// Bitwise AND of two a-th and b-th u32 values, consuming both inputs.
+/// `stack_size` is one plus the number of u32 words above the shared table.
+pub fn u32_and_drop(a: u32, b: u32, stack_size: u32) -> Script {
+    assert_ne!(a, b);
+    assert!(stack_size >= 3);
+    script! {
+        { u32_zip(a, b) }
+        { u8_and(4 + (stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_and(2 + (stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_and((stack_size - 2) * 4) }
+        OP_TOALTSTACK
+        { u8_and((stack_size - 2) * 4 - 2) }
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+        OP_FROMALTSTACK
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -119,6 +139,35 @@ mod tests {
         .compile_with_policy()
         .to_bytes();
         let mut rng = StdRng::seed_from_u64(0x7533325f616e64);
+        for _ in 0..100 {
+            let x: u32 = rng.gen();
+            let y: u32 = rng.gen();
+            run_with_witness(
+                &script,
+                word_witness(x & y)
+                    .chain(word_witness(x))
+                    .chain(word_witness(y)),
+            );
+        }
+    }
+
+    #[test]
+    fn test_and_drop() {
+        let script = script! {
+            { u32_toaltstack() }
+            { u32_toaltstack() }
+            { u8_push_xor_table() }
+            { u32_fromaltstack() }
+            { u32_fromaltstack() }
+            { u32_and_drop(0, 1, 3) }
+            { u32_toaltstack() }
+            { u8_drop_xor_table() }
+            { u32_fromaltstack() }
+            { u32_equal() }
+        }
+        .compile_with_policy()
+        .to_bytes();
+        let mut rng = StdRng::seed_from_u64(0x7533325f64726f70);
         for _ in 0..100 {
             let x: u32 = rng.gen();
             let y: u32 = rng.gen();

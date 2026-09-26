@@ -1,6 +1,6 @@
 //! Checked reversal of the four bits in each u4 nibble.
 
-use super::stack::u4_drop;
+use super::stack::{u4_drop, verify_canonical_nibble};
 use crate::support::script::*;
 
 pub const U4_BIT_REVERSE_TABLE_ITEMS: u32 = 16;
@@ -23,6 +23,15 @@ fn push_table() -> Script {
 /// Consume a contiguous nibble batch and replace each nibble with its
 /// four-bit reversal. Inputs are range-checked before table indexing.
 pub fn u4_nibbles_to_bit_reverse(nibble_count: u32) -> Script {
+    u4_nibbles_to_bit_reverse_impl(nibble_count, false)
+}
+
+/// Consume minimally encoded nibbles and reverse their four bits.
+pub fn u4_nibbles_to_bit_reverse_canonical(nibble_count: u32) -> Script {
+    u4_nibbles_to_bit_reverse_impl(nibble_count, true)
+}
+
+fn u4_nibbles_to_bit_reverse_impl(nibble_count: u32, canonical: bool) -> Script {
     assert!(nibble_count > 0, "nibble batch must not be empty");
     assert!(
         nibble_count <= U4_BIT_REVERSE_MAX_BATCH,
@@ -32,7 +41,11 @@ pub fn u4_nibbles_to_bit_reverse(nibble_count: u32) -> Script {
         { push_table() }
         for _ in 0..nibble_count {
             { U4_BIT_REVERSE_TABLE_ITEMS } OP_ROLL
-            OP_DUP OP_0 OP_16 OP_WITHIN OP_VERIFY
+            if canonical {
+                { verify_canonical_nibble() }
+            } else {
+                OP_DUP OP_0 OP_16 OP_WITHIN OP_VERIFY
+            }
             OP_PICK OP_TOALTSTACK
         }
         { u4_drop(U4_BIT_REVERSE_TABLE_ITEMS) }
@@ -86,5 +99,55 @@ mod tests {
             u4_nibbles_to_bit_reverse(U4_BIT_REVERSE_MAX_BATCH + 1)
         })
         .is_err());
+    }
+
+    #[test]
+    fn canonical_reversal_matches_reference_values() {
+        let result = execute_script(script! {
+            1 10 5 14
+            { u4_nibbles_to_bit_reverse_canonical(4) }
+            7 OP_EQUALVERIFY
+            10 OP_EQUALVERIFY
+            5 OP_EQUALVERIFY
+            8 OP_EQUAL
+        });
+        assert!(result.success, "canonical bit reversal failed: {result}");
+    }
+
+    #[test]
+    fn canonical_reversal_rejects_malformed_nibbles() {
+        let script = script! {
+            { u4_nibbles_to_bit_reverse_canonical(4) }
+            for _ in 0..4 { OP_DROP }
+            OP_TRUE
+        };
+        for position in 0..4 {
+            for replacement in [vec![1, 0], vec![0, 1], vec![0x80]] {
+                let mut witness = vec![vec![1]; 4];
+                witness[position] = replacement;
+                let result =
+                    crate::support::execution::execute_script_with_inputs(script.clone(), witness);
+                assert!(
+                    !result.success,
+                    "accepted malformed nibble at {position}: {result}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn canonical_reversal_preserves_surrounding_stacks() {
+        let result = crate::support::execution::execute_script_with_inputs_strict(
+            script! {
+                99 OP_TOALTSTACK
+                { u4_nibbles_to_bit_reverse_canonical(2) }
+                OP_DROP OP_DROP
+                77 OP_EQUALVERIFY
+                OP_FROMALTSTACK 99 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            vec![vec![77], vec![1], vec![2]],
+        );
+        assert!(result.success, "{result}");
     }
 }

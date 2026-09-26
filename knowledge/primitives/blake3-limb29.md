@@ -1,5 +1,9 @@
 # BLAKE3 over tracked limbs
 
+The public construction is limited to the unkeyed 32-byte digest. Its missing
+root-output counter and longer-output routing are recorded in the [XOF
+boundary result](../negative-results/blake3-xof-output.md).
+
 Implements BLAKE3 for messages up to one 1,024-byte chunk using tracked-stack
 u4 and bigint machinery.
 
@@ -28,6 +32,19 @@ ScriptNum encoding remains a caller obligation. For a final block of at most 32
 bytes, the second 256-bit input group is outside the declared message and is
 dropped without validation before zero padding is synthesized; callers must
 not rely on that ignored group being bound.
+
+## Tree boundary
+
+This implementation is intentionally a single-chunk construction. The public
+generator accepts at most 1,024 bytes, and its block-flag schedule has no
+`PARENT` compression or binary-tree reduction. The boundary is locally
+reproduced by the exact-length test at 1,024 bytes and the rejection test at
+1,025 bytes. A multi-chunk BLAKE3 result must not be estimated by multiplying
+the single-chunk metrics: parent-node compression, child chaining-value
+routing, and the final root schedule have not been implemented or measured.
+
+See the [tree-composition boundary](../negative-results/blake3-tree-composition.md)
+for the falsifiable follow-up criterion.
 
 See the [implementation README](../../src/hashes/blake3/README.md) and catalog
 record `hash/blake3-limb29`. Messages of at most 32 bytes can instead use the
