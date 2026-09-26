@@ -19,7 +19,11 @@ whether the word is zero. It uses no lookup table.
 
 This is a fragment rather than a complete locking script. Callers still need
 any terminal predicate, clean-stack rule, and byte-unique ScriptNum binding
-required by their protocol.
+required by their protocol. The checked fragment's standalone peak is 6 items,
+so preserved main and alt-stack state must satisfy
+`6 + preserved_main + preserved_alt <= 1000`. The unchecked
+`stack::u32_iszero()` helper is a separate 4-byte fragment that assumes its
+four limbs are already validated.
 
 See the [implementation README](../../src/arithmetic/u32/README.md),
 [arithmetic comparison](../comparisons/arithmetic.md), and catalog record

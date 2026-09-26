@@ -1314,7 +1314,7 @@
         },
         {
           "id": "iszero",
-          "label": "u32_iszero()",
+          "label": "stack::u32_iszero()",
           "parameters": {
             "representation": "four big-endian byte limbs",
             "predicate": "all four limbs numerically zero"
