@@ -1757,3 +1757,21 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-070: Output prefixes do not reduce fixed-hash compression cost
+
+The RIPEMD-160, SHA-1, and SHA-256 byte/u4 prefix adapters execute the complete
+underlying compression schedule and only route fewer digest items at the
+terminal boundary. For 32-byte inputs, the representative prefix fragments are
+240,251 bytes (RIPEMD-160), 205,586 bytes (SHA-1), 512,468 bytes (SHA-256
+u32), and 332,970 bytes (SHA-256 u4); the corresponding full fragments are
+240,223, 205,558, 512,428, and 332,942 bytes. The measured prefix peaks are
+406, 632, 856, and 969 items, respectively, under the local
+`research-unlimited` boundary.
+
+The prefixes are useful only as explicit result-shape choices. An 8-byte
+prefix has at most a 32-bit generic collision bound and an ideal 64-bit
+preimage bound; an 8-nibble prefix has at most a 16-bit generic collision
+bound and an ideal 32-bit preimage bound. This is locally reproduced and
+differentially checked against the underlying hash references; it is not a
+consensus or relay-policy deployment claim.
