@@ -11,7 +11,10 @@ The complete-witness preflight now validates the revealed script and control
 block against the P2TR output. Seven funded depth-one fixtures compare valid,
 mutated, and malformed control paths with pinned Core. The recorded comparisons
 are `differentially-validated`; the preflight is not a complete transaction
-validator. Next, validate the remaining transaction context:
+validator. A separate [confirmed-output BIP68 comparison](tapscript-csv-validation.md#confirmed-output-bip68-maturity-follow-up-2026-09-28)
+now matches Core immediately before and at exact height/MTP maturity while
+preserving a missing-context `Unsupported` result. Next, validate the remaining
+transaction context:
 **complete when** valid and mutated Taproot commitments, annexes and Schnorr
 signatures produce supported local verdicts that agree with pinned Core,
 including budgets initialized from the full serialized witness. Unsupported
@@ -130,13 +133,14 @@ context-free profiles, including when their opcodes appear in dead branches.
 The [funded CSV comparison](tapscript-csv-validation.md) repairs a five-byte
 operand panic and checks 19 complete spends against Core. The local executor
 compares transaction version and `nSequence`; it does not know the funding
-height or median-time history needed for BIP68 transaction finality.
-**Remaining acceptance criterion:** a transaction-aware wrapper must either
-check the relevant funding height/MTP against the spend block and match pinned
-Core on both sides of each relative-maturity boundary, or return an explicit
-unsupported outcome when that chain context is absent. This remains under
-OP-001; the funded Core harness supplies complete-spend verdicts for the
-recorded CSV fixtures.
+height or median-time history needed for BIP68 transaction finality. A new
+host-side preflight accepts ordered confirmed-prevout heights, their prior-block
+MTPs and a candidate block's height/parent MTP. Two funded CSV5 spends match
+pinned Core both one height/time unit before and exactly at maturity. Missing or
+inconsistent chain context returns `Unsupported`, never transaction rejection.
+This satisfies the height/time boundary criterion for the recorded confirmed
+prevouts, while same-block and mempool parents, chain-fact authentication,
+absolute finality and full transaction validity remain open under OP-001.
 
 The current [53-fixture Core experiment](core-validation.md) reproduces every
 consensus/policy expectation and rejection diagnostic, with all 106 combined
