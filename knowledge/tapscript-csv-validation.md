@@ -122,3 +122,68 @@ The context-free consensus/policy fragment profiles still refuse CSV as
 unsupported. Commitment validation and a chain-aware timelock verdict remain
 [open under OP-001](open-problems.md#op-001--strict-execution-matrix).
 See [NR-065](negative-results/index.md#nr-065-narrowing-five-byte-csv-operands-before-masking-panics).
+
+## Confirmed-output BIP68 maturity follow-up, 2026-09-28
+
+Question: when a CSV leaf itself succeeds, can a local chain-aware preflight
+distinguish an immature transaction from the same funded spend at its first
+eligible height and median-time-past (MTP)? The comparison objective is the
+consensus and default-policy verdict for the two exact boundaries, with leaf
+execution retained as a separate diagnostic.
+
+[BIP68](https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0068.mediawiki)
+and [pinned Core's sequence-lock calculation](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/consensus/tx_verify.cpp)
+use the input's confirmation height for height locks and the MTP of the block
+before confirmation for time locks. The candidate block's height and its
+parent's MTP must exceed the calculated last-invalid values. A time unit is
+512 seconds, the low 16 sequence bits encode the relative duration, bit 22
+selects time, and bit 31 disables the lock. The new
+[`support::bip68` preflight](../src/support/bip68.rs) checks every input's ordered
+outpoint and confirmed chain facts; missing or inconsistent context yields
+`Unsupported`, not rejection. It does not execute a Script or establish full
+transaction validity.
+
+The [separate maturity runner](../tools/tapscript_maturity_regtest.py) reuses
+the earlier 19-output funding manifest and selects its CSV5 height and time
+leaves without altering the historical report. It funds them on a fresh regtest
+chain with 512-second block spacing.
+The funding output confirms at height **102**; the MTP of its parent block is
+**1800049152**. Both leaf executions accept throughout. At tip 105, candidate
+height 106 and parent MTP `base + 2048` are one height/time unit short: the local
+preflight says `Premature`, Core rejects both transactions in block validation
+as `bad-txns-nonfinal`, and `testmempoolaccept` reports `non-BIP68-final`.
+At tip 106, candidate height 107 and parent MTP `base + 2560` are exactly
+eligible: the preflight says `Mature`, Core policy accepts both, and one block
+confirms both spends. Calling the preflight without chain facts reports
+`Unsupported` for each exact transaction. These are **four stage-by-case
+comparisons**, each against both Core consensus and policy; all eight outcomes
+match. The two immature states are `consensus-incompatible` and the two mature
+states are `policy-validated` for these funded transactions. Evidence is
+`differentially-validated` for the recorded cases.
+
+Each leaf is the final 3-byte policy-produced `OP_CSV OP_DROP OP_TRUE` script.
+Each complete witness is 45 bytes: one 5-byte operand data item, script, and
+33-byte control block. There are **zero hint items per invocation**; the one
+data item enters the leaf alone, and the combined main-plus-alt-stack peak is
+one with the 1,000-item limit enabled. Transaction weight is 423 WU per spend.
+The initial and remaining signature budget is 95 because neither leaf uses a
+signature. The static non-push count is two; dynamic executed-opcode counts
+remain unavailable. No repetition or batching is measured.
+
+Reproduce with `cargo test --locked bip68::tests`,
+`cargo build --locked --example bip68_maturity_probe`,
+`python3 tools/test_tapscript_maturity_regtest.py`, and
+`python3 tools/tapscript_maturity_regtest.py --download-core` on a machine
+without the pinned Core archive. Two fresh-node runs produced byte-identical
+[stored reports](../tests/data/tapscript-maturity-v30.3.json), SHA256
+`c8e4e05222280a178b5efeb20f6098154dc04ae874894c2cf4f70f00405a73fc`.
+The report records the pinned Core binary and commit, full funded transactions,
+block identities, MTP values, local leaf outcomes and exact rejection reasons.
+
+The preflight supports confirmed prevouts whose height and MTP facts come from
+the same candidate chain. It does not verify that those facts are authentic,
+model same-block or mempool parent outputs, enforce absolute finality, validate
+UTXO existence, or implement full relay policy. Local `Exec::new_tapscript`
+still has no chain history; an accepted leaf must not be presented as a mature
+transaction. These wider transaction-context obligations remain under
+[OP-001](open-problems.md#op-001--strict-execution-matrix).

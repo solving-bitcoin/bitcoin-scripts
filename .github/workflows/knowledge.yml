@@ -84,6 +84,8 @@ jobs:
         run: python3 tools/tapscript_budget_regtest.py --download-core --output target/ci-reports/tapscript-budget.json
       - name: Compare five-byte CSV semantics
         run: python3 tools/tapscript_csv_regtest.py --download-core --output target/ci-reports/tapscript-csv.json
+      - name: Compare confirmed-output BIP68 maturity
+        run: python3 tools/tapscript_maturity_regtest.py --download-core --output target/ci-reports/tapscript-maturity.json
       - name: Validate checked PRINCEv2 spends
         run: python3 tools/prince_regtest.py --download-core --output target/ci-reports/prince.json
       - name: Validate SHAKE256 output prefix under Core consensus
