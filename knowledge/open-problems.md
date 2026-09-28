@@ -65,6 +65,15 @@ The new checked 6,426-byte zero-key leaf measures input validation and a
 terminal predicate as well; it is a separate boundary and does not advance
 the sub-5,000-byte fragment objective.
 
+Progress: the reusable standalone `prince_m_layer()` fragment now measures
+1,707 policy-produced bytes with 16 input data items, zero hints, and a strict
+633-item peak. It includes canonical per-nibble checks (rejecting out-of-range
+values and non-minimal encodings), packed table setup/cleanup, all four M-hat
+blocks, and output restoration. This clears the byte target for the
+linear-layer fragment, but does not yet demonstrate the complete
+generation-time-key encryption circuit against the pinned C fixtures and
+seeded random key/plaintext set, so OP-019 remains open.
+
 ## OP-021 — Taproot Merkle-path verifier
 
 Resolve the missing dynamic byte boundary for Taproot `TapBranch` verification.

@@ -3,6 +3,7 @@
 | Construction | Block/key | Script bytes | Witness bytes | Peak items |
 | --- | --- | ---: | ---: | ---: |
 | PRINCEv2 u4 | 64-bit block / embedded 128-bit key | 6,136 | 17–33 | 633 |
+| PRINCEv2 standalone M-hat | 16-nibble linear layer | 1,707 | 32–33 | 633 |
 | AES-128 u4 | 128-bit block / embedded 128-bit key | 25,388 zero-key; 25,449 FIPS; 25,520 all-ones | 33–65 | 908 |
 | AES-128 ShiftRows | 32-nibble state permutation | <!-- metric:aes128_shift_rows -->117<!-- /metric:aes128_shift_rows --> | <!-- metric:aes128_shift_rows_witness -->65<!-- /metric:aes128_shift_rows_witness -->; 32 data items | <!-- metric:aes128_shift_rows_stack -->33<!-- /metric:aes128_shift_rows_stack --> items |
 | Checked AES-128 AddRoundKey | 32 checked u4 state nibbles / embedded 128-bit key | <!-- metric:aes128_add_round_key -->1874<!-- /metric:aes128_add_round_key --> | <!-- metric:aes128_add_round_key_witness -->65<!-- /metric:aes128_add_round_key_witness --> | <!-- metric:aes128_add_round_key_stack -->899<!-- /metric:aes128_add_round_key_stack --> |
@@ -31,6 +32,15 @@ Both PRINCE configurations have zero hints and 16 plaintext data items. Strict
 tapscript fragment execution is recorded; these fragment rows remain
 `unclassified`.
 Protocol requirements and cryptographic assumptions dominate this choice.
+
+The standalone M-hat row is not an encryption alternative: it omits S-boxes,
+round constants, key whitening, and ShiftRows. It is a reusable linear fragment
+that clears the OP-019 5,000-byte sub-fragment target while retaining the full
+PRINCEv2 table scheduler. Its 633-item peak is unchanged because the packed
+lookup memory dominates the four-state transformation. Each nibble is
+canonically checked (empty vector for zero, single byte in `1..=15`
+otherwise) at every position, matching `prince_verify`'s per-nibble
+convention below.
 
 AES sizes are key-dependent because round keys are embedded and the generator
 fuses constant-specific table paths. The three reported keys are deterministic

@@ -120,6 +120,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked AES-128 SubBytes](aes-subbytes.md)
 - [Checked AES-128 MixColumns](aes-mixcolumns.md)
 - [PRINCEv2 over u4 digits](princev2-u4.md)
+- [PRINCEv2 standalone M-hat layer](princev2-mhat.md)
 
 ## Signatures and one-time authentication
 

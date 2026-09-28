@@ -1085,6 +1085,7 @@ mod optimized {
 
     #[derive(Clone, Copy)]
     enum PreAction {
+        None,
         Initial,
         Forward(usize),
         MiddleForward,
@@ -1438,6 +1439,7 @@ mod optimized {
 
         fn emit_pre_action(&self, action: PreAction, state: usize) -> Program {
             match action {
+                PreAction::None => Program::default(),
                 PreAction::Initial => self.op_sbox_xor_constant(self.key[state], 0),
                 PreAction::Forward(round) => {
                     let key_index = if (round - 1) % 2 != 0 {
@@ -1671,6 +1673,33 @@ mod optimized {
         }
     }
 
+    pub(super) fn m_layer_engine() -> Script {
+        let mut generator = Generator::new(0);
+        let mut out = generator.init_memory();
+        out.extend(generator.m_layer(PreAction::None));
+
+        // Retire the transformed state, drop persistent lookup memory, and
+        // restore the public MSB-on-top order.
+        let mut remaining = env_top_order(&generator.env);
+        for state in (0..SIZE_STATE).rev() {
+            let moved = move_state_in_order(&remaining, state);
+            out.extend(moved.emit);
+            out.op(OP_TOALTSTACK);
+            remaining = moved.order;
+            remaining.remove(0);
+        }
+        for _ in 0..(generator.tables.memory_size - SIZE_STATE) / 2 {
+            out.op(OP_2DROP);
+        }
+        if (generator.tables.memory_size - SIZE_STATE) & 1 != 0 {
+            out.op(OP_DROP);
+        }
+        for _ in 0..SIZE_STATE {
+            out.op(OP_FROMALTSTACK);
+        }
+        Script::new("PRINCEv2 M-layer").push_script(out.into_script_buf())
+    }
+
     static ENGINES: OnceLock<Mutex<HashMap<u128, ScriptBuf>>> = OnceLock::new();
 
     pub(super) fn engine(key: u128) -> Script {
@@ -1695,6 +1724,41 @@ mod optimized {
 /// Output: 16 ciphertext nibbles in same layout.
 pub fn prince_encrypt(key: u128) -> Script {
     optimized::engine(key)
+}
+
+/// PRINCEv2's four M-hat blocks over a 16-nibble state.
+///
+/// Input and output use the same MSB-first stack layout as `prince_encrypt`.
+/// The 16 top state items must be canonically encoded nibbles: zero as the
+/// empty byte vector, one through fifteen as a single byte in that range
+/// (the same per-nibble encoding `prince_verify` requires). Unrelated stack
+/// items below them are preserved.
+pub fn prince_m_layer() -> Script {
+    script! {
+        // Move each nibble to the alt stack, then restore and canonicalize
+        // them one at a time so every position is certified independently
+        // before any table-derived depth is used. A non-minimal encoding
+        // (e.g. a two-byte zero, or a single byte with the sign bit set)
+        // must be rejected here: numeric range checks alone (OP_LESSTHAN)
+        // do not enforce minimal encoding.
+        for _ in 0..16 {
+            OP_TOALTSTACK
+        }
+        for _ in 0..16 {
+            OP_FROMALTSTACK
+            // Validate a disposable copy; the real nibble (moved from the alt
+            // stack above) survives underneath for the engine to consume.
+            OP_DUP
+            OP_DUP OP_0 OP_EQUAL
+            OP_IF
+                OP_DROP
+            OP_ELSE
+                OP_SIZE OP_1 OP_EQUALVERIFY
+                OP_1 OP_16 OP_WITHIN OP_VERIFY
+            OP_ENDIF
+        }
+        { optimized::m_layer_engine() }
+    }
 }
 
 /// Complete PRINCEv2 computation predicate for an embedded key and ciphertext.
@@ -1752,8 +1816,13 @@ pub fn u64_to_nibbles_msb(v: u64) -> [u8; 16] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::support::execution::execute_script;
-    use crate::support::script::{script, ScriptCompilation};
+    use crate::support::execution::{
+        execute_raw_script_with_inputs_strict, execute_script, execute_script_with_inputs_strict,
+    };
+    use crate::support::script::{script, Script, ScriptCompilation};
+    use crate::support::tapscript::{execute_tapscript, TapscriptOutcome, TapscriptProfile};
+    use bitcoin::ScriptBuf;
+    use bitcoin_scriptexec::ExecError;
     use rand::{Rng, SeedableRng};
     use rand_chacha::ChaCha20Rng;
     use sha2::{Digest, Sha256};
@@ -1959,6 +2028,102 @@ mod tests {
             "script_m_layer failed: expected {:?}, error={:?}",
             exp_nibs, result.error
         );
+    }
+
+    fn m_layer_witness(state: u64) -> Vec<Vec<u8>> {
+        u64_to_nibbles_msb(state)
+            .into_iter()
+            .rev()
+            .map(|nibble| if nibble == 0 { vec![] } else { vec![nibble] })
+            .collect()
+    }
+
+    #[test]
+    fn test_optimized_m_layer_boundaries_and_random_state() {
+        let fragment = prince_m_layer();
+        for state in [0, u64::MAX, 0x0123_4567_89ab_cdef] {
+            let expected = m_layer(state);
+            let expected_nibbles = u64_to_nibbles_msb(expected);
+            let mut witness = vec![vec![0x7b]];
+            witness.extend(m_layer_witness(state));
+            let leaf = script! {
+                { fragment.clone() }
+                for nibble in expected_nibbles {
+                    { nibble as u32 } OP_EQUALVERIFY
+                }
+                0x7b OP_EQUAL
+            };
+            let result = execute_script_with_inputs_strict(leaf, witness);
+            assert!(result.success, "state={state:016x}: {result}");
+            assert!(result.stats.max_nb_stack_items <= 1_000);
+        }
+    }
+
+    /// A complete leaf under `TapscriptProfile::Consensus`: the fragment plus
+    /// a terminal predicate that drops its 16 outputs and returns true. This
+    /// follows the shared checked-primitive contract (see
+    /// `src/arithmetic/u32/or_constant.rs::rejects_malformed_and_nonminimal_limbs`).
+    fn complete_m_layer_leaf(fragment: Script) -> ScriptBuf {
+        script! {
+            { fragment }
+            for _ in 0..16 {
+                OP_DROP
+            }
+            OP_TRUE
+        }
+        .compile_with_policy()
+    }
+
+    fn m_layer_executed_success(script: &ScriptBuf, witness: Vec<Vec<u8>>) -> bool {
+        matches!(
+            execute_tapscript(script.clone(), witness, TapscriptProfile::Consensus).outcome,
+            TapscriptOutcome::Executed(info) if info.success
+        )
+    }
+
+    #[test]
+    fn test_optimized_m_layer_rejects_malformed_and_nonminimal_nibbles_at_every_position() {
+        let leaf = complete_m_layer_leaf(prince_m_layer());
+        let canonical = m_layer_witness(0);
+
+        // Canonical control: every position empty (nibble zero) must succeed.
+        assert!(
+            m_layer_executed_success(&leaf, canonical.clone()),
+            "canonical all-zero witness was rejected"
+        );
+
+        for (invalid, expected_error) in [
+            (vec![16u8], ExecError::Verify),          // out of range (>=16)
+            (vec![0x81u8], ExecError::Verify),        // out of range (-1)
+            (vec![1u8, 0u8], ExecError::EqualVerify), // non-minimal encoding of 1
+            (vec![0u8, 0u8], ExecError::EqualVerify), // non-minimal encoding of 0
+            (vec![0x80u8], ExecError::Verify),        // non-minimal/negative-zero
+            (vec![0u8], ExecError::Verify),           // single-byte zero alias
+        ] {
+            for position in 0..16 {
+                let mut witness = canonical.clone();
+                witness[position] = invalid.clone();
+                let result = execute_tapscript(leaf.clone(), witness, TapscriptProfile::Consensus);
+                assert!(
+                    matches!(
+                        result.outcome,
+                        TapscriptOutcome::Executed(ref info)
+                            if !info.success && info.error == Some(expected_error.clone())
+                    ),
+                    "position {position} invalid={invalid:?} produced unexpected outcome: {result:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_optimized_m_layer_rejects_short_input() {
+        let fragment = prince_m_layer();
+        let mut short = m_layer_witness(0);
+        short.pop();
+        let short_bytes = fragment.compile_with_policy().to_bytes();
+        let result = execute_raw_script_with_inputs_strict(short_bytes, short);
+        assert!(!result.success, "short state was accepted: {result}");
     }
 
     #[test]
