@@ -1757,3 +1757,14 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-079: Damm table bytes consume composition capacity
+
+A resident 100-entry decimal transition table wins measured bytes from two
+digits against row-table dispatch, but loses at one digit and adds 94 peak
+items versus row tables. Standalone resident capacity is 896 digits; 28
+preloaded 32-digit folds reach exactly 1,000 combined items and a 29th rejects
+StackSize. All invocations have zero hints. A ten-state checksum is forgeable:
+000 and 130 are distinct equal-length zero-state codewords. This is
+`locally-reproduced`/`unclassified`, not authentication or Core validation.
+See [the complete negative result](damm-finite-state.md).

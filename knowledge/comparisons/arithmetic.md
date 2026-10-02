@@ -302,3 +302,16 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+## Decimal finite-state error detection
+
+The [numeric decimal Damm fold](../primitives/u4-damm.md) is an order-sensitive
+transducer, distinct from commutative exact or modulo-16 sums. Its fixed table
+has ten states; locally checked table relations support single numeric digit
+substitution and adjacent unequal numeric swap detection for fixed-length
+valid codewords. It accepts numeric aliases when the profile permits them and
+provides no authentication or byte-encoding binding. The 32-digit resident
+fragment measures 766 bytes, 61 witness bytes, 32 data items, zero hints and a
+136-item combined peak. The [lookup comparison](lookup-strategies.md#damm-finite-state-folds)
+prices matched alternatives; the shared contract tests preserve the existing
+sum-family semantics and deployment classes.

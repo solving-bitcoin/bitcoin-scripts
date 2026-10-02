@@ -77,3 +77,29 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+## Independent decimal checksum folds
+
+The [Damm composition report](../../research/damm-finite-state/README.md)
+preloads independent 32-digit messages, consumes the top remaining message,
+parks its checksum above the caller's altstack, and restores all checksum
+outputs in original message order. Every fold uses **zero hint items**; two
+folds use zero total hints and 64 ordinary entry data items, while 28 folds
+use zero total hints and 896 ordinary entry data items. Future messages and
+accumulated results are included in the combined main-plus-alt peak.
+
+Two folds measure 1,532 fragment bytes, 1,537 bytes for a leaf binding both
+outputs, 67 witness bytes and peak 168. Independently compiling two 766-byte
+folds plus two park/restore pairs gives 1,536 bytes; the whole-policy delta is
+-4. At 28 folds, 21,504 component bytes plus delta -56 give a 21,448-byte
+fragment; the leaf binding all states is 21,505 bytes, witness 927 bytes,
+peak exactly 1,000. All these scripts use ALL. The 29th fold rejects StackSize
+at first peak 1,001. Four-byte numeric aliases remain admissible under the
+Consensus profile, so allowed witness maxima are 321/4,483 bytes at the
+two/28-fold boundaries, larger than the selected canonical fixtures.
+
+Each invocation installs and removes its own table. The measured optimizer
+delta is not table-sharing amortization. Fixed arity, output order and every
+result are tested along with caller state, short inputs and compiled validation
+bypasses. Evidence remains `locally-reproduced`/`unclassified`: a checksum-only
+leaf is forgeable and does not bind message length or authorization (OP-037).

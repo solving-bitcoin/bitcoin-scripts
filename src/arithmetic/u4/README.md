@@ -825,3 +825,16 @@ Canonical input witnesses, including the CompactSize item count: nibble packing 
 The checked u12 triplet fixture uses <!-- metric:u4_triplet_to_u12_checked_witness -->7<!-- /metric:u4_triplet_to_u12_checked_witness --> serialized witness bytes across three data items.
 
 The checked u16 quad fixture uses <!-- metric:u4_quad_to_u16_checked_witness -->9<!-- /metric:u4_quad_to_u16_checked_witness --> serialized witness bytes across four data items.
+
+## Numeric decimal Damm checksum
+
+[`damm::u4_decimal_digits_to_damm(n)`](damm/README.md) folds 0..=896 numeric
+**decimal** digits through a fixed 100-entry transition table. It consumes digits
+left to right, returns one canonical state, preserves both caller stacks, and
+requires zero hints. Nonempty combined peak is `n+104+caller_main+caller_alt`;
+empty input returns zero at a one-item incremental peak. Four-byte numeric
+aliases are accepted when minimal-number enforcement is off. The checksum is
+error detection; callers bind its result, message meaning and authentication.
+The 32-digit fragment is 766 bytes/136 peak, versus 5,652/42 for matched
+row-table dispatch. The shared contract suite also audits the existing canonical
+modulo-16 and numeric exact-sum APIs without changing their contracts.

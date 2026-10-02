@@ -27,7 +27,7 @@ constructions from being hidden behind local module names.
 ## Orthogonal technique tags
 
 - `lookup-table`, `half-table`, `log-exp-table`, `radix-table`, `streaming-table`
-- `batch-lookup`, `branch-map`
+- `batch-lookup`, `branch-map`, `finite-state-fold`
 - `addition-chain`, `limb-arithmetic`, `digit-arithmetic`, `rns`
 - `witness-hints`, `constant-embedding`, `tracked-stack`, `batch-inversion`
 - `affine-coordinates`, `glv-endomorphism`, `jacobian-coordinates`,

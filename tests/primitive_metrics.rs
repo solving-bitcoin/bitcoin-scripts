@@ -10861,3 +10861,38 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
 }
+
+#[test]
+fn u4_damm_metrics_are_current() {
+    let fragment = bitcoin_lab::arithmetic::u4::damm::u4_decimal_digits_to_damm(32);
+    let leaf = script! {{fragment.clone()}9 OP_EQUALVERIFY OP_TRUE};
+    let witness: Vec<_> = (0..32).map(|i| scriptnum((7 * i + 3) % 10)).collect();
+    let readme = "src/arithmetic/u4/damm/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "u4_damm32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme,
+            key: "u4_damm32_leaf",
+            value: script_len(leaf.clone()),
+        },
+        Metric {
+            readme,
+            key: "u4_damm32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme,
+            key: "u4_damm32_stack",
+            value: max_stack_items_strict(leaf, witness),
+        },
+        Metric {
+            readme,
+            key: "u4_damm32_static",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}

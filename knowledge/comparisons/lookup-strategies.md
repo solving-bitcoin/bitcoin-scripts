@@ -136,3 +136,40 @@ All-witness-at-entry routing, certificate fan-out/reordering, and terminal
 predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
 bytes before a square, illustrating why those circuit costs cannot be omitted
 from an end-to-end recurrence.
+
+## Damm finite-state folds
+
+The [decimal Damm fold](../primitives/u4-damm.md) consumes hostile numeric digits
+in left-to-right order and returns a canonical checksum state. All four methods
+validate every 0..=9 digit and include table lifecycle/routing. At 32 digits:
+
+| Method | Fragment / exact-state leaf bytes | Combined peak |
+| --- | ---: | ---: |
+| Resident 100-entry table | 766 / 769 | 136 |
+| First-digit balanced warmup, then resident table | 829 / 832 | 135 |
+| Selected ten-entry row table | 5,652 / 5,655 | 42 |
+| Balanced table-free mapping | 27,809 / 27,812 | 35 |
+
+All are ALL policy compilations. Each uses the same 61-byte serialized witness:
+32 ordinary numeric data items, **zero hint items and zero hint bytes**, all
+present at entry. Witness pushes and script/control-block/transaction framing
+are excluded; the leaf binds the final state and returns TRUE. Nonminimal
+four-byte numeric aliases are also allowed by the local Consensus profile;
+the complete admissible witness maximum is 161 bytes at this boundary.
+Local Policy rejects those aliases with MinimalData, without proving relay
+acceptance of canonical leaves.
+
+At one digit, resident lookup loses (172/105 bytes/peak versus row table 27/11
+and dispatch 81/4). At two, resident beats row-table bytes (191 versus 206) but
+uses 106 versus 12 items. At 128, resident/row-table measure 2,686/23,124 bytes
+with ALL; balanced dispatch is 113,731 bytes explicitly **unoptimized NONE**.
+No universal dominance or new checksum algorithm is claimed. Public resident
+capacity is 896 digits at peak 1,000; the next digit fails StackSize. The measured
+warmup/row-table/dispatch frontiers are 897/990/997 digits, respectively.
+
+All results are `locally-reproduced`/`unclassified` using an explicitly configured
+local tapscript interpreter with stack enforcement; no Bitcoin Core experiment
+is present. [NR-079](../negative-results/damm-finite-state.md) records lost
+capacity, one-digit domination and checksum forgery. Source revisions, artifact
+hashes, exact profiles, lifecycle components and cross-component deltas are
+bound by [the report](../../research/damm-finite-state/README.md).

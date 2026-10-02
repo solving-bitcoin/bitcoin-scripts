@@ -1,0 +1,2 @@
+# Exact upstream source snapshots retain their original whitespace for SHA256 provenance.
+research/damm-finite-state/reference/*.cs whitespace=-blank-at-eol

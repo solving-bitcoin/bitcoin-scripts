@@ -116,3 +116,14 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+The [Damm experiment](../../research/damm-finite-state/README.md) uses
+`damm-checkdigits-net-20261002`, CheckDigits.Net commit
+`734afa2d3596862ef4c3bb3ec404b512b96b8965`, as primary implementation evidence.
+Exact table/fold/license bytes are preserved and SHA256-bound. Independent
+Python checks compare the Rust transcription and every local fold result;
+row/column permutations, the zero diagonal and all 1,000 adjacent-pair state
+relations are reproduced. The original C# implementation has not been executed.
+The upstream ASCII API rejects empty text; returning zero for an empty numeric
+fold is an explicit local extension. The 2004 thesis was unavailable, so no
+thesis proof inspection or cryptographic security claim is made.

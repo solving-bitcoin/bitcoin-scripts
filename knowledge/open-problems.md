@@ -985,3 +985,19 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-037 — Authenticated decimal transducer composition
+
+Determine whether the Damm table schedule is useful inside a real authenticated
+numeric decimal protocol after message meaning, fixed length and order are
+bound. **Complete when:** implement a consumer that independently authenticates
+those properties and every checksum result, compare resident/row-table/branch
+schedules on the same complete boundary (including routing, cleanup, witness
+serialization and caller state), reject known forgeable codewords and numeric
+alias attacks as appropriate to the consumer's encoding contract, and record
+explicit ordinary data and hint-item counts per invocation and composed
+configuration with combined peak at most 1,000. Any claimed consensus/policy
+class needs a pinned Bitcoin Core differential fixture for that exact leaf.
+The 28-message checksum-only composition and checks against literal final states
+do not close this criterion; a freely recomputable check digit authenticates
+neither the message nor its source.

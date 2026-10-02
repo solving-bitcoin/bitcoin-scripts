@@ -121,3 +121,29 @@ The [v30.3 differential fixtures](../core-validation.md) now
 confirm Core rejection of that boundary and validate one complete isolated
 HASH160 leaf under consensus and policy; other table/fragment measurements
 retain their original scope.
+
+## Resident finite-state transitions
+
+The [Damm fold](../primitives/u4-damm.md) embeds all 100 decimal transition
+entries once, routes each checked numeric digit above the table and current
+state, and uses `10*state+digit` as a PICK index. Cleanup preserves the final
+state and the caller's altstack. Resident lookup exchanges table bytes for
+live space: nonempty peak is `n+104` plus **both** caller stacks. There are
+exactly zero hints per fold and n ordinary entry data items. The 896-digit
+standalone endpoint leaves no caller capacity.
+
+The report independently policy-compiles table setup, zero initial state,
+validated/routed queries and state-preserving cleanup, and records the delta to
+the final whole fragment. A selected ten-entry row table instead peaks at n+10
+but repeats dispatch and cleanup, losing bytes from two measured digits onward.
+Balanced table-free mapping peaks at n+3 and loses more bytes. These are local
+tradeoffs, not consensus evidence. The public API installs a fresh table per
+fold; it does not expose shared resident state between independent messages.
+
+At 32 digits the independently policy-compiled lifecycle is 100 bytes of table
+setup, one byte of initial state, 613 bytes of validated queries/routing, and
+52 bytes of table cleanup/state restoration. The whole optimizer delta is zero,
+so these sum to the final 766-byte fragment. At 128/896 digits, query/routing
+components are 2,533/17,893 bytes; setup/state/cleanup remain 100/1/52 and deltas
+remain zero. Query depth encodings vary with n, so this is not a constant
+per-digit charge or a shared-table API.

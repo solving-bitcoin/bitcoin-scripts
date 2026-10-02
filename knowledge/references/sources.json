@@ -309,6 +309,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "damm-checkdigits-net-20261002",
+      "title": "CheckDigits.Net Damm decimal transition table and fold",
+      "kind": "upstream-source",
+      "url": "https://github.com/KnowledgeForwardSolutions/CheckDigits.Net/tree/734afa2d3596862ef4c3bb3ec404b512b96b8965",
+      "revision": "734afa2d3596862ef4c3bb3ec404b512b96b8965; exact MIT-licensed DammQuasigroupTable.cs, DammAlgorithm.cs and LICENSE.txt snapshots with SHA256 bindings in research/damm-finite-state/reference; numeric table relations reproduced locally on 2026-10-02, without C# execution or thesis proof inspection"
     }
   ]
 }

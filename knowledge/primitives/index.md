@@ -9,6 +9,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)
+- [Numeric decimal Damm finite-state checksum](u4-damm.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)

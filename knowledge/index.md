@@ -66,3 +66,9 @@ tapscript context and sometimes without the consensus stack limit. Therefore
 the initial catalog is stronger as a map of constructions and relative local
 measurements than as a deployability database. Closing that gap is tracked in
 [open problems](open-problems.md).
+
+The [numeric decimal Damm fold](primitives/u4-damm.md) adds a fixed-state
+checksum comparison: resident tables, row tables and balanced dispatch are
+measured on matched numeric inputs with zero hints. Its strict local tests,
+including preloaded independent folds, remain `locally-reproduced` and
+`unclassified`; they do not extend deployment evidence for other primitives.
