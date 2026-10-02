@@ -116,3 +116,15 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+The [integer-root experiment](../../research/integer-root-bounds/README.md)
+records Linux v6.18 commit `7d0a66e4bb9081d75c82ec4957c50034cb0ea449`
+(`integer-root-linux-v618`) as established shift/subtract context, without
+porting its code or executing Linux as an oracle. The Script schedule derives
+the square-difference identity locally. Independent exact Python math.isqrt
+checks use `integer-root-cpython-v3147`, CPython v3.14.7 source commit
+`823f0323ee6ec1402088b73bce1a38473cac36dc`; each verifier prints its actual runtime
+version. The original prototype compared complete 16-bit output streams and all
+31-bit square endpoints against that exact-integer oracle. Source/artifact/Cargo
+bindings, numeric versus canonicality contracts and local execution classes
+are recorded separately; algorithm context is not a deployment proof.

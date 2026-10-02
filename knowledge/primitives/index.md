@@ -7,6 +7,7 @@ the source. Read a page together with its comparison page and evidence record.
 ## Arithmetic
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
+- [ScriptNum integer floor root](scriptnum-isqrt.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)

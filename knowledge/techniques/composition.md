@@ -77,3 +77,38 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+## Preloaded integer roots
+
+The [root composition](../../research/integer-root-bounds/README.md) preloads
+all ordinary inputs, consumes the top remaining input, parks each canonical
+root above the caller's altstack and restores roots in original input order.
+Every invocation has one ordinary data item and zero hints. Two/32/996 folds
+therefore have 2/32/996 ordinary entry items, **zero total hint items and zero
+hint bytes**, and combined peaks 6/36/1,000 including every future input and
+already computed root. Caller main+alt state reduces capacity one item at a
+time; 997 roots fail StackSize at 1,001.
+
+Two/32 31-bit folds have ALL whole fragments 1,230/19,710 bytes and leaves
+binding every output at 1,235/19,803. Serialized fixture witnesses are 4/89
+bytes, allowed alias-inclusive maxima 11/161. Independent component sums
+1,232/19,712 include park/restore; whole optimizer delta -2 reconciles final
+fragments. At 996, raw component sum/whole fragment is 615,528 and compilation
+is NONE, explicitly unoptimized; checked leaf 618,389, fixture witness 2,738,
+allowed maximum 4,983. Individually ALL-compiled components sum to 613,536;
+whole-policy delta +1,992 includes the change to NONE. It is not a measured
+cross-component rewrite loss alone.
+
+Every root result is checked, and order, short prefixes, aliases, malformed
+positions and actual compiled validation bypasses are exercised with valid
+controls. Root zero remains data, so dropping or returning it without a consumer
+is not a terminal predicate. Evidence is locally-reproduced/unclassified;
+complete transaction and relay claims need exact context validation. Ordinary
+u32 values above the four-byte positive ScriptNum range require a different
+representation (OP-038).
+
+At the exact optimizer boundary, 53 preloaded roots give a 32,646-byte ALL
+fragment (raw 32,754) but a 32,903-byte NONE leaf, explicitly unoptimized.
+There are 53 ordinary entry items and zero hints, witness 142 (allowed max 266),
+peak 57. Every artifact records its own policy choice: 149 raw checking bytes
+increase final bytes by 257 when the leaf crosses the cutoff.

@@ -985,3 +985,17 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-038 — Unsigned-word integer-root frontier
+
+Extend the floor-root operation beyond one nonnegative four-byte ScriptNum.
+**Complete when:** a checked ordinary unsigned 32-bit word representation
+supports 0..=2^32-1 and returns the exact canonical root, executes square-boundary
+and malformed-limb/alias tests with compiled validation bypasses and unchanged
+valid controls, records all conversion/routing/cleanup/terminal costs and
+per-invocation plus composed data/hint counts, and compares against the
+31-bit schedule on matched overlapping inputs. If hints are used, bind them and
+count all live hints/inputs/results within the combined 1,000-item limit.
+Any consensus/policy claim requires a pinned Core fixture for that exact leaf.
+A five-byte single ScriptNum is rejected rather than a valid wider encoding,
+and the 996-root 31-bit composition does not close this criterion.

@@ -90,3 +90,14 @@ remainder is derived; neither requires a witness item.
 The design is independently implemented from the hint-verification technique
 described in
 [`coins/bitcoin-scripts`](https://github.com/coins/bitcoin-scripts/blob/master/composite-opcodes.md#op_mod-and-op_div).
+
+## Zero-hint integer floor roots
+
+[`arithmetic::integer_root::scriptnum_isqrt(bit_count)`](../integer_root/README.md)
+consumes one nonnegative numeric input in 1..=31 bits and returns its canonical
+floor root. It reuses this module's constant multiplier on derived canonical
+root state. Input numeric aliases are allowed when the profile permits them;
+callers can compose verify_canonical for a byte-unique contract. The 16/31-bit
+fragments measure 232/614 bytes and peak five; every invocation uses one ordinary
+data item and zero hints. Existing multiplication/division/canonicality APIs and
+catalog evidence remain unchanged.

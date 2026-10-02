@@ -302,3 +302,27 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+## Integer floor roots
+
+The [ScriptNum root](../primitives/scriptnum-isqrt.md) consumes one checked
+numeric x and returns canonical floor sqrt(x). A residual difference `2*r*b+b*b`
+lets fixed root-bit trials use only the existing constant multiplier and ordinary
+stack/comparison arithmetic. It avoids forming an overflowing whole candidate
+square at 31 bits; no table, variable multiplication/division or hint is used.
+
+Matched restoring/threshold fragments measure 27/18 bytes at one bit,
+72/70 at six, 98/106 at seven, 99/147 at eight, and 232/2,989 at sixteen. Their peaks are five
+and three, respectively. Both include numeric guards and full calculation /
+cleanup, start from the same ordinary one-item witness and exclude input pushes
+and terminal checks. Sixteen-bit max-input witness is five bytes; each has
+zero hint items and zero hint bytes. At 31, restoring is 614 bytes ALL versus
+659,112 explicitly unoptimized NONE; exact-root leaves are 620/659,118.
+The one-input allowed numeric witness maximum is six bytes, including aliases.
+
+Canonical-input compositions using the existing verify_canonical helper are
+separately audited; their rejection/stack contracts are not transferred to the
+numeric public API. All results are locally-reproduced/unclassified. A single
+five-byte positive ScriptNum for 2^31 is rejected, not supported as a u32 word.
+[NR-080](../negative-results/integer-root-bounds.md) records small-width losses,
+whole-policy repetition deltas and that wider representation frontier.

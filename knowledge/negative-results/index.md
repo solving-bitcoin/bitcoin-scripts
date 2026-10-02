@@ -1757,3 +1757,13 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-080: Integer-root trials lose small widths and do not widen ScriptNum
+
+Residual root-bit trials cost 27/48/72 bytes at 1/4/6 bits versus threshold
+18/34/70, while using five instead of three peak items. They win measured bytes
+from seven bits, but a repeated whole script can cross the optimizer cutoff:
+996 preloaded roots use a 615,528-byte unoptimized NONE fragment and peak 1,000
+with 996 ordinary inputs and zero hints. Five-byte positive inputs remain
+outside the arithmetic domain; root calculation is not input authentication.
+See [the complete record](integer-root-bounds.md), locally-reproduced/unclassified.

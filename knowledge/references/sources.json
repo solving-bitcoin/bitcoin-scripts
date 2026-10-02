@@ -309,6 +309,20 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "integer-root-linux-v618",
+      "title": "Linux integer square root shift/subtract implementation",
+      "kind": "upstream-source",
+      "url": "https://github.com/torvalds/linux/blob/7d0a66e4bb9081d75c82ec4957c50034cb0ea449/lib/math/int_sqrt.c",
+      "revision": "7d0a66e4bb9081d75c82ec4957c50034cb0ea449 (v6.18); inspected 2026-10-02 as established algorithm context; code is not ported and no Linux execution is claimed"
+    },
+    {
+      "id": "integer-root-cpython-v3147",
+      "title": "CPython v3.14.7 exact math.isqrt oracle",
+      "kind": "reference-implementation",
+      "url": "https://github.com/python/cpython/tree/823f0323ee6ec1402088b73bce1a38473cac36dc",
+      "revision": "823f0323ee6ec1402088b73bce1a38473cac36dc (v3.14.7); math.isqrt exact integer contract documented at https://docs.python.org/3.14/library/math.html#math.isqrt; actual runtime version printed by independent Python oracles, locally 3.14.7; no floating-point roots"
     }
   ]
 }

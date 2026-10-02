@@ -136,3 +136,16 @@ All-witness-at-entry routing, certificate fan-out/reordering, and terminal
 predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
 bytes before a square, illustrating why those circuit costs cannot be omitted
 from an end-to-end recurrence.
+
+## Integer-root square thresholds
+
+The [integer-root experiment](../primitives/scriptnum-isqrt.md) compares
+balanced constant square thresholds with residual differences, on identical
+numeric guards and exact-root boundaries. Small threshold trees win bytes at
+1/4/6 bits (18/34/70 versus 27/48/72); sixteen-bit threshold dispatch costs
+2,989 versus 232, with peak three versus five. One ordinary input / zero hints
+and the same serialized witness are included. There is no resident lookup
+memory in either method. Large 24/31-bit trees are explicitly unoptimized NONE
+(54,109/659,112 bytes), while the public difference schedule remains ALL.
+A root result authenticates neither the input encoding nor its provenance.
+These are locally-reproduced/unclassified comparisons, not Core execution.

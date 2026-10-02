@@ -66,3 +66,8 @@ tapscript context and sometimes without the consensus stack limit. Therefore
 the initial catalog is stronger as a map of constructions and relative local
 measurements than as a deployability database. Closing that gap is tracked in
 [open problems](open-problems.md).
+
+The [integer floor-root schedule](primitives/scriptnum-isqrt.md) adds a
+zero-hint nonlinear ScriptNum operation and a matched threshold-dispatch
+comparison. Its finite arithmetic argument and all-entry composition are local
+results; every configuration remains locally-reproduced/unclassified.

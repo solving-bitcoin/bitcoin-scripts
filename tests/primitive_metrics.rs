@@ -10861,3 +10861,49 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
 }
+
+#[test]
+fn scriptnum_isqrt_metrics_are_current() {
+    let g16 = bitcoin_lab::arithmetic::integer_root::scriptnum_isqrt(16);
+    let g31 = bitcoin_lab::arithmetic::integer_root::scriptnum_isqrt(31);
+    let leaf16 = script! {{g16.clone()}255 OP_EQUALVERIFY OP_TRUE};
+    let leaf31 = script! {{g31.clone()}46340 OP_EQUALVERIFY OP_TRUE};
+    let readme = "src/arithmetic/integer_root/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "scriptnum_isqrt16",
+            value: script_len(g16),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt16_leaf",
+            value: script_len(leaf16),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt31",
+            value: script_len(g31.clone()),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt31_leaf",
+            value: script_len(leaf31.clone()),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt31_witness",
+            value: witness_size(&[scriptnum(2147483647)]),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt31_stack",
+            value: max_stack_items_strict(leaf31, vec![scriptnum(2147483647)]),
+        },
+        Metric {
+            readme,
+            key: "scriptnum_isqrt31_static",
+            value: static_non_push_opcodes(g31),
+        },
+    ]);
+}
