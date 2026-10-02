@@ -14564,6 +14564,136 @@
         "OP-002",
         "OP-003"
       ]
+    },
+    {
+      "id": "arithmetic/u32-mod65537",
+      "name": "Canonical u32 residue modulo 65,537",
+      "class": "arithmetic/word",
+      "summary": "Canonical four-byte u32 word reduced modulo 65,537 using checked 16-bit lanes and one bounded signed difference.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-02",
+      "knowledge_page": "knowledge/primitives/u32-mod65537.md",
+      "implementation": "src/arithmetic/u32/residue.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "src/arithmetic/u32/residue.rs",
+        "tests/u32_residue_contract.rs",
+        "tests/primitive_metrics.rs",
+        "examples/u32_fermat_residue_probe.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bitcoin-core-v30-resource-limits"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "stack-routing",
+        "constant-embedding"
+      ],
+      "security": "Hostile inputs are checked as canonical ScriptNum bytes in 0..255. Output is a modular projection, not authentication; words differing by multiples of 65537 collide. Expected residue and word authenticity are separate caller obligations. Zero hints; caller supplies terminal predicate and clean-stack framing.",
+      "stack_contract": "preserved | b0 b1 b2 b3 -> preserved | unsigned_word mod65537 in 0..65536; big-endian four-byte input; one 17-bit numeric ScriptNum output; both surrounding stacks preserved; exact fragment bound 7+preserved_main+preserved_alt<=1000.",
+      "configurations": [
+        {
+          "id": "canonical-word",
+          "label": "u32_mod65537() over 0x89abcdef",
+          "parameters": {
+            "word_hex": "89abcdef",
+            "input_bytes_msb_first": [
+              137,
+              171,
+              205,
+              239
+            ],
+            "expected_residue": 17476,
+            "terminal_predicate": "17476 OP_EQUAL",
+            "data_items": 4,
+            "hint_items": 0,
+            "table_items": 0,
+            "fragment_sha256": "5b1ba83fcbbd58054d2afb37e350d655b0c7bbf9edcce7ced2f51754050dd99b",
+            "leaf_sha256": "2177d59f1fe190776ec97eee76320303443f4f1c6491db7fe10a617beb675c9b",
+            "leaf_bytes": 104,
+            "witness_sha256": "a8478ac36be9cfba74648a8f7bae57f90b6b2fe5ce195e3199390fb9d2d5010d",
+            "report": "research/u32-fermat-residue/metrics.json",
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "stack_limit_enforced": true,
+            "source_revision": "87f324464d641e4263f696af3b0a4063c8c4ba94"
+          },
+          "includes": "fragment-only: four raw canonical byte checks, two 16-bit lane packings, signed difference and normalization; excludes input pushes, terminal expected-residue OP_EQUAL and transaction; serialized witness is complete four-item data-only vector, all data coexist at entry; peak measured on recorded policy-produced complete leaf; no table, setup or hints; dynamic opcodes unavailable",
+          "script_bytes": 100,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 100,
+          "hint_items": 0,
+          "static_non_push_opcodes": 75,
+          "metric_keys": [
+            "u32_mod65537",
+            "u32_mod65537_witness",
+            "u32_mod65537_stack",
+            "u32_mod65537_opcodes"
+          ]
+        },
+        {
+          "id": "complete-fixed-residue-leaf",
+          "label": "u32_mod65537() then 17476 OP_EQUAL",
+          "parameters": {
+            "word_hex": "89abcdef",
+            "input_bytes_msb_first": [
+              137,
+              171,
+              205,
+              239
+            ],
+            "expected_residue": 17476,
+            "terminal_predicate": "17476 OP_EQUAL",
+            "data_items": 4,
+            "hint_items": 0,
+            "table_items": 0,
+            "fragment_sha256": "5b1ba83fcbbd58054d2afb37e350d655b0c7bbf9edcce7ced2f51754050dd99b",
+            "leaf_sha256": "2177d59f1fe190776ec97eee76320303443f4f1c6491db7fe10a617beb675c9b",
+            "leaf_bytes": 104,
+            "witness_sha256": "a8478ac36be9cfba74648a8f7bae57f90b6b2fe5ce195e3199390fb9d2d5010d",
+            "report": "research/u32-fermat-residue/metrics.json",
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "stack_limit_enforced": true,
+            "source_revision": "87f324464d641e4263f696af3b0a4063c8c4ba94"
+          },
+          "includes": "complete-leaf: four canonical byte checks, lane packings, modular difference and terminal expected-residue 17476 OP_EQUAL, ending with one truthy item for the fixed runtime input; no table or hints; full serialized data-only witness has four entry items and excludes leaf/control-block/annex; transaction, Taproot commitment, full consensus and policy context excluded; dynamic opcodes unavailable",
+          "script_bytes": 104,
+          "witness_bytes": 13,
+          "witness_bytes_max": 13,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 104,
+          "hint_items": 0,
+          "static_non_push_opcodes": 76,
+          "metric_keys": [
+            "u32_mod65537_leaf",
+            "u32_mod65537_witness",
+            "u32_mod65537_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "No Core consensus or full relay-policy transaction validation",
+        "Dynamic executed opcodes and complete-transaction validation weight unavailable",
+        "Data-only witness excludes leaf and control block",
+        "Output is one 17-bit ScriptNum, not a four-byte u32 word or low 16-bit lane",
+        "No repeated/batched configuration measured"
+      ],
+      "open_problems": [
+        "OP-032"
+      ]
     }
   ]
 }

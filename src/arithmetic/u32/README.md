@@ -579,3 +579,73 @@ bits, and packs them as `8*msb(byte[0]) + 4*msb(byte[1]) +
 `0x42` data items and zero hints. Unlike `u32_to_le_bits()`, it materializes
 only the four routing bits; the bit-expansion baseline is
 <!-- metric:u32_msb_mask_bit_projection_baseline -->514<!-- /metric:u32_msb_mask_bit_projection_baseline --> bytes.
+
+## Canonical u32 residue modulo 65,537
+
+`residue::u32_mod65537()` consumes one four-byte word, most significant byte
+first, and returns one canonical ScriptNum in `0..=65536`. It has no caller
+parameters or defaults. This **17-bit numeric result** is neither a low-16-bit
+word nor the module's four-byte u32 representation: `0x00010000` returns 65,536.
+
+### Script metrics
+
+Fragment-only: all four raw canonical byte checks, two 16-bit lane packings,
+subtraction and conditional normalization. Input pushes and terminal predicate
+are excluded. The data-only witness is the complete serialization of canonical
+bytes for `0x89abcdef`; all four items coexist at entry. Peak uses the exact
+complete leaf ending in `17476 OP_EQUAL`, with runtime witness under strict
+local tapscript execution. No hints or table items are used.
+
+| Configuration | Script bytes | Witness bytes | Data items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| One canonical u32 word | <!-- metric:u32_mod65537 -->100<!-- /metric:u32_mod65537 --> | <!-- metric:u32_mod65537_witness -->13<!-- /metric:u32_mod65537_witness --> | 4 | 0 | <!-- metric:u32_mod65537_stack -->7<!-- /metric:u32_mod65537_stack --> | <!-- metric:u32_mod65537_opcodes -->75<!-- /metric:u32_mod65537_opcodes --> |
+
+Thirteen bytes is also the maximum canonical four-byte data witness. The
+complete computation leaf is <!-- metric:u32_mod65537_leaf -->104<!-- /metric:u32_mod65537_leaf --> bytes; data witness sizes exclude its bytes,
+control block and annex. Dynamic opcode count and complete-transaction validation
+weight are unavailable. The like-for-like comparison-only bitwise remainder
+circuit is 1,137 fragment bytes, 1,141 leaf bytes and 35 peak items with the same
+witness and zero hints. Exact final hashes and embedded-lockfile dependency
+pins are in the [report](../../../research/u32-fermat-residue/metrics.json).
+
+### Security, witness and stack contract
+
+Witness order: `preserved | b0 b1 b2 b3`, with `b3` least significant and on top.
+Each input is a minimally encoded ScriptNum in `0..=255`. Negative zero,
+redundant encodings, negative/above-byte numeric values and oversized items are
+rejected before packing. Output is `preserved | residue`; both surrounding
+stacks survive. The implementation temporarily uses at most two altstack items
+above caller state and restores them before returning. Its exact fragment
+coexistence bound is `7 + preserved_main + preserved_alt <= 1000`.
+Terminal consumers require their own cleanup and transient resource allowance.
+
+Hint items per invocation are **0 (none)**; the measured one-word configuration
+therefore has zero cumulative hints and four complete data items at entry.
+This modular projection has no cryptographic authentication or collision claim:
+words differing by a multiple of 65,537 share a result. If used in a protocol,
+any expected residue, word length, authenticity and interpretation must be
+bound separately by the caller. No hint-binding or one-time-key obligation
+arises from this arithmetic fragment.
+
+### Compatibility, standardness and operations
+
+Only existing stack, four-byte numeric and conditional opcodes are used. The
+measured small leaf fits the numerical 201-op and 520-byte redeem-script bounds,
+but bare script, P2SH and P2WSH still need full context-specific validation.
+For P2WSH and tapscript, witness/script framing and clean-stack rules are caller
+obligations. No full transaction, Core consensus or relay policy test was run
+for this configuration. Evidence is `locally-reproduced`; deployment remains
+`unclassified`. See [script types](../../../docs/script-types.md) and
+[standardness](../../../docs/standardness.md).
+
+Focused tests enumerate all 256 numeric byte values at every lane, high/low
+16-bit boundaries and deterministic words. The shared `u32_residue_contract`
+suite covers hostile items at every position, short input, raw numeric aliases,
+both preserved stacks and exact resource boundaries. It also audits the
+comparison circuit and the existing numeric-only checked zero predicate; the
+latter intentionally accepts in-range numeric aliases and is not upgraded to a
+canonical-wire contract. Deliberate mutations of actual policy-produced
+validation checks are caught by the same typed rejection assertions.
+
+See the [knowledge page](../../../knowledge/primitives/u32-mod65537.md) and
+[reproduction manifest](../../../research/u32-fermat-residue/README.md).

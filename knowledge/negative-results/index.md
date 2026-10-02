@@ -1757,3 +1757,11 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-074: Bitwise u32 remainder loses to the Fermat lane identity
+
+For a canonical four-byte word reduced modulo 65,537, general bitwise Horner
+reduction costs 1,137 fragment bytes and a 35-item peak, versus 100 bytes and
+seven items for two checked 16-bit lanes and a signed difference. Both have
+four data items, the same 13-byte witness and zero hints. See the
+[exact-boundary negative result](u32-mod65537-bitwise.md).

@@ -28,3 +28,9 @@ four limbs are already validated.
 See the [implementation README](../../src/arithmetic/u32/README.md),
 [arithmetic comparison](../comparisons/arithmetic.md), and catalog record
 `arithmetic/u32-zero`.
+
+The shared `u32_residue_contract` suite also audits this numeric-only fragment
+with minimal-number policy disabled. It verifies permitted aliases retain their
+numeric meaning, checks malformed values at every position and exact resource
+boundaries, and detects deliberately removed range checks using typed errors.
+This does not upgrade its raw encoding contract or historical deployment evidence.

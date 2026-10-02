@@ -302,3 +302,17 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+## U32 word to modulo-65,537 residue
+
+For the same four canonical byte inputs and one canonical numeric residue,
+[two checked 16-bit lanes](../primitives/u32-mod65537.md) cost 100 fragment
+bytes and seven combined stack items, versus 1,137 bytes and 35 items for the
+general bitwise Horner circuit. Both use the same 13-byte data-only witness,
+four entry items and zero hints. Complete expected-residue leaves are 104 and
+1,141 bytes. This fixed-modulus configuration is `locally-reproduced` and
+`unclassified`; static non-push counts are 75/684, dynamic counts unavailable.
+The [dominated baseline](../negative-results/u32-mod65537-bitwise.md) remains
+comparison-only code. Compressed u32 adapters and F257 multiplication have
+different input/output semantics, so their byte sizes do not establish a
+like-for-like dominance relation here.

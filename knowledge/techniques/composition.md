@@ -77,3 +77,15 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+## Fold a checked u32 word through two native-width lanes
+
+The [modulo-65,537 adapter](../primitives/u32-mod65537.md) avoids reconstructing
+an unsigned 32-bit ScriptNum: two canonical 16-bit lanes are subtracted because
+`65536=-1 (mod65537)`. All intermediates fit native numeric arithmetic, with
+zero hints, no table and a seven-item fragment peak. The result can require
+17 bits and is a single numeric ScriptNum, so it must not be mistaken for a
+low-16-bit lane or the four-byte u32 representation. In contrast, expanding
+all 32 bits for general binary Horner remainder uses 35 peak items in the
+measured comparison. These are configuration-specific local resource results,
+not consensus or authentication claims.

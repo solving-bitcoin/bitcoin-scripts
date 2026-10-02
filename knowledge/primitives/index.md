@@ -77,6 +77,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [u32 byte parity projection](u32-byte-parity.md)
 - [Fused u32 NAND](u32-nand.md)
 - [Fused u32 NOR](u32-nor.md)
+- [Canonical u32 residue modulo 65,537](u32-mod65537.md)
 - [Checked u32 zero predicate](u32-zero.md)
 
 - [Compressed total-domain u32 logical right shift](u32-compressed-rshift.md)

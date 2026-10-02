@@ -985,3 +985,16 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-032 — U32 Fermat residue composition
+
+The [paired-lane modulo-65,537 adapter](primitives/u32-mod65537.md) is locally
+reproduced under strict resource checks, but its complete computation leaf has
+not been exercised in a real spend. **Accept when:** a pinned Bitcoin Core
+harness differentially tests the exact final leaf with unsigned boundary words,
+all hostile witness positions, raw numeric aliases and wrong expected residues;
+records compiler/interpreter/code/leaf pins, full transaction and witness sizes,
+terminal predicate and combined stack with surrounding state; and reports
+consensus and policy evidence separately. The 17-bit output interpretation and
+expected modulus must be bound by its consumer; modular collisions are expected,
+not authentication failures.

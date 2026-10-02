@@ -1,0 +1,58 @@
+{
+  "boundary": "fragment-only: canonical checks, packing and reduction; input pushes and terminal expected-residue OP_EQUAL excluded; witness is complete data-only vector; combined peak measured using recorded complete leaf and runtime witness",
+  "compilation": "compile_with_policy: all reported scripts below 32KiB cutoff and receive CompileOptions::ALL",
+  "compiler_source": "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "correctness_vectors": "ten boundary words plus i*0x9e3779b9 wrapping, rotated left by i mod32, i=0..127; both scripts checked against unsigned host remainder",
+  "evidence": "locally-reproduced",
+  "execution": "unclassified",
+  "interpreter_source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+  "options": "ExecCtx::Tapscript; Options::default with enforce_stack_limit=true; synthetic empty transaction; data-only budget; no signatures",
+  "records": [
+    {
+      "combined_peak": 7,
+      "data_items": 4,
+      "executed_opcodes": null,
+      "expected_residue": 17476,
+      "fragment_bytes": 100,
+      "fragment_sha256": "5b1ba83fcbbd58054d2afb37e350d655b0c7bbf9edcce7ced2f51754050dd99b",
+      "hint_items": 0,
+      "input_bytes_msb_first": [
+        137,
+        171,
+        205,
+        239
+      ],
+      "leaf_bytes": 104,
+      "leaf_sha256": "2177d59f1fe190776ec97eee76320303443f4f1c6491db7fe10a617beb675c9b",
+      "name": "paired-lanes",
+      "static_non_push_opcodes": 75,
+      "validation_weight": null,
+      "witness_bytes": 13,
+      "witness_sha256": "a8478ac36be9cfba74648a8f7bae57f90b6b2fe5ce195e3199390fb9d2d5010d",
+      "word_hex": "89abcdef"
+    },
+    {
+      "combined_peak": 35,
+      "data_items": 4,
+      "executed_opcodes": null,
+      "expected_residue": 17476,
+      "fragment_bytes": 1137,
+      "fragment_sha256": "42ee64b4468d61faac350c4ab189fe7d5f35255bc0bcd225c2953c9744ca848c",
+      "hint_items": 0,
+      "input_bytes_msb_first": [
+        137,
+        171,
+        205,
+        239
+      ],
+      "leaf_bytes": 1141,
+      "leaf_sha256": "400c23af6332df2745605182aa42edbdd561c9a4dea985c31065a92a713f8517",
+      "name": "bitwise-horner",
+      "static_non_push_opcodes": 684,
+      "validation_weight": null,
+      "witness_bytes": 13,
+      "witness_sha256": "a8478ac36be9cfba74648a8f7bae57f90b6b2fe5ce195e3199390fb9d2d5010d",
+      "word_hex": "89abcdef"
+    }
+  ]
+}

@@ -14,6 +14,7 @@ pub mod nor;
 pub mod or;
 pub mod or_constant;
 pub mod popcount;
+pub mod residue;
 pub mod rotate;
 pub mod shift;
 pub mod shift_left;
