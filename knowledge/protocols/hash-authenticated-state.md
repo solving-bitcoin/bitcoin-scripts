@@ -39,3 +39,10 @@ state independently: otherwise changing `(x, 1)` to `(SHA256(x), 0)` preserves
 the result. Nested paths equal the joined path and do not encode round
 boundaries. Binohash/Lamport consumers must bind the normalized branch bits,
 not the original selector bytes. A complete wrapper and its costs remain OP-020.
+
+
+A [quarter-square exact product](../primitives/u4-exact-product.md) returns
+ScriptNum products, not canonical one-byte serialization. Products 128..225 have
+a sign-padding byte; a hash transcript must specify conversion and bind the
+actual product/vector being consumed. Zero hints and a small table do not
+replace that byte contract or the terminal authentication predicate.

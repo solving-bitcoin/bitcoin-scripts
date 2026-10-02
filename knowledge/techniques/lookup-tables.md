@@ -121,3 +121,14 @@ The [v30.3 differential fixtures](../core-validation.md) now
 confirm Core rejection of that boundary and validate one complete isolated
 HASH160 leaf under consensus and policy; other table/fragment measurements
 retain their original scope.
+
+
+## Quarter squares specialize product grids
+
+For canonical 0..15 operands, Q(a+b)-Q(abs(a-b)) with Q(x)=floor(x*x/4) needs 31
+entries instead of 256. The sum/difference parity makes floors cancel. A live
+Q(sum) item requires adding 1 to the second lookup index; neither table index
+may bypass operand checks. The [exact batch](../primitives/u4-exact-product.md)
+returns 0..225 ScriptNums and stages all outputs through table cleanup. Storing
+Q modulo 16 adds a negative-difference correction; its byte/stack frontier is
+[NR-076](../negative-results/u4-quarter-square-modulo.md).

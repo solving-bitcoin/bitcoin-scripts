@@ -825,3 +825,54 @@ Canonical input witnesses, including the CompactSize item count: nibble packing 
 The checked u12 triplet fixture uses <!-- metric:u4_triplet_to_u12_checked_witness -->7<!-- /metric:u4_triplet_to_u12_checked_witness --> serialized witness bytes across three data items.
 
 The checked u16 quad fixture uses <!-- metric:u4_quad_to_u16_checked_witness -->9<!-- /metric:u4_quad_to_u16_checked_witness --> serialized witness bytes across four data items.
+
+
+## Exact quarter-square nibble products
+
+`quarter_square::u4_pairwise_mul_exact(n)` accepts 1..483 pairs (no default).
+Hostile operands must be canonical ScriptNums in 0..15. The private 31-entry
+table implements `floor((a+b)^2/4)-floor(abs(a-b)^2/4)=a*b`; products are
+canonical ScriptNums in 0..225. Values 128..225 occupy two bytes, not one raw
+byte. Both caller stacks are preserved; table lifecycle is included. This
+arithmetic adapter has no cryptographic security or authentication claim.
+
+| Configuration | Fragment bytes | Complete leaf bytes | Data-only witness bytes | Data items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 32 pairs of canonical sevens | <!-- metric:u4_exact_product32 -->1389<!-- /metric:u4_exact_product32 --> | <!-- metric:u4_exact_product32_leaf -->1486<!-- /metric:u4_exact_product32_leaf --> | <!-- metric:u4_exact_product32_witness -->129<!-- /metric:u4_exact_product32_witness --> | 64 | 0 | <!-- metric:u4_exact_product32_stack -->98<!-- /metric:u4_exact_product32_stack --> | <!-- metric:u4_exact_product32_opcodes -->1008<!-- /metric:u4_exact_product32_opcodes --> |
+
+Fragment-with-memory includes table setup, canonical/range checks, reverse pair
+routing, lookup, cleanup and ordered outputs. Input pushes and terminal checks
+are excluded. The complete leaf compares all outputs with 49 via OP_EQUALVERIFY,
+then OP_TRUE; the witness is data only and excludes leaf/control block.
+All 2n ordinary inputs coexist at entry, with **0 hint items per invocation and
+0 for every measured batch**. Peak is `2*n+34+preserved_items`; n483 uses 966
+inputs, 1935 witness bytes, 19880 fragment bytes and 21330 complete-leaf bytes,
+reaching 1000 combined items. The fragment retains n products; consumers must
+supply terminal predicates and any byte conversion required by a protocol.
+
+The same canonical full exact table uses 1937 bytes and 323 items at n32;
+the quarter method saves 548 bytes and 225 items. Dynamic executed counts and
+validation weight are unavailable; static counts are not execution counts.
+The research-only modulo variant has a separate Pareto tradeoff documented
+under [NR-076](../../../knowledge/negative-results/u4-quarter-square-modulo.md).
+
+Bare/P2SH/P2WSH use compatible arithmetic/stack opcodes, but the 32-pair row's
+1008 static non-push opcodes exceed their 201-opcode bound; P2SH also has a
+redeem-script element limit. Tapscript cost runs pass the local strict stack
+checks, but no complete Core transaction or relay policy validation is claimed.
+Evidence is locally-reproduced and deployment unclassified. See
+[script types](../../../docs/script-types.md) and [standardness](../../../docs/standardness.md).
+
+The shared product suite checks all 256 pairs singly and in a shared-table batch,
+asymmetric vectors, malformed witnesses at all six positions of a three-pair
+fixture, aliases under canonical and numeric-only contracts, short input,
+caller main/alt stacks, exact resource frontiers and compiled validation mutations
+caught by the same typed rejection assertion. Run
+`cargo test --locked --test u4_product_contract` and named metric
+`u4_exact_product_metrics_are_current`. See [knowledge](../../../knowledge/primitives/u4-exact-product.md),
+[manifest](../../../research/u4-quarter-square/README.md),
+[arithmetic comparison](../../../knowledge/comparisons/arithmetic.md),
+[lookup technique](../../../knowledge/techniques/lookup-tables.md),
+[protocol composition](../../../knowledge/protocols/hash-authenticated-state.md),
+[primary source](../../../knowledge/references/index.md) and
+[OP-034](../../../knowledge/open-problems.md#op-034--complete-quarter-square-product-oracle).

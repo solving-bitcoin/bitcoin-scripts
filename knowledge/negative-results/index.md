@@ -1757,3 +1757,12 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+
+## NR-076: Quarter-square modulo memory does not always save script bytes
+
+The 31-entry modulo table saves 225 live items versus the full 256-entry grid.
+It is 209 bytes smaller at n32 but 175 bytes larger at n128 and 1143 larger at
+n370 under the same canonical lifecycle boundary. The [measured tradeoff](u4-quarter-square-modulo.md)
+keeps this branch variant as a research comparison; exact products have a
+separate API and evidence. Classification: locally-reproduced/unclassified.

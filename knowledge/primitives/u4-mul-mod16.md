@@ -95,3 +95,13 @@ python3 tools/kb.py validate
 
 The full repository test suite is intentionally not included in this focused
 contribution run.
+
+
+The [shared product contracts](../../tests/u4_product_contract.rs) additionally
+audit the existing numeric-only query in a full memory lifecycle, covering all
+six positions in a three-pair hostile fixture, accepted aliases with exact
+numeric meaning, caller state and the 2*n+259 resource frontier. Compiled range
+mutations are executable using caller data below memory and caught by the same
+typed rejection assertion. The new [exact quarter-square batch](u4-exact-product.md)
+has a canonical input boundary and different output semantics; the research
+canonical modulo comparisons add explicit byte checks to this existing query.

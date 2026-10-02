@@ -985,3 +985,13 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+
+## OP-034 — Complete quarter-square product oracle
+
+**Accept when:** a complete 32-pair exact-product leaf plus malformed and alias
+vectors has differential verdicts against an immutable Bitcoin Core transaction
+oracle, with exact leaf/witness/transaction hashes and full witness weights.
+Record relay policy separately and test output ScriptNum sign-padding values
+128..225. Local 483-pair resource acceptance and host products do not satisfy
+that complete transaction criterion.

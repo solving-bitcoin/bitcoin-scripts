@@ -116,3 +116,9 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+
+The exact nibble product specializes the already-inspected identity in
+`bitcoin-scripts-quarter-square-20261002`, pinned to bf9ee0bb34987a9130ad9dc13a06e18fef137296.
+Only the mathematical identity is reused; its field carry/hint/deployment claims
+are not inherited and field arithmetic tests remain excluded.

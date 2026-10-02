@@ -136,3 +136,15 @@ All-witness-at-entry routing, certificate fan-out/reordering, and terminal
 predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
 bytes before a square, illustrating why those circuit costs cannot be omitted
 from an end-to-end recurrence.
+
+
+## Product-grid symmetry
+
+The [exact nibble product](../primitives/u4-exact-product.md) uses Q(sum) minus
+Q(abs difference), with Q(x)=floor(x*x/4) and 31 resident entries. At n32 its
+complete memory lifecycle costs1389 bytes and 98 combined items, versus 1937/323
+for an exact 256-entry grid, with 64 data items, 129 witness bytes and zero hints.
+All input checks, routing, cleanup and outputs are included; terminals excluded.
+The quarter modulo table keeps its 225-item memory saving but loses script size
+at n128/370 because each query normalizes the signed difference; see
+[NR-076](../negative-results/u4-quarter-square-modulo.md).

@@ -309,6 +309,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "bitcoin-scripts-quarter-square-20261002",
+      "title": "Existing Bitcoin Scripts quarter-square identity and field table construction",
+      "kind": "reference-implementation",
+      "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/bf9ee0bb34987a9130ad9dc13a06e18fef137296/src/fields/secp256k1/bigint9/mod.rs",
+      "revision": "bf9ee0bb34987a9130ad9dc13a06e18fef137296; identity and source inspected; field arithmetic tests excluded"
     }
   ]
 }

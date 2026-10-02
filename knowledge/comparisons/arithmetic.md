@@ -302,3 +302,16 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+
+## Exact nibble products
+
+[Quarter-square products](../primitives/u4-exact-product.md) use a 31-entry
+private table instead of the full 256-entry exact grid. At 32 pairs of canonical
+sevens they cost 1389 bytes/98 combined items versus 1937/323, with 129 serialized
+data-witness bytes, 64 ordinary inputs and zero hints. Both include setup,
+canonical/range checks, routing, cleanup and ordered outputs; terminals and
+input pushes are excluded. All data coexist at entry. Outputs are exact
+ScriptNums 0..225, not modulo nibbles or raw bytes. Costs are policy-optimized,
+locally-reproduced/unclassified. The [modulo comparison](../negative-results/u4-quarter-square-modulo.md)
+is a different operation and loses the size advantage at larger batches.

@@ -36,6 +36,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 squaring modulo 16](u4-square-mod16.md)
 - [Checked u4 nondecreasing predicate](u4-nondecreasing.md)
 - [Checked u4 exact sum](u4-exact-sum.md)
+- [Exact u4 quarter-square products](u4-exact-product.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)
 - [Checked u4 adjacent forward delta](u4-adjacent-delta.md)
 - [Checked u4 cyclic vector rotation](u4-vector-rotation.md)

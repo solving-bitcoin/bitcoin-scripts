@@ -77,3 +77,11 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+
+[Exact quarter-square nibble products](../primitives/u4-exact-product.md)
+consume 2n canonical nibble operands and return n exact 0..225 ScriptNums. Their
+2*n+34 peak includes private memory and output staging; all inputs are present
+at entry. Product outputs 128..225 require two-byte numeric encoding, so a hash
+consumer needs an explicit raw-byte conversion. Terminal binding and caller
+live state remain part of the composed protocol cost.

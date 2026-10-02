@@ -31,6 +31,7 @@ pub mod parity;
 pub mod popcount;
 pub mod power_of_two;
 pub mod presence;
+pub mod quarter_square;
 pub mod rotate;
 pub mod shift;
 pub mod square;
