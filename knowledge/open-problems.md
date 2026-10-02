@@ -985,3 +985,15 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-031 — Positional nibble checksum composition
+
+The new [modulo-17 integer residue](primitives/u4-mod17.md) is locally reproduced
+with canonical runtime witnesses and an exact strict stack bound. **Accept when:**
+a complete leaf with a caller-bound vector length and independently fixed residue
+passes an immutable Bitcoin Core consensus differential harness, rejects all
+single-symbol changes and unequal adjacent swaps in deterministic vectors, and
+reports complete Taproot witness size, combined peak with surrounding state,
+terminal predicate, compiler/interpreter/leaf pins and policy acceptance separately.
+Record cancelling changes and same-parity permutations as expected collisions;
+no authentication or Winternitz anti-forwarding claim follows from this checksum.

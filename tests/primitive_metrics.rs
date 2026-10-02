@@ -4653,6 +4653,7 @@ fn metrics() -> Vec<Metric> {
     .chain(u32_conditional_select_metrics())
     .chain(u32_conditional_negate_metrics())
     .chain(u4_sum_metrics())
+    .chain(u4_mod17_metrics())
     .chain(u32_consuming_bitwise_metrics())
     .chain(u4_le_bits_metrics())
     .chain(u32_iszero_metrics())
@@ -10860,4 +10861,37 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 #[test]
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
+}
+
+fn u4_mod17_metrics() -> Vec<Metric> {
+    let fragment = u4::mod17::u4_nibbles_to_mod17(32);
+    let witness: Vec<_> = (0..32).map(|i| scriptnum((7 * i + i / 3) % 16)).collect();
+    let leaf = script! { { fragment.clone() } 6 OP_EQUAL };
+    vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mod17_batch32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mod17_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mod17_batch32_stack",
+            value: max_stack_items_strict(leaf, witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_mod17_batch32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]
+}
+
+#[test]
+fn u4_mod17_metrics_are_current() {
+    check_readme_metrics(u4_mod17_metrics());
 }

@@ -58,3 +58,10 @@ cargo test --locked 'arithmetic::u4::sum::tests' --lib
 cargo test --locked --test primitive_metrics u4_sum_metrics_are_current
 python3 tools/kb.py validate
 ```
+
+For positional base-16 integer residues rather than the additive sum, see
+[modulo 17](u4-mod17.md). The shared `u4_reduction_contract` suite also audits
+this reducer under the local consensus profile with minimal-number policy
+disabled; malformed witnesses at every position, raw aliases, short inputs and
+compiled validation mutations pass. This audit does not change its historical
+measurement configuration or promote deployment evidence.

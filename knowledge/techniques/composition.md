@@ -77,3 +77,15 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+## Reverse positional residue folds
+
+When the input radix is `b` and the modulus is `b+1`, `b=-1` modulo that
+modulus. A right-to-left `x-r` fold can therefore replace depth-dependent input
+routing with swaps, provided even vector lengths apply a final modular negation.
+The [u4 modulo-17 experiment](../primitives/u4-mod17.md) demonstrates this with
+bounded `-16..=15` intermediates, canonical runtime inputs, no table or hints,
+and exact fragment bound `n+3+preserved<=1000`. Preserved state must be supplied
+at runtime in frontier tests: known altstack constants can move across the
+fragment under compilation and erase the coexistence being tested. Complete-leaf
+terminal consumers require their own resource accounting.

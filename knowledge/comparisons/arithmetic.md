@@ -302,3 +302,23 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+## Positional residue of a base-16 vector
+
+For **identical integer-modulo-17 semantics**, canonical runtime witness,
+fragment-only boundary and no hints, the
+[reverse fold](../primitives/u4-mod17.md) uses 670 bytes versus 746 for the
+forward scheduler at 32 inputs. Both serialize the same 62-byte data witness,
+peak at 35 combined stack items and return residue 6 for the recorded vector.
+At 997 inputs they use 20,926/24,775 optimized bytes and both reach 1,000 items.
+The reverse fold is smaller at each measured width (1/2/32/128/997); this is
+configuration-specific evidence, not a global current-best claim.
+
+The additive modulo-16 sum and XOR reduction implement different checksum
+semantics and cannot replace this positional residue. The existing modulo-16
+sum costs 592 bytes and has a 66-item peak at 32 inputs, so eliminating the table
+here improves memory but does not make a like-for-like script-size claim.
+See [NR-073](../negative-results/u4-mod17-forward-routing.md) for the dominated
+scheduler and [OP-031](../open-problems.md#op-031--positional-nibble-checksum-composition)
+for the complete-leaf validation criterion. All new configurations remain
+`locally-reproduced` / `unclassified`; dynamic opcodes are unavailable.

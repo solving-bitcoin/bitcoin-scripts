@@ -825,3 +825,69 @@ Canonical input witnesses, including the CompactSize item count: nibble packing 
 The checked u12 triplet fixture uses <!-- metric:u4_triplet_to_u12_checked_witness -->7<!-- /metric:u4_triplet_to_u12_checked_witness --> serialized witness bytes across three data items.
 
 The checked u16 quad fixture uses <!-- metric:u4_quad_to_u16_checked_witness -->9<!-- /metric:u4_quad_to_u16_checked_witness --> serialized witness bytes across four data items.
+
+## Base-16 integer residue modulo 17
+
+`mod17::u4_nibbles_to_mod17(n)` consumes a **big-endian** vector of `n`
+canonical nibbles and returns the represented integer modulo 17 in `0..=16`.
+`n` is mandatory, with no default, and must be in `1..=997`. This is a
+positional checksum, unlike the permutation-invariant sum modulo 16.
+
+### Script metrics
+
+Fragment-only boundary: all range and raw-canonicality checks, the reverse
+subtraction fold, conditional normalization, and even-length sign correction;
+operand pushes and terminal predicate excluded. Witness bytes serialize the
+complete data-only vector `x[i]=(7*i+floor(i/3)) mod16`. Stack peak is measured
+with that runtime witness and a terminal `6 OP_EQUAL`, using strict local
+execution. All 32 input items coexist at entry; hint items are **0 (none)**.
+
+| Configuration | Script bytes | Witness bytes | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 32 canonical nibbles | <!-- metric:u4_mod17_batch32 -->670<!-- /metric:u4_mod17_batch32 --> | <!-- metric:u4_mod17_batch32_witness -->62<!-- /metric:u4_mod17_batch32_witness --> | 0 | <!-- metric:u4_mod17_batch32_stack -->35<!-- /metric:u4_mod17_batch32_stack --> | <!-- metric:u4_mod17_batch32_opcodes -->478<!-- /metric:u4_mod17_batch32_opcodes --> |
+
+The maximum canonical data witness for 32 nibbles is 65 serialized bytes.
+Dynamic executed opcodes and complete-transaction validation budget are
+unavailable. See the [artifact report](../../../research/u4-mod17/metrics.json)
+for exact fragment/leaf hashes, compiler/interpreter pins, and 1/2/32/128/997
+input configurations. The 997-input fragment is 20,926 optimized bytes and
+peaks at 1,000 items. Every reported batch has zero cumulative hint items.
+
+### Security, witness and stack contract
+
+Witness order is `preserved | x[0] ... x[n-1]`, with the least-significant
+nibble on top. Every nibble must be a minimally encoded ScriptNum in `0..=15`;
+negative zero, redundant sign bytes, numeric overflows, and out-of-range values
+are hostile and rejected. Output is `preserved | residue`; no altstack
+operations are used. For the fragment boundary, exact combined occupancy is
+`n + 3 + preserved <= 1000`, including all surrounding main and altstack state.
+The terminal consumer must account for its own transient items and clean stack.
+
+The modulo identity supplies no cryptographic authentication or collision
+resistance. Single-nibble substitutions and unequal adjacent transpositions
+change the residue; changes in multiple positions can cancel, and permutations
+within one parity class can collide. A caller must bind the checksum and vector
+length if their application requires those properties. Neither this result nor
+any checksum substitute is a safe replacement for Winternitz anti-forwarding
+checks.
+
+### Compatibility, standardness and reproduction
+
+Only existing numeric, stack, and conditional opcodes are used. Bare/P2SH/P2WSH
+have the legacy 201-operation and script-size limits; 32 inputs already use
+478 static non-push operations and are unsuitable for those limits. Smaller
+configurations still need full script and transaction validation; P2SH's
+520-byte redeem-script bound also applies. Tapscript removes that operation
+limit but retains the combined stack limit. No transaction or Bitcoin Core
+policy acceptance is established; evidence is `locally-reproduced`, deployment
+is `unclassified`. See [script types](../../../docs/script-types.md) and
+[standardness](../../../docs/standardness.md).
+
+Run `cargo test --locked --lib arithmetic::u4::mod17`,
+`cargo test --locked --test u4_reduction_contract`, and
+`cargo test --locked --test primitive_metrics u4_mod17_metrics_are_current`.
+The shared suite audits the existing canonical modulo-16 sum and the comparison
+scheduler under the local consensus profile (minimal-number policy disabled),
+including mutations of their actual compiled validation checks. No production
+bug fix was needed. See the [knowledge page](../../../knowledge/primitives/u4-mod17.md)
+for the proof and comparison objective.

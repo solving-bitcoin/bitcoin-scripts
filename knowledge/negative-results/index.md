@@ -1757,3 +1757,11 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-073: Forward modulo-17 nibble routing loses to a reverse fold
+
+For the same canonical big-endian residue boundary and runtime witness,
+forward `OP_ROLL`/altstack scheduling costs 746 bytes at 32 inputs versus
+670 for the reverse subtraction fold, with the same 35-item peak and zero
+hints. It remains comparison-only code. See the
+[reproducible negative result](u4-mod17-forward-routing.md).
