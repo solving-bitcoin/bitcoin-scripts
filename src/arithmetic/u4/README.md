@@ -825,3 +825,56 @@ Canonical input witnesses, including the CompactSize item count: nibble packing 
 The checked u12 triplet fixture uses <!-- metric:u4_triplet_to_u12_checked_witness -->7<!-- /metric:u4_triplet_to_u12_checked_witness --> serialized witness bytes across three data items.
 
 The checked u16 quad fixture uses <!-- metric:u4_quad_to_u16_checked_witness -->9<!-- /metric:u4_quad_to_u16_checked_witness --> serialized witness bytes across four data items.
+
+
+## Canonical modulo-16 prefix sums
+
+`prefix_sum::u4_nibbles_to_prefix_sum(n)` accepts `1..=997` (no default).
+Every hostile input must be a canonical ScriptNum in `0..=15`. It replaces
+`x[0] ... x[n-1]` with `s[0] ... s[n-1]`, where `s[i]=sum(x[0..=i]) mod16`,
+in original order. Caller main and alt state are preserved; all `n` inputs
+coexist at entry. There are **0 hint items per invocation**, also 0 for every
+reported batch. Initial value in an inverse-delta application is ordinary data,
+which its consumer must bind. No cryptographic security is claimed.
+
+| Configuration | Fragment bytes | Complete leaf bytes | Data witness bytes | Data items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 32 canonical sevens | <!-- metric:u4_prefix_sum32 -->661<!-- /metric:u4_prefix_sum32 --> | <!-- metric:u4_prefix_sum32_leaf -->726<!-- /metric:u4_prefix_sum32_leaf --> | <!-- metric:u4_prefix_sum32_witness -->65<!-- /metric:u4_prefix_sum32_witness --> | 32 | 0 | <!-- metric:u4_prefix_sum32_stack -->35<!-- /metric:u4_prefix_sum32_stack --> | <!-- metric:u4_prefix_sum32_opcodes -->503<!-- /metric:u4_prefix_sum32_opcodes --> |
+
+Fragment-with-memory includes input staging, canonical/range validation and all
+outputs, excluding input pushes and terminal predicates. The complete leaf
+compares every prefix against `(7*i)%16` in reverse order with `OP_EQUALVERIFY`
+and ends in `OP_TRUE`; the witness is data only, excluding leaf/control block.
+The fragment retains `n` outputs and needs caller cleanup or predicates.
+Strict local tapscript execution measures `n+3+preserved_items`; hence the
+997-item batch cannot coexist with any caller items. The maximum batch uses
+20,926 optimized fragment bytes, a 22,921-byte leaf, 1,997 serialized data
+witness bytes, 997 data items and zero hints, with a measured 1,000-item peak.
+
+Bare, P2SH and P2WSH use compatible arithmetic/stack opcodes, but their script,
+201-opcode and wrapping limits must be evaluated separately; the 32-item row
+already has 503 static non-push opcodes and exceeds their 201-opcode bound.
+P2SH also imposes the redeem-script element limit. Tapscript uses compatible
+opcodes and the measured local stack schedule, but no complete Bitcoin Core
+transaction or relay policy test establishes deployment. All rows are
+`locally-reproduced` / `unclassified`. See [script types](../../../docs/script-types.md)
+and [standardness](../../../docs/standardness.md).
+
+The 31-entry comparison table is research-only. It measures 664 bytes / 66
+items at n32 and 2,584 bytes / 162 items at n128, versus 661 / 35 and 2,677 /
+131 for this scan. It saves 93 bytes at n128 while needing 31 extra live items;
+its standalone maximum is 966. Dynamic opcode counts and validation weight
+are unavailable. Both scans receive the centralized optimization policy.
+
+The shared `tests/u4_prefix_contract.rs` suite checks all 16/256/4,096 vectors
+at lengths 1/2/3, malformed witnesses in every position, typed rejection and
+validation mutations, numeric aliases in the existing forward-delta sibling,
+short input, asymmetric ordering, runtime caller stacks, exact resource
+frontiers, and canonical delta round trips retaining the initial value.
+Run `cargo test --locked --test u4_prefix_contract` and the named
+`u4_prefix_sum_metrics_are_current` metric. See [knowledge](../../../knowledge/primitives/u4-prefix-sum.md),
+[research report](../../../research/u4-prefix-reconstruction/README.md),
+[comparison](../../../knowledge/comparisons/arithmetic.md),
+[lookup technique](../../../knowledge/techniques/lookup-tables.md),
+[NR-075](../../../knowledge/negative-results/u4-prefix-table-tradeoff.md) and
+[OP-033](../../../knowledge/open-problems.md#op-033--complete-prefix-scan-oracle).

@@ -121,3 +121,13 @@ The [v30.3 differential fixtures](../core-validation.md) now
 confirm Core rejection of that boundary and validate one complete isolated
 HASH160 leaf under consensus and policy; other table/fragment measurements
 retain their original scope.
+
+
+## Ordered prefix outputs deepen table queries
+
+[Modulo-16 prefix sums](../primitives/u4-prefix-sum.md) retain prior outputs
+above a 31-entry table. Query i adds the number of prior prefixes to its index;
+cleanup parks all outputs before dropping the table, then restores their order.
+At n128 this saves 93 bytes over conditional subtraction but needs 31 more live
+items (162 versus131). Include staging and output restoration before comparing;
+[NR-075](../negative-results/u4-prefix-table-tradeoff.md) gives the frontier.

@@ -4653,6 +4653,7 @@ fn metrics() -> Vec<Metric> {
     .chain(u32_conditional_select_metrics())
     .chain(u32_conditional_negate_metrics())
     .chain(u4_sum_metrics())
+    .chain(u4_prefix_sum_metrics())
     .chain(u32_consuming_bitwise_metrics())
     .chain(u4_le_bits_metrics())
     .chain(u32_iszero_metrics())
@@ -10860,4 +10861,40 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 #[test]
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
+}
+
+fn u4_prefix_sum_metrics() -> Vec<Metric> {
+    let fragment = u4::prefix_sum::u4_nibbles_to_prefix_sum(32);
+    let leaf = script! {{fragment.clone()}for i in (1..=32).rev(){{(7*i)%16}OP_EQUALVERIFY}OP_TRUE};
+    vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_prefix_sum32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_prefix_sum32_leaf",
+            value: script_len(leaf.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_prefix_sum32_witness",
+            value: witness_size(&vec![scriptnum(7); 32]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_prefix_sum32_stack",
+            value: max_stack_items_strict(leaf, vec![scriptnum(7); 32]),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_prefix_sum32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]
+}
+#[test]
+fn u4_prefix_sum_metrics_are_current() {
+    check_readme_metrics(u4_prefix_sum_metrics());
 }

@@ -136,3 +136,24 @@ All-witness-at-entry routing, certificate fan-out/reordering, and terminal
 predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
 bytes before a square, illustrating why those circuit costs cannot be omitted
 from an end-to-end recurrence.
+
+
+## Canonical modulo-16 prefix vectors
+
+The [prefix scan](../primitives/u4-prefix-sum.md) returns every prefix, unlike
+scalar sum or the n-1-output forward delta. Conditional versus31-entry table
+under identical canonical input/output and staging/cleanup boundaries:
+
+| n | Conditional script / peak | Table script / peak | Data witness bytes | Hint items |
+| ---: | ---: | ---: | ---: | ---: |
+| 32 | 661 / 35 | 664 / 66 | 65 | 0 |
+| 128 | 2677 / 131 | 2584 / 162 | 257 | 0 |
+| 966 | 20275 / 969 | 20182 / 1000 | 1935 | 0 |
+| 997 | 20926 / 1000 | unsupported | 1997 | 0 |
+
+All n data items coexist at entry; caller live items add to the peak. Table
+setup/query/cleanup/restoration are included, terminal checks excluded on both
+sides. All sizes are policy-optimized. Evidence is locally-reproduced, execution
+unclassified, dynamic opcodes and validation weight unavailable. The table
+trades93 fewer bytes for 31 more live items at n128/966; see
+[NR-075](../negative-results/u4-prefix-table-tradeoff.md).

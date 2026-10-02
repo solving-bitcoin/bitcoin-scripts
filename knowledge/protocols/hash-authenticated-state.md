@@ -39,3 +39,11 @@ state independently: otherwise changing `(x, 1)` to `(SHA256(x), 0)` preserves
 the result. Nested paths equal the joined path and do not encode round
 boundaries. Binohash/Lamport consumers must bind the normalized branch bits,
 not the original selector bytes. A complete wrapper and its costs remain OP-020.
+
+
+A [prefix/delta sequence adapter](../primitives/u4-prefix-sum.md) preserves
+numeric sequence content when the initial value is retained. A protocol must
+also bind that initial value, all deltas and the canonical byte encoding into
+its authenticated state. The local round trip prices checking and routing,
+but includes no hash or commitment; it establishes arithmetic reconstruction
+only.

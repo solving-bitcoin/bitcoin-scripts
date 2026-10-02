@@ -77,3 +77,10 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+
+The [canonical prefix scan](../primitives/u4-prefix-sum.md) can reconstruct
+forward deltas only with a retained initial value. Its round-trip wrapper
+canonical-checks all original items because the existing delta encoder accepts
+numeric aliases. Retaining, routing and binding initial state are real caller
+costs; the standalone n+3 scan peak does not price the encoder's live outputs.

@@ -985,3 +985,13 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+
+## OP-033 — Complete prefix-scan oracle
+
+Validate a complete canonical modulo-16 prefix-vector leaf against an independent
+Bitcoin Core transaction oracle. **Accept when:** the measured n32 complete
+leaf and every-position malformed/canonical-alias vectors have differential
+verdicts tied to exact leaf bytes, witness, transaction and Core revision;
+record policy separately and include leaf/control block in witness weight.
+The local997-item frontier and delta round trip do not close this criterion.

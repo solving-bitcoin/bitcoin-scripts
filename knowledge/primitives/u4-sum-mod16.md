@@ -58,3 +58,10 @@ cargo test --locked 'arithmetic::u4::sum::tests' --lib
 cargo test --locked --test primitive_metrics u4_sum_metrics_are_current
 python3 tools/kb.py validate
 ```
+
+
+The shared [prefix contract](../../tests/u4_prefix_contract.rs) additionally
+audits this scalar sibling with typed every-position rejection, canonical-check
+mutations, runtime caller state and its32-input66-item resource frontier. The
+new [prefix-vector scan](u4-prefix-sum.md) returns n outputs rather than1,
+so its costs are not interchangeable with this scalar reduction.

@@ -65,3 +65,11 @@ python3 tools/kb.py validate
 Execution remains `unclassified`: the local strict executor measures combined
 stack occupancy, but no Bitcoin Core consensus or relay-policy transaction has
 validated this fragment.
+
+
+The shared [prefix contract](../../tests/u4_prefix_contract.rs) audits every
+malformed position, aliases with minimal-number policy disabled, short input,
+caller main/alt preservation and the exact32-input65-item frontier. It confirms
+the existing numeric-only alias contract; no encoder API change is made.
+A [canonical inverse composition](u4-prefix-sum.md) retains the first value and
+explicitly validates all original encodings before encoding.

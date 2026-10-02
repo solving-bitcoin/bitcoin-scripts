@@ -38,6 +38,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 exact sum](u4-exact-sum.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)
 - [Checked u4 adjacent forward delta](u4-adjacent-delta.md)
+- [Canonical u4 modulo-16 prefix scan](u4-prefix-sum.md)
 - [Checked u4 cyclic vector rotation](u4-vector-rotation.md)
 - [Checked u4 vector interleave](u4-interleave.md)
 - [Checked u4 reflected Gray-code projection](u4-gray.md)

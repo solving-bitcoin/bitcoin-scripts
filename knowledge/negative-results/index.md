@@ -1757,3 +1757,11 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+
+## NR-075: Prefix-scan table/branch Pareto frontier
+
+The table-free canonical prefix scan uses31 fewer live items than its31-entry
+table baseline for n>=2, but the table saves93 bytes at n128 and n966.
+The [measured tradeoff](u4-prefix-table-tradeoff.md) is locally reproduced;
+neither is a universal script-size winner and execution remains unclassified.

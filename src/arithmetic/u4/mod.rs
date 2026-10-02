@@ -30,6 +30,7 @@ pub mod pack;
 pub mod parity;
 pub mod popcount;
 pub mod power_of_two;
+pub mod prefix_sum;
 pub mod presence;
 pub mod rotate;
 pub mod shift;
