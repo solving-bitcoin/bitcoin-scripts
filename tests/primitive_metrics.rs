@@ -10861,3 +10861,42 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
 }
+
+#[test]
+fn stable_selection_metrics_are_current() {
+    let fragment = bitcoin_lab::support::selection::compact_selected_items(32);
+    let leaf = script! {
+        {fragment.clone()} 32 OP_EQUALVERIFY
+        for _ in 0..32 {0x42 OP_EQUALVERIFY}
+        OP_TRUE
+    };
+    let witness: Vec<_> = (0..32).flat_map(|_| [vec![0x42], vec![1]]).collect();
+    let readme = "src/support/selection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "stable_selection32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme,
+            key: "stable_selection32_leaf",
+            value: script_len(leaf.clone()),
+        },
+        Metric {
+            readme,
+            key: "stable_selection32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme,
+            key: "stable_selection32_stack",
+            value: max_stack_items_strict(leaf, witness),
+        },
+        Metric {
+            readme,
+            key: "stable_selection32_static",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}

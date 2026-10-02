@@ -4,6 +4,10 @@ Each page describes one construction family or representation. Exact measured
 configurations live in `../catalog.json`; implementation details remain beside
 the source. Read a page together with its comparison page and evidence record.
 
+## Stack support
+
+- [Stable selection of opaque stack items](stable-selection.md)
+
 ## Arithmetic
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)

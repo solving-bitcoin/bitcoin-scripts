@@ -197,3 +197,10 @@ Return to an immutable upstream revision when it contains all adopted repairs or
 equivalent implementations and passes these regressions, Core comparisons,
 unchanged primitive metrics and the non-field suite. Do not silently repoint
 historical evidence or update the other dependency pins during that migration.
+
+## Stable item selection
+
+[`selection::compact_selected_items`](selection/README.md) routes opaque
+payloads using native tapscript binary flags, preserving both caller stacks.
+It requires zero hints and reports the full entry data count and caller-state
+frontier. Its local results remain `locally-reproduced` / `unclassified`.

@@ -116,3 +116,10 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+The stable opaque-item selector uses `cpp-draft-stable-copy-if-20261002`,
+Eelis/draft `c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1`, [alg.copy], solely
+for established stable-subsequence semantics. Native exact binary flags use
+BIP342's tapscript MINIMALIF context. Its local source/artifact report pins the
+retained `bitcoin-script-locked` compiler and `bitcoin-scriptexec-csv-20260920`
+interpreter; neither semantic source nor local execution establishes deployment.

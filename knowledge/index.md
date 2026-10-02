@@ -53,6 +53,10 @@ python3 tools/kb.py validate
 
 ## Coverage snapshot
 
+The stack-support layer includes [stable selection of opaque payloads](primitives/stable-selection.md)
+under native tapscript binary flags, with matched routing comparisons and
+explicit caller-state frontiers.
+
 The initial catalog covers all primitive families documented or actively
 implemented in this repository: ScriptNum, u4/u32/u31/bigint/RNS, native
 secp256k1 and other prime-field arithmetic, integer commitments, SHA-1,

@@ -985,3 +985,16 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-036 — Stable selection protocol composition
+
+Determine whether stable filtering improves a real authenticated variable-output
+consumer after binding selector meaning, retained count/vector and cleanup.
+**Accept when:** an identified protocol composes the selector with its actual
+caller state and terminal predicates, prices both reverse and matched forward
+schedules on the same boundary, records all preloaded data items and exactly
+zero or explicit hint items, observes a combined peak no greater than 1,000,
+and validates complete transactions against an immutable Bitcoin Core revision.
+Report policy separately, including oversized discarded payloads and whole-leaf
+optimizer options. A locally accepted routing fragment or constant literal
+consumer alone does not close this criterion; see NR-078.

@@ -296,11 +296,14 @@ pub fn u8_reverse_toaltstack(num_bytes: usize) -> Script {
     }
 }
 
-/// Select one complete u32 word using Script truthiness.
+/// Select one complete u32 word using numeric Script truthiness.
 ///
 /// Stack before (top first): `condition | when_true | when_false`.
 /// Stack after: the selected word. The condition is consumed; a canonical
-/// boolean is not required because selection follows `OP_IF` semantics.
+/// boolean is not required: `OP_0NOTEQUAL` accepts an at-most-four-byte
+/// ScriptNum before passing a canonical boolean to `OP_IF`. Numeric aliases
+/// are accepted when the execution profile permits nonminimal numbers.
+/// This routing fragment does not validate either word's limb encoding/range.
 pub fn u32_conditional_select() -> Script {
     script! {
         OP_0NOTEQUAL

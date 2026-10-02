@@ -4,6 +4,7 @@ These pages compare only configurations whose inclusion boundaries are stated.
 They summarize the current catalog rather than claiming global completeness.
 
 - [Arithmetic representations](arithmetic.md)
+- [Stable stack selection schedules](stack-selection.md)
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)
 - [Integer commitments](commitments.md)

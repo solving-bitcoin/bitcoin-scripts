@@ -33,7 +33,7 @@ src/
 ├── signatures/       # Lamport, HORS, and Winternitz OTS
 ├── ciphers/          # AES-128 and PRINCEv2
 ├── curves/           # Curve groups, MSM, and pairing
-└── support/          # Script execution and shared pseudo-op helpers
+└── support/          # Script execution, opaque item selection, and shared helpers
 ```
 
 Every primitive directory has a README covering parameters, measured script

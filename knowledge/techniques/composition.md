@@ -67,6 +67,30 @@ budget that live prefix, consume every ciphertext output and add authorization
 where the protocol requires it. The three Core-validated complete spends do
 not transfer their deployment class to a differently composed leaf.
 
+## Stable selection with native binary flags
+
+[Opaque-item stable selection](../primitives/stable-selection.md) uses no hints
+or table but starts with two ordinary data items per pair. All discarded
+payloads and future preloaded invocations still count at entry. For n>=2 its
+peak is `2n+1+caller_main+caller_alt`; budget 4 plus caller state at n=1, and
+1 plus caller state at n=0. A 499-pair invocation leaves room for one caller
+item, on either stack, before reaching exactly 1,000. The shared tests observe
+every preserved caller and returned item after compilation; cleanup cannot
+hide the resource boundary.
+
+Native tapscript MINIMALIF provides exact empty/01 selectors. That guarantee
+does not transfer to legacy truthy IF or the numeric word selector, whose
+OP_0NOTEQUAL accepts at-most-four-byte numeric aliases when the profile allows
+them. Bind selector meaning, retained vector/count and terminal predicate;
+routing does not certify payload content. Discarding a payload also cannot
+repair 521-byte consensus entry elements or the local policy's 80-byte cap.
+Literal-checking whole leaves can cross the optimizer cutoff even when their
+selection fragment uses ALL; report whole-artifact options separately.
+
+These measurements are locally-reproduced / unclassified, with zero hints and
+explicit stack-limited local tapscript profiles. Protocol/Core composition is
+[OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
+
 ## Binary hash-path checkpoints
 
 The [optional-SHA256 hash path](../primitives/hash-path-integer.md) finishes

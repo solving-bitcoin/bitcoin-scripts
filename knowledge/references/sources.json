@@ -309,6 +309,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "cpp-draft-stable-copy-if-20261002",
+      "title": "C++ draft [alg.copy]: stable copy_if semantics",
+      "kind": "specification",
+      "url": "https://github.com/Eelis/draft/blob/c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1/source/algorithms.tex",
+      "revision": "c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1; source/algorithms.tex, [alg.copy]; inspected 2026-10-02; semantic context only, no Bitcoin Script cost or security claim"
     }
   ]
 }

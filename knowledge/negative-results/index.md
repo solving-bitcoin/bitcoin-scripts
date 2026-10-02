@@ -3,6 +3,16 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-078: Forward stable filtering and redundant flag guards
+
+The [stable-selection experiment](stable-selection.md) reproduces 970/1,070
+fragment/leaf bytes and peak 66 for forward routing with reversal versus
+496/596/65 for backward consumption, with the same 32 opaque payloads, native
+MINIMALIF, 64 ordinary data items, zero hints and 129 witness bytes. Explicit
+guards raise the backward fragment to 816 bytes and peak to 68, reducing its
+frontier to 498 pairs. Discarding cannot repair entry element or policy limits.
+Evidence is `locally-reproduced`; deployment `unclassified`.
+
 ## NR-071: u4 MSB lookup table is dominated by a direct threshold at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes

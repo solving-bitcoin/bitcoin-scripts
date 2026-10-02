@@ -5,6 +5,7 @@ constructions from being hidden behind local module names.
 
 ## Primitive classes
 
+- `support/stack`: routing and stable selection of opaque stack items.
 - `arithmetic/scriptnum`: arithmetic on minimally encoded Bitcoin Script
   integers.
 - `arithmetic/word`: fixed-width bit or digit representations such as u4/u32.
@@ -26,6 +27,7 @@ constructions from being hidden behind local module names.
 
 ## Orthogonal technique tags
 
+- `stable-selection`, `reverse-consumption`, `native-minimalif`
 - `lookup-table`, `half-table`, `log-exp-table`, `radix-table`, `streaming-table`
 - `batch-lookup`, `branch-map`
 - `addition-chain`, `limb-arithmetic`, `digit-arithmetic`, `rns`
