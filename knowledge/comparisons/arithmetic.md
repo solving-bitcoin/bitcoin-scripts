@@ -302,3 +302,11 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+The [non-cryptographic Adler-state comparison](checksums.md) reports a
+canonical-byte/two-residue boundary. At n32, deferred reduction costs
+636/645 fragment/leaf bytes versus 740/749 prefix-bounded streaming bytes,
+with the same 97-byte/32-item data witness, zero hints and 35-item peak.
+Prevalidating the bytes also raises the strict stack frontier from 995
+to 997 inputs compared with interleaved validation. No authentication
+or global novelty is implied; RFC 1950 already describes delayed reduction.

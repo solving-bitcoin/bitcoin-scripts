@@ -116,3 +116,11 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+`rfc-1950-adler32` pins RFC 1950, May 1996, version 3.3, for the two-sum
+Adler-32 recurrence, wire order and previously known delayed reduction.
+The ScriptNum bounds, canonical-witness checks, stack schedule and byte
+costs are local specializations, not new Adler algorithms. Independent
+zlib output vectors are reproducible from
+[`oracle.py`](../../research/adler32-delayed-reduction/oracle.py); no Core
+execution or transaction evidence is inherited from that result oracle.

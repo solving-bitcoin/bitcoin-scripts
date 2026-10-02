@@ -1,0 +1,8 @@
+{
+  "python": "3.14.7",
+  "zlib_compile": "1.2.12",
+  "zlib_runtime": "1.2.12",
+  "extension_sha256": "d01fbb9cfa43d994fd4254580fa59448565f05a1ebf09bc6c3166b5020f1e375",
+  "method": "Python stdlib zlib.adler32(data), default initial state 1; oracle.py uses no Script code",
+  "result_evidence": "Independent result vectors only; resource/cost/catalog evidence remains locally-reproduced; not Bitcoin Core"
+}

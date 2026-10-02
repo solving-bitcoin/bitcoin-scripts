@@ -309,6 +309,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "rfc-1950-adler32",
+      "title": "RFC 1950: ZLIB Compressed Data Format Specification version 3.3",
+      "kind": "specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc1950.txt",
+      "revision": "May 1996, version 3.3; sections 2.2, 8.2 and 9; immutable RFC text; Adler recurrence, serialization and delayed reduction inspected 2026-10-02"
     }
   ]
 }

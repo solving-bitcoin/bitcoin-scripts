@@ -10861,3 +10861,37 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
 }
+
+#[test]
+fn adler32_state_metrics_are_current() {
+    use bitcoin_lab::arithmetic::checksums::adler32::adler32_state;
+    let fragment = adler32_state(32);
+    let leaf = script! {{fragment.clone()}3630 OP_EQUALVERIFY 8161 OP_EQUALVERIFY OP_TRUE};
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/checksums/README.md",
+            key: "adler32_state32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/checksums/README.md",
+            key: "adler32_state32_leaf",
+            value: script_len(leaf.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/checksums/README.md",
+            key: "adler32_state32_witness",
+            value: witness_size(&vec![scriptnum(255); 32]),
+        },
+        Metric {
+            readme: "src/arithmetic/checksums/README.md",
+            key: "adler32_state32_stack",
+            value: max_stack_items_strict(leaf, vec![scriptnum(255); 32]),
+        },
+        Metric {
+            readme: "src/arithmetic/checksums/README.md",
+            key: "adler32_state32_static",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}

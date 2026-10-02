@@ -6,6 +6,8 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Arithmetic
 
+- [Canonical Adler-32 state](adler32-state.md) — non-cryptographic checksum with deferred reduction
+
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)

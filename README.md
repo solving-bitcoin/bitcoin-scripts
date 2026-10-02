@@ -26,7 +26,7 @@ inspected, locally reproduced, or differentially validated.
 
 ```text
 src/
-├── arithmetic/       # Modulus-agnostic bigint, u31, u32, u4, and RNS machinery
+├── arithmetic/       # Bigint, u31, u32, u4, RNS, and non-cryptographic checksums
 ├── fields/           # Concrete fields, grouped by field and then backend
 ├── commitments/      # Integer hash-path and preimage-length commitments
 ├── hashes/           # RIPEMD-160, SHA-1, SHA-256, SHAKE256, and BLAKE3

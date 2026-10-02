@@ -85,3 +85,11 @@ preserves unrelated main state and peaks at 120. Neither method reconstructs
 bytes or checks the host's rank bound. BitVM3 can use the assignment subject
 to integration that binds its meaning and handles unused ranks; an onchain
 byte consumer remains a separate measured cost.
+
+The [Adler-32 state](../primitives/adler32-state.md) returns two numeric
+residues A/B instead of a packed unsigned 32-bit checksum. Canonical byte
+inputs 128..255 require a sign byte, and positive residues 32768..65520
+require three ScriptNum bytes. The network-order wire conversion is a
+separate boundary because the packed unsigned word may exceed positive
+four-byte ScriptNum. Zero hints are needed for the fixed 0..997-input
+deferred accumulator; the exact numeric bounds avoid intermediate reduction.

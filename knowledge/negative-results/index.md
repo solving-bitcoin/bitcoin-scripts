@@ -1757,3 +1757,14 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-077: Adler byte validation overlapping accumulators loses capacity
+
+The initial interleaved canonical-byte schedule peaks at n+5 and rejects
+n996/997 with typed StackSize. Prevalidating before allocating A/B reaches
+n+3 and accepts n997 at exactly 1,000 items, without increasing bytes. All
+997 data items coexist at entry, zero hints, 2,994 witness bytes. Naive
+per-byte reduction is also dominated at n32 by prefix-bounded streaming,
+which in turn costs 740 versus 636 deferred bytes. See the
+[reproduced counterexample and scope limits](adler32-scheduling.md).
+Evidence is `locally-reproduced`, deployment `unclassified`; no Core claim.
