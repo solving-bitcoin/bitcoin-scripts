@@ -136,6 +136,62 @@ fn static_non_push_opcodes(script: bitcoin_script::Script) -> usize {
         .count()
 }
 
+#[test]
+fn crc8_smbus_metrics_are_current() {
+    use bitcoin_lab::arithmetic::checksums::crc8::crc8_smbus_nibbles;
+    let fragment = crc8_smbus_nibbles(9);
+    let leaf = script! {{fragment.clone()}244 OP_EQUALVERIFY OP_TRUE};
+    let witness: Vec<Vec<u8>> = b"123456789"
+        .iter()
+        .flat_map(|&b| [b >> 4, b & 15])
+        .rev()
+        .map(|n| scriptnum(n.into()))
+        .collect();
+    let readme = "src/arithmetic/checksums/crc8/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "crc8_smbus9",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus9_leaf",
+            value: script_len(leaf.clone()),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus9_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus9_stack",
+            value: max_stack_items_strict(leaf, witness),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus9_static",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus1",
+            value: script_len(crc8_smbus_nibbles(1)),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus2",
+            value: script_len(crc8_smbus_nibbles(2)),
+        },
+        Metric {
+            readme,
+            key: "crc8_smbus406",
+            value: script_len(crc8_smbus_nibbles(406)),
+        },
+    ]);
+}
+
 fn witness_size(items: &[Vec<u8>]) -> usize {
     serialize(&Witness::from_slice(items)).len()
 }

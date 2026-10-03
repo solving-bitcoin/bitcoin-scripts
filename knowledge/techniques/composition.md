@@ -77,3 +77,24 @@ branch bits for downstream authentication. A path has zero hints and `n+1`
 input data items; a retained path peaks at `n+2` combined items before unrelated
 protocol state. This bound does not include a surrounding pinning/signature
 wrapper (OP-020).
+
+## Independent CRC-8 messages
+
+The [CRC-8 repeated wrapper](../primitives/crc8-smbus.md) retains every future
+message nibble, parks each canonical CRC on altstack, then restores CRCs
+top first and binds every output. Each nine-byte invocation uses 18 ordinary
+items and zero incremental hints; all 18R inputs are at entry and total hints
+remain zero. Numeric feedback has measured peak 18R+188 plus both caller
+stacks, so R=45 reaches 998 and leaves two caller slots; R=46 fails at
+measured 1,001. Witness maxima including four-byte numeric aliases are
+181/721/2,253/2,343/4,053 at R=2/8/25/26/45.
+
+R=2 fragment/leaf are 2,524/2,532, witness 71, peak 224. R=8 gives
+10,096/10,126, witness 280, peak 332. R=25 ALL versus R=26 unoptimized NONE
+shows why individually optimized components cannot be summed without a
+whole-policy delta. Tables are reinstalled per independent call; sharing them
+would require a separately validated state/table lifecycle. Every malformed
+position and short prefix is audited across these configurations and matched
+serial/canonical siblings. Runtime caller bytes are observed at exact 1,000
+boundaries; alt state is reduced when the configuration has fewer free slots.
+These are locally-reproduced/unclassified fragment outcomes.

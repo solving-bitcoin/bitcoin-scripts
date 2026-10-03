@@ -66,3 +66,8 @@ tapscript context and sometimes without the consensus stack limit. Therefore
 the initial catalog is stronger as a map of constructions and relative local
 measurements than as a deployability database. Closing that gap is tracked in
 [open problems](open-problems.md).
+
+The [CRC-8 nibble feedback experiment](primitives/crc8-smbus.md) adds a checked
+noncryptographic checksum frontier: zero hints, exact all-entry limits, matched
+serial/canonical families, and immutable local artifacts; deployment remains
+unclassified.

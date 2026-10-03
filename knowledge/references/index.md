@@ -116,3 +116,13 @@ The binary hash-path optimization also inspects `bitcoin-core-v29-hashes`
 (Bitcoin Core v29.0 interpreter.cpp) for CastToBool, static opcode counting and
 MINIMALIF. Executable local results use rust-bitcoin-scriptexec revision
 `702544c9a045ac4fc14846da6da6559e2b7cd9d1`, not Bitcoin Core execution.
+
+## CRC-8 primary sources
+
+- `crc8-smbus-v31`: [SMBus Specification v3.1, 2018-03-19](https://smbus.org/specs/SMBus_3_1_20180319.pdf),
+  section 6.4.1.3 (p.37); PDF SHA256
+  ae22a791184fdd649c3101f70c3ce238c35b08c7f5b736458e740b903d1bf386.
+- `crc8-linux-v618`: [Linux generic CRC-8](https://github.com/torvalds/linux/blob/7d0a66e4bb9081d75c82ec4957c50034cb0ea449/lib/crc/crc8.c),
+  v6.18 immutable commit 7d0a66e4bb9081d75c82ec4957c50034cb0ea449. Algorithm
+  context only; not copied/executed, and its generic caller-selected state
+  does not replace the explicit zero/no-xor local profile.

@@ -309,6 +309,20 @@
       "kind": "reference-implementation",
       "url": "https://github.com/bitcoin/bitcoin/tree/49faec4f87f5cd19c88db01a82e5c68b087c8227",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
+    },
+    {
+      "id": "crc8-smbus-v31",
+      "title": "SMBus Specification v3.1 CRC-8 Packet Error Checking",
+      "kind": "specification",
+      "url": "https://smbus.org/specs/SMBus_3_1_20180319.pdf",
+      "revision": "v3.1, 2018-03-19, section 6.4.1.3 p.37; PDF SHA256 ae22a791184fdd649c3101f70c3ce238c35b08c7f5b736458e740b903d1bf386"
+    },
+    {
+      "id": "crc8-linux-v618",
+      "title": "Linux v6.18 generic CRC-8 table generator and byte fold",
+      "kind": "reference-implementation",
+      "url": "https://github.com/torvalds/linux/blob/7d0a66e4bb9081d75c82ec4957c50034cb0ea449/lib/crc/crc8.c",
+      "revision": "Linux v6.18 commit 7d0a66e4bb9081d75c82ec4957c50034cb0ea449; inspected context only, not copied/executed"
     }
   ]
 }

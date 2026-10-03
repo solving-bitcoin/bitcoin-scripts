@@ -6,6 +6,8 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Arithmetic
 
+- [CRC-8/SMBus with nibble feedback](crc8-smbus.md)
+
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)

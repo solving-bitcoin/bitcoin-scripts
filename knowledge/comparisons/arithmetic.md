@@ -302,3 +302,21 @@ All carry verifiers are table-free. Their bytes are arithmetic, validation,
 binding, and routing rather than reusable lookup setup. The composable profile
 amortizes certificate work, not static tables; its multi-gate witness scheduling
 and certificate duplication/reordering costs remain outside the measured gate.
+
+## CRC-8 message checksum representations
+
+[CRC-8/SMBus](../primitives/crc8-smbus.md) compares the same hostile numeric
+nibble messages, guards, canonical byte output, setup and cleanup. Feedback
+versus serial fragments are 414/285 at one byte, 520/541 at two, and
+1,262/2,333 at nine. Exact-CRC leaves at nine are 1,267/2,338; both witnesses
+serialize 18 ordinary data items, zero hints, all at entry, to 37 fixture bytes.
+Numeric aliases can attain 91 bytes under the local Consensus profile. Combined
+peaks are N+188 versus N+13, including future inputs and both caller stacks.
+Table feedback wins code growth but loses startup and maximum message length.
+
+The public complete-byte maximum is 406, with 812 ordinary items / zero hints,
+peak 1,000, and unoptimized NONE fragment/leaf 43,345/43,349. Serial permits
+493 complete bytes at peak 999 and has larger code. Canonical siblings and
+independent repeated messages have separate measured artifacts. These are
+locally-reproduced/unclassified outcomes, not cryptographic or deployment
+claims; see [NR-081](../negative-results/crc8-nibble-feedback.md).

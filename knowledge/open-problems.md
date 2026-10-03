@@ -985,3 +985,23 @@ Price a keyed BLAKE3 construction for the existing 32-byte input profile.
 independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
+
+## OP-039 — Streamed CRC-8 frontier
+
+Can a smaller table lifecycle, bounded bit circuit or shared feedback layout
+improve the complete-message byte/stack frontier? The current numeric
+CRC-8 feedback constructor stops at 406 bytes because 812 entry nibbles
+plus 188 items reach 1,000. Serial admits more input but is much larger.
+
+Acceptance criterion: deterministically reproduce the same zero-init, MSB-first
+0x07/no-xor CRC for at least 407 complete bytes, all inputs present at entry,
+zero hints, combined main-plus-alt peak at most 1,000, and a final
+policy-produced fragment at most 43,345 bytes. Include the same hostile
+numeric domain, all setup/cleanup/packing and caller-state obligations;
+label NONE results unoptimized. Audit every state/nibble transition, exhaustive
+two-byte messages, malformed/alias/short inputs at every live position, actual
+compiled guard/terminal/order mutations caught by the same assertions, exact
+resource boundaries and repeated-message composition. Pin source/dependencies,
+profiles, witness/hint counts, script and input hashes. Strengthened deployment
+classes additionally need the appropriate complete Core/relay evidence. The
+existing serial baseline does not meet the byte target.

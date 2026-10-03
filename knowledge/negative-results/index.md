@@ -1757,3 +1757,12 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-081: CRC-8 feedback startup and memory frontier
+
+[CRC-8 nibble feedback](crc8-nibble-feedback.md) wins code growth from two
+bytes but loses at one byte and uses N+188 combined stack items versus
+serial N+13. Every input, table and parked output is counted; all hints are
+zero. Independent nine-byte calls switch compilation policy at 25/26 and
+reach the resource frontier at 45/46. Evidence is locally-reproduced;
+deployment is unclassified.

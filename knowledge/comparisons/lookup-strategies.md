@@ -136,3 +136,22 @@ All-witness-at-entry routing, certificate fan-out/reordering, and terminal
 predicates remain unmeasured. A straightforward 46-residue duplicate costs 138
 bytes before a square, illustrating why those circuit costs cannot be omitted
 from an end-to-end recurrence.
+
+## CRC-8 four-bit feedback
+
+A sixteen-entry paired feedback table composes with the existing 136-item
+triangular XOR table and sixteen offsets: 184 resident items. On matched
+complete message boundaries, [CRC-8](../primitives/crc8-smbus.md) loses to
+serial bits at one byte (414 versus 285 fragment bytes), wins at two
+(520 versus 541) and nine (1,262 versus 2,333), but needs N+188 combined
+items rather than N+13. Every input is guarded before lookup, both caller
+stacks are preserved, and every setup/cleanup cost is included. Each byte
+uses two ordinary numeric nibbles and zero hints, all at entry.
+
+For independent nine-byte messages the whole policy switches between
+R=25 ALL and R=26 unoptimized NONE; component-policy deltas include that
+change. R=45 coexists at 998, R=46 fails at 1,001. Numeric aliases, canonical
+compositions, terminals, runtime caller bytes and each hostile live position
+have separate shared contracts. Evidence is locally-reproduced, deployment
+unclassified; [NR-081](../negative-results/crc8-nibble-feedback.md) retains the
+startup, memory and repeated-setup tradeoffs.

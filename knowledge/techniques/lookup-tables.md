@@ -121,3 +121,14 @@ The [v30.3 differential fixtures](../core-validation.md) now
 confirm Core rejection of that boundary and validate one complete isolated
 HASH160 leaf under consensus and policy; other table/fragment measurements
 retain their original scope.
+
+## CRC feedback plus symmetric XOR
+
+[CRC-8 nibble feedback](../primitives/crc8-smbus.md) pairs high/low remainder
+entries and reuses the triangular XOR table for two state transitions per
+input nibble. A fixed 186-deep ROLL consumes the next checked input below
+184 table items and two CRC nibbles. Every query derives its index from
+range-checked numeric inputs or bounded internal state; tables are embedded.
+Both setup and destructive cleanup belong to the measured boundary. This
+reduces code growth at the cost of resident memory, recorded in
+[NR-081](../negative-results/crc8-nibble-feedback.md).
