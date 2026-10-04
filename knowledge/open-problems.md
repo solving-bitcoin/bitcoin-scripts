@@ -554,6 +554,20 @@ byte-oriented API remains unresolved: identify a caller and compare direct
 four-byte shifting with compression, compressed shifting, and conversion back,
 including validation and table setup/cleanup at the same boundary.
 
+## OP-031 — Byte-competitive variable run-length decoder
+
+`u4_expand_canonical_runs` fixes the run count in the locking script. On the
+measured width-16 shapes it costs more script-plus-witness bytes than checking
+the expanded nibbles in place. [NR-073](negative-results/index.md#nr-073-fixed-count-u4-run-length-expansion-loses-combined-bytes)
+records those boundaries.
+
+**Complete when:** one fragment accepts every canonical run count from 1
+through a stated width, rejects zero-length, overlong, adjacent-equal,
+non-canonical, and sum-mismatch witnesses at every pair, and either undercuts
+the in-place canonical-nibble script-plus-witness total on a stated repetitive
+witness or records a new measured negative result at that same boundary. A
+single compile-time run count does not close this.
+
 ## OP-026 — Total-domain compressed-u32 shift pair
 
 Determine whether a canonical one-item compressed u32 representation can

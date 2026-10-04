@@ -96,6 +96,11 @@ these operations, but this module contains no hash-specific round logic.
   public u4 threshold and a checked batch size in `1..=998`, returning `0`,
   `1`, or `2` for less-than, equal, or greater-than. Callers preserving live
   stack items must satisfy `nibble_count + 2 + preserved_items <= 1000`.
+- `run_length::u4_expand_canonical_runs(width, run_count)` expands exactly
+  `run_count` canonical `(symbol, length)` pairs into `width` nibbles. Each
+  length is in `1..=width-run_count+1`, the lengths sum to `width`, and
+  adjacent symbols differ. The fragment has no hints. Its no-preserved
+  combined stack peak is `max(2*run_count+5, width+run_count+2)`.
 - `bit_planes::u4_nibbles_to_bit_planes(nibble_count, check_inputs)` reuses
   checked nibble decomposition and transposes batches up to 234 nibbles.
 - `bit_planes::u4_nibbles_to_bit_planes_canonical(nibble_count)` additionally
@@ -234,6 +239,8 @@ words as data, with no hint items.
 | Checked power-of-two batch, 32 nibbles | <!-- metric:u4_power_of_two_batch32 -->440<!-- /metric:u4_power_of_two_batch32 --> bytes | <!-- metric:u4_power_of_two_batch32_stack -->50<!-- /metric:u4_power_of_two_batch32_stack --> items | <!-- metric:u4_power_of_two_batch32_opcodes -->328<!-- /metric:u4_power_of_two_batch32_opcodes --> |
 | Checked modulo-three batch, 32 nibbles | <!-- metric:u4_mod3_batch32 -->440<!-- /metric:u4_mod3_batch32 --> bytes | <!-- metric:u4_mod3_batch32_stack -->50<!-- /metric:u4_mod3_batch32_stack --> items | <!-- metric:u4_mod3_batch32_opcodes -->328<!-- /metric:u4_mod3_batch32_opcodes --> |
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
+| Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
+| Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Canonical checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_canonical_batch32 -->504<!-- /metric:u4_lsb_canonical_batch32 --> bytes | <!-- metric:u4_lsb_canonical_batch32_stack -->51<!-- /metric:u4_lsb_canonical_batch32_stack --> items | <!-- metric:u4_lsb_canonical_batch32_opcodes -->360<!-- /metric:u4_lsb_canonical_batch32_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
@@ -315,6 +322,10 @@ The embedded-cap fixture uses <!-- metric:u4_clamp_16_witness -->33<!-- /metric:
 <!-- metric:u4_mod3_batch32_witness -->65<!-- /metric:u4_mod3_batch32_witness --> serialized witness bytes for the representative modulo-three batch.
 
 The embedded-trichotomy fixture uses <!-- metric:u4_trichotomy_16_witness -->33<!-- /metric:u4_trichotomy_16_witness --> serialized witness bytes for <!-- metric:u4_trichotomy_16_witness_items -->16<!-- /metric:u4_trichotomy_16_witness_items --> canonical data items and returns one numeric three-way class per input. Numeric range checks accept non-minimal encodings; compose `verify_canonical_nibble()` when byte-unique witness encoding is required.
+
+<!-- metric:u4_run_length_width16_runs2_witness -->8<!-- /metric:u4_run_length_width16_runs2_witness --> serialized witness bytes for the width-16 two-run expansion. The witness is four payload items and zero hints.
+
+<!-- metric:u4_run_length_width16_runs8_witness -->29<!-- /metric:u4_run_length_width16_runs8_witness --> serialized witness bytes for the width-16 eight-run expansion. The witness is 16 payload items and zero hints. That length-2 fixture peaks at 21 combined items; a valid length pattern for the same shape can reach the generator bound of 26.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
 A separately scoped Core v30.3 run accepts a complete 16-nibble
@@ -641,6 +652,12 @@ proof of canonical byte encoding or a terminal predicate.
 Modulo-three output is a numeric residue in `0..=2`, not a terminal predicate
 or a byte encoding.
 
+Run-length expansion range-checks every symbol and length, requires canonical
+ScriptNum encoding, rejects a zero or overlong length, rejects adjacent equal
+symbols, and requires the lengths to sum to the width. It does not provide a
+terminal predicate. The two measured width-16 scripts have 271 and 709 static
+non-push opcodes, above the 201-opcode limit for bare, P2SH, and P2WSH script.
+
 ## Script compatibility and standardness
 
 The fragments use arithmetic, flow, stack, and comparison opcodes available to
@@ -658,7 +675,10 @@ Bitcoin Core validation.
 
 ## Witness and hints
 
-No cryptographic hints are required. Operand nibbles may come from the witness;
+No cryptographic hints are required. A run-length witness is payload, not a
+hint: `u4_expand_canonical_runs(width, run_count)` consumes exactly
+`2 * run_count` items, all present at script entry. The width-16 two-run
+fixture has four payload items and zero hints. Operand nibbles may come from the witness;
 their order is operation-specific. The bit-plane adapter adds zero data or
 incremental hint items beyond the source nibbles. Tables are generated by the
 locking script. The bit-reversal batch consumes one data
@@ -666,6 +686,14 @@ item per nibble and has zero incremental hint items; its 32-nibble metric uses
 65 serialized witness bytes.
 
 ## Stack contract
+
+For `u4_expand_canonical_runs(width, run_count)`, input is
+`preserved | symbol[0] | length[0] | ... | symbol[n-1] | length[n-1]`, with
+the last length on top. Output is `preserved | nibble[0] | ... | nibble[width-1]`,
+with the last nibble on top. With no preserved state, the combined peak is
+`max(2*run_count+5, width+run_count+2)`. Preserved main-stack and altstack
+items add to that peak. The fragment returns any pre-existing altstack items
+beneath the expanded nibbles.
 
 For `u4_nibbles_to_be_bits(n, ...)`, input is
 `preserved | nibble[0] | ... | nibble[n-1]`, with `nibble[n-1]` on top. The

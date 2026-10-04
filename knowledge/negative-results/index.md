@@ -1757,3 +1757,42 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-073: Fixed-count u4 run-length expansion loses combined bytes
+
+The question is whether a canonical run-length witness is a smaller way to
+supply a width-16 u4 vector than checking those nibbles in place. Both sides
+are policy-compiled fragments. The run-length side includes validation and
+expansion to the nibble vector. The baseline checks each nibble in place with
+the same range and canonical-encoding tests and leaves that vector on the
+stack. Input pushes inside the script are excluded; witness bytes are the
+consensus serialization of the payload only. Neither side includes a terminal
+predicate, transaction weight, or validation budget. Hint items are zero on
+both sides, and every payload item coexists at script entry.
+
+| Witness shape | Payload items | Witness bytes | Script bytes | Script + witness | Combined stack |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| In-place check of eight `0` nibbles and eight `15` nibbles | 16 | 25 | 206 | 231 | not the dominance criterion |
+| Two runs, `(0, 8)` then `(15, 8)` | 4 | 8 | 321 | 329 | 20 |
+| Eight runs of length 2, symbols alternating `0, 1` | 16 | 29 | 867 | 896 | 21 |
+| Sixteen runs of length 1, symbols `0..=15` | 32 | 64 | 698 | 762 | not separately peaked |
+
+The two-run witness cuts entry items from 16 to 4 and witness bytes from 25
+to 8, but the expander adds 115 script bytes. Combined fragment bytes rise
+from 231 to 329. Length-2 runs tie the item count and increase both witness
+and script bytes. Length-1 runs double the item count. The two-run policy
+script is SHA256
+`00c8ca6ef44237329a54df1e49adeb7944393d22a7f1ed7065a207b0849d08f1`.
+Its static non-push count is 271, above the 201-opcode bare/P2SH/P2WSH limit.
+Evidence is `locally-reproduced`. Deployment is `unclassified`.
+
+A raw multi-value length cannot drive `OP_IF` under BIP342 minimal-if. A
+one-item control with length 1 completes; length 2 fails with
+`TapscriptMinimalIf` before `OP_1SUB`. The generator therefore counts down
+with `OP_GREATERTHAN` against zero. That failed flag encoding is not a second
+cost entry.
+
+The shape-wide stack bound `max(2*run_count+5, width+run_count+2)` is pinned
+separately from these witness-specific peaks. For eight runs of width 16 the
+bound is 26, above the length-2 fixture's 21. No variable run count and no
+byte-winning layout is claimed. See [OP-031](../open-problems.md#op-031--byte-competitive-variable-run-length-decoder).

@@ -54,6 +54,8 @@ the current byte-oriented and decode/re-encode configurations below.
 | 32 checked Gray nibbles to binary nibbles | `u4_nibbles_from_gray(32)` | 440 | 50-item peak; one decoded nibble per input |
 | 32 checked nibbles to nonzero-power-of-two bits | `u4_nibbles_to_power_of_two(32)` | 440 | 50-item peak; one predicate bit per input |
 | 32 checked nibbles to modulo-three residues | `u4_nibbles_to_mod3(32)` | 440 | 50-item peak; one residue per input |
+| 16 nibbles from two canonical runs | `u4_expand_canonical_runs(16, 2)` | 321 | 20-item peak; 4 payload items; 8 witness bytes; 0 hints; in-place canonical check is 206 bytes and 25 witness bytes |
+| 16 nibbles from eight length-2 runs | `u4_expand_canonical_runs(16, 8)` | 867 | 21-item peak on that witness; 16 payload items; 29 witness bytes; 0 hints; same item count as the raw vector |
 | 32 checked nibbles to parity bits | `u4_nibbles_to_parity(32)` | 440 | 50-item peak; one output bit per input; numeric range only; accepts non-minimal aliases without MINIMALDATA |
 | 32 canonical checked nibbles to parity bits | `u4_nibbles_to_parity_canonical(32)` | 504 | 51-item peak; 65-byte witness; rejects raw aliases; standalone maximum 981 inputs |
 | Fixed-symbol u4 occurrence count | `u4_nibbles_count(0, 16)` | <!-- metric:u4_symbol_count_16 -->266<!-- /metric:u4_symbol_count_16 --> | <!-- metric:u4_symbol_count_16_stack -->19<!-- /metric:u4_symbol_count_16_stack -->-item peak; one count output; target embedded; numeric equality |

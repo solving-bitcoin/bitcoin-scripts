@@ -13391,6 +13391,117 @@
       ]
     },
     {
+      "id": "arithmetic/u4-run-length",
+      "name": "Checked u4 run-length expansion",
+      "class": "arithmetic/word",
+      "summary": "Expands a fixed number of canonical u4 run-length pairs into a nibble vector, rejecting non-canonical, zero-length, overlong, adjacent-equal, and sum-mismatch witnesses.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-03",
+      "knowledge_page": "knowledge/primitives/u4-run-length.md",
+      "implementation": "src/arithmetic/u4/run_length.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4/run_length.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "tracked-stack"
+      ],
+      "security": "Every symbol and length is range-checked and re-encoded before use. The checks prove canonical ScriptNum form, positive bounded lengths, adjacent inequality, and an exact sum. They do not provide a terminal predicate or cryptographic security. Zero hint items.",
+      "stack_contract": "Consumes preserved | symbol[0] | length[0] | ... | symbol[n-1] | length[n-1] and returns preserved | nibble[0] | ... | nibble[width-1], with the last item on top. All 2*run_count payload items coexist at entry. No hint items and no resident table.",
+      "configurations": [
+        {
+          "id": "width16-runs2",
+          "label": "u4_expand_canonical_runs(16, 2) on (0,8),(15,8)",
+          "parameters": {
+            "width": 16,
+            "run_count": 2,
+            "runs": "(0, 8), (15, 8)",
+            "data_items": 4,
+            "hint_items": 0,
+            "hints_coexist_at_entry": true,
+            "input_check": true,
+            "script_sha256": "00c8ca6ef44237329a54df1e49adeb7944393d22a7f1ed7065a207b0849d08f1",
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true
+          },
+          "includes": "fragment-only: canonical symbol and length checks, exact-width sum, adjacent inequality, countdown emission, and main-stack restoration for two runs totaling 16 nibbles; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 321,
+          "witness_bytes": 8,
+          "witness_bytes_max": 8,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 321,
+          "metric_keys": [
+            "u4_run_length_width16_runs2",
+            "u4_run_length_width16_runs2_witness",
+            "u4_run_length_width16_runs2_stack",
+            "u4_run_length_width16_runs2_opcodes"
+          ],
+          "static_non_push_opcodes": 271
+        },
+        {
+          "id": "width16-runs8-length2",
+          "label": "u4_expand_canonical_runs(16, 8) on eight length-2 runs",
+          "parameters": {
+            "width": 16,
+            "run_count": 8,
+            "runs": "length 2, symbols alternating 0 and 1",
+            "data_items": 16,
+            "hint_items": 0,
+            "hints_coexist_at_entry": true,
+            "input_check": true,
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true,
+            "shape_stack_bound": 26
+          },
+          "includes": "fragment-only: same checks and restoration as the two-run fixture, for eight length-2 runs; the 21-item peak is this witness, while the shape-wide bound is 26; excludes input pushes, witness serialization from the script, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 867,
+          "witness_bytes": 29,
+          "witness_bytes_max": 29,
+          "max_stack_items": 21,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 867,
+          "metric_keys": [
+            "u4_run_length_width16_runs8",
+            "u4_run_length_width16_runs8_witness",
+            "u4_run_length_width16_runs8_stack",
+            "u4_run_length_width16_runs8_opcodes"
+          ],
+          "static_non_push_opcodes": 709
+        }
+      ],
+      "limitations": [
+        "Compile-time run count; a shorter witness cannot be padded with a zero-length run",
+        "Measured width-16 shapes use more script-plus-witness bytes than an in-place canonical nibble check",
+        "Static non-push opcode counts exceed the 201-opcode bare, P2SH, and P2WSH limit",
+        "The tapscript opcode counter includes skipped countdown bodies, so executed_opcodes is null",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003",
+        "OP-031"
+      ]
+    },
+    {
       "id": "arithmetic/u32-zero",
       "name": "Checked u32 zero predicate",
       "class": "arithmetic/word",
