@@ -54,7 +54,8 @@ python3 tools/kb.py validate
 ## Coverage snapshot
 
 The initial catalog covers all primitive families documented or actively
-implemented in this repository: ScriptNum, u4/u32/u31/bigint/RNS, native
+implemented in this repository: ScriptNum, u4/u32/u31/bigint/RNS (including checked
+factoradic/Lehmer decoding), native
 secp256k1 and other prime-field arithmetic, integer commitments, SHA-1,
 SHA-256, RIPEMD-160, BLAKE3, SHAKE256,
 AES-128, PRINCEv2, Lamport/HORS/Winternitz one-time constructions, and BN254
