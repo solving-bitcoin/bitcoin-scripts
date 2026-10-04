@@ -280,7 +280,7 @@
       "status": "active",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-17",
+      "as_of": "2026-10-03",
       "knowledge_page": "knowledge/primitives/u4.md",
       "implementation": "src/arithmetic/u4/mod.rs",
       "documentation": "src/arithmetic/u4/README.md",
@@ -293,6 +293,7 @@
         "primitive_metrics::u4_staged_word_verifier_metrics_are_current",
         "primitive_metrics::u4_lookup_lifecycle_metrics_are_current",
         "arithmetic::u4::unpack::tests::boundary_bytes_decode_in_input_order",
+        "arithmetic::u4::unpack::tests::witness_bytes_decode_and_preserve_surrounding_state",
         "arithmetic::u4::unpack::tests::rejects_non_bytes_at_each_position",
         "arithmetic::u4::unpack::tests::batch_size_guard_accounts_for_altstack_outputs",
         "primitive_metrics::u4_unpack_metrics_are_current"
@@ -957,7 +958,7 @@
             "data_items": 16,
             "hint_items": 0
           },
-          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, table cleanup, and restoration of all 32 output nibbles; representative witness records 16 hostile byte data items; excludes terminal predicate, unrelated live state, and transaction context",
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, 512-item table cleanup, and restoration of all 2*n output nibbles. The table path is 512 setup bytes + 256 cleanup bytes + 25 bytes per input (768 + 25*n). Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. Witness contains 16 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
           "script_bytes": 1168,
           "witness_bytes": 49,
           "witness_bytes_max": 49,
@@ -972,7 +973,255 @@
             "u4_unpack_batch16_stack",
             "u4_unpack_batch16_opcodes"
           ],
-          "static_non_push_opcodes": 544
+          "static_non_push_opcodes": 544,
+          "cleanup_script_bytes": 256
+        },
+        {
+          "id": "byte-to-nibbles-batch18-checked",
+          "label": "Checked 18-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 18,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 18,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, 512-item table cleanup, and restoration of all 36 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. Witness contains 18 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1218,
+          "witness_bytes": 55,
+          "witness_bytes_max": 55,
+          "max_stack_items": 550,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "cleanup_script_bytes": 256,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch18",
+            "u4_unpack_batch18_witness",
+            "u4_unpack_batch18_stack",
+            "u4_unpack_batch18_opcodes"
+          ],
+          "static_non_push_opcodes": 580
+        },
+        {
+          "id": "byte-to-nibbles-batch19-checked",
+          "label": "Checked 19-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 19,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 19,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, 512-item table cleanup, and restoration of all 38 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. Witness contains 19 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1243,
+          "witness_bytes": 58,
+          "witness_bytes_max": 58,
+          "max_stack_items": 552,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "cleanup_script_bytes": 256,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch19",
+            "u4_unpack_batch19_witness",
+            "u4_unpack_batch19_stack",
+            "u4_unpack_batch19_opcodes"
+          ],
+          "static_non_push_opcodes": 598
+        },
+        {
+          "id": "byte-to-nibbles-batch32-checked",
+          "label": "Checked 32-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 32,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, 512-item table cleanup, and restoration of all 64 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. Witness contains 32 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1568,
+          "witness_bytes": 97,
+          "witness_bytes_max": 97,
+          "max_stack_items": 578,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "cleanup_script_bytes": 256,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch32",
+            "u4_unpack_batch32_witness",
+            "u4_unpack_batch32_stack",
+            "u4_unpack_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 832
+        },
+        {
+          "id": "byte-to-nibbles-batch243-checked",
+          "label": "Checked 243-byte to nibble unpack",
+          "parameters": {
+            "byte_count": 243,
+            "input_check": true,
+            "table_items": 512,
+            "data_items": 243,
+            "hint_items": 0
+          },
+          "includes": "fragment-with-memory: 512-item high/low-nibble table setup, two checked queries per byte, 512-item table cleanup, and restoration of all 486 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. Witness contains 243 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 6843,
+          "witness_bytes": 730,
+          "witness_bytes_max": 730,
+          "max_stack_items": 1000,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 512,
+          "cleanup_script_bytes": 256,
+          "per_use_script_bytes": 25,
+          "metric_keys": [
+            "u4_unpack_batch243",
+            "u4_unpack_batch243_witness",
+            "u4_unpack_batch243_stack",
+            "u4_unpack_batch243_opcodes"
+          ],
+          "static_non_push_opcodes": 4630
+        },
+        {
+          "id": "byte-to-nibbles-scalar-batch16-checked",
+          "label": "Fair scalar checked 16-byte unpack baseline",
+          "parameters": {
+            "byte_count": 16,
+            "input_check": true,
+            "data_items": 16,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 16 checked u8_to_u4_pair(true) conversions, staging of both nibbles per byte, and restoration of all 32 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. The nominal 67 bytes per call has a -6-byte cross-component optimizer delta in the compiled batch total. Witness contains 16 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1066,
+          "witness_bytes": 49,
+          "witness_bytes_max": 49,
+          "max_stack_items": 34,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_unpack_scalar_batch16",
+            "u4_unpack_scalar_batch16_witness",
+            "u4_unpack_scalar_batch16_stack",
+            "u4_unpack_scalar_batch16_opcodes"
+          ],
+          "static_non_push_opcodes": 682,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67,
+          "optimizer_cross_component_delta_bytes": -6
+        },
+        {
+          "id": "byte-to-nibbles-scalar-batch18-checked",
+          "label": "Fair scalar checked 18-byte unpack baseline",
+          "parameters": {
+            "byte_count": 18,
+            "input_check": true,
+            "data_items": 18,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 18 checked u8_to_u4_pair(true) conversions, staging of both nibbles per byte, and restoration of all 36 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. The nominal 67 bytes per call has a -6-byte cross-component optimizer delta in the compiled batch total. Witness contains 18 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1200,
+          "witness_bytes": 55,
+          "witness_bytes_max": 55,
+          "max_stack_items": 38,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_unpack_scalar_batch18",
+            "u4_unpack_scalar_batch18_witness",
+            "u4_unpack_scalar_batch18_stack",
+            "u4_unpack_scalar_batch18_opcodes"
+          ],
+          "static_non_push_opcodes": 768,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67,
+          "optimizer_cross_component_delta_bytes": -6
+        },
+        {
+          "id": "byte-to-nibbles-scalar-batch19-checked",
+          "label": "Fair scalar checked 19-byte unpack baseline",
+          "parameters": {
+            "byte_count": 19,
+            "input_check": true,
+            "data_items": 19,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 19 checked u8_to_u4_pair(true) conversions, staging of both nibbles per byte, and restoration of all 38 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. The nominal 67 bytes per call has a -6-byte cross-component optimizer delta in the compiled batch total. Witness contains 19 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 1267,
+          "witness_bytes": 58,
+          "witness_bytes_max": 58,
+          "max_stack_items": 40,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_unpack_scalar_batch19",
+            "u4_unpack_scalar_batch19_witness",
+            "u4_unpack_scalar_batch19_stack",
+            "u4_unpack_scalar_batch19_opcodes"
+          ],
+          "static_non_push_opcodes": 811,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67,
+          "optimizer_cross_component_delta_bytes": -6
+        },
+        {
+          "id": "byte-to-nibbles-scalar-batch32-checked",
+          "label": "Fair scalar checked 32-byte unpack baseline",
+          "parameters": {
+            "byte_count": 32,
+            "input_check": true,
+            "data_items": 32,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 32 checked u8_to_u4_pair(true) conversions, staging of both nibbles per byte, and restoration of all 64 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. The nominal 67 bytes per call has a -6-byte cross-component optimizer delta in the compiled batch total. Witness contains 32 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 2138,
+          "witness_bytes": 97,
+          "witness_bytes_max": 97,
+          "max_stack_items": 66,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_unpack_scalar_batch32",
+            "u4_unpack_scalar_batch32_witness",
+            "u4_unpack_scalar_batch32_stack",
+            "u4_unpack_scalar_batch32_opcodes"
+          ],
+          "static_non_push_opcodes": 1370,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67,
+          "optimizer_cross_component_delta_bytes": -6
+        },
+        {
+          "id": "byte-to-nibbles-scalar-batch243-checked",
+          "label": "Fair scalar checked 243-byte unpack baseline",
+          "parameters": {
+            "byte_count": 243,
+            "input_check": true,
+            "data_items": 243,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: 243 checked u8_to_u4_pair(true) conversions, staging of both nibbles per byte, and restoration of all 486 output nibbles. Final policy-produced ScriptBuf bytes and static opcode count exclude output-drop and terminal-truth harness, unrelated live state, and transaction context. The nominal 67 bytes per call has a -6-byte cross-component optimizer delta in the compiled batch total. Witness contains 243 ScriptNum 255 data items encoded as [0xff, 0x00]; all coexist at script entry, with zero explicit hint items. Strict stack peaks use execute_script_with_inputs_strict, which runs in tapscript context and enforces the combined stack limit; its otherwise-identical measurement harness drops the 2*n outputs and ends in OP_TRUE. This is local execution evidence, not Bitcoin Core consensus or relay-policy validation.",
+          "script_bytes": 16275,
+          "witness_bytes": 730,
+          "witness_bytes_max": 730,
+          "max_stack_items": 488,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_unpack_scalar_batch243",
+            "u4_unpack_scalar_batch243_witness",
+            "u4_unpack_scalar_batch243_stack",
+            "u4_unpack_scalar_batch243_opcodes"
+          ],
+          "static_non_push_opcodes": 10443,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 67,
+          "optimizer_cross_component_delta_bytes": -6
         }
       ],
       "limitations": [

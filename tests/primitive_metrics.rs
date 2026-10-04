@@ -5613,18 +5613,6 @@ fn u32_uncompress_canonical_nonnegative_metrics_are_current() {
 
 #[test]
 fn u4_unpack_metrics_are_current() {
-    const BYTE_COUNT: u32 = 16;
-    let fragment = u4::unpack::u4_bytes_to_nibbles(BYTE_COUNT);
-    let witness = vec![scriptnum(0xff); BYTE_COUNT as usize];
-    let stack = max_stack_items_strict(
-        script! {
-            { fragment.clone() }
-            { u4::stack::u4_drop(2 * BYTE_COUNT) }
-            OP_TRUE
-        },
-        witness.clone(),
-    );
-
     let scalar = |byte_count: u32| {
         script! {
             for _ in 0..byte_count {
@@ -5636,10 +5624,33 @@ fn u4_unpack_metrics_are_current() {
             }
         }
     };
-    let mut comparison_metrics = Vec::new();
-    for byte_count in [16, 32, 243] {
+    let mut metrics = Vec::new();
+    for byte_count in [16, 18, 19, 32, 243] {
+        // Byte/opcode metrics use this single policy-produced fragment. Peak
+        // execution below wraps the same fragment in the shared output-drop /
+        // truth harness required for strict clean-stack evaluation.
+        let table_fragment = u4::unpack::u4_bytes_to_nibbles(byte_count);
+        let table_witness = vec![scriptnum(0xff); byte_count as usize];
+        let table_compiled = table_fragment.clone().compile_with_policy();
+        let table_stack = max_stack_items_strict(
+            script! {
+                { table_fragment.clone() }
+                { u4::stack::u4_drop(2 * byte_count) }
+                OP_TRUE
+            },
+            table_witness.clone(),
+        );
+        let table_script_bytes = table_compiled.len();
+        let table_static_opcodes = table_compiled
+            .instructions()
+            .map(|instruction| instruction.expect("generated table metric script must parse"))
+            .filter(|instruction| {
+                matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60)
+            })
+            .count();
         let scalar_fragment = scalar(byte_count);
         let scalar_witness = vec![scriptnum(0xff); byte_count as usize];
+        let scalar_compiled = scalar_fragment.clone().compile_with_policy();
         let scalar_stack = max_stack_items_strict(
             script! {
                 { scalar_fragment.clone() }
@@ -5648,76 +5659,130 @@ fn u4_unpack_metrics_are_current() {
             },
             scalar_witness.clone(),
         );
-        let (script_key, witness_key, stack_key, opcode_key) = match byte_count {
-            16 => (
-                "u4_unpack_scalar_batch16",
-                "u4_unpack_scalar_batch16_witness",
-                "u4_unpack_scalar_batch16_stack",
-                "u4_unpack_scalar_batch16_opcodes",
-            ),
-            32 => (
-                "u4_unpack_scalar_batch32",
-                "u4_unpack_scalar_batch32_witness",
-                "u4_unpack_scalar_batch32_stack",
-                "u4_unpack_scalar_batch32_opcodes",
-            ),
-            243 => (
-                "u4_unpack_scalar_batch243",
-                "u4_unpack_scalar_batch243_witness",
-                "u4_unpack_scalar_batch243_stack",
-                "u4_unpack_scalar_batch243_opcodes",
-            ),
-            _ => unreachable!(),
-        };
-        comparison_metrics.extend([
+        let scalar_script_bytes = scalar_compiled.len();
+        let scalar_static_opcodes = scalar_compiled
+            .instructions()
+            .map(|instruction| instruction.expect("generated scalar metric script must parse"))
+            .filter(|instruction| {
+                matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60)
+            })
+            .count();
+        let (table_script_key, table_witness_key, table_stack_key, table_opcode_key) =
+            match byte_count {
+                16 => (
+                    "u4_unpack_batch16",
+                    "u4_unpack_batch16_witness",
+                    "u4_unpack_batch16_stack",
+                    "u4_unpack_batch16_opcodes",
+                ),
+                18 => (
+                    "u4_unpack_batch18",
+                    "u4_unpack_batch18_witness",
+                    "u4_unpack_batch18_stack",
+                    "u4_unpack_batch18_opcodes",
+                ),
+                19 => (
+                    "u4_unpack_batch19",
+                    "u4_unpack_batch19_witness",
+                    "u4_unpack_batch19_stack",
+                    "u4_unpack_batch19_opcodes",
+                ),
+                32 => (
+                    "u4_unpack_batch32",
+                    "u4_unpack_batch32_witness",
+                    "u4_unpack_batch32_stack",
+                    "u4_unpack_batch32_opcodes",
+                ),
+                243 => (
+                    "u4_unpack_batch243",
+                    "u4_unpack_batch243_witness",
+                    "u4_unpack_batch243_stack",
+                    "u4_unpack_batch243_opcodes",
+                ),
+                _ => unreachable!(),
+            };
+        let (scalar_script_key, scalar_witness_key, scalar_stack_key, scalar_opcode_key) =
+            match byte_count {
+                16 => (
+                    "u4_unpack_scalar_batch16",
+                    "u4_unpack_scalar_batch16_witness",
+                    "u4_unpack_scalar_batch16_stack",
+                    "u4_unpack_scalar_batch16_opcodes",
+                ),
+                18 => (
+                    "u4_unpack_scalar_batch18",
+                    "u4_unpack_scalar_batch18_witness",
+                    "u4_unpack_scalar_batch18_stack",
+                    "u4_unpack_scalar_batch18_opcodes",
+                ),
+                19 => (
+                    "u4_unpack_scalar_batch19",
+                    "u4_unpack_scalar_batch19_witness",
+                    "u4_unpack_scalar_batch19_stack",
+                    "u4_unpack_scalar_batch19_opcodes",
+                ),
+                32 => (
+                    "u4_unpack_scalar_batch32",
+                    "u4_unpack_scalar_batch32_witness",
+                    "u4_unpack_scalar_batch32_stack",
+                    "u4_unpack_scalar_batch32_opcodes",
+                ),
+                243 => (
+                    "u4_unpack_scalar_batch243",
+                    "u4_unpack_scalar_batch243_witness",
+                    "u4_unpack_scalar_batch243_stack",
+                    "u4_unpack_scalar_batch243_opcodes",
+                ),
+                _ => unreachable!(),
+            };
+        metrics.extend([
             Metric {
                 readme: "src/arithmetic/u4/README.md",
-                key: script_key,
-                value: script_len(scalar_fragment.clone()),
+                key: table_script_key,
+                value: table_script_bytes,
             },
             Metric {
                 readme: "src/arithmetic/u4/README.md",
-                key: witness_key,
+                key: table_witness_key,
+                value: witness_size(&table_witness),
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: table_stack_key,
+                value: table_stack,
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: table_opcode_key,
+                value: table_static_opcodes,
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: scalar_script_key,
+                value: scalar_script_bytes,
+            },
+            Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: scalar_witness_key,
                 value: witness_size(&scalar_witness),
             },
             Metric {
                 readme: "src/arithmetic/u4/README.md",
-                key: stack_key,
+                key: scalar_stack_key,
                 value: scalar_stack,
             },
             Metric {
                 readme: "src/arithmetic/u4/README.md",
-                key: opcode_key,
-                value: static_non_push_opcodes(scalar_fragment),
+                key: scalar_opcode_key,
+                value: scalar_static_opcodes,
             },
         ]);
+        assert_eq!(table_witness.len(), byte_count as usize);
+        assert_eq!(scalar_witness.len(), byte_count as usize);
+        if byte_count == 16 {
+            assert_eq!(witness_size(&table_witness), 49);
+        }
     }
-    assert_eq!(witness_size(&witness), 49);
-    assert_eq!(witness.len(), BYTE_COUNT as usize);
-
-    let mut metrics = vec![
-        Metric {
-            readme: "src/arithmetic/u4/README.md",
-            key: "u4_unpack_batch16",
-            value: script_len(fragment.clone()),
-        },
-        Metric {
-            readme: "src/arithmetic/u4/README.md",
-            key: "u4_unpack_batch16_witness",
-            value: witness_size(&witness),
-        },
-        Metric {
-            readme: "src/arithmetic/u4/README.md",
-            key: "u4_unpack_batch16_stack",
-            value: stack,
-        },
-        Metric {
-            readme: "src/arithmetic/u4/README.md",
-            key: "u4_unpack_batch16_opcodes",
-            value: static_non_push_opcodes(fragment),
-        },
-    ];
-    metrics.extend(comparison_metrics);
     check_readme_metrics(metrics);
 }
 

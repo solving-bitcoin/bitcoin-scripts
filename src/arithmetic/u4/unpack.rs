@@ -101,14 +101,21 @@ mod tests {
     #[test]
     fn rejects_non_bytes_at_each_position() {
         for position in 0..3 {
-            let mut input = vec![1; 3];
-            input[position] = if position % 2 == 0 { -1 } else { 256 };
-            let result = execute_script(script! {
-                for byte in input { { byte } }
-                { u4_bytes_to_nibbles(3) }
-                OP_2DROP OP_2DROP OP_2DROP OP_TRUE
-            });
-            assert!(!result.success, "accepted invalid byte at {position}");
+            for (invalid, encoding) in [(-1, vec![0x81]), (256, vec![0x00, 0x01])] {
+                let mut witness = vec![vec![1]; 3];
+                witness[position] = encoding;
+                let result = execute_script_with_inputs_strict(
+                    script! {
+                        { u4_bytes_to_nibbles(3) }
+                        OP_2DROP OP_2DROP OP_2DROP OP_TRUE
+                    },
+                    witness,
+                );
+                assert!(
+                    !result.success,
+                    "accepted out-of-range byte {invalid} at position {position}: {result}"
+                );
+            }
         }
 
         for position in 0..3 {
@@ -123,6 +130,27 @@ mod tests {
             );
             assert!(!result.success, "accepted oversized byte at {position}");
         }
+    }
+
+    #[test]
+    fn witness_bytes_decode_and_preserve_surrounding_state() {
+        let result = execute_script_with_inputs_strict(
+            script! {
+                OP_9 OP_TOALTSTACK
+                { u4_bytes_to_nibbles(3) }
+                15 OP_EQUALVERIFY 15 OP_EQUALVERIFY
+                0 OP_EQUALVERIFY 1 OP_EQUALVERIFY
+                0 OP_EQUALVERIFY 0 OP_EQUALVERIFY
+                7 OP_EQUALVERIFY
+                OP_FROMALTSTACK 9 OP_EQUALVERIFY
+                OP_TRUE
+            },
+            vec![vec![7], vec![], vec![0x10], vec![0xff, 0x00]],
+        );
+        assert!(
+            result.success,
+            "valid byte inputs or preserved state failed: {result}"
+        );
     }
 
     #[test]

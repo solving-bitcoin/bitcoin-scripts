@@ -17,17 +17,20 @@ coexistence with the surrounding state.
 
 The checked u4 byte unpacker is a batch representation bridge: it validates
 each byte, queries a shared 512-item high/low table, stages the 2*n nibble
-outputs, and restores them in input order. At the only batch size measured
-for the table path, 16 bytes, it costs 1,168 locking bytes and a 546-item
-combined peak; a fair repeated checked scalar splitter at the same 16 bytes
-costs 1,066 bytes and 34 items. The scalar splitter is both smaller and
-shallower at this size: the table is 102 bytes larger and holds 512 more
-combined stack items. The table's 512-item setup is a one-time cost that does
-not grow with the batch, while the scalar splitter's cost is per-byte, so the
-two curves must cross somewhere before the table's 243-byte standalone
-ceiling; that crossover batch size is not directly measured in this
-repository, so no claim is made about which representation is smaller at
-larger batches.
+outputs, and restores them in input order. Matched table and repeated checked
+scalar fixtures measure 16, 18, 19, 32, and 243 bytes. The scalar path is 18
+bytes smaller at 18 inputs, while the table path is 24 bytes smaller at 19,
+locating the measured byte crossover between those widths. The scalar path is
+shallower at every measured width; the table uses 1,000 combined items at its
+243-byte standalone ceiling, leaving no room for unrelated state. Both paths
+include validation and output restoration in their script-byte and static
+opcode counts; those counts exclude the same output drop, terminal truth, and
+transaction context. Strict stack peaks execute both fragments with the
+identical output-drop and truth harness. Each uses one witness data item per
+input and zero explicit hints. Witness serialization and static non-push
+opcode counts are reported separately; dynamic opcode counts are unavailable.
+Strict local tapscript execution is `locally-reproduced`, while deployment
+remains `unclassified` because this is not Bitcoin Core validation.
 
 The u4 bit-plane adapter is a checked transpose boundary: it reuses the
 four-bit decomposition, groups one bit position across all input nibbles, and

@@ -41,7 +41,13 @@ the current byte-oriented and decode/re-encode configurations below.
 | Checked u4 total popcount, 32 inputs | `u4_popcount(32)` | <!-- metric:u4_popcount_total_batch32 -->471<!-- /metric:u4_popcount_total_batch32 --> | <!-- metric:u4_popcount_total_batch32_stack -->50<!-- /metric:u4_popcount_total_batch32_stack -->-item peak; 65-byte witness; one output; no hints |
 | Checked u8 byte to nibble pair | `u8_to_u4_pair(true)` | 62 | 4-item peak; 4-byte witness; two nibble outputs |
 | Checked 16-byte table unpack to nibbles | `u4_bytes_to_nibbles(16)` | 1,168 | 546-item peak; 49-byte witness; 544 static non-push opcodes |
+| Checked 18-byte table unpack to nibbles | `u4_bytes_to_nibbles(18)` | 1,218 | 550-item peak; 55-byte witness; 580 static non-push opcodes |
+| Checked 19-byte table unpack to nibbles | `u4_bytes_to_nibbles(19)` | 1,243 | 552-item peak; 58-byte witness; 598 static non-push opcodes |
+| Checked 32-byte table unpack to nibbles | `u4_bytes_to_nibbles(32)` | 1,568 | 578-item peak; 97-byte witness; 832 static non-push opcodes |
+| Checked 243-byte table unpack to nibbles | `u4_bytes_to_nibbles(243)` | 6,843 | 1,000-item peak; 730-byte witness; 4,630 static non-push opcodes |
 | Fair scalar 16-byte unpack baseline | 16 checked `u8_to_u4_pair(true)` calls with staging | 1,066 | 34-item peak; 49-byte witness; 682 static non-push opcodes |
+| Fair scalar 18-byte unpack baseline | 18 checked `u8_to_u4_pair(true)` calls with staging | 1,200 | 38-item peak; 55-byte witness; 768 static non-push opcodes |
+| Fair scalar 19-byte unpack baseline | 19 checked `u8_to_u4_pair(true)` calls with staging | 1,267 | 40-item peak; 58-byte witness; 811 static non-push opcodes |
 | Fair scalar 32-byte unpack baseline | 32 checked `u8_to_u4_pair(true)` calls with staging | 2,138 | 66-item peak; 97-byte witness; 1,370 static non-push opcodes |
 | Fair scalar 243-byte unpack baseline | 243 checked `u8_to_u4_pair(true)` calls with staging | 16,275 | 488-item peak; 730-byte witness; 10,443 static non-push opcodes |
 | Checked u8 high-bit extraction | `u8_extract_hbit_checked(4)` | 73 | 5-item peak; 4-byte witness; rejects non-byte ScriptNums |

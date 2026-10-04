@@ -1757,3 +1757,25 @@ integer objective and is not retained as a byte-efficiency improvement. The
 result does not rule out a ternary path when protocol state is naturally
 three-valued or when a different consumer amortizes its dispatcher; see
 [OP-030](../open-problems.md#op-030--ternary-commitment-composition-frontier).
+
+## NR-074: The u4 byte-unpack table loses bytes and stack at small batches
+
+Matched checked table and scalar fixtures include the same byte validation and
+output staging/restoration, with output-drop and terminal-truth harness
+excluded from script bytes and static opcode counts. Both use `n` witness data
+items encoding 255 as `[0xff, 0x00]`, and zero hints. Strict stack runs compile
+both fragments with the same output-drop and truth harness. At 16 inputs the
+scalar path is smaller and shallower
+(1,066 bytes / 34 items versus 1,168 / 546), although the table has fewer
+static non-push opcodes (544 versus 682). At 18 the scalar remains smaller and
+shallower (1,200 / 38 versus 1,218 / 550). The table becomes 24 bytes smaller
+at 19 inputs (1,243 versus 1,267), but still uses 552 versus 40 items. At its
+243-input ceiling it reaches exactly 1,000 combined main/alt-stack items, so
+its 6,843-byte script has no room for unrelated state despite being smaller
+than the 16,275-byte, 488-item scalar path there. All script-byte figures are
+from policy-produced scripts; opcode figures are static non-push counts, not
+dynamic counts. Strict
+local tapscript execution is `locally-reproduced`; deployment remains
+`unclassified`, with no Bitcoin Core validation claim. The reproduced rows
+are in the [u4 implementation README](../../src/arithmetic/u4/README.md) and
+`primitive_metrics::u4_unpack_metrics_are_current`.
