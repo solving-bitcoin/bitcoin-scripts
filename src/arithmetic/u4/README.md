@@ -91,7 +91,11 @@ these operations, but this module contains no hash-specific round logic.
 - `leading_zeros::u4_nibbles_to_leading_zeros(nibble_count)` maps checked
   nibbles to their four-bit leading-zero count in `0..=4`.
 - `mod3::u4_nibbles_to_mod3(nibble_count)` maps checked nibbles to residues in
-  `0..=2` using a 16-item lookup table.
+  `0..=2` using a 16-item lookup table. The wider
+  [`arithmetic::factoradic`](../factoradic/) module decodes checked Lehmer
+  digit vectors (a `u4` digit with a per-position bound) into one factorial
+  value; it is a separate module because its value domain is a factorial, not
+  a per-nibble residue.
 - `trichotomy::u4_nibbles_to_trichotomy(threshold, nibble_count)` takes a
   public u4 threshold and a checked batch size in `1..=998`, returning `0`,
   `1`, or `2` for less-than, equal, or greater-than. Callers preserving live

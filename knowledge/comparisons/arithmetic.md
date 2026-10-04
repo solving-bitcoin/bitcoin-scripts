@@ -56,6 +56,8 @@ the current byte-oriented and decode/re-encode configurations below.
 | 32 checked nibbles to modulo-three residues | `u4_nibbles_to_mod3(32)` | 440 | 50-item peak; one residue per input |
 | 32 checked nibbles to parity bits | `u4_nibbles_to_parity(32)` | 440 | 50-item peak; one output bit per input; numeric range only; accepts non-minimal aliases without MINIMALDATA |
 | 32 canonical checked nibbles to parity bits | `u4_nibbles_to_parity_canonical(32)` | 504 | 51-item peak; 65-byte witness; rejects raw aliases; standalone maximum 981 inputs |
+| 12 checked Lehmer digits to one permutation rank | `u4_lehmer_to_value(12)` | 185 | 22-item peak; 24-byte witness; 12 data items; one value output; numeric range only; accepts non-minimal aliases without MINIMALDATA |
+| 12 canonical checked Lehmer digits to one permutation rank | `u4_lehmer_to_value_canonical(12)` | 305 | 22-item peak; 24-byte witness; rejects raw aliases; width bounded at 12 by the 4-byte numeric-operand domain |
 | Fixed-symbol u4 occurrence count | `u4_nibbles_count(0, 16)` | <!-- metric:u4_symbol_count_16 -->266<!-- /metric:u4_symbol_count_16 --> | <!-- metric:u4_symbol_count_16_stack -->19<!-- /metric:u4_symbol_count_16_stack -->-item peak; one count output; target embedded; numeric equality |
 | 16 checked nibbles to presence bits | `u4_nibbles_to_presence_bits(16)` | <!-- metric:u4_presence_bits_16 -->1526<!-- /metric:u4_presence_bits_16 --> | <!-- metric:u4_presence_bits_16_stack -->34<!-- /metric:u4_presence_bits_16_stack -->-item peak; 16 Boolean outputs; no bitwise opcode |
 | 32 checked nibbles transition count | `u4_nibbles_transition_count(32)` | 588 | 35-item peak; 391 static non-push opcodes; one compact count; no table |

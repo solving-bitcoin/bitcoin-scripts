@@ -1,6 +1,7 @@
 //! Modulus-agnostic integer, residue, and finite-field arithmetic backends.
 
 pub mod bigint;
+pub mod factoradic;
 pub mod rns;
 pub mod scriptint;
 pub mod signed_window;

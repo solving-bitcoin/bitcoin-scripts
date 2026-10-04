@@ -1191,6 +1191,100 @@
       ]
     },
     {
+      "id": "arithmetic/factoradic-u4",
+      "name": "Checked factoradic (Lehmer code) decoding",
+      "class": "arithmetic/word",
+      "summary": "Range-checked decoding of a width-n factoradic (Lehmer) digit vector with descending domains 0 <= c_i < n-i into the single value v = sum c_i (n-1-i)! in 0..n!, the lexicographic rank of a permutation of n objects; u4 digits, one ScriptNum accumulator, and unrolled repeated-addition constants because the OP_MUL family fails scripts that execute it.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-04",
+      "knowledge_page": "knowledge/primitives/factoradic-u4.md",
+      "implementation": "src/arithmetic/factoradic/mod.rs",
+      "documentation": "src/arithmetic/factoradic/README.md",
+      "tests": [
+        "src/arithmetic/factoradic/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "canonical-encoding",
+        "permutation"
+      ],
+      "security": "Every witness digit is hostile raw ScriptNum: each digit is proven 0 <= c_i < n-i with OP_WITHIN before use and a terminal OP_WITHIN re-proves 0 <= v < n!. u4_lehmer_to_value proves only numeric range and, under consensus numeric semantics without MINIMALDATA, accepts non-minimal ScriptNum aliases of in-range values; u4_lehmer_to_value_canonical additionally rejects non-minimal aliases and negative zero. Neither supplies a terminal predicate.",
+      "stack_contract": "Consumes preserved | c_{n-1} | ... | c_1 | c_0 with c_0 on top and returns preserved | v with 0 <= v < n!. Width 12 peaks at 22 combined items (12 entry items plus the repeated-addition window); no altstack or hints. Width is generator-bounded at 12: 13! - 1 exceeds the 4-byte consensus numeric-operand domain that the accumulator and terminal check must fit.",
+      "configurations": [
+        {
+          "id": "range-checked-width12",
+          "label": "u4_lehmer_to_value(12)",
+          "parameters": {
+            "width": 12,
+            "max_width": 12,
+            "input_check": "numeric range only; non-minimal aliases accepted without MINIMALDATA",
+            "data_items": 12,
+            "hint_items": 0,
+            "max_value": 479001599
+          },
+          "includes": "fragment-only: 12 per-position OP_WITHIN checks, unrolled repeated-addition Horner ladder, and terminal 0 <= v < 12! self-check; excludes witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 185,
+          "witness_bytes": 24,
+          "witness_bytes_max": 24,
+          "max_stack_items": 22,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "static_non_push_opcodes": 157,
+          "metric_keys": [
+            "factoradic_u4_width12",
+            "factoradic_u4_width12_witness",
+            "factoradic_u4_width12_stack",
+            "factoradic_u4_width12_opcodes"
+          ]
+        },
+        {
+          "id": "canonical-width12",
+          "label": "u4_lehmer_to_value_canonical(12)",
+          "parameters": {
+            "width": 12,
+            "max_width": 12,
+            "input_check": "canonical ScriptNum encoding and numeric range",
+            "data_items": 12,
+            "hint_items": 0,
+            "max_value": 479001599
+          },
+          "includes": "fragment-only: 12 canonical-nibble checks, 12 per-position OP_WITHIN checks, unrolled repeated-addition Horner ladder, and terminal self-check; excludes witness serialization, terminal predicate, unrelated live state, and transaction context",
+          "script_bytes": 305,
+          "witness_bytes": 24,
+          "witness_bytes_max": 24,
+          "max_stack_items": 22,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "static_non_push_opcodes": null,
+          "metric_keys": [
+            "factoradic_u4_canonical_width12"
+          ]
+        }
+      ],
+      "limitations": [
+        "Widths 13 and above need a numeric domain beyond 4 bytes (13! - 1 > 2^31 - 1)",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003"
+      ]
+    },
+    {
       "id": "arithmetic/u4-count",
       "name": "Checked fixed-symbol u4 occurrence count",
       "class": "arithmetic/word",

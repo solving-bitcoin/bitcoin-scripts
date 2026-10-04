@@ -14,7 +14,7 @@ use bitcoin::hashes::{
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
-    arithmetic::{bigint::U254, rns, scriptint, signed_window, u31, u32, u4},
+    arithmetic::{bigint::U254, factoradic, rns, scriptint, signed_window, u31, u32, u4},
     ciphers::{aes, prince},
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
@@ -7107,6 +7107,62 @@ fn u4_parity_canonical_metrics_are_current() {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_parity_canonical_batch32_opcodes",
             value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+/// Representative maximum-width factoradic configuration.
+#[test]
+fn factoradic_u4_metrics_are_current() {
+    const WIDTH: u32 = 12;
+    let fragment = factoradic::u4_lehmer_to_value(WIDTH);
+    let canonical = factoradic::u4_lehmer_to_value_canonical(WIDTH);
+    let digits: Vec<u32> = (0..WIDTH).rev().collect();
+    let witness: Vec<Vec<u8>> = digits
+        .iter()
+        .rev()
+        .map(|d| if *d == 0 { vec![] } else { vec![*d as u8] })
+        .collect();
+    let peak = max_stack_items_strict(
+        script! {
+            { fragment.clone() }
+            OP_DROP
+            OP_TRUE
+        },
+        witness.clone(),
+    );
+
+    assert_eq!(witness.len(), WIDTH as usize);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_width12",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_width12_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_width12_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_width12_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_width12_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/factoradic/README.md",
+            key: "factoradic_u4_canonical_width12",
+            value: script_len(canonical),
         },
     ]);
 }
