@@ -10152,6 +10152,112 @@ fn u4_power_of_two_metrics_are_current() {
     ]);
 }
 
+fn u4_run_pairs(runs: &[(i64, i64)]) -> Vec<Vec<u8>> {
+    runs.iter()
+        .flat_map(|(symbol, length)| [scriptnum(*symbol), scriptnum(*length)])
+        .collect()
+}
+
+/// This isolated fixture measures checked canonical u4 run-length expansion.
+#[test]
+fn u4_run_length_metrics_are_current() {
+    let repetitive = u4::run_length::u4_expand_canonical_runs(16, 2);
+    let repetitive_witness = u4_run_pairs(&[(0, 8), (15, 8)]);
+    let repetitive_peak = max_stack_items_strict(
+        script! {
+            { repetitive.clone() }
+            for _ in 0..16 {
+                OP_DROP
+            }
+            OP_TRUE
+        },
+        repetitive_witness.clone(),
+    );
+    let short_runs: Vec<(i64, i64)> = (0..8).map(|index| (index % 2, 2)).collect();
+    let short = u4::run_length::u4_expand_canonical_runs(16, 8);
+    let short_witness = u4_run_pairs(&short_runs);
+    let short_peak = max_stack_items_strict(
+        script! {
+            { short.clone() }
+            for _ in 0..16 {
+                OP_DROP
+            }
+            OP_TRUE
+        },
+        short_witness.clone(),
+    );
+    let direct_witness: Vec<Vec<u8>> = [0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 15, 15, 15]
+        .into_iter()
+        .map(scriptnum)
+        .collect();
+    let direct = script! {
+        for index in (0..16u32).rev() {
+            { index }
+            OP_PICK
+            OP_DUP
+            0
+            16
+            OP_WITHIN
+            OP_VERIFY
+            OP_DUP
+            OP_DUP
+            OP_0
+            OP_ADD
+            OP_EQUALVERIFY
+            OP_DROP
+        }
+    };
+    assert_eq!(script_len(direct), 206);
+    assert_eq!(witness_size(&direct_witness), 25);
+    assert_eq!(repetitive_witness.len(), 4);
+    assert_eq!(short_witness.len(), 16);
+    assert_eq!(repetitive_peak, 20);
+    assert_eq!(short_peak, 21);
+
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs2",
+            value: script_len(repetitive.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs2_witness",
+            value: witness_size(&repetitive_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs2_stack",
+            value: repetitive_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs2_opcodes",
+            value: static_non_push_opcodes(repetitive),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs8",
+            value: script_len(short.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs8_witness",
+            value: witness_size(&short_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs8_stack",
+            value: short_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_width16_runs8_opcodes",
+            value: static_non_push_opcodes(short),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u4 modulo-three projection.
 #[test]
 fn u4_mod3_metrics_are_current() {

@@ -32,6 +32,7 @@ pub mod popcount;
 pub mod power_of_two;
 pub mod presence;
 pub mod rotate;
+pub mod run_length;
 pub mod shift;
 pub mod square;
 pub mod stack;
