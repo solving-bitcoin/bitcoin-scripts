@@ -43,6 +43,7 @@ pub mod threshold;
 pub mod trailing_zeros;
 pub mod transition_count;
 pub mod trichotomy;
+pub mod unpack;
 pub mod vector_rotate;
 pub mod xor_reduce;
 pub mod zero;

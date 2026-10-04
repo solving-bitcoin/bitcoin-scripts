@@ -61,6 +61,8 @@ these operations, but this module contains no hash-specific round logic.
 - `lsb::u4_nibbles_to_lsb(nibble_count)` takes a checked batch size in
   `1..=982` and returns one bit per input nibble; the range check does not
   establish canonical ScriptNum encoding.
+- `unpack::u4_bytes_to_nibbles(byte_count)` takes a checked batch size in
+  `1..=243` and returns high/low nibbles for each input byte.
 - `lsb::u4_nibbles_to_lsb_canonical(nibble_count)` is a separate API that
   additionally rejects non-minimal ScriptNum encodings. It takes a canonical
   batch size in `1..=981`; the extra raw-encoding check consumes one additional
@@ -235,6 +237,16 @@ words as data, with no hint items.
 | Checked modulo-three batch, 32 nibbles | <!-- metric:u4_mod3_batch32 -->440<!-- /metric:u4_mod3_batch32 --> bytes | <!-- metric:u4_mod3_batch32_stack -->50<!-- /metric:u4_mod3_batch32_stack --> items | <!-- metric:u4_mod3_batch32_opcodes -->328<!-- /metric:u4_mod3_batch32_opcodes --> |
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
+| Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
+| Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
+| Checked byte-to-nibble unpack, 19 bytes | <!-- metric:u4_unpack_batch19 -->1243<!-- /metric:u4_unpack_batch19 --> bytes | <!-- metric:u4_unpack_batch19_stack -->552<!-- /metric:u4_unpack_batch19_stack --> items | <!-- metric:u4_unpack_batch19_opcodes -->598<!-- /metric:u4_unpack_batch19_opcodes --> |
+| Checked byte-to-nibble unpack, 32 bytes | <!-- metric:u4_unpack_batch32 -->1568<!-- /metric:u4_unpack_batch32 --> bytes | <!-- metric:u4_unpack_batch32_stack -->578<!-- /metric:u4_unpack_batch32_stack --> items | <!-- metric:u4_unpack_batch32_opcodes -->832<!-- /metric:u4_unpack_batch32_opcodes --> |
+| Checked byte-to-nibble unpack, 243 bytes | <!-- metric:u4_unpack_batch243 -->6843<!-- /metric:u4_unpack_batch243 --> bytes | <!-- metric:u4_unpack_batch243_stack -->1000<!-- /metric:u4_unpack_batch243_stack --> items | <!-- metric:u4_unpack_batch243_opcodes -->4630<!-- /metric:u4_unpack_batch243_opcodes --> |
+| Scalar checked splitter baseline, 16 bytes | <!-- metric:u4_unpack_scalar_batch16 -->1066<!-- /metric:u4_unpack_scalar_batch16 --> bytes | <!-- metric:u4_unpack_scalar_batch16_stack -->34<!-- /metric:u4_unpack_scalar_batch16_stack --> items | <!-- metric:u4_unpack_scalar_batch16_opcodes -->682<!-- /metric:u4_unpack_scalar_batch16_opcodes --> |
+| Scalar checked splitter baseline, 18 bytes | <!-- metric:u4_unpack_scalar_batch18 -->1200<!-- /metric:u4_unpack_scalar_batch18 --> bytes | <!-- metric:u4_unpack_scalar_batch18_stack -->38<!-- /metric:u4_unpack_scalar_batch18_stack --> items | <!-- metric:u4_unpack_scalar_batch18_opcodes -->768<!-- /metric:u4_unpack_scalar_batch18_opcodes --> |
+| Scalar checked splitter baseline, 19 bytes | <!-- metric:u4_unpack_scalar_batch19 -->1267<!-- /metric:u4_unpack_scalar_batch19 --> bytes | <!-- metric:u4_unpack_scalar_batch19_stack -->40<!-- /metric:u4_unpack_scalar_batch19_stack --> items | <!-- metric:u4_unpack_scalar_batch19_opcodes -->811<!-- /metric:u4_unpack_scalar_batch19_opcodes --> |
+| Scalar checked splitter baseline, 32 bytes | <!-- metric:u4_unpack_scalar_batch32 -->2138<!-- /metric:u4_unpack_scalar_batch32 --> bytes | <!-- metric:u4_unpack_scalar_batch32_stack -->66<!-- /metric:u4_unpack_scalar_batch32_stack --> items | <!-- metric:u4_unpack_scalar_batch32_opcodes -->1370<!-- /metric:u4_unpack_scalar_batch32_opcodes --> |
+| Scalar checked splitter baseline, 243 bytes | <!-- metric:u4_unpack_scalar_batch243 -->16275<!-- /metric:u4_unpack_scalar_batch243 --> bytes | <!-- metric:u4_unpack_scalar_batch243_stack -->488<!-- /metric:u4_unpack_scalar_batch243_stack --> items | <!-- metric:u4_unpack_scalar_batch243_opcodes -->10443<!-- /metric:u4_unpack_scalar_batch243_opcodes --> |
 | Canonical checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_canonical_batch32 -->504<!-- /metric:u4_lsb_canonical_batch32 --> bytes | <!-- metric:u4_lsb_canonical_batch32_stack -->51<!-- /metric:u4_lsb_canonical_batch32_stack --> items | <!-- metric:u4_lsb_canonical_batch32_opcodes -->360<!-- /metric:u4_lsb_canonical_batch32_opcodes --> |
 | Checked zero-mask batch, 32 nibbles | <!-- metric:u4_zero_mask_batch32 -->414<!-- /metric:u4_zero_mask_batch32 --> bytes | <!-- metric:u4_zero_mask_batch32_stack -->35<!-- /metric:u4_zero_mask_batch32_stack --> items | <!-- metric:u4_zero_mask_batch32_opcodes -->318<!-- /metric:u4_zero_mask_batch32_opcodes --> |
 | Checked popcount batch, 32 nibbles | <!-- metric:u4_popcount_batch32 -->440<!-- /metric:u4_popcount_batch32 --> bytes | <!-- metric:u4_popcount_batch32_stack -->50<!-- /metric:u4_popcount_batch32_stack --> items | <!-- metric:u4_popcount_batch32_opcodes -->328<!-- /metric:u4_popcount_batch32_opcodes --> |
@@ -325,6 +337,16 @@ leaf is 264 bytes, has script SHA256
 16 data items, zero hints, and 18 total witness items. Its complete Taproot
 witness is 333 bytes; its strict local tapscript stack peak is 34 items.
 
+<!-- metric:u4_unpack_batch16_witness -->49<!-- /metric:u4_unpack_batch16_witness --> serialized witness bytes for the representative 16-byte unpack batch.
+<!-- metric:u4_unpack_batch18_witness -->55<!-- /metric:u4_unpack_batch18_witness --> serialized witness bytes for the representative 18-byte unpack batch.
+<!-- metric:u4_unpack_batch19_witness -->58<!-- /metric:u4_unpack_batch19_witness --> serialized witness bytes for the representative 19-byte unpack batch.
+<!-- metric:u4_unpack_batch32_witness -->97<!-- /metric:u4_unpack_batch32_witness --> serialized witness bytes for the representative 32-byte unpack batch.
+<!-- metric:u4_unpack_batch243_witness -->730<!-- /metric:u4_unpack_batch243_witness --> serialized witness bytes for the representative 243-byte unpack batch.
+<!-- metric:u4_unpack_scalar_batch16_witness -->49<!-- /metric:u4_unpack_scalar_batch16_witness --> serialized witness bytes for the 16-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch18_witness -->55<!-- /metric:u4_unpack_scalar_batch18_witness --> serialized witness bytes for the 18-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch19_witness -->58<!-- /metric:u4_unpack_scalar_batch19_witness --> serialized witness bytes for the 19-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch32_witness -->97<!-- /metric:u4_unpack_scalar_batch32_witness --> serialized witness bytes for the 32-byte scalar baseline.
+<!-- metric:u4_unpack_scalar_batch243_witness -->730<!-- /metric:u4_unpack_scalar_batch243_witness --> serialized witness bytes for the 243-byte scalar baseline.
 <!-- metric:u4_lsb_canonical_batch32_witness -->65<!-- /metric:u4_lsb_canonical_batch32_witness --> serialized witness bytes for the representative canonical LSB batch.
 
 <!-- metric:u4_zero_mask_batch32_witness -->65<!-- /metric:u4_zero_mask_batch32_witness --> serialized witness bytes for the representative zero-mask batch.
@@ -406,6 +428,27 @@ by `OP_NUMEQUAL`, so it needs no resident table. A checked 32-nibble batch is
 That is 26 bytes and 15 items below the existing 16-item table-shaped
 parity/LSB projections at the same witness boundary. The output is a numeric
 zero predicate per nibble, not a terminal aggregate.
+
+The checked byte unpacker keeps a 512-item high/low table resident. Its
+standalone peak is `512 + 2*n + 2 + preserved_main + preserved_alt`, so the
+generator ceiling is 243 bytes before unrelated state. The policy-compiled
+comparison fixture measures table and repeated checked
+`u8_to_u4_pair(true)` paths at 16, 18, 19, 32, and 243 bytes. Script-byte and
+static-opcode counts include input validation and output staging/restoration,
+and exclude the same output drop, terminal truth, unrelated state, and
+transaction context. Strict stack peaks execute both fragments with the same
+output-drop and truth harness. Each uses `n` witness data items, zero explicit
+hint items, and includes serialized witness bytes separately. The table wins
+script bytes by 24 bytes at 19 inputs, after losing by 18 bytes at 18; the
+measured byte crossover is therefore between 18 and 19 inputs. The scalar
+path remains shallower at all measured sizes. At 243 inputs the table reaches
+the strict 1,000-item bound;
+that maximum cannot compose with any unrelated live stack state. Opcode
+figures are static non-push counts, not executed counts. These are strict
+local tapscript measurements with deployment class unclassified, not Bitcoin
+Core validation. The table cost breakdown is 512 setup bytes, 256 cleanup
+bytes, and 25 bytes per input (`768 + 25*n`); the scalar batch is nominally
+67 bytes per call with a -6-byte cross-component optimizer delta.
 
 The XOR reduction keeps a 256-item full table while folding a checked batch to
 one nibble. Its representative 16-nibble boundary is measured at 740 bytes,

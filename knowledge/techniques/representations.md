@@ -15,13 +15,22 @@ Conversion is a protocol cost, not bookkeeping. A comparison that changes
 representations must account for conversion fragments, witness layout, and
 coexistence with the surrounding state.
 
-The checked u32 byte-plane adapter is a fixed-width stack-scheduling boundary:
-it transposes word-major MSB-first bytes into byte-major planes, preserves
-unrelated state, and costs 411 bytes for eight words with a 35-item combined
-peak and zero incremental hints. The generated permutation contains 4*n
-`OP_ROLL` operations, but cumulative stack-shifting work is quadratic in batch
-width, so consumers should price the actual batch rather than the 249-word
-static ceiling.
+The checked u4 byte unpacker is a batch representation bridge: it validates
+each byte, queries a shared 512-item high/low table, stages the 2*n nibble
+outputs, and restores them in input order. Matched table and repeated checked
+scalar fixtures measure 16, 18, 19, 32, and 243 bytes. The scalar path is 18
+bytes smaller at 18 inputs, while the table path is 24 bytes smaller at 19,
+locating the measured byte crossover between those widths. The scalar path is
+shallower at every measured width; the table uses 1,000 combined items at its
+243-byte standalone ceiling, leaving no room for unrelated state. Both paths
+include validation and output restoration in their script-byte and static
+opcode counts; those counts exclude the same output drop, terminal truth, and
+transaction context. Strict stack peaks execute both fragments with the
+identical output-drop and truth harness. Each uses one witness data item per
+input and zero explicit hints. Witness serialization and static non-push
+opcode counts are reported separately; dynamic opcode counts are unavailable.
+Strict local tapscript execution is `locally-reproduced`, while deployment
+remains `unclassified` because this is not Bitcoin Core validation.
 
 The u4 bit-plane adapter is a checked transpose boundary: it reuses the
 four-bit decomposition, groups one bit position across all input nibbles, and
@@ -34,6 +43,14 @@ composition width.
 The u4 bit-reversal adapter is a checked per-nibble representation change. It
 preserves lane order, uses a 16-item table, and costs 344 bytes for 32 input
 nibbles with a 51-item combined peak and zero incremental hints.
+
+The checked u32 byte-plane adapter is a fixed-width stack-scheduling boundary:
+it transposes word-major MSB-first bytes into byte-major planes, preserves
+unrelated state, and costs 411 bytes for eight words with a 35-item combined
+peak and zero incremental hints. The generated permutation contains 4*n
+`OP_ROLL` operations, but cumulative stack-shifting work is quadratic in batch
+width, so consumers should price the actual batch rather than the 249-word
+static ceiling.
 
 The checked u32 byte-equality mask is a two-word routing boundary: it keeps
 four per-lane equality predicates as one nibble instead of folding them into
