@@ -725,7 +725,7 @@ Bitcoin Core validation.
 
 ## Witness and hints
 
-No cryptographic hints are required. A run-length witness is payload, not a
+Most operations require no hints. Exact sorting requires n-1 public selection hints; its section below documents item counts, ordering and coexistence. A run-length witness is payload, not a
 hint: `u4_expand_canonical_runs(width, run_count)` consumes exactly
 `2 * run_count` items, all present at script entry. The width-16 two-run
 fixture has four payload items and zero hints. Operand nibbles may come from the witness;
@@ -1200,3 +1200,87 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Exact sorting with destructive-selection hints
+
+`sort::u4_sort_with_hints(n)` sorts a hostile canonical nibble vector using
+`n-1` bounded selection hints. `n` is a required generation-time parameter in
+`1..=499`, with no default. It consumes the entire original multiset; it does
+not trust a separately supplied sorted vector. Equal values retain their
+multiplicity. This is a sorting fragment, not an authorization or commitment.
+
+| Inputs | Script bytes | Serialized data witness | Hint items | Combined stack peak | Executed non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 8 | <!-- metric:u4_sort8 -->217<!-- /metric:u4_sort8 --> | <!-- metric:u4_sort8_witness -->30<!-- /metric:u4_sort8_witness --> | 7 | <!-- metric:u4_sort8_stack -->18<!-- /metric:u4_sort8_stack --> | <!-- metric:u4_sort8_opcodes -->166<!-- /metric:u4_sort8_opcodes --> |
+| 32 | <!-- metric:u4_sort32 -->969<!-- /metric:u4_sort32 --> | <!-- metric:u4_sort32_witness -->122<!-- /metric:u4_sort32_witness --> | 31 | <!-- metric:u4_sort32_stack -->66<!-- /metric:u4_sort32_stack --> | <!-- metric:u4_sort32_opcodes -->718<!-- /metric:u4_sort32_opcodes --> |
+| Two preloaded batches of 32; first output consumed | <!-- metric:u4_sort32_twice -->1954<!-- /metric:u4_sort32_twice --> | <!-- metric:u4_sort32_twice_witness -->243<!-- /metric:u4_sort32_twice_witness --> | 62 | <!-- metric:u4_sort32_twice_stack -->129<!-- /metric:u4_sort32_twice_stack --> | <!-- metric:u4_sort32_twice_opcodes -->1452<!-- /metric:u4_sort32_twice_opcodes --> |
+
+Boundary: `fragment-only:` all canonical operand/hint checks, pool bounds,
+destructive selection, monotonicity checks, and output restoration; no input
+pushes, terminal predicates, transaction, or control block. Witness sizes are
+the serialized complete **data vector**, including hints, item count and length
+prefixes; script/control-block witness items are excluded. Deterministic input
+`x[i]=(7*i+3)%16` gives 15/63 total data items for the 8/32-input rows. Hint
+length-prefix-plus-payload contributions are 13/59 bytes (14/60 bytes if
+serialized as their own witness vectors). Accepted witness maxima are 31/127
+bytes. There are no resident lookup tables.
+
+Entry (bottom to top):
+`preserved | hint[n-2] ... hint[0] | x[0] ... x[n-1]`.
+Output: `preserved | sorted[0] ... sorted[n-1]`, largest on top. Each hint
+selects the next maximum by depth in the shrinking operand pool. The final
+operand needs no hint. `u4_sort_hints(&input)` generates deterministic hints,
+choosing the topmost maximum on ties, and returns them in witness order.
+Hints are public derived data, not secrets; other equal-value selection orders
+can be valid, so witness uniqueness is not claimed.
+
+All `n` operands and `n-1` hints coexist at entry. The exact standalone peak is
+4 items at `n=1`, otherwise `2*n+2`. Add every preserved main/alt-stack item.
+The script bounds each selector to `0..remaining`, validates both kinds of
+item by canonical re-encoding, removes the selected operand with `OP_ROLL`,
+and checks descending selection order. The output temporarily resides on the
+altstack; unrelated altstack state is preserved. Two preloaded width-32
+batches have exactly 62 hints and 64 operands (126 entry items), and peak at
+129 combined items when the first output is consumed before the second batch.
+Its full-data witness maximum is 253 bytes. Whole-script optimization saves
+16 bytes across the two fragments and intermediate output cleanup:
+`969 + 32 + 969 - 16 = 1,954` bytes. This repeated boundary includes that
+cleanup; terminal predicates and transaction context remain excluded.
+General preloaded batches require their full operand/hint vectors and retained
+outputs to fit, not merely `batch_count*(n-1) <= 1000`.
+
+Security is exact bounded integer/multiset preservation, with no cryptographic
+security claim. Sorting deliberately loses original order; callers must bind
+the original operands and enforce their own protocol's authorization and
+terminal predicate. Extra witness items are preserved by the fragment and must
+be consumed or rejected by the enclosing clean-stack leaf. Strict local tests
+run in tapscript with stack enforcement; evidence is `locally-reproduced` and
+execution `unclassified`. The raw strict probe enforces stack limits; the
+separate `execute_raw_script_with_inputs` helper disables them and is not used.
+
+Only existing opcodes are used; compatibility still depends on the wrapper:
+
+| Script type | Sorting boundary |
+| --- | --- |
+| Bare script | Width 32 exceeds 201 non-push opcodes; custom locking-script relay policy is unvalidated. |
+| P2SH | Width 32 exceeds both 201 non-push opcodes and the 520-byte redeem-script element bound. |
+| P2WSH | Width 32 exceeds 201 non-push opcodes; smaller complete witnesses still need separate consensus/policy validation. |
+| Tapscript | No 201-opcode cap, but the combined stack bound, complete transaction, clean-stack terminal and relay policy remain to be validated. |
+
+No Core or relay validation is claimed. See [script types](../../../docs/script-types.md) and
+[standardness](../../../docs/standardness.md).
+
+Reproduce with `cargo test --locked arithmetic::u4::sort --lib -- --nocapture`
+and `cargo test --locked --test primitive_metrics u4_sort_metrics_are_current`.
+Coverage includes all 4,096 triples, deterministic larger vectors, duplicate
+selectors, hostile values/encodings at every position, stack coexistence, and
+a mutant that steals preserved state after the pool bound is removed.
+The comparison retains the existing `logic::u4_sort()` as its zero-hint
+two-item kernel. This is a measured tradeoff against that selection network,
+not a best-known sorting claim; small vectors lose combined bytes.
+Linear script growth is not a linear-CPU claim: dynamic `OP_ROLL` may perform
+quadratic total stack movement. Runtime speed has not been benchmarked.
+See the [knowledge entry](../../../knowledge/primitives/u4-sort.md),
+[arithmetic comparison](../../../knowledge/comparisons/arithmetic.md),
+[NR-087](../../../knowledge/negative-results/index.md#nr-087-hinted-u4-sorting-loses-at-small-widths),
+and [OP-043](../../../knowledge/open-problems.md#op-043-exact-sorting-certificate-frontier).

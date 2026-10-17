@@ -159,6 +159,36 @@ the current byte-oriented and decode/re-encode configurations below.
 | Hinted secp256k1 modular multiply, standalone-bound | 47-prime limb-bound exact-carry verifier | 51,055 | 868-byte complete data witness; 305-item strict peak; global bindings included; unoptimized above cutoff |
 | Hinted secp256k1 modular multiply, composable | 46-prime reusable-certificate verifier | 31,257 | 471 incremental hint bytes; 267-item peak; two adjacent certified operands required |
 
+### Exact sorting with deletion-index hints
+
+The [hinted u4 sorter](../primitives/u4-sort.md) sorts arbitrary canonical
+nibbles, preserving exact multiset multiplicity. Compared with a zero-hint
+selection network using the existing `logic::u4_sort()` min/max kernel:
+
+| Width | Hinted script / serialized data witness | Zero-hint script / serialized data witness | Hints / total entry items | Hinted / zero-hint combined peak |
+| ---: | ---: | ---: | ---: | ---: |
+| 2 | 37 / 6 | 30 / 5 | 1 / 3 | 6 / 6 |
+| 4 | 97 / 14 | 88 / 9 | 3 / 7 | 10 / 8 |
+| 8 | 217 / 30 | 266 / 17 | 7 / 15 | 18 / 12 |
+| 16 | 457 / 60 | 862 / 32 | 15 / 31 | 34 / 20 |
+| 32 | 969 / 122 | 3,044 / 63 | 31 / 63 | 66 / 36 |
+
+Boundary on both sides: `fragment-only:` canonical input checks through sorted
+outputs, excluding input pushes, output predicates and transaction context.
+Every hint coexists with all operands at entry. At width 32, measured executed
+non-push opcodes are 718 versus 2,859. The hinted sort trades 31 extra entry
+items and 30 peak items for 2,016 fewer script-plus-data-witness bytes. Small
+widths lose; [NR-087](../negative-results/index.md#nr-087-hinted-u4-sorting-loses-at-small-widths)
+records that boundary. This comparison does not measure an optimized bitonic
+network or claim a global sorting optimum. Both rows are `locally-reproduced`
+and `unclassified`, under stack-enforced local tapscript execution.
+
+The existing bounded permutation decoder reconstructs a permutation of a
+trusted alphabet from a rank or Lehmer digits. Its operand domain and output
+condition differ from sorting arbitrary hostile nibbles; the shared mechanism
+is bounded destructive selection. A packed-rank sorting consumer remains an
+explicit witness/stack comparison question, rather than an assumed win.
+
 Selection order: choose semantics and range, then representation compatibility,
 then consensus feasibility, and only then minimize bytes. The prime-log profile
 keeps canonical operands and covers one unsigned 256-by-256-bit product exactly,

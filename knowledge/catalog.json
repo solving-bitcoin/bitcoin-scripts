@@ -21522,6 +21522,160 @@
       "open_problems": [
         "OP-042"
       ]
+    },
+    {
+      "id": "arithmetic/u4-hinted-sort",
+      "name": "Exact u4 sorting with destructive-selection hints",
+      "class": "arithmetic/word",
+      "summary": "Sorts canonical hostile nibble operands by bounded destructive selection, preserving exact multiset multiplicity with n-1 deletion-index hints.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-17",
+      "knowledge_page": "knowledge/primitives/u4-sort.md",
+      "implementation": "src/arithmetic/u4/sort.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4/sort.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "witness-hints",
+        "tracked-stack",
+        "digit-arithmetic"
+      ],
+      "security": "Each canonical selector is bounded to the shrinking operand pool before destructive OP_ROLL. Every selected operand is canonical u4 and selection must be nonincreasing, proving an exact multiset sort. Equal-value selection schedules need not be unique. No operand authentication or cryptographic-security claim.",
+      "stack_contract": "Consumes preserved | hint[n-2] ... hint[0] | x[0] ... x[n-1]; returns preserved | sorted[0] ... sorted[n-1], largest on top. Uses n-1 hints plus n operands, all at entry. Preserves unrelated main/alt-stack state. Standalone combined peak is 4 at n=1, otherwise 2*n+2; add all preserved items.",
+      "configurations": [
+        {
+          "id": "width8",
+          "label": "u4_sort_with_hints(8)",
+          "parameters": {
+            "width": 8,
+            "operand_items": 8,
+            "hint_items": 7,
+            "data_items": 15,
+            "hints_coexist_at_entry": true,
+            "hint_length_prefixed_bytes": 13,
+            "standalone_hint_witness_bytes": 14,
+            "input": "x[i]=(7*i+3)%16; host hint generator chooses topmost maximum",
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true,
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "script_sha256": "1f05ffc691ea23a61aa5baaf19986c08a29951008fe2663a767fa3dc72c78360"
+          },
+          "includes": "fragment-only: all canonical operand/hint checks, pool bounds, descending selection checks, destructive removal, and ascending output restoration; excludes input pushes, terminal predicates, unrelated live state, transaction and control block; witness bytes serialize all operand-plus-hint data items",
+          "script_bytes": 217,
+          "witness_bytes": 30,
+          "witness_bytes_max": 31,
+          "max_stack_items": 18,
+          "executed_opcodes": 166,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 217,
+          "metric_keys": [
+            "u4_sort8",
+            "u4_sort8_witness",
+            "u4_sort8_stack",
+            "u4_sort8_opcodes"
+          ],
+          "static_non_push_opcodes": 166
+        },
+        {
+          "id": "width32",
+          "label": "u4_sort_with_hints(32)",
+          "parameters": {
+            "width": 32,
+            "operand_items": 32,
+            "hint_items": 31,
+            "data_items": 63,
+            "hints_coexist_at_entry": true,
+            "hint_length_prefixed_bytes": 59,
+            "standalone_hint_witness_bytes": 60,
+            "input": "x[i]=(7*i+3)%16; host hint generator chooses topmost maximum",
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true,
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "script_sha256": "5b0b6821a9753690979e4af66dc35e46c911044ed0c5d64de99ed4dd3f7befea"
+          },
+          "includes": "fragment-only: all canonical operand/hint checks, pool bounds, descending selection checks, destructive removal, and ascending output restoration; excludes input pushes, terminal predicates, unrelated live state, transaction and control block; witness bytes serialize all operand-plus-hint data items",
+          "script_bytes": 969,
+          "witness_bytes": 122,
+          "witness_bytes_max": 127,
+          "max_stack_items": 66,
+          "executed_opcodes": 718,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 969,
+          "metric_keys": [
+            "u4_sort32",
+            "u4_sort32_witness",
+            "u4_sort32_stack",
+            "u4_sort32_opcodes"
+          ],
+          "static_non_push_opcodes": 718
+        },
+        {
+          "id": "width32-twice",
+          "label": "Two preloaded width-32 sorts, first output consumed",
+          "parameters": {
+            "width": 32,
+            "operand_items": 64,
+            "hint_items": 62,
+            "data_items": 126,
+            "hints_coexist_at_entry": true,
+            "hint_length_prefixed_bytes": 118,
+            "standalone_hint_witness_bytes": 119,
+            "input": "x[i]=(7*i+3)%16; host hint generator chooses topmost maximum",
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true,
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "repeats": 2,
+            "cross_component_optimizer_delta": -16
+          },
+          "includes": "fragment-only: two canonical width-32 sorts and cleanup of the first 32 outputs, with both full operand-plus-hint vectors present at entry; whole-script optimization accounts for a -16 byte cross-component delta; excludes input pushes, final output predicate, unrelated state, transaction and control block; witness serialization includes all 126 data items",
+          "script_bytes": 1954,
+          "witness_bytes": 243,
+          "witness_bytes_max": 253,
+          "max_stack_items": 129,
+          "executed_opcodes": 1452,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1954,
+          "metric_keys": [
+            "u4_sort32_twice",
+            "u4_sort32_twice_witness",
+            "u4_sort32_twice_stack",
+            "u4_sort32_twice_opcodes"
+          ],
+          "static_non_push_opcodes": 1452
+        }
+      ],
+      "limitations": [
+        "Extra entry items are preserved by the fragment and must be handled by an enclosing clean-stack leaf",
+        "Sort destroys original order and does not bind operands to an authenticated message",
+        "Combined-byte gains are measured against a min/max selection network, not an optimized Batcher or bitonic network",
+        "Widths 2 and 4 lose combined bytes to the zero-hint baseline",
+        "Width 32 exceeds the 201-opcode bare/P2SH/P2WSH limit",
+        "Strict local tapscript execution alone does not establish consensus or relay-policy validity"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-043"
+      ]
     }
   ]
 }

@@ -91,6 +91,18 @@ These measurements are locally-reproduced / unclassified, with zero hints and
 explicit stack-limited local tapscript profiles. Protocol/Core composition is
 [OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
 
+## Destructive sorting pools
+
+The [u4 sorting certificate](../primitives/u4-sort.md) requires a contiguous
+operand pool above its reversed hint vector. One call needs `n` operands and
+`n-1` hints at entry; `2*n+2` combined items is the exact standalone peak for
+`n>=2`. Every unrelated main/alt-stack item adds to that bound. Two preloaded
+32-input calls carry 62 hints and 64 operands and peak at 129 items if the
+first output is consumed before the second call. Keeping those outputs would
+require additional explicit routing and a fresh measurement. The primitive
+preserves surrounding state but does not authenticate operands or preserve
+their original ordering in the sorted result.
+
 ## Binary hash-path checkpoints
 
 The [optional-SHA256 hash path](../primitives/hash-path-integer.md) finishes

@@ -3,6 +3,16 @@
 A hint moves expensive computation to the witness, but it is safe only when the
 script constrains the relation that makes the hinted value unique or harmless.
 
+The [exact u4 sorter](../primitives/u4-sort.md) illustrates harmless nonunique
+hints: each deletion index is bounded to a shrinking pool and consumed with
+`OP_ROLL`. This proves a permutation without a second uniqueness certificate;
+the nonincreasing selection check then proves sorting. Equal values may admit
+multiple valid schedules. Width 32 needs 31 hint items plus 32 operand items,
+all at entry, and a 66-item combined peak. Two preloaded batches have 62 hints,
+64 operands, and a 129-item peak when the first outputs are consumed. The pool
+bound is essential: native `OP_ROLL` only bounds an index against the entire
+main stack, including other hints and preserved protocol state.
+
 For every hinted construction, document:
 
 - hint generation algorithm and serialization order;

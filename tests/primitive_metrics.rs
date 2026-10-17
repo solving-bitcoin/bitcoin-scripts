@@ -10808,6 +10808,91 @@ fn u4_run_pairs(runs: &[(i64, i64)]) -> Vec<Vec<u8>> {
         .collect()
 }
 
+#[test]
+fn u4_sort_metrics_are_current() {
+    use bitcoin_lab::support::execution::execute_raw_script_with_inputs_strict;
+    let mut metrics = Vec::new();
+    for (n, repeats, keys) in [
+        (
+            8,
+            1,
+            [
+                "u4_sort8",
+                "u4_sort8_witness",
+                "u4_sort8_stack",
+                "u4_sort8_opcodes",
+            ],
+        ),
+        (
+            32,
+            1,
+            [
+                "u4_sort32",
+                "u4_sort32_witness",
+                "u4_sort32_stack",
+                "u4_sort32_opcodes",
+            ],
+        ),
+        (
+            32,
+            2,
+            [
+                "u4_sort32_twice",
+                "u4_sort32_twice_witness",
+                "u4_sort32_twice_stack",
+                "u4_sort32_twice_opcodes",
+            ],
+        ),
+    ] {
+        let input: Vec<u8> = (0..n).map(|i| ((i * 7 + 3) % 16) as u8).collect();
+        let hints = u4::sort::u4_sort_hints(&input);
+        assert_eq!(hints.len(), n as usize - 1);
+        let one_witness: Vec<Vec<u8>> = hints
+            .into_iter()
+            .map(|x| scriptnum(x.into()))
+            .chain(input.iter().map(|x| scriptnum((*x).into())))
+            .collect();
+        let witness: Vec<Vec<u8>> = (0..repeats).flat_map(|_| one_witness.clone()).collect();
+        assert_eq!(witness.len(), (repeats * (2 * n - 1)) as usize);
+        let compiled = script! {
+            for batch in 0..repeats {
+                { u4::sort::u4_sort_with_hints(n) }
+                if batch + 1 < repeats {
+                    for _ in 0..n { OP_DROP }
+                }
+            }
+        }
+        .compile_with_policy();
+        let result = execute_raw_script_with_inputs_strict(compiled.to_bytes(), witness.clone());
+        // All instructions were reached: this branch-free fragment's parsed
+        // non-push count is also its actual executed non-push count. It leaves
+        // n outputs and is not a complete-leaf acceptance probe.
+        assert_eq!(result.stats.opcode_count, compiled.instructions().count());
+        assert_eq!(result.final_stack.len(), n as usize);
+        let mut sorted = input;
+        sorted.sort_unstable();
+        for (i, value) in sorted.iter().enumerate() {
+            assert_eq!(result.final_stack.get(i), scriptnum((*value).into()));
+        }
+        let executed_nonpush = compiled.instructions().filter(|instruction| {
+            matches!(instruction, Ok(Instruction::Op(opcode)) if opcode.to_u8() > 0x60)
+        }).count();
+        for (key, value) in keys.into_iter().zip([
+            compiled.len(),
+            witness_size(&witness),
+            result.stats.max_nb_stack_items,
+            executed_nonpush,
+        ]) {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures checked canonical u4 run-length expansion.
 #[test]
 fn u4_run_length_metrics_are_current() {

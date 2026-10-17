@@ -3,6 +3,34 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-087: Hinted u4 sorting loses at small widths
+
+The [exact sorter](../primitives/u4-sort.md) replaces repeated min/max scans
+with `n-1` bounded destructive-selection hints. Against the checked zero-hint
+selection network in `src/arithmetic/u4/sort.rs`, two inputs cost 37 script + 6
+serialized data-witness bytes versus 30 + 5; four cost 97 + 14 versus 88 + 9.
+The hinted form loses combined bytes by 8 and 14, respectively, without
+reducing the stack peak. At eight inputs the measured combined cost reverses
+to 247 versus 283, at the expense of seven hint items and an 18 versus 12-item
+peak. This is a measured crossover against this baseline, not an impossibility
+or optimum claim. Evidence is `locally-reproduced`; execution `unclassified`.
+
+All operands and hints coexist at entry: width 32 carries 31 hints plus 32
+operands, and width 499 carries 498 hints plus 499 operands. Deriving a batch
+capacity from hints alone would overstate composability. The exact combined
+peak is `2*n+2` for `n>=2`; width 499 reaches 1,000. An extra preserved item
+rejects. The caller cannot treat sorted output as an order-sensitive message
+binding: sorting removes order, and valid equal-value hint schedules are not
+unique. The existing nondecreasing predicate only checks existing order and
+does not prove multiset equality with an unrelated sorted witness.
+
+Reproduce with `cargo test --locked arithmetic::u4::sort --lib -- --nocapture`.
+The experiment includes full canonical checks on both sides, all stack
+routing and cleanup, and final policy-produced bytes. Terminal comparisons and
+transaction context are excluded on both sides. No optimized Batcher/bitonic
+network has yet been measured; see OP-043.
+
+
 ## NR-078: Forward stable filtering and redundant flag guards
 
 The [stable-selection experiment](stable-selection.md) reproduces 970/1,070

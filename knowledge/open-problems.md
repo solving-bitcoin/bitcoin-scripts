@@ -3,6 +3,24 @@
 Each problem has a falsifiable completion criterion. Update comparisons and
 negative results when closing one.
 
+## OP-043 — Exact sorting certificate frontier
+
+The [destructive-selection sorter](primitives/u4-sort.md) uses `n-1` hints and
+linear script growth. At 32 canonical nibbles it measures 969 script bytes,
+122 representative data-witness bytes, 31 hints / 63 total entry items,
+718 executed non-push opcodes and a 66-item combined stack peak. Its zero-hint
+selection-network baseline measures 3,044 + 63 bytes and a 36-item peak. These
+are `locally-reproduced`, `unclassified` fragment results, not a sorting optimum.
+
+**Complete when:** compare an exact canonical sort against an optimized
+Batcher/bitonic network and at least one compressed-selector schedule at widths
+8, 16 and 32, including encoding validation, hint/data serialization, all
+entry items, output restoration, actual executed operations, and preserved
+state. Publish a reproducible Pareto frontier for combined bytes and combined
+stack peak, and retain malformed-hint, duplicate-multiplicity and out-of-pool
+selector tests. Any claim of consensus or relay acceptance additionally needs
+a complete validated spend; local stack enforcement alone is insufficient.
+
 **Next priority (2026-09-28): OP-001, remaining Taproot transaction context.**
 The interpreter repairs and explicit context-free consensus/policy profiles
 are adopted. Complete-witness budgeting and annex signature context now have
