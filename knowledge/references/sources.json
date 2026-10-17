@@ -372,6 +372,13 @@
       "kind": "paper",
       "url": "https://arxiv.org/abs/2109.09006v1",
       "revision": "arXiv:2109.09006v1, 2021-09-18; palindromic coefficient-vector definition only"
+    },
+    {
+      "id": "rfc-1950-adler32",
+      "title": "RFC 1950: ZLIB Compressed Data Format Specification version 3.3",
+      "kind": "specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc1950.txt",
+      "revision": "May 1996, version 3.3; sections 2.2, 8.2 and 9; immutable RFC text; Adler recurrence, serialization and delayed reduction inspected 2026-10-02"
     }
   ]
 }

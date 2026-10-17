@@ -580,6 +580,15 @@ bits, and packs them as `8*msb(byte[0]) + 4*msb(byte[1]) +
 only the four routing bits; the bit-expansion baseline is
 <!-- metric:u32_msb_mask_bit_projection_baseline -->514<!-- /metric:u32_msb_mask_bit_projection_baseline --> bytes.
 
+The [Adler-state shared contract suite](../../../tests/adler32_contract.rs)
+audits `u32_to_le_bits_canonical()` and numeric `u32_to_le_bits()` alongside
+three checksum schedules. It preserves the numeric adapter's permitted
+aliases and verifies typed malformed-every-position, short-input, asymmetric
+ordering, both runtime caller stacks and exact combined-stack frontiers.
+Removing compiled validation guards defeats the same rejection assertions.
+These sibling contracts add local evidence without changing either API,
+metric snapshot, catalog classification or deployment claim.
+
 ## Canonical u32 residue modulo 65,537
 
 `residue::u32_mod65537()` consumes one four-byte word, most significant byte

@@ -1,0 +1,1622 @@
+{
+  "boundary": "Canonical input validation, staging, computation and both normalized outputs included. Fragment excludes input pushes and terminal checks; leaf checks B then A and leaves TRUE. Data-witness serialization excludes script/control block/annex. All n data items coexist at entry; zero hints.",
+  "compiler_source": "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+  "counter_note": "Pinned interpreter's Tapscript opcode_count is an instruction-position counter including pushes and inactive branch instructions, not an executed non-push opcode counter; executed_opcodes remains null. Static non-push counts are separate. No signature checks means zero validation weight charged, not a full transaction budget measurement.",
+  "evidence": "locally-reproduced",
+  "execution": "unclassified",
+  "interpreter_source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+  "profile": {
+    "context": "Tapscript",
+    "enforce_stack_limit": true,
+    "experimental_op_cat": false,
+    "require_minimal": false,
+    "transaction": "synthetic empty transaction, data-only witness budget; no signatures",
+    "verify_cltv": true,
+    "verify_csv": true,
+    "verify_minimal_if": true
+  },
+  "rows": [
+    {
+      "algorithm": "delayed",
+      "data_items": 0,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ],
+          []
+        ],
+        "max_stack_items": 2,
+        "raw_bytes": 4,
+        "script_bytes": 2,
+        "sha256": "94e706dc7b0e756b561c8c4ad4d31b476077dbf9486f9787d8530fb67f91cff8",
+        "static_non_push_opcodes": 0,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1,
+        "raw_bytes": 9,
+        "script_bytes": 1,
+        "sha256": "4ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+        "static_non_push_opcodes": 0,
+        "validation_weight_charged": 0
+      },
+      "n": 0,
+      "state": [
+        1,
+        0
+      ],
+      "witness_bytes": 1,
+      "witness_sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 1,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "max_stack_items": 4,
+        "raw_bytes": 23,
+        "script_bytes": 21,
+        "sha256": "325c71f981928634c002255301daf2731a6ba620b337c18a80b0547ef61d2f7a",
+        "static_non_push_opcodes": 14,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 4,
+        "raw_bytes": 32,
+        "script_bytes": 30,
+        "sha256": "2f777ae3f2c0a4ca6b977b450ede80a196f32cda71fc1fb4c2748e8a695782c6",
+        "static_non_push_opcodes": 16,
+        "validation_weight_charged": 0
+      },
+      "n": 1,
+      "state": [
+        256,
+        256
+      ],
+      "witness_bytes": 4,
+      "witness_sha256": "6cea7955ba6a975f713c2572e9e9db92ba5543fbef92b60794186ba4ec50e2e7"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 2,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            255,
+            1
+          ],
+          [
+            255,
+            2
+          ]
+        ],
+        "max_stack_items": 5,
+        "raw_bytes": 42,
+        "script_bytes": 40,
+        "sha256": "d6ff17fdd730aff8751165a525661d68dc848f17a25698b21a16d7ffca2aa872",
+        "static_non_push_opcodes": 28,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 5,
+        "raw_bytes": 51,
+        "script_bytes": 49,
+        "sha256": "ade80aa121fcd506413b4ae4141c0031ee9c8a0f17ed5c2624cf947814c13fa5",
+        "static_non_push_opcodes": 30,
+        "validation_weight_charged": 0
+      },
+      "n": 2,
+      "state": [
+        511,
+        767
+      ],
+      "witness_bytes": 7,
+      "witness_sha256": "0d63a4ada63daf8bd86e9c13d73191fae8243184ee80416b4ddaac252c0c7ce8"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 32,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            225,
+            31
+          ],
+          [
+            46,
+            14
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 638,
+        "script_bytes": 636,
+        "sha256": "7ef8ba28f32840359c74ae1f21ad66c23318d8535dacb7bb6a478417b0047ea9",
+        "static_non_push_opcodes": 458,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 647,
+        "script_bytes": 645,
+        "sha256": "2365decddd22f6ecf605e91d8f938fbbdbfe21bc7dd8fe773d07cedabe02a33c",
+        "static_non_push_opcodes": 460,
+        "validation_weight_charged": 0
+      },
+      "n": 32,
+      "state": [
+        8161,
+        3630
+      ],
+      "witness_bytes": 97,
+      "witness_sha256": "7d6c3098f828bc414030b99999c6dab68de762ab5cf22d272868ab90810d74b6"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 128,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            129,
+            127
+          ],
+          [
+            32,
+            34
+          ]
+        ],
+        "max_stack_items": 131,
+        "raw_bytes": 2514,
+        "script_bytes": 2512,
+        "sha256": "48592ee315b1eb9c91da203e001c9df0c99be06333d6ece1fa9f2997e97d6d4c",
+        "static_non_push_opcodes": 1822,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 131,
+        "raw_bytes": 2523,
+        "script_bytes": 2521,
+        "sha256": "763a34cf88184d5d97d6fd57ade4449879339d8c1e453e64a184b7047f9fc577",
+        "static_non_push_opcodes": 1824,
+        "validation_weight_charged": 0
+      },
+      "n": 128,
+      "state": [
+        32641,
+        8736
+      ],
+      "witness_bytes": 385,
+      "witness_sha256": "bca48bd425388cfd64913619293ed3d2faf9eeb15d94609378d5dc7cea676d0c"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 512,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            16,
+            254,
+            0
+          ],
+          [
+            241,
+            30
+          ]
+        ],
+        "max_stack_items": 515,
+        "raw_bytes": 9864,
+        "script_bytes": 9864,
+        "sha256": "791af321de65de7f6d154fbbf1c790341dcff06b3cf619cc01bf4c75255a3cb6",
+        "static_non_push_opcodes": 7220,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 515,
+        "raw_bytes": 9874,
+        "script_bytes": 9874,
+        "sha256": "23b5a532793434f5e9af1919c117b0f902dfc870363b2002186271c43be8dfeb",
+        "static_non_push_opcodes": 7222,
+        "validation_weight_charged": 0
+      },
+      "n": 512,
+      "state": [
+        65040,
+        7921
+      ],
+      "witness_bytes": 1539,
+      "witness_sha256": "10b283ff396cc6fbe86f6b147240f0024ded7eeefbd54a0a2b42168dfbdc3670"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 728,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            71,
+            213,
+            0
+          ],
+          [
+            196,
+            190,
+            0
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 14011,
+        "script_bytes": 14011,
+        "sha256": "95d387d2d9c97977e1a3cabe223f507092f6f59cd073ab16cab813dc8087beb4",
+        "static_non_push_opcodes": 10259,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 14022,
+        "script_bytes": 14022,
+        "sha256": "28292b3a9d64ff665a4d7dee8bcf5e12f6d7d111e05964f2d0edb8a928693cf4",
+        "static_non_push_opcodes": 10261,
+        "validation_weight_charged": 0
+      },
+      "n": 728,
+      "state": [
+        54599,
+        48836
+      ],
+      "witness_bytes": 2187,
+      "witness_sha256": "5aa70dd7908acc012ac3f5249c44b64868b02ac54c16d7d8b34c0176eaa34b3b"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 808,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            6,
+            37
+          ],
+          [
+            252,
+            4
+          ]
+        ],
+        "max_stack_items": 811,
+        "raw_bytes": 15531,
+        "script_bytes": 15531,
+        "sha256": "ae3e926306cfbe6ce9511397fba54f15067646f72f31d64108f0f30b9197a61d",
+        "static_non_push_opcodes": 11379,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 811,
+        "raw_bytes": 15540,
+        "script_bytes": 15540,
+        "sha256": "530fb3a6565f35271b949fa1a072771ff7f17e4f8d81eeeb0b1bd286a70d00a9",
+        "static_non_push_opcodes": 11381,
+        "validation_weight_charged": 0
+      },
+      "n": 808,
+      "state": [
+        9478,
+        1276
+      ],
+      "witness_bytes": 2427,
+      "witness_sha256": "821a86e9c8bf35e263b895fdc43f9448df71e95a4ca4dd7fbb39ff08885df326"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 809,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            5,
+            38
+          ],
+          [
+            1,
+            43
+          ]
+        ],
+        "max_stack_items": 812,
+        "raw_bytes": 15550,
+        "script_bytes": 15550,
+        "sha256": "a336d4fd09ff605d547c6689ffea4db5cd1e232d6e14b1a191914f36cfb8c36b",
+        "static_non_push_opcodes": 11393,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 812,
+        "raw_bytes": 15559,
+        "script_bytes": 15559,
+        "sha256": "91b1f91c382003ba0e6fb45248976976cebf0d8e752894946082eaa3447407ff",
+        "static_non_push_opcodes": 11395,
+        "validation_weight_charged": 0
+      },
+      "n": 809,
+      "state": [
+        9733,
+        11009
+      ],
+      "witness_bytes": 2430,
+      "witness_sha256": "89079e639040db9dfa15196698180df6d4b0e8c2deb0f026a17e0b9b36f94335"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 995,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            75,
+            223,
+            0
+          ],
+          [
+            69,
+            123
+          ]
+        ],
+        "max_stack_items": 998,
+        "raw_bytes": 19084,
+        "script_bytes": 19084,
+        "sha256": "ec0d4dadb35436a0b048ad3a5e063ddef42a3db42faa6023cf3b7049125ee0f2",
+        "static_non_push_opcodes": 13997,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 998,
+        "raw_bytes": 19094,
+        "script_bytes": 19094,
+        "sha256": "8a6d679d33c3037586a2ce65f63b9044611fdc869b12a62ae8540f63778a454b",
+        "static_non_push_opcodes": 13999,
+        "validation_weight_charged": 0
+      },
+      "n": 995,
+      "state": [
+        57163,
+        31557
+      ],
+      "witness_bytes": 2988,
+      "witness_sha256": "777117591541ff1630ef07379179bf6a871697c4f8fda046f1507a7c159412b6"
+    },
+    {
+      "algorithm": "delayed",
+      "data_items": 997,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            73,
+            225,
+            0
+          ],
+          [
+            246,
+            60
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 19122,
+        "script_bytes": 19122,
+        "sha256": "385ce57f16acab79b905ec0aeb2febcefb34de6ff4386f56e4029fb473eaf7b3",
+        "static_non_push_opcodes": 14025,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 19132,
+        "script_bytes": 19132,
+        "sha256": "4e0faa9d03fd26ba348de1fc6ebe62ac8bc0cb81b85e2222f1110ba9efacc9c9",
+        "static_non_push_opcodes": 14027,
+        "validation_weight_charged": 0
+      },
+      "n": 997,
+      "state": [
+        57673,
+        15606
+      ],
+      "witness_bytes": 2994,
+      "witness_sha256": "637f5844e78e901ce3e4737f6f4a79c2f56d73f3a46275d51988f79f4d26a943"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 0,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ],
+          []
+        ],
+        "max_stack_items": 2,
+        "raw_bytes": 2,
+        "script_bytes": 2,
+        "sha256": "94e706dc7b0e756b561c8c4ad4d31b476077dbf9486f9787d8530fb67f91cff8",
+        "static_non_push_opcodes": 0,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1,
+        "raw_bytes": 7,
+        "script_bytes": 1,
+        "sha256": "4ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+        "static_non_push_opcodes": 0,
+        "validation_weight_charged": 0
+      },
+      "n": 0,
+      "state": [
+        1,
+        0
+      ],
+      "witness_bytes": 1,
+      "witness_sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 1,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "max_stack_items": 4,
+        "raw_bytes": 21,
+        "script_bytes": 21,
+        "sha256": "325c71f981928634c002255301daf2731a6ba620b337c18a80b0547ef61d2f7a",
+        "static_non_push_opcodes": 14,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 4,
+        "raw_bytes": 30,
+        "script_bytes": 30,
+        "sha256": "2f777ae3f2c0a4ca6b977b450ede80a196f32cda71fc1fb4c2748e8a695782c6",
+        "static_non_push_opcodes": 16,
+        "validation_weight_charged": 0
+      },
+      "n": 1,
+      "state": [
+        256,
+        256
+      ],
+      "witness_bytes": 4,
+      "witness_sha256": "6cea7955ba6a975f713c2572e9e9db92ba5543fbef92b60794186ba4ec50e2e7"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 2,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            255,
+            1
+          ],
+          [
+            255,
+            2
+          ]
+        ],
+        "max_stack_items": 5,
+        "raw_bytes": 40,
+        "script_bytes": 40,
+        "sha256": "d6ff17fdd730aff8751165a525661d68dc848f17a25698b21a16d7ffca2aa872",
+        "static_non_push_opcodes": 28,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 5,
+        "raw_bytes": 49,
+        "script_bytes": 49,
+        "sha256": "ade80aa121fcd506413b4ae4141c0031ee9c8a0f17ed5c2624cf947814c13fa5",
+        "static_non_push_opcodes": 30,
+        "validation_weight_charged": 0
+      },
+      "n": 2,
+      "state": [
+        511,
+        767
+      ],
+      "witness_bytes": 7,
+      "witness_sha256": "0d63a4ada63daf8bd86e9c13d73191fae8243184ee80416b4ddaac252c0c7ce8"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 32,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            225,
+            31
+          ],
+          [
+            46,
+            14
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 740,
+        "script_bytes": 740,
+        "sha256": "cb471d57d28413ed55edb4d52bbf2d800d05d67c08f252a2c8a612d42ef12dc9",
+        "static_non_push_opcodes": 498,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 749,
+        "script_bytes": 749,
+        "sha256": "46771fc322e21d66498c840b34794df89282d9799b00cae25a5e66077f4d9e11",
+        "static_non_push_opcodes": 500,
+        "validation_weight_charged": 0
+      },
+      "n": 32,
+      "state": [
+        8161,
+        3630
+      ],
+      "witness_bytes": 97,
+      "witness_sha256": "7d6c3098f828bc414030b99999c6dab68de762ab5cf22d272868ab90810d74b6"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 128,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            129,
+            127
+          ],
+          [
+            32,
+            34
+          ]
+        ],
+        "max_stack_items": 131,
+        "raw_bytes": 3812,
+        "script_bytes": 3812,
+        "sha256": "eed9163be32e3568ccb6c8f6387346c3141cd4c01ed0da10491a0a136fa8f691",
+        "static_non_push_opcodes": 2322,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 131,
+        "raw_bytes": 3821,
+        "script_bytes": 3821,
+        "sha256": "735cc5f998d25308232314c050f81e4175b84ca11d92dcd7c39143cf31a46d45",
+        "static_non_push_opcodes": 2324,
+        "validation_weight_charged": 0
+      },
+      "n": 128,
+      "state": [
+        32641,
+        8736
+      ],
+      "witness_bytes": 385,
+      "witness_sha256": "bca48bd425388cfd64913619293ed3d2faf9eeb15d94609378d5dc7cea676d0c"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 512,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            16,
+            254,
+            0
+          ],
+          [
+            241,
+            30
+          ]
+        ],
+        "max_stack_items": 515,
+        "raw_bytes": 19428,
+        "script_bytes": 19428,
+        "sha256": "74f1776ecb7c02a0da741773a6167f00ed99c12a2dfe35dfdbfb658994097122",
+        "static_non_push_opcodes": 10898,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 515,
+        "raw_bytes": 19438,
+        "script_bytes": 19438,
+        "sha256": "e77b25cc2a956916fbfb8f6a5b22ae31dd7ec2cfde7dc736c7b88369ce9182cb",
+        "static_non_push_opcodes": 10900,
+        "validation_weight_charged": 0
+      },
+      "n": 512,
+      "state": [
+        65040,
+        7921
+      ],
+      "witness_bytes": 1539,
+      "witness_sha256": "10b283ff396cc6fbe86f6b147240f0024ded7eeefbd54a0a2b42168dfbdc3670"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 728,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            71,
+            213,
+            0
+          ],
+          [
+            196,
+            190,
+            0
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 29148,
+        "script_bytes": 29148,
+        "sha256": "0ca4261686650921d6e82c5fd54499afa5d1ea82e65f534682400317b3586b14",
+        "static_non_push_opcodes": 16082,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 29159,
+        "script_bytes": 29159,
+        "sha256": "60739d1d009ad48202955934b3a6eaa2c8b0f551686e05712aee1cacb05352fe",
+        "static_non_push_opcodes": 16084,
+        "validation_weight_charged": 0
+      },
+      "n": 728,
+      "state": [
+        54599,
+        48836
+      ],
+      "witness_bytes": 2187,
+      "witness_sha256": "5aa70dd7908acc012ac3f5249c44b64868b02ac54c16d7d8b34c0176eaa34b3b"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 808,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            6,
+            37
+          ],
+          [
+            252,
+            4
+          ]
+        ],
+        "max_stack_items": 811,
+        "raw_bytes": 32748,
+        "script_bytes": 32748,
+        "sha256": "38ffbfc30633ddbd72dad7708eaa8d688950929a91d708f25143d9ece1dd3614",
+        "static_non_push_opcodes": 18002,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 811,
+        "raw_bytes": 32757,
+        "script_bytes": 32757,
+        "sha256": "eb776e953754d54e4c8c75a8fded15b52c19ab799b43e9abc56a164632943119",
+        "static_non_push_opcodes": 18004,
+        "validation_weight_charged": 0
+      },
+      "n": 808,
+      "state": [
+        9478,
+        1276
+      ],
+      "witness_bytes": 2427,
+      "witness_sha256": "821a86e9c8bf35e263b895fdc43f9448df71e95a4ca4dd7fbb39ff08885df326"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 809,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            5,
+            38
+          ],
+          [
+            1,
+            43
+          ]
+        ],
+        "max_stack_items": 812,
+        "raw_bytes": 32793,
+        "script_bytes": 32793,
+        "sha256": "5b59f2320f43aad1e0a0488e6bbb6fd6613bb7fa567c3f1f8d1c0e78371d25e9",
+        "static_non_push_opcodes": 18026,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 812,
+        "raw_bytes": 32802,
+        "script_bytes": 32802,
+        "sha256": "d9ccb2cb9db01edc9e9571652ffbc7fdaf4f1e3c109bf2b0ebd80aa938b835d2",
+        "static_non_push_opcodes": 18028,
+        "validation_weight_charged": 0
+      },
+      "n": 809,
+      "state": [
+        9733,
+        11009
+      ],
+      "witness_bytes": 2430,
+      "witness_sha256": "89079e639040db9dfa15196698180df6d4b0e8c2deb0f026a17e0b9b36f94335"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 995,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            75,
+            223,
+            0
+          ],
+          [
+            69,
+            123
+          ]
+        ],
+        "max_stack_items": 998,
+        "raw_bytes": 41163,
+        "script_bytes": 41163,
+        "sha256": "4e4b2ea5e59a5cbcb74e22aebfecd6128dc48e61d6b9c723a63f917da7ee5091",
+        "static_non_push_opcodes": 22490,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 998,
+        "raw_bytes": 41173,
+        "script_bytes": 41173,
+        "sha256": "0c591d291020548e04fa55807bd3a2cc35f218a355b7204be48d9bcb7103d783",
+        "static_non_push_opcodes": 22492,
+        "validation_weight_charged": 0
+      },
+      "n": 995,
+      "state": [
+        57163,
+        31557
+      ],
+      "witness_bytes": 2988,
+      "witness_sha256": "777117591541ff1630ef07379179bf6a871697c4f8fda046f1507a7c159412b6"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 997,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            73,
+            225,
+            0
+          ],
+          [
+            246,
+            60
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 41253,
+        "script_bytes": 41253,
+        "sha256": "9ec70a915f566fa7c2d30c69cd733422aa632ce0dbb143ead611be52ae415b4f",
+        "static_non_push_opcodes": 22538,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 41263,
+        "script_bytes": 41263,
+        "sha256": "95b7597097bbb032974e33f1d21fde17efe90b5e56859b75b737ef1ad5ffadcf",
+        "static_non_push_opcodes": 22540,
+        "validation_weight_charged": 0
+      },
+      "n": 997,
+      "state": [
+        57673,
+        15606
+      ],
+      "witness_bytes": 2994,
+      "witness_sha256": "637f5844e78e901ce3e4737f6f4a79c2f56d73f3a46275d51988f79f4d26a943"
+    },
+    {
+      "algorithm": "bounded-streaming",
+      "data_items": 998,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 41298,
+        "script_bytes": 41298,
+        "sha256": "f0a4ca9f00da78379f211e6fa5ff21be49f3a8e5fdb7795f35ba64d675075952",
+        "static_non_push_opcodes": 22562,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 41308,
+        "script_bytes": 41308,
+        "sha256": "12dd514124e48db2cadd907427cd3f5f54e9bb825683ddaee446da399d2686e1",
+        "static_non_push_opcodes": 22564,
+        "validation_weight_charged": 0
+      },
+      "n": 998,
+      "state": [
+        57928,
+        8013
+      ],
+      "witness_bytes": 2997,
+      "witness_sha256": "95b25acb69279deddfe19584313f9353709d1d02b8e13ee5cc4ac52b7e261b78"
+    },
+    {
+      "algorithm": "naive-streaming",
+      "data_items": 32,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            225,
+            31
+          ],
+          [
+            46,
+            14
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 1442,
+        "script_bytes": 1442,
+        "sha256": "7c58cf097483c9d1ad2c9bb2d0fb1b388d29cd5e3c1e96c2d1c1869052a28f4d",
+        "static_non_push_opcodes": 768,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 35,
+        "raw_bytes": 1451,
+        "script_bytes": 1451,
+        "sha256": "00d517f05864c6e4974de5ca40dbd08b67cb2636cdc9645002cb0e31e4aa4664",
+        "static_non_push_opcodes": 770,
+        "validation_weight_charged": 0
+      },
+      "n": 32,
+      "state": [
+        8161,
+        3630
+      ],
+      "witness_bytes": 97,
+      "witness_sha256": "7d6c3098f828bc414030b99999c6dab68de762ab5cf22d272868ab90810d74b6"
+    },
+    {
+      "algorithm": "naive-streaming",
+      "data_items": 728,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            71,
+            213,
+            0
+          ],
+          [
+            196,
+            190,
+            0
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 32762,
+        "script_bytes": 32762,
+        "sha256": "97debcdf2b949c42655cbf91c886c2f6b94bfa1b31857f459e9736832b53aa7b",
+        "static_non_push_opcodes": 17472,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 731,
+        "raw_bytes": 32773,
+        "script_bytes": 32773,
+        "sha256": "ce97a20abd3fe51e95ecc6dcd6977ea359f688d0695e183ab093a07d4f962a5e",
+        "static_non_push_opcodes": 17474,
+        "validation_weight_charged": 0
+      },
+      "n": 728,
+      "state": [
+        54599,
+        48836
+      ],
+      "witness_bytes": 2187,
+      "witness_sha256": "5aa70dd7908acc012ac3f5249c44b64868b02ac54c16d7d8b34c0176eaa34b3b"
+    },
+    {
+      "algorithm": "naive-streaming",
+      "data_items": 729,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            70,
+            214,
+            0
+          ],
+          [
+            25,
+            149,
+            0
+          ]
+        ],
+        "max_stack_items": 732,
+        "raw_bytes": 32807,
+        "script_bytes": 32807,
+        "sha256": "dd77d83c8735552d05c353ebdc7e70dc6ee985e0ea28c3ee5adf9c5d7a7f2c91",
+        "static_non_push_opcodes": 17496,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 732,
+        "raw_bytes": 32818,
+        "script_bytes": 32818,
+        "sha256": "6028ea5cbf7db52d4e6cdafe078971b2688cc07d3bac304eadc6b0ca2d565438",
+        "static_non_push_opcodes": 17498,
+        "validation_weight_charged": 0
+      },
+      "n": 729,
+      "state": [
+        54854,
+        38169
+      ],
+      "witness_bytes": 2190,
+      "witness_sha256": "75fc82b3304313a81572b67963d2c40e8a040296fa6706d46011a0243ad35ce9"
+    },
+    {
+      "algorithm": "naive-streaming",
+      "data_items": 997,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            73,
+            225,
+            0
+          ],
+          [
+            246,
+            60
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 44867,
+        "script_bytes": 44867,
+        "sha256": "e26a427a82de200f50c141f3d8424e96e70f594ec35febb9e361531b61f88609",
+        "static_non_push_opcodes": 23928,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "NONE",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 44877,
+        "script_bytes": 44877,
+        "sha256": "dbde21068f9493483c10aba2739a5ad6a1523698afc31440f55c7c157191d827",
+        "static_non_push_opcodes": 23930,
+        "validation_weight_charged": 0
+      },
+      "n": 997,
+      "state": [
+        57673,
+        15606
+      ],
+      "witness_bytes": 2994,
+      "witness_sha256": "637f5844e78e901ce3e4737f6f4a79c2f56d73f3a46275d51988f79f4d26a943"
+    },
+    {
+      "algorithm": "interleaved",
+      "data_items": 32,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            225,
+            31
+          ],
+          [
+            46,
+            14
+          ]
+        ],
+        "max_stack_items": 37,
+        "raw_bytes": 638,
+        "script_bytes": 636,
+        "sha256": "1d798321d93179af963c611c0886b418fb7e556d6ec63eaf49e09247a0fb1e34",
+        "static_non_push_opcodes": 458,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 37,
+        "raw_bytes": 647,
+        "script_bytes": 645,
+        "sha256": "a4588feae7ebb0c0e49888213c495093d5c7d3dfc7fd4e0285670b0548c664f1",
+        "static_non_push_opcodes": 460,
+        "validation_weight_charged": 0
+      },
+      "n": 32,
+      "state": [
+        8161,
+        3630
+      ],
+      "witness_bytes": 97,
+      "witness_sha256": "7d6c3098f828bc414030b99999c6dab68de762ab5cf22d272868ab90810d74b6"
+    },
+    {
+      "algorithm": "interleaved",
+      "data_items": 995,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            75,
+            223,
+            0
+          ],
+          [
+            69,
+            123
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 19084,
+        "script_bytes": 19084,
+        "sha256": "db7c3863c6db1c8fc6a6bab62d3b1d96a7092d8325d9d5f652544fd12303115b",
+        "static_non_push_opcodes": 13997,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": true,
+        "compile_options": "ALL",
+        "error": null,
+        "executed_opcodes": null,
+        "final_stack": [
+          [
+            1
+          ]
+        ],
+        "max_stack_items": 1000,
+        "raw_bytes": 19094,
+        "script_bytes": 19094,
+        "sha256": "fd129a7f930737feb5108091a4c7392c127f16329fe637abff506d8b9632bb1c",
+        "static_non_push_opcodes": 13999,
+        "validation_weight_charged": 0
+      },
+      "n": 995,
+      "state": [
+        57163,
+        31557
+      ],
+      "witness_bytes": 2988,
+      "witness_sha256": "777117591541ff1630ef07379179bf6a871697c4f8fda046f1507a7c159412b6"
+    },
+    {
+      "algorithm": "interleaved",
+      "data_items": 996,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 19103,
+        "script_bytes": 19103,
+        "sha256": "460e0ef0ac392ed57bba327fc59242570956a45854fa9d2200dc4b207ed87bca",
+        "static_non_push_opcodes": 14011,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 19113,
+        "script_bytes": 19113,
+        "sha256": "24a5f89f81aedafdbdd6621da8e363e55b58cc7cdbefa4ff6ffa2bff723ac708",
+        "static_non_push_opcodes": 14013,
+        "validation_weight_charged": 0
+      },
+      "n": 996,
+      "state": [
+        57418,
+        23454
+      ],
+      "witness_bytes": 2991,
+      "witness_sha256": "4e485b754f86b5b8a20f0b945f20310f6071db7a289bde5ac1af41af5f781feb"
+    },
+    {
+      "algorithm": "interleaved",
+      "data_items": 997,
+      "fragment": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 19122,
+        "script_bytes": 19122,
+        "sha256": "5609357f652866f231ec354adcceecd39d563c84945d3fef9516efb5a16be4d4",
+        "static_non_push_opcodes": 14025,
+        "validation_weight_charged": 0
+      },
+      "hint_items": 0,
+      "input": "all-255 canonical ScriptNums",
+      "leaf": {
+        "clean_success": false,
+        "compile_options": "ALL",
+        "error": "StackSize",
+        "executed_opcodes": null,
+        "final_stack": null,
+        "max_stack_items": 1001,
+        "raw_bytes": 19132,
+        "script_bytes": 19132,
+        "sha256": "650b87b17b19fe49718b9daf76adaf02503c00ad038a7aff2c9f85023eef4374",
+        "static_non_push_opcodes": 14027,
+        "validation_weight_charged": 0
+      },
+      "n": 997,
+      "state": [
+        57673,
+        15606
+      ],
+      "witness_bytes": 2994,
+      "witness_sha256": "637f5844e78e901ce3e4737f6f4a79c2f56d73f3a46275d51988f79f4d26a943"
+    }
+  ],
+  "schema_version": 1,
+  "source_revision": "250f23861a87ee10b2a7e1ea3de07dcf8569e820",
+  "source_sha256": {
+    "Cargo.lock": "13cceb87703b0d63d66d1c5c3406dfa00f5d8f166b9bfcfe68509dd5fe803de7",
+    "examples/adler32_delayed_probe.rs": "78289660a65dcfd595b9b94473332728860de93ddfa7d08234cd7c99d27cb75f",
+    "research/adler32-delayed-reduction/baseline.rs": "fce8e8d291a009513b00a67b38658b994c3408d1dc95f39ceef403152ae3c658",
+    "research/adler32-delayed-reduction/measure.rs": "ade7681bd8c0c8200d71a765f0efe44122b28a8999e7013eb68c15fe46e1b071",
+    "research/adler32-delayed-reduction/oracle-provenance.json": "470b3a077caae20aa290e150dc16874ae2ba507be8ee1f0aad986aa924787219",
+    "research/adler32-delayed-reduction/oracle.json": "d0e8c235a14a4dccf2d9c91a8df2241371b43f29f89453749dfd7679fd0c2ef0",
+    "research/adler32-delayed-reduction/oracle.py": "25a599e27150dfb564315ac2cf2941472f229a6148f084d78ef6104e3f8b92d2",
+    "src/arithmetic/checksums/adler32.rs": "b9b22e27ff726b9715e0ec18d6be63357281fd99d80f4f5e5b866bf27de22a9f",
+    "src/arithmetic/checksums/mod.rs": "7b857e4194d384cdfdeafd222f48b7b1770e1a2cdcca20ef3d1098c117cdc250",
+    "src/arithmetic/mod.rs": "be55283e974e348ac59fb3c6e2db70774b05fa6512685c2f11567d1a6ffb41c9",
+    "src/arithmetic/u32/stack.rs": "f94dc39dc1c7eecff67f8e6641b7fd57c1fc7db9b6b982302f51e16a87b1c80c",
+    "src/support/execution.rs": "0ac9e22b7a2cb2169c8659c6dd69f9376edc61909b3566a7718141b15fd7a527",
+    "src/support/provenance.rs": "defadb97f203ca849191d73f5cdc81557735a7dd470937a6c0923a9b2c208322",
+    "src/support/script.rs": "266235ef0675dea7bcc08e40d9420fc5c1b6aa542681554909207d0c871033f3",
+    "src/support/tapscript.rs": "0a9ffcdebddac8cae0aaade8270350f91784bad057c635ca6351dc5ad539e901",
+    "tests/adler32_contract.rs": "a4827e66358f9574318fba69268289ef3b39989c5ea0e251c7104555ea1c7be9",
+    "tests/primitive_metrics.rs": "ab64d761fca6c177f884adf823ab6f2303fb8e5e0976e1b0e04186e6347ed66e"
+  }
+}

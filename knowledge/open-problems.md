@@ -1044,6 +1044,18 @@ independent BLAKE3 implementation, records the eight key words and
 `KEYED_HASH` flag handling, reports witness and combined-stack costs, and
 compares the result with the unkeyed profile under the same compilation policy.
 
+## OP-043 — Complete Adler-state leaf validation
+
+Build a complete, independently bound error-detection computation leaf for
+the canonical Adler-32 state fragment. **Complete when:** a funded fixture
+validates both residue predicates against a pinned Bitcoin Core revision,
+rejects noncanonical bytes, wrong A/B, and over-limit composed state, and
+records full leaf/control-block/data witness serialization, transaction
+weight, consensus and relay-policy outcomes separately. Include explicit
+zero hint counts and combined stack peaks. Keep the documented checksum
+collision and lack of authentication explicit; Core acceptance must not be
+represented as cryptographic security or inherited by other configurations.
+
 ## OP-031 — Positional nibble checksum composition
 
 The new [modulo-17 integer residue](primitives/u4-mod17.md) is locally reproduced
