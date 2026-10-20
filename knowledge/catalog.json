@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "signature/lamport-digits",
+      "name": "Multi-digit Lamport commitments",
+      "class": "signature/one-time",
+      "summary": "Radix-2^w multi-digit Lamport HASH160 commitments that leave the opened digits on the stack, with a measured digit-width design space and comparison to Winternitz at 160 bits.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/lamport-digits.md",
+      "implementation": "src/signatures/lamport_digits/mod.rs",
+      "documentation": "src/signatures/lamport_digits/README.md",
+      "tests": [
+        "signatures::lamport_digits::tests",
+        "primitive_metrics::lamport_digits_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "hash-chain",
+        "selector-validation",
+        "signature-commitment"
+      ],
+      "security": "Strictly one-time: a revealed preimage is public, and the commitment authenticates only the value left on the stack, not a transaction. Security is bounded by HASH160 (80-bit collision, 160-bit preimage). Out-of-range values abort. No Bitcoin Core validation.",
+      "stack_contract": "Consumes the witness value,preimage pairs for digits 0..d-1 (digit d-1 on top) and returns the d values in order, last digit on top; an out-of-range value, wrong preimage or swapped digits abort.",
+      "configurations": [
+        {
+          "id": "bits32-radix4",
+          "label": "lamport_digits_commit, 32 bits, radix 4",
+          "parameters": {
+            "message_bits": 32,
+            "bits_per_digit": 2,
+            "digits": 16,
+            "images_per_digit": 4,
+            "secret_bytes": 16,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-digit range check, image pushes, selection, HASH160 comparison, image cleanup and value restoration; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count, value items and 16-byte preimages",
+          "script_bytes": 1615,
+          "witness_bytes": 301,
+          "witness_bytes_max": null,
+          "max_stack_items": 37,
+          "executed_opcodes": 239,
+          "static_non_push_opcodes": 239,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1615,
+          "metric_keys": [
+            "lamport_digits_32_w2",
+            "lamport_digits_32_w2_witness",
+            "lamport_digits_32_w2_stack",
+            "lamport_digits_32_w2_opcodes"
+          ]
+        },
+        {
+          "id": "bits160-radix4",
+          "label": "lamport_digits_commit, 160 bits, radix 4",
+          "parameters": {
+            "message_bits": 160,
+            "bits_per_digit": 2,
+            "digits": 80,
+            "images_per_digit": 4,
+            "secret_bytes": 16,
+            "data_items": 160,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-digit range check, image pushes, selection, HASH160 comparison, image cleanup and value restoration; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count, value items and 16-byte preimages",
+          "script_bytes": 8079,
+          "witness_bytes": 1501,
+          "witness_bytes_max": null,
+          "max_stack_items": 165,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 8079,
+          "metric_keys": [
+            "lamport_digits_160_w2",
+            "lamport_digits_160_w2_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Leaves two-bit digits, not bytes; a consumer needs a conversion",
+        "Witness bytes are for one fixture; the maximum is at most one byte per digit larger",
+        "The 160-bit row records no opcode or peak measurement beyond the pinned size",
+        "The Winternitz comparison reuses the existing README totals rather than rebuilding them",
+        "Strictly one-time and not bound to a transaction",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-056"
       ]
     }
   ]

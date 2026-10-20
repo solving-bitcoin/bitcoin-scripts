@@ -8023,6 +8023,76 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures multi-digit Lamport commitments at radix four.
+#[test]
+fn lamport_digits_metrics_are_current() {
+    use bitcoin_lab::signatures::lamport_digits::{
+        lamport_digit_images, lamport_digit_secret, lamport_digits_commit,
+    };
+    const SEED: &[u8] = b"lamport-digits-metrics";
+    let measure = |bits: u32| {
+        let digits = bits.div_ceil(2);
+        let images = lamport_digit_images(SEED, digits, 4);
+        let fragment = lamport_digits_commit(&images);
+        let witness: Vec<Vec<u8>> = (0..digits)
+            .flat_map(|digit| {
+                let value = (37 * digit + 5) % 4;
+                [
+                    scriptnum(i64::from(value)),
+                    lamport_digit_secret(SEED, digit, value),
+                ]
+            })
+            .collect();
+        (fragment, witness)
+    };
+    let (fragment32, witness32) = measure(32);
+    let leaf = script! {
+        { fragment32.clone() }
+        for _ in 0..16 { OP_DROP }
+        OP_TRUE
+    };
+    let peak = max_stack_items_strict(leaf, witness32.clone());
+    let (fragment160, witness160) = measure(160);
+    let script160 = script_len(fragment160);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2",
+            value: script_len(fragment32.clone()),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_witness",
+            value: witness_size(&witness32),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_witness_items",
+            value: witness32.len(),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_opcodes",
+            value: static_non_push_opcodes(fragment32),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_160_w2",
+            value: script160,
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_160_w2_witness",
+            value: witness_size(&witness160),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -1991,3 +1991,17 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-100: Multi-digit Lamport is dominated by Winternitz at 160 bits
+
+Committing 160 bits with radix-four Lamport digits costs 9,580 script-plus-witness
+bytes (8,079 + 1,501), 4.1 times the 2,334-byte mixed-stage constant-sum
+Winternitz result and 2.5 times the 3,809-byte clamped base-16 construction, on
+the same fragment-plus-serialized-signature boundary with 16-byte secrets and zero
+hints. One-bit digits cost 12,240 and four-bit digits 15,118, so two bits per
+digit is the best Lamport width at every tested message size (8, 16, 32 and 160
+bits). The Lamport figure leaves two-bit digits rather than bytes, so a
+like-for-like comparison would only add to it. Figures are policy-compiled
+fragments plus serialized witnesses under strict local `unclassified` tapscript
+rules, `locally-reproduced`; the Winternitz totals are the existing recorded
+figures. See the [primitive](../primitives/lamport-digits.md).

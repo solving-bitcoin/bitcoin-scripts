@@ -1185,3 +1185,12 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-056 — Small-message Lamport versus Winternitz crossover
+
+Lamport digits may beat Winternitz for very short messages. **Accept when:** the
+Winternitz constructions are measured at 8, 16 and 32 bits on the same
+fragment-plus-serialized-signature boundary with 16-byte secrets and the
+crossover (or its absence) is recorded against the 479, 958 and 1,916-byte
+two-bit Lamport totals, including the conversion each design needs to deliver the
+message to a consumer. Core validation is required for any deployment claim.
