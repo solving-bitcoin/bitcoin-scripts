@@ -1,6 +1,7 @@
 pub mod add;
 pub mod adjacent_delta;
 pub mod adjacent_eq;
+pub mod ascii_hex_encode;
 pub mod bit_planes;
 pub mod bit_reverse;
 pub mod bit_transitions;

@@ -1185,3 +1185,12 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-058 — Hex text round trip and digest-text consumer
+
+Encoding and decoding hexadecimal text are measured separately. **Accept when:** a
+consumer (for example comparing a witness-supplied hexadecimal digest text with a
+computed digest) combines the decoder and encoder with its live protocol state and
+compares text, nibble and raw-byte witnesses on equal complete-leaf boundaries
+with witness bytes and items, hint counts, executed opcodes and combined peaks.
+Core validation is required for any deployment claim.

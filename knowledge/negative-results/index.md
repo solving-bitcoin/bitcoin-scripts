@@ -1991,3 +1991,14 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-102: The arithmetic hex encoder is dominated beyond a few nibbles
+
+The branching arithmetic encoder costs about 18 script bytes per nibble, against
+about 10 per nibble plus a 40-byte fixed cost for the 16-entry table form: 70
+versus 80 bytes at four nibbles but 142 versus 120 at eight, 574 versus 360 at 32
+and 1,150 versus 680 at 64 (41% smaller). The arithmetic form keeps its niche only
+for the shortest strings or where the 16 extra live stack items are unaffordable
+(peak 67 versus 83 at 64 nibbles). Byte counts are policy-compiled fragments under
+strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-ascii-hex-encode.md).

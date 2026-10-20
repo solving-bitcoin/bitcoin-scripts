@@ -1200,3 +1200,23 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Nibbles to ASCII hexadecimal text
+
+`ascii_hex_encode::u4_nibbles_to_ascii_hex_arith(n, case)` (`n` in `1..=997`, peak
+`n + 3`) and `u4_nibbles_to_ascii_hex_table(n, case)` (`n` in `1..=981`, peak
+`n + 19`) replace each checked nibble with the ASCII code of its lower- or
+upper-case hexadecimal digit, in order; a nibble outside `0..=15` aborts. The
+arithmetic form branches (`+48`, or `+87`/`+55` above 9); the table form keeps
+16 code entries live. No hints.
+
+Fragment-only boundary: range checks, encoding and order restoration; input pushes
+and terminal predicate excluded. Fixture: the nibbles `0..=15` repeated four times
+(64 nibbles, <!-- metric:u4_ascii_hex_encode_64_witness -->125<!-- /metric:u4_ascii_hex_encode_64_witness --> witness bytes, <!-- metric:u4_ascii_hex_encode_64_witness_items -->64<!-- /metric:u4_ascii_hex_encode_64_witness_items --> items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Arithmetic, 64 nibbles | <!-- metric:u4_ascii_hex_encode_arith_64 -->1150<!-- /metric:u4_ascii_hex_encode_arith_64 --> | <!-- metric:u4_ascii_hex_encode_arith_64_stack -->67<!-- /metric:u4_ascii_hex_encode_arith_64_stack --> | <!-- metric:u4_ascii_hex_encode_arith_64_opcodes -->702<!-- /metric:u4_ascii_hex_encode_arith_64_opcodes --> |
+| Table, 64 nibbles | <!-- metric:u4_ascii_hex_encode_table_64 -->680<!-- /metric:u4_ascii_hex_encode_table_64 --> | <!-- metric:u4_ascii_hex_encode_table_64_stack -->83<!-- /metric:u4_ascii_hex_encode_table_64_stack --> | <!-- metric:u4_ascii_hex_encode_table_64_opcodes -->456<!-- /metric:u4_ascii_hex_encode_table_64_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-ascii-hex-encode.md).

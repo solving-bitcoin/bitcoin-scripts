@@ -8023,6 +8023,62 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures nibble-to-ASCII hexadecimal encoding at 64 nibbles.
+#[test]
+fn u4_ascii_hex_encode_metrics_are_current() {
+    use u4::ascii_hex_encode::{
+        u4_nibbles_to_ascii_hex_arith, u4_nibbles_to_ascii_hex_table, HexLetterCase,
+    };
+    const LEN: u32 = 64;
+    // The 64 nibbles 0..=15 repeated four times.
+    let witness: Vec<Vec<u8>> = (0..LEN as i64).map(|i| scriptnum(i % 16)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        (
+            "arith",
+            u4_nibbles_to_ascii_hex_arith(LEN, HexLetterCase::Lower),
+        ),
+        (
+            "table",
+            u4_nibbles_to_ascii_hex_table(LEN, HexLetterCase::Lower),
+        ),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            for _ in 0..LEN { OP_DROP }
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_ascii_hex_encode_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

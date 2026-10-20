@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Nibble to ASCII hexadecimal encoders
+
+Encoding 64 nibbles as lowercase hexadecimal text costs 1,150 script bytes with the
+branching arithmetic form (peak 67) and 680 bytes with a resident 16-entry table
+(peak 83), 125 witness bytes over 64 items, zero hints (strict local
+`unclassified` tapscript, `locally-reproduced`). The table form wins from about five
+nibbles. See [the primitive](../primitives/u4-ascii-hex-encode.md) and NR-102.

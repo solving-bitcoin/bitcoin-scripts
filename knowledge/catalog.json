@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-ascii-hex-encode",
+      "name": "Nibbles to ASCII hexadecimal text",
+      "class": "arithmetic/word",
+      "summary": "Range-checked u4 nibbles replaced by the ASCII codes of their lower- or upper-case hexadecimal digits with a branching arithmetic form and a resident 16-entry table form.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-ascii-hex-encode.md",
+      "implementation": "src/arithmetic/u4/ascii_hex_encode.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::ascii_hex_encode::tests",
+        "primitive_metrics::u4_ascii_hex_encode_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "representation-bridge",
+        "lookup-table"
+      ],
+      "security": "Every nibble is range-checked before it is encoded or used as a table index. The text is not authenticated and its meaning is caller-bound. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | v[0..n-1] (last on top) and returns preserved | c[0..n-1] in the same order; out-of-range nibbles abort; peaks n+3 (arithmetic) and n+19 (table); unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "arith-len64",
+          "label": "u4_nibbles_to_ascii_hex_arith(64, Lower)",
+          "parameters": {
+            "length": 64,
+            "case": "Lower",
+            "form": "arithmetic",
+            "fixture": "0..=15 x4",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: nibble range checks, encoding (arithmetic branch or table lookup) and altstack order restoration; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 1150,
+          "witness_bytes": 125,
+          "witness_bytes_max": null,
+          "max_stack_items": 67,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 702,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1150,
+          "metric_keys": [
+            "u4_ascii_hex_encode_arith_64",
+            "u4_ascii_hex_encode_64_witness",
+            "u4_ascii_hex_encode_arith_64_stack",
+            "u4_ascii_hex_encode_arith_64_opcodes"
+          ]
+        },
+        {
+          "id": "table-len64",
+          "label": "u4_nibbles_to_ascii_hex_table(64, Lower)",
+          "parameters": {
+            "length": 64,
+            "case": "Lower",
+            "form": "table",
+            "fixture": "0..=15 x4",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: nibble range checks, encoding (arithmetic branch or table lookup) and altstack order restoration; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 680,
+          "witness_bytes": 125,
+          "witness_bytes_max": null,
+          "max_stack_items": 83,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 456,
+          "validation_weight": null,
+          "setup_script_bytes": 16,
+          "per_use_script_bytes": 680,
+          "metric_keys": [
+            "u4_ascii_hex_encode_table_64",
+            "u4_ascii_hex_encode_64_witness",
+            "u4_ascii_hex_encode_table_64_stack",
+            "u4_ascii_hex_encode_table_64_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "The arithmetic form's executed opcode count is branch dependent and recorded as null",
+        "Encoding only: the decoding direction is a separate primitive and a round-trip composition is unmeasured",
+        "Output text is not authenticated",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-058"
       ]
     }
   ]
