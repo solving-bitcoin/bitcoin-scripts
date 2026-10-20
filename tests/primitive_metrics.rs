@@ -8023,6 +8023,53 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures parity-hinted XOR reduction at 32 nibbles.
+#[test]
+fn u4_xor_hinted_metrics_are_current() {
+    use u4::xor_hinted::u4_nibbles_xor_hinted;
+    use u4::xor_reduce::u4_nibbles_to_xor;
+    const N: u32 = 32;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let y = values.iter().fold(0, |a, &v| a ^ v);
+    let halves: Vec<i64> = (0..4)
+        .map(|b| values.iter().filter(|&&v| (v >> b) & 1 == 1).count() as i64 / 2)
+        .collect();
+    let table_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = table_witness.clone();
+    hinted_witness.push(scriptnum(y));
+    hinted_witness.extend(halves.iter().map(|&h| scriptnum(h)));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("table", u4_nibbles_to_xor(N), table_witness),
+        ("hinted", u4_nibbles_xor_hinted(N), hinted_witness),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            { y } OP_EQUALVERIFY
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_xor_{name}_32{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

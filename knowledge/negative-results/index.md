@@ -1991,3 +1991,15 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-107: The table-driven XOR reduction is dominated when hints are allowed
+
+Folding a u4 vector through the 256-entry XOR table costs about 24 script bytes per
+nibble plus a fixed table cost and a 256-item stack peak: 740 bytes and a 273-item
+peak at 16 nibbles, 1,890 and 321 at 64. Verifying a claimed XOR from packed
+bit-count lanes with four hinted half-counts costs 367 bytes (peak 43) and 1,087
+(peak 91), 50% and 42% less, for five hint items; script plus witness is 408 versus 772
+bytes at 16 nibbles. The table form keeps its role beyond 212 nibbles, where the
+single-word accumulator overflows, or where hints are forbidden. Figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-xor-hinted.md).

@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-xor-hinted",
+      "name": "Parity-hinted XOR reduction",
+      "class": "arithmetic/word",
+      "summary": "Verify a claimed XOR of a u4 vector with exact packed bit-count lanes and four hinted half-counts, without a 256-entry XOR table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-xor-hinted.md",
+      "implementation": "src/arithmetic/u4/xor_hinted.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::xor_hinted::tests",
+        "primitive_metrics::u4_xor_hinted_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "witness-hints",
+        "bit-packing",
+        "lookup-table"
+      ],
+      "security": "Nibbles, the claim and the lane halves are hostile and range-checked. Exact non-carrying lane arithmetic fixes each lane's parity, so a forged claim or half-count cannot verify and the honest pair is unique (checked by exhaustive search on four vectors). No key or cryptographic security claim.",
+      "stack_contract": "Witness x[0..n-1] y h0 h1 h2 h3 (h3 on top) returns y; the vector and hints are consumed; five hint items per invocation; peak n+27; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "table-len32",
+          "label": "u4_nibbles_to_xor(32)",
+          "parameters": {
+            "length": 32,
+            "form": "256-entry table",
+            "fixture": "x[i]=(7i+3)%16",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item",
+          "script_bytes": 1122,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 289,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 758,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1122,
+          "metric_keys": [
+            "u4_xor_table_32",
+            "u4_xor_table_32_witness",
+            "u4_xor_table_32_stack",
+            "u4_xor_table_32_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-len32",
+          "label": "u4_nibbles_xor_hinted(32)",
+          "parameters": {
+            "length": 32,
+            "form": "parity-hinted",
+            "fixture": "x[i]=(7i+3)%16",
+            "data_items": 37,
+            "hint_items": 5,
+            "hint_bytes": 9,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item",
+          "script_bytes": 617,
+          "witness_bytes": 72,
+          "witness_bytes_max": null,
+          "max_stack_items": 59,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 383,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 617,
+          "metric_keys": [
+            "u4_xor_hinted_32",
+            "u4_xor_hinted_32_witness",
+            "u4_xor_hinted_32_stack",
+            "u4_xor_hinted_32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Single-word lanes limit the vector to 212 nibbles",
+        "Five hint items per invocation",
+        "The exhaustive hint search covers four short vectors, not every vector",
+        "Static non-push opcode counts equal executed counts only because the fragments are straight-line",
+        "The model is ordinary Rust; the existing table reduction is the only independent comparator",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-063"
       ]
     }
   ]

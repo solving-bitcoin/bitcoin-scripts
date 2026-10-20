@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## XOR reduction of u4 vectors
+
+At 32 nibbles the 256-entry table reduction costs 1,122 script bytes with a 289-item
+peak, and the parity-hinted reduction 617 bytes with a 59-item peak and five hint
+items (1,185 versus 689 including witness; strict local `unclassified` tapscript,
+`locally-reproduced`). The hinted form is 50% smaller at 16 nibbles and 42% at 64, but
+is limited to 212 nibbles. See [the primitive](../primitives/u4-xor-hinted.md) and NR-107.

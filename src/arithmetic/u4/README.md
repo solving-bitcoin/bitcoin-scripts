@@ -1200,3 +1200,26 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Parity-hinted XOR reduction
+
+`xor_hinted::u4_nibbles_xor_hinted(n)` (`n` in `1..=212`) verifies a claimed XOR of
+`n` checked nibbles without the 256-entry XOR table. Witness, bottom to top:
+`x[0..n-1] y h0 h1 h2 h3`; output `y`. Each nibble adds the packed bit-count weight
+`T[x] = sum_b bit_b(x) * (n + 2)^b` to one accumulator, so lane `b` of the sum counts
+the nibbles with bit `b` set. The claim is accepted when the sum equals `T[y] + 2 *
+sum_b h_b (n + 2)^b` with every `h_b` in `0..=n/2`; then each lane of the right side is
+at most `n + 1 < n + 2`, nothing carries, and `count_b = y_b + 2 h_b` means `y_b` is
+the parity of `count_b`. Hint items per invocation: **5**. The limit 212 keeps the
+accumulator below `2^31`.
+
+Fragment-only boundary: range checks, packing, accumulation, the lane equality and
+cleanup; input pushes and terminal predicate excluded. Fixture `x[i] = (7i + 3) mod 16`
+over 32 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 256-entry table reduction, 32 nibbles | <!-- metric:u4_xor_table_32 -->1122<!-- /metric:u4_xor_table_32 --> | <!-- metric:u4_xor_table_32_witness -->63<!-- /metric:u4_xor_table_32_witness --> | <!-- metric:u4_xor_table_32_witness_items -->32<!-- /metric:u4_xor_table_32_witness_items --> | 0 | <!-- metric:u4_xor_table_32_stack -->289<!-- /metric:u4_xor_table_32_stack --> | <!-- metric:u4_xor_table_32_opcodes -->758<!-- /metric:u4_xor_table_32_opcodes --> |
+| Parity-hinted reduction, 32 nibbles | <!-- metric:u4_xor_hinted_32 -->617<!-- /metric:u4_xor_hinted_32 --> | <!-- metric:u4_xor_hinted_32_witness -->72<!-- /metric:u4_xor_hinted_32_witness --> | <!-- metric:u4_xor_hinted_32_witness_items -->37<!-- /metric:u4_xor_hinted_32_witness_items --> | 5 | <!-- metric:u4_xor_hinted_32_stack -->59<!-- /metric:u4_xor_hinted_32_stack --> | <!-- metric:u4_xor_hinted_32_opcodes -->383<!-- /metric:u4_xor_hinted_32_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-xor-hinted.md).
