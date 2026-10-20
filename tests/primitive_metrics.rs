@@ -8023,6 +8023,56 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures lower-median selection and verification at 16 nibbles.
+#[test]
+fn u4_order_statistic_metrics_are_current() {
+    use u4::order_statistic::{u4_nibbles_kth_smallest, u4_nibbles_kth_smallest_hinted};
+    const LEN: u32 = 16;
+    const K: u32 = 8;
+    // a[i] = (7i + 3) mod 15 + 1; the lower median is computed from the sorted fixture.
+    let values: Vec<i64> = (0..LEN as i64).map(|i| (7 * i + 3) % 15 + 1).collect();
+    let mut sorted = values.clone();
+    sorted.sort();
+    let median = sorted[K as usize - 1];
+    let select_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = select_witness.clone();
+    hinted_witness.push(scriptnum(median));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("select", u4_nibbles_kth_smallest(LEN, K), select_witness),
+        (
+            "hinted",
+            u4_nibbles_kth_smallest_hinted(LEN, K),
+            hinted_witness,
+        ),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            { median } OP_EQUALVERIFY
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_kth_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

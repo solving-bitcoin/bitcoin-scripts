@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-order-statistic",
+      "name": "k-th smallest nibble claim check and selector",
+      "class": "arithmetic/word",
+      "summary": "Linear-time verification that a witness-claimed nibble is the k-th smallest (for example the lower median) of a range-checked u4 vector, with a quadratic hint-free pairwise selector.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-order-statistic.md",
+      "implementation": "src/arithmetic/u4/order_statistic.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::order_statistic::tests",
+        "primitive_metrics::u4_order_statistic_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "witness-hints",
+        "threshold-comparison"
+      ],
+      "security": "The vector and the claim are hostile: both are range-checked and the claim is accepted only when its rank interval contains k. No hint is trusted beyond that check; no key or cryptographic security claim.",
+      "stack_contract": "Claim check: preserved | a[0..n-1] | claim -> preserved | claim, or abort. Selector: preserved | a[0..n-1] -> preserved | value in 0..=15. Peak n+4 (claim check) and n+6 (selector); unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "hinted-len16-k8",
+          "label": "u4_nibbles_kth_smallest_hinted(16, 8)",
+          "parameters": {
+            "length": 16,
+            "k": 8,
+            "form": "claim check",
+            "fixture": "a[i]=(7i+3)%15+1",
+            "data_items": 17,
+            "hint_items": 1,
+            "hint_bytes": 2,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 312,
+          "witness_bytes": 35,
+          "witness_bytes_max": null,
+          "max_stack_items": 20,
+          "executed_opcodes": 193,
+          "static_non_push_opcodes": 193,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 312,
+          "metric_keys": [
+            "u4_kth_hinted_16",
+            "u4_kth_hinted_16_witness",
+            "u4_kth_hinted_16_stack",
+            "u4_kth_hinted_16_opcodes"
+          ]
+        },
+        {
+          "id": "select-len16-k8",
+          "label": "u4_nibbles_kth_smallest(16, 8)",
+          "parameters": {
+            "length": 16,
+            "k": 8,
+            "form": "pairwise selector",
+            "fixture": "a[i]=(7i+3)%15+1",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": null,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 3512,
+          "witness_bytes": 33,
+          "witness_bytes_max": null,
+          "max_stack_items": 22,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 2282,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3512,
+          "metric_keys": [
+            "u4_kth_select_16",
+            "u4_kth_select_16_witness",
+            "u4_kth_select_16_stack",
+            "u4_kth_select_16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "The pairwise selector is quadratic and limited to 32 nibbles",
+        "The sorting-network comparison figure is reported by the open sorting PR, not reproduced here",
+        "Selector opcode count is branch dependent and its executed count is recorded as null",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-057"
       ]
     }
   ]

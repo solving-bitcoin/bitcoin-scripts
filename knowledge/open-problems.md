@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-057 — Rank-certificate consumer and network comparison
+
+The claim check and the pairwise selector are measured standalone. **Accept when:**
+the zero-hint sorting-network selection from the sorting PR is reproduced on the
+same fragment boundary at 16 and 32 nibbles and compared with the claim check
+including the hint item, and a consumer (for example a median-of-reports or
+threshold-ordering protocol) uses the winner with its live state, recording witness
+bytes and items, hint counts, executed opcodes and combined peaks. Core validation
+is required for any deployment claim.
