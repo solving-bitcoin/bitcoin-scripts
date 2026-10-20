@@ -1185,3 +1185,14 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-044 — Multiset-equality consumer frontier
+
+The packed histogram test is measured standalone. **Accept when:** a concrete
+consumer (for example a permutation check on witness-supplied nibbles) uses
+it with its live protocol state and compares it against a hinted sorted-order
+certificate on equal complete-leaf boundaries, with script and witness bytes,
+data and hint items, executed opcodes and combined peaks; record either the
+winning regime or dominance. A cheaper table schedule (reusing one table
+across words) is also open. Complete-spend/Core validation is required before
+any deployment claim.

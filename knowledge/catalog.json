@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,85 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-multiset-equal",
+      "name": "Checked u4 multiset equality via packed histogram difference",
+      "class": "arithmetic/word",
+      "summary": "Exact zero-hint multiset equality of two equal-length u4 vectors using radix-(2n+1) signed histogram lanes in 4-byte ScriptNum accumulators.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-multiset-equal.md",
+      "implementation": "src/arithmetic/u4/multiset_equal.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::multiset_equal::tests",
+        "primitive_metrics::u4_multiset_equal_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "constant-embedding",
+        "lookup-table",
+        "bit-packing",
+        "permutation"
+      ],
+      "security": "Every nibble of both vectors is range-checked before it indexes a stack table, so hostile values cannot alias another stack slot. Lane base 2n+1 makes the signed histogram difference injective. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | a[0..n-1] | b[0..n-1] (last item on top) and returns preserved | equal with equal in {0,1}; out-of-range nibbles abort. Peak is 2n+21+preserved combined items.",
+      "configurations": [
+        {
+          "id": "checked-len16-equal",
+          "label": "u4_nibbles_multiset_equal(16), A=0..15 and B reversed",
+          "parameters": {
+            "length": 16,
+            "lane_base": 33,
+            "lanes_per_word": 6,
+            "words": 3,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: 2n range checks (first pass only), per-word 16-entry constant tables, 2n signed lane accumulations per word, word-zero tests, table and input cleanup; excludes input pushes, witness serialization beyond the CompactSize count, transaction framing and unrelated live state",
+          "script_bytes": 1158,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 53,
+          "executed_opcodes": 723,
+          "static_non_push_opcodes": 723,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1158,
+          "metric_keys": [
+            "u4_multiset_equal_16",
+            "u4_multiset_equal_16_witness",
+            "u4_multiset_equal_16_stack",
+            "u4_multiset_equal_16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Order and duplicate positions are ignored by design: this decides multiset equality, not permutation witnesses or sortedness",
+        "Script size grows with n times the word count (3 words at n=8..16, 4 at n=64, 6 at n=489)",
+        "Table passes re-push 16 constants per word; no reuse across calls is measured",
+        "The per-symbol baseline is a lower-bound estimate (32 fixed-symbol counts) not a built comparator",
+        "Static non-push opcode count is not a dynamic execution measurement",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-044"
       ]
     }
   ]
