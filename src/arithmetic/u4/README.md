@@ -1200,3 +1200,27 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Fixed-composition check
+
+`composition::u4_nibbles_have_composition(&counts)` decides whether a vector of
+`n = sum(counts)` checked nibbles (`1..=979`, peak `n + 21`) contains each nibble
+value `s` exactly `counts[s]` times, returning one Boolean; an out-of-range nibble
+aborts. Each nibble adds `B^lane` (`B = n + 1`) to one of a few accumulator words
+that are compared with the public target words; no lane can carry because a
+count never exceeds `n`. No hints. `[1; 16]` decides "is a permutation of
+`0..=15`". `u4_nibbles_pairwise_distinct(n)` is the pairwise comparator for that
+case.
+
+Fragment-only boundary: nibble range checks, table pushes, accumulation, target
+comparisons and cleanup; input pushes and terminal predicate excluded. Fixture:
+the 16 nibbles `15..0` (<!-- metric:u4_composition_16_witness -->32<!-- /metric:u4_composition_16_witness --> witness bytes, 16 items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Packed-lane composition, permutation of 16 | <!-- metric:u4_composition_lanes_16 -->649<!-- /metric:u4_composition_lanes_16 --> | <!-- metric:u4_composition_lanes_16_stack -->37<!-- /metric:u4_composition_lanes_16_stack --> | <!-- metric:u4_composition_lanes_16_opcodes -->379<!-- /metric:u4_composition_lanes_16_opcodes --> |
+| Pairwise distinctness, 16 nibbles | <!-- metric:u4_composition_pairwise_16 -->823<!-- /metric:u4_composition_pairwise_16 --> | <!-- metric:u4_composition_pairwise_16_stack -->19<!-- /metric:u4_composition_pairwise_16_stack --> | <!-- metric:u4_composition_pairwise_16_opcodes -->538<!-- /metric:u4_composition_pairwise_16_opcodes --> |
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_composition_16_count_baseline -->4256<!-- /metric:u4_composition_16_count_baseline -->-byte lower bound
+(an estimate: it excludes vector copies and the comparisons). See the
+[knowledge page](../../../knowledge/primitives/u4-composition.md).

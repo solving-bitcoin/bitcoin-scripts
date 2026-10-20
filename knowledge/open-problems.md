@@ -1185,3 +1185,14 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-055 — Composition-check consumer frontier
+
+The composition check is measured standalone. **Accept when:** a concrete
+consumer (for example a constant-composition one-time signature verifier or a
+permutation-valued witness) uses it with its live protocol state and compares it
+with a destructive-selection or hint-based design on equal complete-leaf
+boundaries with witness bytes and items, hint counts, executed opcodes and
+combined peaks, recording either a winning regime or dominance. A cheaper
+table schedule that reuses one table across words is unmeasured. Core
+validation is required for any deployment claim.

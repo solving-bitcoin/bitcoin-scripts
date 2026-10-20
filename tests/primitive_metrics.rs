@@ -8023,6 +8023,50 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the fixed-composition check on a 16-nibble permutation.
+#[test]
+fn u4_composition_metrics_are_current() {
+    let fragment = u4::composition::u4_nibbles_have_composition(&[1; 16]);
+    let comparator = u4::composition::u4_nibbles_pairwise_distinct(16);
+    let witness: Vec<Vec<u8>> = (0..16).rev().map(|nibble| scriptnum(nibble)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_composition_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_composition_16_count_baseline",
+            value: 16 * script_len(u4::count::u4_nibbles_count(0, 16)),
+        },
+    ];
+    for (name, frag) in [("lanes", fragment), ("pairwise", comparator)] {
+        let leaf = script! {
+            { frag.clone() }
+            OP_VERIFY
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_composition_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(frag.clone())),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(frag)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

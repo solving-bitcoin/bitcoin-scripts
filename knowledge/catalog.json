@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-composition",
+      "name": "Fixed-composition check of a u4 vector",
+      "class": "arithmetic/word",
+      "summary": "Hint-free decision that a range-checked u4 vector has exactly a public multiset of nibbles, using packed base-(n+1) lanes, with a pairwise-distinct comparator for permutations.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-composition.md",
+      "implementation": "src/arithmetic/u4/composition.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::composition::tests",
+        "primitive_metrics::u4_composition_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "constant-embedding",
+        "lookup-table",
+        "bit-packing",
+        "permutation"
+      ],
+      "security": "Every nibble is range-checked before it indexes a stack table, so hostile values cannot alias another slot. Lanes cannot carry, so a word matches its target only when every count does. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | a[0..n-1] (last on top), n = sum(counts), and returns preserved | ok in {0,1}; out-of-range nibbles abort; peak n+21+preserved; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "lanes-permutation16",
+          "label": "u4_nibbles_have_composition([1;16])",
+          "parameters": {
+            "length": 16,
+            "fixture": "nibbles 15..0",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "packed lanes"
+          },
+          "includes": "fragment-only: nibble range checks, table pushes, accumulation or pairwise tests, target comparison and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 649,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 37,
+          "executed_opcodes": 379,
+          "static_non_push_opcodes": 379,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 649,
+          "metric_keys": [
+            "u4_composition_lanes_16",
+            "u4_composition_16_witness",
+            "u4_composition_lanes_16_stack",
+            "u4_composition_lanes_16_opcodes"
+          ]
+        },
+        {
+          "id": "pairwise-permutation16",
+          "label": "u4_nibbles_pairwise_distinct(16)",
+          "parameters": {
+            "length": 16,
+            "fixture": "nibbles 15..0",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "pairwise comparator"
+          },
+          "includes": "fragment-only: nibble range checks, table pushes, accumulation or pairwise tests, target comparison and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 823,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 19,
+          "executed_opcodes": 538,
+          "static_non_push_opcodes": 538,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 823,
+          "metric_keys": [
+            "u4_composition_pairwise_16",
+            "u4_composition_16_witness",
+            "u4_composition_pairwise_16_stack",
+            "u4_composition_pairwise_16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Needs a few resident table items per pass and a peak of n+21",
+        "The per-symbol-count baseline is a lower-bound estimate, not a built comparator",
+        "Opcode counts equal executed counts only because the fragments are straight-line",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-055"
       ]
     }
   ]
