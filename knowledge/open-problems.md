@@ -1185,3 +1185,14 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-051 — Residue-check consumer frontier
+
+The residues are measured standalone. **Accept when:** a concrete consumer (for
+example a cheap necessary check on witness-supplied limb arithmetic) combines
+casting-out residues with its live protocol state and compares them with an
+exact check on equal complete-leaf boundaries, with witness bytes and items,
+hint counts, executed opcodes and combined peaks, recording either a winning
+regime or dominance. A delayed-reduction variant of the modulo-65,537 and
+Damm schedules is unmeasured. Core validation is required for any deployment
+claim.

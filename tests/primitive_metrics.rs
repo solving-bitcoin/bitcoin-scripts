@@ -4800,6 +4800,7 @@ fn metrics() -> Vec<Metric> {
     .chain(u32_conditional_negate_metrics())
     .chain(u4_sum_metrics())
     .chain(u4_mod17_metrics())
+    .chain(casting_out_residue_metrics())
     .chain(u4_prefix_sum_metrics())
     .chain(u4_exact_product_metrics())
     .chain(u32_consuming_bitwise_metrics())
@@ -8021,6 +8022,84 @@ fn u4_symbol_count_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+fn casting_out_residue_metrics() -> Vec<Metric> {
+    // Fixture x[i] = (7i + floor(i/3)) mod 16 over 32 nibbles, as for modulo 17.
+    let digits: Vec<i64> = (0..32).map(|i| (7 * i + i / 3) % 16).collect();
+    let witness: Vec<Vec<u8>> = digits.iter().map(|&d| scriptnum(d)).collect();
+    let value = |modulus: i64| digits.iter().fold(0i64, |r, &d| (16 * r + d) % modulus);
+    let mut metrics = vec![Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_casting_out_32_witness",
+        value: witness_size(&witness),
+    }];
+    for (name, fragment, modulus) in [
+        ("mod15_run", u4::mod15::u4_nibbles_to_mod15(32), 15),
+        (
+            "mod15_ladder",
+            u4::mod15::u4_nibbles_to_mod15_ladder(32),
+            15,
+        ),
+        (
+            "mod17_delayed",
+            u4::mod17::u4_nibbles_to_mod17_delayed(32),
+            17,
+        ),
+    ] {
+        let leaf = script! { { fragment.clone() } { value(modulus) } OP_EQUAL };
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_{name}_32{suffix}").into_boxed_str())
+        };
+        for (suffix, measured) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", max_stack_items_strict(leaf, witness.clone())),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value: measured,
+            });
+        }
+    }
+    // u32 word 0x89abcdef, as for modulo 65,537.
+    let word_witness: Vec<Vec<u8>> = 0x89abcdefu32
+        .to_be_bytes()
+        .iter()
+        .map(|&b| scriptnum(i64::from(b)))
+        .collect();
+    metrics.push(Metric {
+        readme: "src/arithmetic/u32/README.md",
+        key: "u32_mersenne_witness",
+        value: witness_size(&word_witness),
+    });
+    for (name, fragment, modulus) in [
+        ("mod255", u32::mersenne_residue::u32_mod255(), 255u32),
+        ("mod65535", u32::mersenne_residue::u32_mod65535(), 65_535),
+    ] {
+        let leaf = script! { { fragment.clone() } { i64::from(0x89abcdefu32 % modulus) } OP_EQUAL };
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u32_{name}{suffix}").into_boxed_str())
+        };
+        for (suffix, measured) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", max_stack_items_strict(leaf, word_witness.clone())),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: key(suffix),
+                value: measured,
+            });
+        }
+    }
+    metrics
+}
+
+#[test]
+fn casting_out_residue_metrics_are_current() {
+    check_readme_metrics(casting_out_residue_metrics());
 }
 
 /// This isolated fixture measures only the checked u32 population count.

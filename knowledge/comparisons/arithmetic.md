@@ -463,3 +463,13 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Delayed versus running modular reduction
+
+Keeping the nibble sum exact and reducing once shrinks the modulo-15 fold from
+1,214 to 833 script bytes at 64 nibbles and the modulo-17 fold from 1,342 to
+894 (20,926 to 13,066 at 997), at the same `n + 3` peak, zero hints and no
+table (strict local `unclassified` tapscript, `locally-reproduced`). Running
+reduction wins only below four nibbles. The u32 byte-sum residues cost 87
+(mod 255) and 115 (mod 65,535) bytes against 100 for mod 65,537. See
+[the primitive](../primitives/u4-mod15.md) and NR-095.

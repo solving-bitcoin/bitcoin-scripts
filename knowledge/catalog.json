@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,291 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-mod15.md",
+      "documentation": "src/arithmetic/u4/README.md",
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "class": "arithmetic/word",
+      "id": "arithmetic/u4-mod15",
+      "name": "Checked base-16 integer residue modulo 15",
+      "summary": "Table-free casting-out-fifteens residue of a canonical big-endian u4 vector with running and delayed (ladder) reduction schedules.",
+      "implementation": "src/arithmetic/u4/mod15.rs",
+      "tests": [
+        "arithmetic::u4::mod15::tests",
+        "primitive_metrics::casting_out_residue_metrics_are_current"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "modular-reduction",
+        "range-check",
+        "canonical-encoding"
+      ],
+      "security": "Every input is checked for range and minimal encoding. The residue is a digit sum modulo 15: it is blind to transpositions and is not authentication. Length and expected residue are caller-bound.",
+      "stack_contract": "Consumes preserved | x[0..n-1] (last on top) and returns preserved | r in 0..=14; altstack untouched; fragment bound n+3+preserved<=1000.",
+      "configurations": [
+        {
+          "id": "running-batch32",
+          "label": "u4_nibbles_to_mod15(32)",
+          "parameters": {
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "nibbles": 32,
+            "schedule": "running",
+            "data_items": 32
+          },
+          "includes": "fragment-only: all canonical nibble checks, the fold and the final reduction; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness is the complete data-only vector, all inputs coexist at entry; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 606,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 446,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 606,
+          "metric_keys": [
+            "u4_mod15_run_32",
+            "u4_casting_out_32_witness",
+            "u4_mod15_run_32_stack",
+            "u4_mod15_run_32_opcodes"
+          ]
+        },
+        {
+          "id": "ladder-batch32",
+          "label": "u4_nibbles_to_mod15_ladder(32)",
+          "parameters": {
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "nibbles": 32,
+            "schedule": "ladder",
+            "data_items": 32
+          },
+          "includes": "fragment-only: all canonical nibble checks, the fold and the final reduction; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness is the complete data-only vector, all inputs coexist at entry; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 438,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 316,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 438,
+          "metric_keys": [
+            "u4_mod15_ladder_32",
+            "u4_casting_out_32_witness",
+            "u4_mod15_ladder_32_stack",
+            "u4_mod15_ladder_32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Digit-sum residue: blind to transpositions",
+        "Static non-push opcode counts are not dynamic measurements (the ladder branches)",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-051"
+      ]
+    },
+    {
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-mod15.md",
+      "documentation": "src/arithmetic/u4/README.md",
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "class": "arithmetic/word",
+      "id": "arithmetic/u4-mod17-delayed",
+      "name": "Delayed-reduction base-16 integer residue modulo 17",
+      "summary": "The modulo-17 residue of arithmetic/u4-mod17 computed from an exact alternating sum reduced once by a conditional-subtraction ladder.",
+      "implementation": "src/arithmetic/u4/mod17.rs",
+      "tests": [
+        "arithmetic::u4::mod17::tests::delayed_schedule_matches_the_running_schedule_and_base_16_evaluation",
+        "primitive_metrics::casting_out_residue_metrics_are_current"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "modular-reduction",
+        "range-check",
+        "canonical-encoding"
+      ],
+      "security": "Every input is checked for range and minimal encoding. Output is a positional checksum, not authentication; same-parity permutations and cancelling changes collide. Length and expected residue are caller-bound.",
+      "stack_contract": "Consumes preserved | x[0..n-1] (last on top) and returns preserved | integer(x) mod17 in 0..=16; fragment bound n+3+preserved<=1000.",
+      "configurations": [
+        {
+          "id": "delayed-batch32",
+          "label": "u4_nibbles_to_mod17_delayed(32)",
+          "parameters": {
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "nibbles": 32,
+            "schedule": "delayed",
+            "data_items": 32
+          },
+          "includes": "fragment-only: all canonical nibble checks, the fold and the final reduction; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness is the complete data-only vector, all inputs coexist at entry; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 467,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 344,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 467,
+          "metric_keys": [
+            "u4_mod17_delayed_32",
+            "u4_casting_out_32_witness",
+            "u4_mod17_delayed_32_stack",
+            "u4_mod17_delayed_32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Loses to the running form below four nibbles (31 versus 10 bytes at one nibble)",
+        "Static non-push opcode counts are not dynamic measurements",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-051"
+      ]
+    },
+    {
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-mod15.md",
+      "documentation": "src/arithmetic/u32/README.md",
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "class": "arithmetic/word",
+      "id": "arithmetic/u32-mersenne-residues",
+      "name": "Checked u32 residues modulo 255 and 65,535",
+      "summary": "Byte-sum and 16-bit-lane-sum residues of a canonical four-byte word reduced by short conditional-subtraction ladders.",
+      "implementation": "src/arithmetic/u32/mersenne_residue.rs",
+      "tests": [
+        "arithmetic::u32::mersenne_residue::tests",
+        "primitive_metrics::casting_out_residue_metrics_are_current"
+      ],
+      "techniques": [
+        "byte-arithmetic",
+        "modular-reduction",
+        "range-check",
+        "canonical-encoding"
+      ],
+      "security": "Every byte is checked for range and minimal encoding. The residues are checksums, not authentication. Length and expected residue are caller-bound.",
+      "stack_contract": "Consumes preserved | b0 b1 b2 b3 (b3 on top) and returns preserved | r; fragment needs seven combined items plus preserved state.",
+      "configurations": [
+        {
+          "id": "mod255-word",
+          "label": "u32_mod255()",
+          "parameters": {
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "modulus": 255,
+            "word": "0x89abcdef",
+            "data_items": 4
+          },
+          "includes": "fragment-only: four raw canonical byte checks, limb sums and the final reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 87,
+          "witness_bytes": 13,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 49,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 87,
+          "metric_keys": [
+            "u32_mod255",
+            "u32_mersenne_witness",
+            "u32_mod255_stack",
+            "u32_mod255_opcodes"
+          ]
+        },
+        {
+          "id": "mod65535-word",
+          "label": "u32_mod65535()",
+          "parameters": {
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "modulus": 65535,
+            "word": "0x89abcdef",
+            "data_items": 4
+          },
+          "includes": "fragment-only: four raw canonical byte checks, limb sums and the final reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 115,
+          "witness_bytes": 13,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 79,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 115,
+          "metric_keys": [
+            "u32_mod65535",
+            "u32_mersenne_witness",
+            "u32_mod65535_stack",
+            "u32_mod65535_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Sum residues are blind to limb permutations",
+        "Static non-push opcode counts are not dynamic measurements",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-051"
       ]
     }
   ]

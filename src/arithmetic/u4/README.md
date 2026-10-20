@@ -1200,3 +1200,27 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Casting out fifteens and delayed modulo-17 reduction
+
+`mod15::u4_nibbles_to_mod15(n)` and `mod15::u4_nibbles_to_mod15_ladder(n)` return
+the represented base-16 integer modulo 15 in `0..=14` (`n` in `1..=997`); since
+16 = 1 modulo 15 this is the digit sum, so unlike modulo 17 it is blind to digit
+transpositions. `mod17::u4_nibbles_to_mod17_delayed(n)` returns the same residue
+as `u4_nibbles_to_mod17` while keeping the alternating sum exact and reducing it
+once at the end with a conditional-subtraction ladder. Inputs are checked for
+range and minimal encoding; no hints or tables are used.
+
+Fragment-only boundary: all canonical checks, the fold and the final reduction;
+operand pushes and terminal predicate excluded. The data-only witness is the
+modulo-17 fixture `x[i]=(7*i+floor(i/3)) mod16` over 32 nibbles (<!-- metric:u4_casting_out_32_witness -->62<!-- /metric:u4_casting_out_32_witness --> serialized bytes, 32 items, 0 hints). Peaks use a terminal
+expected-residue `OP_EQUAL` under strict local execution.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo 15, running reduction, 32 nibbles | <!-- metric:u4_mod15_run_32 -->606<!-- /metric:u4_mod15_run_32 --> | <!-- metric:u4_mod15_run_32_stack -->35<!-- /metric:u4_mod15_run_32_stack --> | <!-- metric:u4_mod15_run_32_opcodes -->446<!-- /metric:u4_mod15_run_32_opcodes --> |
+| Modulo 15, ladder (delayed) reduction, 32 nibbles | <!-- metric:u4_mod15_ladder_32 -->438<!-- /metric:u4_mod15_ladder_32 --> | <!-- metric:u4_mod15_ladder_32_stack -->35<!-- /metric:u4_mod15_ladder_32_stack --> | <!-- metric:u4_mod15_ladder_32_opcodes -->316<!-- /metric:u4_mod15_ladder_32_opcodes --> |
+| Modulo 17, delayed reduction, 32 nibbles | <!-- metric:u4_mod17_delayed_32 -->467<!-- /metric:u4_mod17_delayed_32 --> | <!-- metric:u4_mod17_delayed_32_stack -->35<!-- /metric:u4_mod17_delayed_32_stack --> | <!-- metric:u4_mod17_delayed_32_opcodes -->344<!-- /metric:u4_mod17_delayed_32_opcodes --> |
+
+The running modulo-17 form above measures 670 bytes on the same boundary. See
+the [knowledge page](../../../knowledge/primitives/u4-mod15.md).

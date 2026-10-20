@@ -45,6 +45,39 @@ pub fn u4_nibbles_to_mod17(nibble_count: u32) -> Script {
     }
 }
 
+/// Delayed-reduction schedule for the same residue as [`u4_nibbles_to_mod17`].
+///
+/// The alternating sum is kept exact (no per-step normalization), made
+/// nonnegative with one public offset, and reduced by a ladder of conditional
+/// subtractions of `17 * 2^k`. Same stack contract and input checks.
+pub fn u4_nibbles_to_mod17_delayed(nibble_count: u32) -> Script {
+    assert!(nibble_count > 0, "modulo-17 batch must not be empty");
+    assert!(
+        nibble_count <= U4_MOD17_MAX_BATCH,
+        "modulo-17 batch exceeds stack limit"
+    );
+    // |alternating sum| <= 15 * ceil(n / 2); shift into 0..=2 * offset.
+    let bound = 15 * i64::from(nibble_count.div_ceil(2));
+    let offset = 17 * ((bound + 16) / 17);
+    let top = 63 - ((2 * offset / 17) as u64).leading_zeros();
+    script! {
+        { verify_canonical_nibble() }
+        for _ in 1..nibble_count {
+            OP_SWAP
+            { verify_canonical_nibble() }
+            OP_SWAP OP_SUB
+        }
+        if nibble_count % 2 == 0 {
+            OP_NEGATE
+        }
+        { offset } OP_ADD
+        for level in (0..=top).rev() {
+            OP_DUP { 17i64 << level } OP_GREATERTHANOREQUAL
+            OP_IF { 17i64 << level } OP_SUB OP_ENDIF
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -90,5 +123,65 @@ mod tests {
         }
         assert!(std::panic::catch_unwind(|| u4_nibbles_to_mod17(0)).is_err());
         assert!(std::panic::catch_unwind(|| u4_nibbles_to_mod17(U4_MOD17_MAX_BATCH + 1)).is_err());
+    }
+
+    #[test]
+    fn delayed_schedule_matches_the_running_schedule_and_base_16_evaluation() {
+        let mut state = 0x9e37_79b9_7f4a_7c15u64;
+        let mut cases: Vec<Vec<u8>> = vec![vec![15; 64], vec![0; 64], vec![15, 0, 15, 0, 15]];
+        for len in [1usize, 2, 3, 4, 5, 8, 16, 31, 32, 33, 64, 127, 128] {
+            for _ in 0..8 {
+                cases.push(
+                    (0..len)
+                        .map(|_| {
+                            state ^= state << 13;
+                            state ^= state >> 7;
+                            state ^= state << 17;
+                            (state % 16) as u8
+                        })
+                        .collect(),
+                );
+            }
+        }
+        for values in cases {
+            let expected = values
+                .iter()
+                .fold(0u32, |r, &x| (16 * r + u32::from(x)) % 17);
+            let witness: Vec<Vec<u8>> = values
+                .iter()
+                .map(|&x| if x == 0 { vec![] } else { vec![x] })
+                .collect();
+            let result = execute_script_with_inputs_strict(
+                script! { { u4_nibbles_to_mod17_delayed(values.len() as u32) } { expected } OP_EQUAL },
+                witness,
+            );
+            assert!(result.success, "values={values:?}: {result}");
+        }
+        // Exhaustive for one to three digits.
+        for x in 0..16u8 {
+            for y in 0..16u8 {
+                for z in 0..16u8 {
+                    for values in [vec![x], vec![x, y], vec![x, y, z]] {
+                        let expected = values
+                            .iter()
+                            .fold(0u32, |r, &d| (16 * r + u32::from(d)) % 17);
+                        let witness: Vec<Vec<u8>> = values
+                            .iter()
+                            .map(|&d| if d == 0 { vec![] } else { vec![d] })
+                            .collect();
+                        let result = execute_script_with_inputs_strict(
+                            script! { { u4_nibbles_to_mod17_delayed(values.len() as u32) } { expected } OP_EQUAL },
+                            witness,
+                        );
+                        assert!(result.success, "values={values:?}: {result}");
+                    }
+                }
+            }
+        }
+        assert!(std::panic::catch_unwind(|| u4_nibbles_to_mod17_delayed(0)).is_err());
+        assert!(
+            std::panic::catch_unwind(|| u4_nibbles_to_mod17_delayed(U4_MOD17_MAX_BATCH + 1))
+                .is_err()
+        );
     }
 }

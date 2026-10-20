@@ -649,3 +649,24 @@ validation checks are caught by the same typed rejection assertions.
 
 See the [knowledge page](../../../knowledge/primitives/u32-mod65537.md) and
 [reproduction manifest](../../../research/u32-fermat-residue/README.md).
+
+## Residues modulo 255 and 65,535
+
+`mersenne_residue::u32_mod255()` and `mersenne_residue::u32_mod65535()` consume
+one four-byte word, most significant byte first, and return the integer modulo
+255 (`0..=254`) or 65,535 (`0..=65534`). Since 256 = 1 modulo 255 and
+65,536 = 1 modulo 65,535, each sums its limbs (bytes or 16-bit lanes) and
+finishes with a short conditional-subtraction ladder; contrast
+`residue::u32_mod65537`, where a difference replaces the sum. All four raw
+canonical byte checks are included; no hints or tables are used.
+
+Fragment-only boundary on the word `0x89abcdef`: input pushes and terminal
+predicate excluded, data-only witness <!-- metric:u32_mersenne_witness -->13<!-- /metric:u32_mersenne_witness --> bytes over four items.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo 255 | <!-- metric:u32_mod255 -->87<!-- /metric:u32_mod255 --> | <!-- metric:u32_mod255_stack -->7<!-- /metric:u32_mod255_stack --> | <!-- metric:u32_mod255_opcodes -->49<!-- /metric:u32_mod255_opcodes --> |
+| Modulo 65,535 | <!-- metric:u32_mod65535 -->115<!-- /metric:u32_mod65535 --> | <!-- metric:u32_mod65535_stack -->7<!-- /metric:u32_mod65535_stack --> | <!-- metric:u32_mod65535_opcodes -->79<!-- /metric:u32_mod65535_opcodes --> |
+
+The modulo-65,537 fragment above is 100 bytes. See the
+[knowledge page](../../../knowledge/primitives/u4-mod15.md).

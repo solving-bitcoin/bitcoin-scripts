@@ -1991,3 +1991,14 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-095: Per-step modular normalization is dominated beyond three nibbles
+
+Normalizing the residue after every addition costs about 19 script bytes per
+nibble for modulo 15 and about 21 for the existing modulo-17 fold, against
+about 13 and 14 when the sum stays exact and one ladder reduces it at the end:
+1,214 versus 833 and 1,342 versus 894 at 64 nibbles, and 20,926 versus
+13,066 at 997 for modulo 17. The running form wins only below four nibbles
+(mod 17 at one nibble: 10 versus 31 bytes). Figures are policy-compiled
+fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-mod15.md).
