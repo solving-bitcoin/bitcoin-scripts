@@ -1200,3 +1200,21 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Delayed-reduction modulo-16 sum
+
+`sum_ladder::u4_nibbles_to_sum_mod16_ladder(n)` (`n` in `1..=997`, combined peak
+`n + 3`) has the contract of `sum::u4_nibbles_to_sum_mod16` but keeps the sum
+exact and reduces it once with a short ladder of conditional subtractions of
+`16 * 2^k`, so it needs no 31-entry table and no altstack. Inputs are checked for
+range and minimal encoding; no hints.
+
+Fragment-only boundary and fixture as for the table schedule (thirty-two sevens,
+65 serialized witness bytes, 32 items, 0 hints); peak uses a terminal `OP_DROP`.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo-16 sum, ladder, 32 nibbles | <!-- metric:u4_sum_ladder_batch32 -->429<!-- /metric:u4_sum_ladder_batch32 --> | <!-- metric:u4_sum_ladder_batch32_stack -->35<!-- /metric:u4_sum_ladder_batch32_stack --> | <!-- metric:u4_sum_ladder_batch32_opcodes -->311<!-- /metric:u4_sum_ladder_batch32_opcodes --> |
+
+The table schedule on the same input is 592 bytes with a 66-item peak. See the
+[knowledge page](../../../knowledge/primitives/u4-sum-ladder.md).

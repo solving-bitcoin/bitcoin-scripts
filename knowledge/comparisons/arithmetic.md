@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Modulo-16 nibble sums
+
+At 32 nibbles the delayed-reduction ladder costs 429 script bytes with a 35-item
+peak, against 592 bytes and a 66-item peak for the resident-table schedule, and is
+smaller at every length from one nibble (10 versus 65 bytes) to the table form's
+965-nibble limit (strict local `unclassified` tapscript, zero hints,
+`locally-reproduced`). See [the primitive](../primitives/u4-sum-ladder.md) and NR-097.

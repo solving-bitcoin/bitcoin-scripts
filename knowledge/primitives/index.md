@@ -159,3 +159,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [BN254 fields](bn254-fields.md)
 - [BN254 groups and MSM](bn254-groups.md)
 - [BN254 pairing verifier](bn254-pairing.md)
+- [Delayed-reduction modulo-16 nibble sum](u4-sum-ladder.md)

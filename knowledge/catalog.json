@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,77 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-sum-ladder",
+      "name": "Delayed-reduction modulo-16 nibble sum",
+      "class": "arithmetic/word",
+      "summary": "Checked modulo-16 sum of u4 nibbles using an exact running sum and a final conditional-subtraction ladder instead of a resident table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-sum-ladder.md",
+      "implementation": "src/arithmetic/u4/sum_ladder.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::sum_ladder::tests",
+        "primitive_metrics::u4_sum_ladder_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "modular-reduction",
+        "range-check",
+        "canonical-encoding"
+      ],
+      "security": "Every nibble is checked for range and minimal encoding. The sum modulo 16 is a permutation-invariant checksum, not authentication; length and expected value are caller-bound.",
+      "stack_contract": "Consumes preserved | x[0..n-1] (last on top) and returns preserved | (sum mod 16) in 0..=15; altstack untouched; fragment bound n+3+preserved<=1000.",
+      "configurations": [
+        {
+          "id": "batch32",
+          "label": "u4_nibbles_to_sum_mod16_ladder(32)",
+          "parameters": {
+            "nibbles": 32,
+            "fixture": "thirty-two sevens",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: canonical nibble checks, exact accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal OP_DROP leaf; no table, setup or hints",
+          "script_bytes": 429,
+          "witness_bytes": 65,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 311,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 429,
+          "metric_keys": [
+            "u4_sum_ladder_batch32",
+            "u4_sum_ladder_batch32_stack",
+            "u4_sum_ladder_batch32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Static non-push opcode count is not a dynamic measurement (the ladder branches)",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-053"
       ]
     }
   ]
