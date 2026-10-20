@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-047 — Bracket-structure consumer frontier
+
+The balanced check is measured standalone. **Accept when:** a concrete consumer
+(for example validating a serialized tree-shape or nested-script commitment)
+uses it with its live protocol state and compares it with an alternative
+encoding such as depth lists on equal complete-leaf boundaries, with witness
+bytes and items, exact hint counts, executed opcodes and combined peaks.
+Byte-wide (256-entry) summary tables are unmeasured. Core validation is required
+for any deployment claim.

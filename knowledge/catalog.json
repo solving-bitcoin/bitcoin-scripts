@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,116 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-balanced",
+      "name": "Nibble-packed bracket-balance check",
+      "class": "arithmetic/word",
+      "summary": "Zero-hint balanced-bracket decision over four brackets per nibble using (net change, prefix deficit) summary tables, with a one-item-per-bracket comparator.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-balanced.md",
+      "implementation": "src/arithmetic/u4/balanced.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::balanced::tests",
+        "primitive_metrics::u4_balanced_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "lookup-table",
+        "finite-state-fold",
+        "stack-scheduling"
+      ],
+      "security": "Every nibble is range-checked before it indexes a stack table; the verdict depends only on validated witness values. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | v[0..n-1] (last on top, v[0] the first four brackets) and returns preserved | balanced in {0,1}; peak n+37+preserved; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "packed-128-brackets",
+          "label": "u4_nibbles_balanced(32)",
+          "parameters": {
+            "brackets": 128,
+            "fixture": "(()) x32",
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "nibble-packed",
+            "data_items": 32
+          },
+          "includes": "fragment-only: nibble range checks, table pushes, per-nibble summary lookups with slack and height updates, final Boolean and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 895,
+          "witness_bytes": 65,
+          "witness_bytes_max": null,
+          "max_stack_items": 69,
+          "executed_opcodes": 598,
+          "static_non_push_opcodes": 598,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_balanced_packed_128",
+            "u4_balanced_packed_128_witness",
+            "u4_balanced_packed_128_stack",
+            "u4_balanced_packed_128_opcodes"
+          ]
+        },
+        {
+          "id": "items-128-brackets",
+          "label": "bracket_items_balanced(128)",
+          "parameters": {
+            "brackets": 128,
+            "fixture": "(()) x32",
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "one-item-per-bracket",
+            "data_items": 128
+          },
+          "includes": "fragment-only: nibble range checks, table pushes, per-nibble summary lookups with slack and height updates, final Boolean and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 2059,
+          "witness_bytes": 193,
+          "witness_bytes_max": null,
+          "max_stack_items": 133,
+          "executed_opcodes": 1669,
+          "static_non_push_opcodes": 1669,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_balanced_items_128",
+            "u4_balanced_items_128_witness",
+            "u4_balanced_items_128_stack",
+            "u4_balanced_items_128_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only a balanced-bracket predicate over a packed bit string; no tree decoding or bracket types",
+        "The comparator scans from the top with open and close exchanged, a different order than the packed form",
+        "Static non-push opcode counts equal executed counts only because both fragments are straight-line",
+        "The model is ordinary Rust, not an independent Script implementation",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-047"
       ]
     }
   ]

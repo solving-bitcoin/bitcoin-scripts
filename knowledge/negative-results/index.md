@@ -1991,3 +1991,13 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-091: One-item-per-bracket balance scanning is dominated
+
+Scanning a bracket string with one stack item per bracket costs 2,059 script
+bytes, 193 witness bytes and a 133-item peak at 128 brackets, versus 895, 65 and
+69 for the nibble-packed summary check, and 4,107 versus 1,727 bytes at 256.
+It is smaller only at four brackets (75 versus 89 bytes), because the packed
+form pays a fixed 63-byte table cost. All figures are policy-compiled fragments
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-balanced.md).

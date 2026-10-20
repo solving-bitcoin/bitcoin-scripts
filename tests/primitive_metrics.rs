@@ -8023,6 +8023,51 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures nibble-packed bracket balance against a bit-per-item comparator.
+#[test]
+fn u4_balanced_metrics_are_current() {
+    use u4::balanced::{bracket_items_balanced, u4_nibbles_balanced};
+    const NIBBLES: u32 = 32;
+    // "(())" repeated: every nibble is 0b1100 and the string is balanced.
+    let packed_witness: Vec<Vec<u8>> = (0..NIBBLES).map(|_| scriptnum(12)).collect();
+    let items_witness: Vec<Vec<u8>> = (0..NIBBLES)
+        .flat_map(|_| [1, 1, 0, 0])
+        .map(scriptnum)
+        .collect();
+    let packed = u4_nibbles_balanced(NIBBLES);
+    let items = bracket_items_balanced(4 * NIBBLES);
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("packed", packed, packed_witness),
+        ("items", items, items_witness),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            OP_VERIFY
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_balanced_{name}_128{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

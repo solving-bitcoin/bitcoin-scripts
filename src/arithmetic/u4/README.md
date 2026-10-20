@@ -22,6 +22,9 @@ these operations, but this module contains no hash-specific round logic.
 - `count::u4_nibbles_count(value, nibble_count)` takes a checked batch size in
   `1..=997` without preserved stack items; composition must satisfy
   `nibble_count + 3 + preserved_items <= 1000`.
+- `balanced::u4_nibbles_balanced(len)` takes `1..=963` nibbles (four brackets
+  each, most significant bit first); peak is `len + 37`. The comparator
+  `bracket_items_balanced(len)` takes one `{0, 1}` item per bracket.
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -250,6 +253,8 @@ words as data, with no hint items.
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
+| Bracket balance, 128 brackets, packed nibbles | <!-- metric:u4_balanced_packed_128 -->895<!-- /metric:u4_balanced_packed_128 --> bytes | <!-- metric:u4_balanced_packed_128_stack -->69<!-- /metric:u4_balanced_packed_128_stack --> items | <!-- metric:u4_balanced_packed_128_opcodes -->598<!-- /metric:u4_balanced_packed_128_opcodes --> |
+| Bracket balance, 128 brackets, one item each | <!-- metric:u4_balanced_items_128 -->2059<!-- /metric:u4_balanced_items_128 --> bytes | <!-- metric:u4_balanced_items_128_stack -->133<!-- /metric:u4_balanced_items_128_stack --> items | <!-- metric:u4_balanced_items_128_opcodes -->1669<!-- /metric:u4_balanced_items_128_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -295,6 +300,8 @@ generated table setup is <!-- metric:u4_odd_inverse_mod16_table -->16<!-- /metri
 The fixed-symbol count fixture uses <!-- metric:u4_symbol_count_16_witness -->33<!-- /metric:u4_symbol_count_16_witness --> serialized witness bytes for <!-- metric:u4_symbol_count_16_witness_items -->16<!-- /metric:u4_symbol_count_16_witness_items --> canonical data items and returns one numeric count. Nonminimal numeric encodings may be accepted under a permissive execution profile and can serialize larger.
 
 The 16-nibble presence-bit batch uses <!-- metric:u4_presence_bits_16_witness -->33<!-- /metric:u4_presence_bits_16_witness --> serialized witness bytes for <!-- metric:u4_presence_bits_16_witness_items -->16<!-- /metric:u4_presence_bits_16_witness_items --> data items, zero hint items, and returns 16 Boolean outputs; all data items coexist at script entry. This is the canonical 16-item profile. Membership uses `OP_NUMEQUAL`, so non-minimal numeric aliases such as `[0x01, 0x00]`, negative zero `[0x80]` and `[0x02, 0x00]` produce the numeric presence bits under the local `TapscriptProfile::Consensus` profile and can serialize larger; the local `Policy` profile rejects them with `MinimalData`. Compose `verify_canonical_nibble()` when byte-unique witness encoding is required.
+
+The bracket-balance fixture is `(())` repeated 32 times, 128 brackets. The packed form uses <!-- metric:u4_balanced_packed_128_witness -->65<!-- /metric:u4_balanced_packed_128_witness --> serialized witness bytes for <!-- metric:u4_balanced_packed_128_witness_items -->32<!-- /metric:u4_balanced_packed_128_witness_items --> data items; the one-item-per-bracket comparator uses <!-- metric:u4_balanced_items_128_witness -->193<!-- /metric:u4_balanced_items_128_witness --> bytes for <!-- metric:u4_balanced_items_128_witness_items -->128<!-- /metric:u4_balanced_items_128_witness_items --> items. Both use zero hints and return one Boolean.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 
