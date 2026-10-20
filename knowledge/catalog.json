@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,113 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u32-uncompress-hinted",
+      "name": "Hint-checked u32 expansion",
+      "class": "arithmetic/word",
+      "summary": "Expand a compressed u32 ScriptNum into four bytes by checking four witness bytes against their recompression instead of running a 31-step bit ladder.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u32-uncompress-hinted.md",
+      "implementation": "src/arithmetic/u32/uncompress_hinted.rs",
+      "documentation": "src/arithmetic/u32/README.md",
+      "tests": [
+        "arithmetic::u32::uncompress_hinted::tests",
+        "primitive_metrics::u32_uncompress_hinted_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "byte-arithmetic",
+        "range-check",
+        "canonical-encoding",
+        "representation-bridge",
+        "witness-hints"
+      ],
+      "security": "The compressed value and the byte hints are hostile: every byte must be canonical in 0..=255 and its compression must equal the value bytewise, which fixes the bytes uniquely and forces a canonical value. No key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | b0 b1 b2 b3 x (x on top) and returns preserved | b0 b1 b2 b3; 4 hint items per invocation; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "ladder-0x89abcdef",
+          "label": "u32_uncompress_canonical()",
+          "parameters": {
+            "word": "0x89abcdef",
+            "form": "bit ladder",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured with a terminal word drop",
+          "script_bytes": 431,
+          "witness_bytes": 6,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 323,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 431,
+          "metric_keys": [
+            "u32_uncompress_ladder_compare",
+            "u32_uncompress_ladder_compare_witness",
+            "u32_uncompress_ladder_compare_stack",
+            "u32_uncompress_ladder_compare_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-0x89abcdef",
+          "label": "u32_uncompress_hinted_canonical()",
+          "parameters": {
+            "word": "0x89abcdef",
+            "form": "hint-checked",
+            "data_items": 5,
+            "hint_items": 4,
+            "hint_bytes": 8,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured with a terminal word drop",
+          "script_bytes": 135,
+          "witness_bytes": 18,
+          "witness_bytes_max": null,
+          "max_stack_items": 12,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 107,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 135,
+          "metric_keys": [
+            "u32_uncompress_hinted_compare",
+            "u32_uncompress_hinted_compare_witness",
+            "u32_uncompress_hinted_compare_stack",
+            "u32_uncompress_hinted_compare_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Needs four hint items and a prover that knows the bytes",
+        "Static non-push opcode counts are not dynamic measurements (the ladder branches)",
+        "The model is ordinary Rust; the existing decoder is the only independent comparator",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-062"
       ]
     }
   ]

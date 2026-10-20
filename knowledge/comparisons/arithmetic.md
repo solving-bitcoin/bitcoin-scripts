@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Expanding compressed u32 words
+
+Recovering the four bytes of the compressed word `0x89abcdef` costs 431 script bytes
+with the bit-ladder decoder (1 witness item, peak 7) and 135 bytes with four hinted
+bytes checked by recompression (5 witness items, 4 hints, peak 12): 69% smaller on
+script and 65% in script plus witness (strict local `unclassified` tapscript,
+`locally-reproduced`). See [the primitive](../primitives/u32-uncompress-hinted.md) and NR-106.

@@ -22,6 +22,7 @@ pub mod shift_left;
 pub mod stack;
 pub mod sub;
 pub mod sub_constant;
+pub mod uncompress_hinted;
 pub mod xnor;
 pub mod xnor_constant;
 pub mod xor;

@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-062 — Hinted conversions inside compressed u32 operations
+
+The compressed total-domain operations (`u32_compressed_add` and the shift pair) pay
+for the bit-ladder conversion. **Accept when:** a compressed operation is rebuilt with
+the hint-checked conversion, correctness is preserved on every semantic boundary
+class including `0x80000000`, and the complete operation is compared with the
+existing one on an equal boundary with script bytes, witness bytes and items, hint
+counts per invocation and in batches, executed opcodes and combined peaks. Core
+validation is required for any deployment claim.
