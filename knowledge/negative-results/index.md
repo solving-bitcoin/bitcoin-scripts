@@ -1991,3 +1991,15 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-093: Hint-free ScriptNum nibble expansion is dominated by hint-checked expansion
+
+Lacking division, a compare-and-subtract ladder expands a ScriptNum at about 57
+script bytes per nibble (230 bytes at four nibbles, 501 at eight), while
+verifying witness nibbles against the Horner sum costs about 17 per nibble (59 and
+127). Counting witness bytes, the ladder totals 235 versus 72 bytes at four
+nibbles, so it never wins on bytes in the measured range; its only advantage is
+zero hint items and a one-item witness. Byte counts are policy-compiled
+fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the
+[primitive](../primitives/u4-scriptnum-nibbles.md).

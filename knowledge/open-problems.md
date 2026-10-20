@@ -1185,3 +1185,12 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-049 — Cheaper hint-free ScriptNum expansion
+
+The hint-free ladder costs about 57 script bytes per nibble. **Accept when:** a
+Script construction expands a hostile 16-bit ScriptNum into four canonical
+nibbles with no hints in fewer than 235 total script-plus-witness bytes on the
+same boundary (the hint-checked form totals 72), or a protocol consumer shows the
+hint-free form is required and measures its complete-leaf cost. Core validation
+is required for any deployment claim.

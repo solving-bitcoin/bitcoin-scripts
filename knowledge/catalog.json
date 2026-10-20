@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,113 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-scriptnum-nibbles",
+      "name": "ScriptNum radix-16 expansion",
+      "class": "arithmetic/word",
+      "summary": "Expand one non-negative ScriptNum into big-endian u4 nibbles with a hint-free compare-and-subtract ladder or hint-checked Horner verification, up to eight nibbles.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-scriptnum-nibbles.md",
+      "implementation": "src/arithmetic/u4/scriptnum_nibbles.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::scriptnum_nibbles::tests",
+        "primitive_metrics::u4_scriptnum_nibbles_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "representation-bridge",
+        "witness-hints"
+      ],
+      "security": "The number and every hint are hostile: the hint-free form checks the input domain, the hinted form range-checks every hint and equates the unique Horner sum to the number. No key or cryptographic security claim.",
+      "stack_contract": "Hint-free: preserved | x -> preserved | d[0..w-1]. Hinted: preserved | d[0..w-1] | x -> preserved | d[0..w-1]. d[0] most significant; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "zero-width4",
+          "label": "u4_scriptnum_to_nibbles(4)",
+          "parameters": {
+            "width": 4,
+            "value": "0xBEEF",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": null,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: domain check, ladder comparisons and subtractions (hint-free) or hint range checks and the Horner equality (hint-checked); excludes the terminal predicate, witness serialization beyond the CompactSize count, transaction framing and unrelated live state",
+          "script_bytes": 230,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 136,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 230,
+          "metric_keys": [
+            "u4_scriptnum_nibbles_zero_4",
+            "u4_scriptnum_nibbles_zero_4_witness",
+            "u4_scriptnum_nibbles_zero_4_stack",
+            "u4_scriptnum_nibbles_zero_4_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-width4",
+          "label": "u4_scriptnum_to_nibbles_hinted(4)",
+          "parameters": {
+            "width": 4,
+            "value": "0xBEEF",
+            "data_items": 5,
+            "hint_items": 4,
+            "hint_bytes": 8,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: domain check, ladder comparisons and subtractions (hint-free) or hint range checks and the Horner equality (hint-checked); excludes the terminal predicate, witness serialization beyond the CompactSize count, transaction framing and unrelated live state",
+          "script_bytes": 59,
+          "witness_bytes": 13,
+          "witness_bytes_max": null,
+          "max_stack_items": 8,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 46,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 59,
+          "metric_keys": [
+            "u4_scriptnum_nibbles_hinted_4",
+            "u4_scriptnum_nibbles_hinted_4_witness",
+            "u4_scriptnum_nibbles_hinted_4_stack",
+            "u4_scriptnum_nibbles_hinted_4_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Hint-free executed opcodes are branch dependent and recorded as null; the static count is not a dynamic measurement",
+        "Only non-negative numbers up to 2^31 - 1; wider values need bigint limbs",
+        "A division-free comparison-count alternative (15 comparisons per nibble) was reasoned about but not built",
+        "The model is ordinary Rust, not an independent Script implementation",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-049"
       ]
     }
   ]

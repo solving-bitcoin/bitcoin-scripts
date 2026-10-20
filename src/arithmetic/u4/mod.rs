@@ -38,6 +38,7 @@ pub mod quarter_square;
 pub mod reflection;
 pub mod rotate;
 pub mod run_length;
+pub mod scriptnum_nibbles;
 pub mod shift;
 pub mod square;
 pub mod stack;
