@@ -463,3 +463,12 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## ASCII hexadecimal text decoders
+
+At 64 lowercase characters the table-free fold costs 1,470 script bytes and a
+67-item peak, and the resident-table decoder 1,299 bytes and a 122-item peak
+(129 witness bytes, zero hints, strict local `unclassified` tapscript,
+`locally-reproduced`). Either-case text widens the gap to 2,174 versus 1,299.
+The fold wins below about 28 lowercase characters, 48 uppercase and 10
+either-case. See [the primitive](../primitives/u4-ascii-hex.md) and NR-090.

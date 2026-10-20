@@ -1991,3 +1991,15 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-090: The arithmetic hex fold is dominated at digest length
+
+For hexadecimal text the table-free fold loses to a resident 55-entry table
+beyond a short crossover: 1,470 versus 1,299 bytes at 64 lowercase characters
+(12%), 2,174 versus 1,299 for either-case input (40%), with crossovers near 28
+lowercase, 48 uppercase and 10 either-case characters. The fold keeps its niche
+only when the extra 55 live stack items are unaffordable. Branchy classification
+cost 23 to 34 bytes per character, which is why folding case ranges together
+was not enough. All figures are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-ascii-hex.md).

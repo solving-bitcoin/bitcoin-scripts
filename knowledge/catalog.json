@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,119 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-ascii-hex",
+      "name": "Checked ASCII hexadecimal text to u4 nibbles",
+      "class": "arithmetic/word",
+      "summary": "Zero-hint conversion of hostile ASCII hex characters to u4 nibbles with a table-free fold and a resident-table scheduler, for lower, upper or either case.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-ascii-hex.md",
+      "implementation": "src/arithmetic/u4/ascii_hex.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::ascii_hex::tests",
+        "primitive_metrics::u4_ascii_hex_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "representation-bridge",
+        "lookup-table",
+        "stack-scheduling"
+      ],
+      "security": "Every character is checked against the accepted hex set before use, so gap codes cannot alias letters and out-of-range or overflowing values abort. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | c[0..n-1] (last on top) and returns preserved | v[0..n-1] in the same order; fold peak n+3, table peak n+58; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "lower-len64-fold",
+          "label": "ascii_hex_to_nibbles_fold(64, Lower)",
+          "parameters": {
+            "length": 64,
+            "case": "Lower",
+            "scheduler": "fold",
+            "fixture": "0123456789abcdef x4",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-character offset, range checks and either branch selection (fold) or table push, roll, index check and cleanup (table), plus altstack order restoration; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 1470,
+          "witness_bytes": 129,
+          "witness_bytes_max": null,
+          "max_stack_items": 67,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 830,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1470,
+          "metric_keys": [
+            "u4_ascii_hex_fold_64",
+            "u4_ascii_hex_fold_64_stack",
+            "u4_ascii_hex_fold_64_opcodes",
+            "u4_ascii_hex_64_witness"
+          ]
+        },
+        {
+          "id": "lower-len64-table",
+          "label": "ascii_hex_to_nibbles_table(64, Lower)",
+          "parameters": {
+            "length": 64,
+            "case": "Lower",
+            "scheduler": "table",
+            "fixture": "0123456789abcdef x4",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-character offset, range checks and either branch selection (fold) or table push, roll, index check and cleanup (table), plus altstack order restoration; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 1299,
+          "witness_bytes": 129,
+          "witness_bytes_max": null,
+          "max_stack_items": 122,
+          "executed_opcodes": 732,
+          "static_non_push_opcodes": 732,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_ascii_hex_table_64",
+            "u4_ascii_hex_table_64_stack",
+            "u4_ascii_hex_table_64_opcodes",
+            "u4_ascii_hex_64_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Fold executed-opcode count is branch dependent and recorded as null; the static count is not a dynamic measurement",
+        "Table decoder needs 55 resident items and caps the batch at 942",
+        "Only hexadecimal text is covered; Base32, Base58 and Bech32 character sets are not",
+        "Nibble pairing into bytes is left to the caller",
+        "The model is ordinary Rust, not an independent Script implementation",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-046"
       ]
     }
   ]

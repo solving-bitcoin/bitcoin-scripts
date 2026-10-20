@@ -1185,3 +1185,14 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-046 — Hex-text consumer frontier
+
+The decoders are measured standalone. **Accept when:** a concrete consumer
+(for example comparing a witness-supplied hex digest text with a computed hash
+or authenticating a textual commitment) uses a decoder together with its live
+protocol state and compares it with a raw-byte witness encoding on equal
+complete-leaf boundaries, with witness bytes and items, exact hint counts,
+executed opcodes and combined peaks; record either a winning regime or
+dominance. Base32, Bech32 and Base58 alphabets are unmeasured. Core validation
+is required for any deployment claim.

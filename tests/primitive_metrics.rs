@@ -8023,6 +8023,60 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures lowercase ASCII hex decoding of a 64-character digest text.
+#[test]
+fn u4_ascii_hex_metrics_are_current() {
+    use u4::ascii_hex::{ascii_hex_to_nibbles_fold, ascii_hex_to_nibbles_table, HexCase};
+    const LEN: u32 = 64;
+    let text: Vec<u8> = "0123456789abcdef".repeat(4).into_bytes();
+    let witness: Vec<Vec<u8>> = text
+        .iter()
+        .map(|&byte| scriptnum(i64::from(byte)))
+        .collect();
+    let mut metrics = Vec::new();
+    for (name, fragment) in [
+        ("fold", ascii_hex_to_nibbles_fold(LEN, HexCase::Lower)),
+        ("table", ascii_hex_to_nibbles_table(LEN, HexCase::Lower)),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            for _ in 0..LEN { OP_DROP }
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_ascii_hex_{name}_64{suffix}").into_boxed_str())
+        };
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key(""),
+            value: script_len(fragment.clone()),
+        });
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key("_stack"),
+            value: result.stats.max_nb_stack_items,
+        });
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key("_opcodes"),
+            value: static_non_push_opcodes(fragment),
+        });
+    }
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_ascii_hex_64_witness",
+        value: witness_size(&witness),
+    });
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_ascii_hex_64_witness_items",
+        value: witness.len(),
+    });
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {
