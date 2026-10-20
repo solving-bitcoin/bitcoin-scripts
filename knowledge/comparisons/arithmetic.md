@@ -463,3 +463,13 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## ScriptNum to decimal digits
+
+Expanding a nine-digit ScriptNum costs 582 script bytes hint-free and 144 bytes
+with nine digit hints. Feeding the digits into the existing Damm fold, the
+complete leaf is 908 bytes with a 6-byte one-item witness hint-free (914 total)
+and 470 bytes with a 24-byte ten-item witness hint-checked (494 total), against
+326 bytes and a 19-byte nine-item witness for digits alone, which binds no amount
+(peak 113 throughout; strict local `unclassified` tapscript, `locally-reproduced`).
+See [the primitive](../primitives/u4-scriptnum-decimal.md) and NR-098.

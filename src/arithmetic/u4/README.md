@@ -1200,3 +1200,31 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## ScriptNum decimal expansion
+
+`scriptnum_decimal::u4_scriptnum_to_decimal(width)` and
+`u4_scriptnum_to_decimal_hinted(width)` expand one non-negative ScriptNum in
+`0..10^width` (`0..2^31` at width 10, `width` in `1..=10`) into most-significant-
+first numeric decimal digits `0..=9`, the decimal counterpart of the radix-16
+expansion. The hint-free form uses a compare-and-subtract ladder; the hint-checked
+form takes digit hints under the number, range-checks each and equates the Horner
+sum to the number. Outputs feed `damm::u4_decimal_digits_to_damm`.
+
+Fragment-only boundary: domain or hint checks, the ladder or Horner sum; input
+pushes and terminal predicate excluded. Nine digits of `123456789`.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Hint-free, 9 digits | <!-- metric:u4_decimal_zero_9 -->582<!-- /metric:u4_decimal_zero_9 --> | <!-- metric:u4_decimal_zero_9_stack -->12<!-- /metric:u4_decimal_zero_9_stack --> | <!-- metric:u4_decimal_zero_9_opcodes -->301<!-- /metric:u4_decimal_zero_9_opcodes --> |
+| Hint-checked, 9 digits | <!-- metric:u4_decimal_hinted_9 -->144<!-- /metric:u4_decimal_hinted_9 --> | <!-- metric:u4_decimal_hinted_9_stack -->13<!-- /metric:u4_decimal_hinted_9_stack --> | <!-- metric:u4_decimal_hinted_9_opcodes -->111<!-- /metric:u4_decimal_hinted_9_opcodes --> |
+
+Complete leaves ending in the nine-digit Damm fold and a check of state 4:
+
+| Witness form | Leaf bytes | Witness bytes | Witness items | Combined peak |
+| --- | ---: | ---: | ---: | ---: |
+| Nine digit items only (amount not bound) | <!-- metric:u4_decimal_leaf_digits -->326<!-- /metric:u4_decimal_leaf_digits --> | <!-- metric:u4_decimal_leaf_digits_witness -->19<!-- /metric:u4_decimal_leaf_digits_witness --> | <!-- metric:u4_decimal_leaf_digits_witness_items -->9<!-- /metric:u4_decimal_leaf_digits_witness_items --> | <!-- metric:u4_decimal_leaf_digits_stack -->113<!-- /metric:u4_decimal_leaf_digits_stack --> |
+| One amount, hint-free expansion | <!-- metric:u4_decimal_leaf_zero -->908<!-- /metric:u4_decimal_leaf_zero --> | <!-- metric:u4_decimal_leaf_zero_witness -->6<!-- /metric:u4_decimal_leaf_zero_witness --> | <!-- metric:u4_decimal_leaf_zero_witness_items -->1<!-- /metric:u4_decimal_leaf_zero_witness_items --> | <!-- metric:u4_decimal_leaf_zero_stack -->113<!-- /metric:u4_decimal_leaf_zero_stack --> |
+| Amount plus nine digit hints | <!-- metric:u4_decimal_leaf_hinted -->470<!-- /metric:u4_decimal_leaf_hinted --> | <!-- metric:u4_decimal_leaf_hinted_witness -->24<!-- /metric:u4_decimal_leaf_hinted_witness --> | <!-- metric:u4_decimal_leaf_hinted_witness_items -->10<!-- /metric:u4_decimal_leaf_hinted_witness_items --> | <!-- metric:u4_decimal_leaf_hinted_stack -->113<!-- /metric:u4_decimal_leaf_hinted_stack --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-scriptnum-decimal.md).

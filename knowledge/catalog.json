@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,215 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-scriptnum-decimal",
+      "name": "ScriptNum decimal expansion",
+      "class": "arithmetic/word",
+      "summary": "Expand a non-negative ScriptNum into numeric decimal digits with a hint-free ladder or hint-checked Horner verification, composed with the Damm fold in measured complete leaves.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-scriptnum-decimal.md",
+      "implementation": "src/arithmetic/u4/scriptnum_decimal.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::scriptnum_decimal::tests",
+        "primitive_metrics::u4_scriptnum_decimal_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "representation-bridge",
+        "witness-hints"
+      ],
+      "security": "The number and every hint are hostile: the hint-free form checks the input domain, the hinted form range-checks every hint and equates the unique Horner sum to the number. Binding is arithmetic only; message meaning and authentication are caller-bound. No key or cryptographic security claim.",
+      "stack_contract": "Hint-free: preserved | x -> preserved | d[0..w-1]. Hinted: preserved | d[0..w-1] | x -> preserved | d[0..w-1]. d[0] most significant; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "zero-width9",
+          "label": "u4_scriptnum_to_decimal(9)",
+          "parameters": {
+            "digits": 9,
+            "value": 123456789,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "hint-free",
+            "data_items": 1,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: domain check or hint range checks and the ladder or Horner equality; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 582,
+          "witness_bytes": 6,
+          "witness_bytes_max": null,
+          "max_stack_items": 12,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 301,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 582,
+          "metric_keys": [
+            "u4_decimal_zero_9",
+            "u4_decimal_leaf_zero_witness",
+            "u4_decimal_zero_9_stack",
+            "u4_decimal_zero_9_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-width9",
+          "label": "u4_scriptnum_to_decimal_hinted(9)",
+          "parameters": {
+            "digits": 9,
+            "value": 123456789,
+            "hint_bytes": 18,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "hint-checked",
+            "data_items": 10,
+            "hint_items": 9
+          },
+          "includes": "fragment-only: domain check or hint range checks and the ladder or Horner equality; excludes input pushes, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 144,
+          "witness_bytes": 24,
+          "witness_bytes_max": null,
+          "max_stack_items": 13,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 111,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 144,
+          "metric_keys": [
+            "u4_decimal_hinted_9",
+            "u4_decimal_leaf_hinted_witness",
+            "u4_decimal_hinted_9_stack",
+            "u4_decimal_hinted_9_opcodes"
+          ]
+        },
+        {
+          "id": "leaf-digits",
+          "label": "digits-only Damm leaf",
+          "parameters": {
+            "digits": 9,
+            "value": 123456789,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "digits only",
+            "data_items": 9,
+            "hint_items": 0
+          },
+          "includes": "complete-leaf: optional expansion, the nine-digit Damm fold, the check-state comparison and clean result; excludes input pushes, transaction framing and leaf/control-block witness items",
+          "script_bytes": 326,
+          "witness_bytes": 19,
+          "witness_bytes_max": null,
+          "max_stack_items": 113,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 326,
+          "metric_keys": [
+            "u4_decimal_leaf_digits",
+            "u4_decimal_leaf_digits_witness",
+            "u4_decimal_leaf_digits_stack"
+          ]
+        },
+        {
+          "id": "leaf-zero",
+          "label": "amount, hint-free expansion, Damm leaf",
+          "parameters": {
+            "digits": 9,
+            "value": 123456789,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "hint-free",
+            "data_items": 1,
+            "hint_items": 0
+          },
+          "includes": "complete-leaf: optional expansion, the nine-digit Damm fold, the check-state comparison and clean result; excludes input pushes, transaction framing and leaf/control-block witness items",
+          "script_bytes": 908,
+          "witness_bytes": 6,
+          "witness_bytes_max": null,
+          "max_stack_items": 113,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 908,
+          "metric_keys": [
+            "u4_decimal_leaf_zero",
+            "u4_decimal_leaf_zero_witness",
+            "u4_decimal_leaf_zero_stack"
+          ]
+        },
+        {
+          "id": "leaf-hinted",
+          "label": "amount plus digit hints, Damm leaf",
+          "parameters": {
+            "digits": 9,
+            "value": 123456789,
+            "hint_bytes": 18,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "form": "hint-checked",
+            "data_items": 10,
+            "hint_items": 9
+          },
+          "includes": "complete-leaf: optional expansion, the nine-digit Damm fold, the check-state comparison and clean result; excludes input pushes, transaction framing and leaf/control-block witness items",
+          "script_bytes": 470,
+          "witness_bytes": 24,
+          "witness_bytes_max": null,
+          "max_stack_items": 113,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 470,
+          "metric_keys": [
+            "u4_decimal_leaf_hinted",
+            "u4_decimal_leaf_hinted_witness",
+            "u4_decimal_leaf_hinted_stack"
+          ]
+        }
+      ],
+      "limitations": [
+        "Amounts above 2^31 - 1 (about 21.47 BTC in satoshis) need multi-limb arithmetic",
+        "Hint-free executed opcodes are branch dependent and recorded as null",
+        "The Damm composition does not authenticate the amount's meaning (see OP-037)",
+        "The Damm table copy in the test is duplicated from the hash-bound source",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-054"
       ]
     }
   ]
