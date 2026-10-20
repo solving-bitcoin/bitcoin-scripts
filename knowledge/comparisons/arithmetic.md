@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Decimal check-digit schemes
+
+At 32 digits the table-free Luhn fold costs 411 script bytes with a 35-item
+peak, against 766 bytes and a 136-item peak for the resident-table Damm fold
+(zero hints, strict local `unclassified` tapscript, `locally-reproduced`). Luhn
+misses the `09`/`90` adjacent transposition; Damm detects it. See
+[the primitive](../primitives/u4-luhn.md) and NR-096.

@@ -8023,6 +8023,50 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the table-free Luhn checksum at 32 digits.
+#[test]
+fn u4_luhn_metrics_are_current() {
+    const DIGITS: u32 = 32;
+    // The Damm fixture: d[i] = (7i + 3) mod 10.
+    let digits: Vec<i64> = (0..DIGITS as i64).map(|i| (7 * i + 3) % 10).collect();
+    let witness: Vec<Vec<u8>> = digits.iter().map(|&d| scriptnum(d)).collect();
+    let mut total = 0i64;
+    for (position, &digit) in digits.iter().rev().enumerate() {
+        let mut value = digit;
+        if position % 2 == 1 {
+            value *= 2;
+            if value > 9 {
+                value -= 9;
+            }
+        }
+        total += value;
+    }
+    let fragment = u4::luhn::u4_decimal_digits_to_luhn(DIGITS);
+    let leaf = script! { { fragment.clone() } { total % 10 } OP_EQUAL };
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_stack",
+            value: max_stack_items_strict(leaf, witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

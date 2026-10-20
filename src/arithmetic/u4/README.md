@@ -1200,3 +1200,26 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Table-free Luhn checksum
+
+`luhn::u4_decimal_digits_to_luhn(n)` folds `1..=997` numeric **decimal** digits,
+leftmost first, and returns the Luhn sum modulo ten in `0..=9` (zero for a valid
+code). The rightmost digit is position zero, every odd position is doubled
+(`9` subtracted above 9), and the exact sum is reduced once by a ladder of
+conditional subtractions. Digits are range-checked as numeric ScriptNums in
+`0..=9`; there are no hints, tables or altstack use. Error detection only: the
+caller binds length, meaning, result and a terminal predicate.
+
+Fragment-only boundary: digit guards, conditional doubling, accumulation and
+the reduction ladder; input pushes and terminal predicate excluded. The Damm
+fixture `d[i]=(7*i+3) mod 10` over 32 digits, <!-- metric:u4_luhn32_witness -->61<!-- /metric:u4_luhn32_witness --> serialized witness bytes, 32 items, 0
+hints. Peak uses a terminal expected-residue `OP_EQUAL` under strict local execution.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Luhn, 32 digits | <!-- metric:u4_luhn32 -->411<!-- /metric:u4_luhn32 --> | <!-- metric:u4_luhn32_stack -->35<!-- /metric:u4_luhn32_stack --> | <!-- metric:u4_luhn32_opcodes -->295<!-- /metric:u4_luhn32_opcodes --> |
+
+The Damm fragment on the same digits is 766 bytes with a 136-item peak. Luhn
+misses the `09`/`90` adjacent transposition that Damm detects; see the
+[knowledge page](../../../knowledge/primitives/u4-luhn.md).

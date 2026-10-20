@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-052 — Luhn-with-repair consumer frontier
+
+Luhn is measured standalone. **Accept when:** a protocol consumer that must
+authenticate decimal codes (see OP-037) uses Luhn, Damm, or a cheaper
+quasigroup together with its live protocol state, and compares them on equal
+complete-leaf boundaries with witness bytes and items, hint counts, executed
+opcodes, combined peaks and the measured undetected-error classes, or a
+construction closes the `0`/`9` blind spot at less than Damm's 766 bytes for 32
+digits. Core validation is required for any deployment claim.

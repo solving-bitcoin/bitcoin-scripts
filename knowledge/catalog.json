@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,79 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-luhn",
+      "name": "Table-free Luhn checksum",
+      "class": "arithmetic/word",
+      "summary": "Hostile numeric decimal digits folded to the Luhn sum modulo ten with conditional doubling and a delayed-reduction ladder, no table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-luhn.md",
+      "implementation": "src/arithmetic/u4/luhn.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::luhn::tests",
+        "primitive_metrics::u4_luhn_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "modular-reduction",
+        "range-check",
+        "finite-state-fold"
+      ],
+      "security": "Every digit is range-checked in 0..=9. Luhn is an error-detecting checksum, not authentication, and misses adjacent 09/90 transpositions; length, result and meaning are caller-bound.",
+      "stack_contract": "Consumes preserved | d[0..n-1] (last on top) and returns preserved | r in 0..=9 (zero for a valid code); altstack untouched; fragment bound n+3+preserved<=1000.",
+      "configurations": [
+        {
+          "id": "digits32",
+          "label": "u4_decimal_digits_to_luhn(32)",
+          "parameters": {
+            "digits": 32,
+            "fixture": "d[i]=(7i+3)%10",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: digit range guards, conditional doubling of odd positions, accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "script_bytes": 411,
+          "witness_bytes": 61,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 295,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 411,
+          "metric_keys": [
+            "u4_luhn32",
+            "u4_luhn32_witness",
+            "u4_luhn32_stack",
+            "u4_luhn32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Misses the 09/90 adjacent transposition (60 of 3,000 in the model comparison)",
+        "Static non-push opcode count is not a dynamic measurement (the doubling branches)",
+        "The detection comparison uses Rust models, not an independent Script implementation",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-052"
       ]
     }
   ]
