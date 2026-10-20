@@ -8023,6 +8023,59 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures packed lexicographic comparison of two 32-byte nodes.
+#[test]
+fn u4_compare_packed_metrics_are_current() {
+    use u4::compare::lexicographic_le;
+    use u4::compare_packed::lexicographic_le_packed;
+    const N: u32 = 64;
+    // Two sibling hashes that share a 40-nibble prefix and then differ.
+    let left: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut right = left.clone();
+    right[40] = (right[40] + 1) % 16;
+    right[41..].iter_mut().for_each(|v| *v = 0);
+    let expected = i64::from(left <= right);
+    let witness: Vec<Vec<u8>> = left.iter().chain(&right).map(|&v| scriptnum(v)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_compare_node_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_compare_node_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        ("state", lexicographic_le(N)),
+        ("packed", lexicographic_le_packed(N)),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            { expected } OP_EQUALVERIFY
+            OP_TRUE
+        };
+        let peak = max_stack_items_strict(leaf, witness.clone());
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_compare_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", peak),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

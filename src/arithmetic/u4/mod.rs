@@ -8,6 +8,7 @@ pub mod bits;
 pub mod centered;
 pub mod clamp;
 pub mod compare;
+pub mod compare_packed;
 pub mod count;
 pub mod cyclic_equality;
 pub mod damm;

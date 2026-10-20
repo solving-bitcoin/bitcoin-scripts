@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-060 — Ordered-sibling assertion and Taproot consumer
+
+The comparison returns a Boolean over hostile vectors. **Accept when:** a Taproot
+node-ordering consumer uses the packed comparison with `tapbranch-u4` and its live
+state, and compares it with a hinted first-difference-index assertion (claimed
+position, prefix equality and one nibble comparison) on equal complete-leaf
+boundaries with witness bytes and items, exact hint counts, executed opcodes and
+combined peaks, recording either a winning regime or dominance. Complete-spend and
+Core validation are required for any deployment claim.

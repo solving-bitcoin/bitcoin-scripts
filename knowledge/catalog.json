@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,115 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-compare-packed",
+      "name": "Packed lexicographic comparison of u4 vectors",
+      "class": "arithmetic/word",
+      "summary": "Lexicographic less-or-equal of two equal-width u4 vectors by packing seven-nibble words and comparing them with native ScriptNum arithmetic, measured against the per-nibble state machine.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-compare-packed.md",
+      "implementation": "src/arithmetic/u4/compare_packed.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::compare_packed::tests",
+        "primitive_metrics::u4_compare_packed_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "lexicographic-comparison",
+        "bit-packing"
+      ],
+      "security": "Every nibble of both vectors is range-checked as it is packed, so hostile values cannot corrupt a word. The comparison is exact over 28-bit words. No hint, key or cryptographic security claim; callers bind vector meaning and order.",
+      "stack_contract": "Consumes left[0..n-1] right[0..n-1] (right[n-1] on top) and returns left <= right in {0,1}; out-of-range nibbles abort; peak 2n+7; the embedded-constant form takes only the left vector.",
+      "configurations": [
+        {
+          "id": "state-machine-64",
+          "label": "lexicographic_le(64)",
+          "parameters": {
+            "nibbles_per_vector": 64,
+            "form": "per-nibble state machine",
+            "fixture": "left[i]=(7i+3)%16; right shares 40 nibbles then differs",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors",
+          "script_bytes": 3532,
+          "witness_bytes": 228,
+          "witness_bytes_max": null,
+          "max_stack_items": 131,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 2178,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3532,
+          "metric_keys": [
+            "u4_compare_state_64",
+            "u4_compare_node_witness",
+            "u4_compare_state_64_stack",
+            "u4_compare_state_64_opcodes"
+          ]
+        },
+        {
+          "id": "packed-64",
+          "label": "lexicographic_le_packed(64)",
+          "parameters": {
+            "nibbles_per_vector": 64,
+            "form": "packed words",
+            "fixture": "left[i]=(7i+3)%16; right shares 40 nibbles then differs",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors",
+          "script_bytes": 2171,
+          "witness_bytes": 228,
+          "witness_bytes_max": null,
+          "max_stack_items": 135,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 1650,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2171,
+          "metric_keys": [
+            "u4_compare_packed_64",
+            "u4_compare_node_witness",
+            "u4_compare_packed_64_stack",
+            "u4_compare_packed_64_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "The per-nibble comparator is the existing primitive, measured here rather than modified",
+        "Equal vectors compare true (less-or-equal), not strict less-than",
+        "Static non-push opcode counts are not dynamic measurements (both forms branch)",
+        "The model is ordinary Rust; the existing implementation is the only independent comparator",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-060"
       ]
     }
   ]
