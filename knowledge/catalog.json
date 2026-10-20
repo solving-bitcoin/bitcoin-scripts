@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,82 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-histogram",
+      "name": "Hint-checked symbol histogram",
+      "class": "arithmetic/word",
+      "summary": "Verify 16 prover-supplied symbol counts of a range-checked u4 vector by comparing packed base-(n+1) lane words, instead of sixteen fixed-symbol counting passes.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-histogram.md",
+      "implementation": "src/arithmetic/u4/histogram.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::histogram::tests",
+        "primitive_metrics::u4_histogram_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "witness-hints",
+        "bit-packing",
+        "lookup-table"
+      ],
+      "security": "Nibbles and counts are hostile and range-checked. Packed words with digits below the base are equal only when every count is exact, so forged or shifted counts fail (1,500 random forgeries rejected in tests). No key or cryptographic security claim.",
+      "stack_contract": "Witness x[0..n-1] c[0..15] (c[15] on top) returns c[0..15]; the vector is consumed; 16 hint items per invocation; peak n+38; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "hinted-len64",
+          "label": "u4_nibbles_histogram_hinted(64)",
+          "parameters": {
+            "length": 64,
+            "fixture": "x[i]=(7i+3)%16",
+            "data_items": 80,
+            "hint_items": 16,
+            "hint_bytes": null,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: nibble and count range checks, claimed target words, packed lane accumulation, equality checks and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item",
+          "script_bytes": 3158,
+          "witness_bytes": 157,
+          "witness_bytes_max": null,
+          "max_stack_items": 102,
+          "executed_opcodes": 2080,
+          "static_non_push_opcodes": 2080,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 3158,
+          "metric_keys": [
+            "u4_histogram_64",
+            "u4_histogram_64_witness",
+            "u4_histogram_64_stack",
+            "u4_histogram_64_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Sixteen hint items per invocation limit batching under the 1,000-item stack bound",
+        "The 16-count comparison is a lower-bound estimate, not a built comparator",
+        "Table pushes repeat per accumulator word; cross-word reuse is unmeasured",
+        "Opcode counts equal executed counts only because the fragment is straight-line",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-064"
       ]
     }
   ]

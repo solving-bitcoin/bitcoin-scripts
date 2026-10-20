@@ -14,6 +14,7 @@ pub mod damm;
 pub mod equality;
 pub mod gray;
 pub mod gray_inverse;
+pub mod histogram;
 pub mod interleave;
 pub mod leading_zeros;
 pub mod logic;

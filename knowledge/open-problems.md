@@ -1185,3 +1185,12 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-064 — Histogram consumers and table reuse
+
+The hinted histogram repushes its 16-entry table once per accumulator word. **Accept
+when:** a schedule that reuses one table across words (or a two-sided multiset
+comparison built on the same lanes) is measured on the same boundary, and a consumer
+such as a sortedness or entropy-style certificate uses the histogram with its live
+state, recording witness bytes and items, hint counts under repeated use, executed
+opcodes and combined peaks. Core validation is required for any deployment claim.

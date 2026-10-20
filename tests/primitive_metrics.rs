@@ -8023,6 +8023,59 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the hint-checked histogram at 64 nibbles.
+#[test]
+fn u4_histogram_metrics_are_current() {
+    use u4::histogram::u4_nibbles_histogram_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut counts = [0i64; 16];
+    for &v in &values {
+        counts[v as usize] += 1;
+    }
+    let mut witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    witness.extend(counts.iter().map(|&c| scriptnum(c)));
+    let fragment = u4_nibbles_histogram_hinted(N);
+    let leaf = script! {
+        { fragment.clone() }
+        for _ in 0..16 { OP_DROP }
+        OP_TRUE
+    };
+    let peak = max_stack_items_strict(leaf, witness.clone());
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_count_baseline",
+            value: 16 * script_len(u4::count::u4_nibbles_count(0, N)),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

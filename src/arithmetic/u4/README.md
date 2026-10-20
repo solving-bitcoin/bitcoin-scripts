@@ -1200,3 +1200,25 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Hint-checked symbol histogram
+
+`histogram::u4_nibbles_histogram_hinted(n)` (`n` in `1..=962`, peak `n + 38`) returns
+the 16 symbol counts of `n` checked nibbles from a witness `x[0..n-1] c[0..15]`
+(`c[15]` on top) and consumes the vector. Every `c[s]` is range-checked to `0..=n`;
+the claimed counts and the vector's own symbols are packed into the same base-`(n+1)`
+lane words and must be equal, so every `c[s]` is exact. **Hint items per
+invocation: 16.** The fixed-symbol `count::u4_nibbles_count` returns one count per
+pass.
+
+Fragment-only boundary: nibble and count range checks, claimed target words, lane
+accumulation and cleanup; input pushes and terminal predicate excluded. Fixture
+`x[i] = (7i + 3) mod 16` over 64 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hint-checked histogram, 64 nibbles | <!-- metric:u4_histogram_64 -->3158<!-- /metric:u4_histogram_64 --> | <!-- metric:u4_histogram_64_witness -->157<!-- /metric:u4_histogram_64_witness --> | <!-- metric:u4_histogram_64_witness_items -->80<!-- /metric:u4_histogram_64_witness_items --> | 16 | <!-- metric:u4_histogram_64_stack -->102<!-- /metric:u4_histogram_64_stack --> | <!-- metric:u4_histogram_64_opcodes -->2080<!-- /metric:u4_histogram_64_opcodes --> |
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_histogram_64_count_baseline -->18448<!-- /metric:u4_histogram_64_count_baseline -->-byte lower bound for the same
+output (an estimate: it excludes vector copies). See the
+[knowledge page](../../../knowledge/primitives/u4-histogram.md).
