@@ -8023,6 +8023,62 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the u4 vector distances at 16 nibbles.
+#[test]
+fn u4_distance_metrics_are_current() {
+    use u4::distance::{
+        u4_nibbles_hamming_distance, u4_nibbles_hamming_distance_composed, u4_nibbles_l1_distance,
+        u4_nibbles_lee_distance,
+    };
+    const LEN: u32 = 16;
+    // Deterministic vectors a[i] = i and b[i] = (7i + 3) mod 16.
+    let witness: Vec<Vec<u8>> = (0..LEN)
+        .map(|i| scriptnum(i64::from(i)))
+        .chain((0..LEN).map(|i| scriptnum(i64::from((7 * i + 3) % 16))))
+        .collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_distance_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_distance_16_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        ("l1", u4_nibbles_l1_distance(LEN)),
+        ("lee", u4_nibbles_lee_distance(LEN)),
+        ("hamming", u4_nibbles_hamming_distance(LEN)),
+        ("composed", u4_nibbles_hamming_distance_composed(LEN)),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            OP_DROP
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_distance_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

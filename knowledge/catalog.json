@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,185 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-distance",
+      "name": "Checked u4 vector distances",
+      "class": "arithmetic/word",
+      "summary": "Zero-hint L1, Lee and Hamming distances between two range-checked u4 vectors, with a fused-table Hamming form measured against XOR-then-popcount composition.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-distance.md",
+      "implementation": "src/arithmetic/u4/distance.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::distance::tests",
+        "primitive_metrics::u4_distance_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "lookup-table",
+        "fused-composition",
+        "stack-scheduling"
+      ],
+      "security": "Every nibble of both vectors is range-checked before it indexes a table or enters arithmetic. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | a[0..n-1] | b[0..n-1] (last b on top) and returns preserved | distance; peaks 2n+3 (L1, Lee), 2n+258 (fused Hamming), 2n+274 (composed); unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "l1-len16",
+          "label": "u4_nibbles_l1_distance(16)",
+          "parameters": {
+            "length": 16,
+            "metric": "l1",
+            "fixture": "a[i]=i; b[i]=(7i+3)%16",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks of both vectors, altstack restoration, resident table pushes where used, per-pair roll, index formation and lookup or native arithmetic, accumulation and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 334,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 253,
+          "static_non_push_opcodes": 253,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_distance_l1_16",
+            "u4_distance_l1_16_stack",
+            "u4_distance_l1_16_opcodes",
+            "u4_distance_16_witness"
+          ]
+        },
+        {
+          "id": "lee-len16",
+          "label": "u4_nibbles_lee_distance(16)",
+          "parameters": {
+            "length": 16,
+            "metric": "lee",
+            "fixture": "a[i]=i; b[i]=(7i+3)%16",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks of both vectors, altstack restoration, resident table pushes where used, per-pair roll, index formation and lookup or native arithmetic, accumulation and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 414,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 317,
+          "static_non_push_opcodes": 317,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_distance_lee_16",
+            "u4_distance_lee_16_stack",
+            "u4_distance_lee_16_opcodes",
+            "u4_distance_16_witness"
+          ]
+        },
+        {
+          "id": "hamming-len16",
+          "label": "u4_nibbles_hamming_distance(16), fused table",
+          "parameters": {
+            "length": 16,
+            "metric": "hamming",
+            "fixture": "a[i]=i; b[i]=(7i+3)%16",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks of both vectors, altstack restoration, resident table pushes where used, per-pair roll, index formation and lookup or native arithmetic, accumulation and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 874,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 290,
+          "executed_opcodes": 514,
+          "static_non_push_opcodes": 514,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_distance_hamming_16",
+            "u4_distance_hamming_16_stack",
+            "u4_distance_hamming_16_opcodes",
+            "u4_distance_16_witness"
+          ]
+        },
+        {
+          "id": "composed-len16",
+          "label": "u4_nibbles_hamming_distance_composed(16)",
+          "parameters": {
+            "length": 16,
+            "metric": "composed",
+            "fixture": "a[i]=i; b[i]=(7i+3)%16",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks of both vectors, altstack restoration, resident table pushes where used, per-pair roll, index formation and lookup or native arithmetic, accumulation and table cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 962,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "max_stack_items": 306,
+          "executed_opcodes": 554,
+          "static_non_push_opcodes": 554,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "u4_distance_composed_16",
+            "u4_distance_composed_16_stack",
+            "u4_distance_composed_16_opcodes",
+            "u4_distance_16_witness"
+          ]
+        }
+      ],
+      "limitations": [
+        "Hamming needs a 256-item resident table, capping n at 371",
+        "A table-free Hamming distance was not built",
+        "Only unweighted metrics on equal-length vectors; no thresholds are applied",
+        "Static non-push opcode counts equal executed counts only because the fragments are straight-line",
+        "The model is ordinary Rust, not an independent Script implementation",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-048"
       ]
     }
   ]

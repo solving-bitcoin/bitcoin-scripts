@@ -1185,3 +1185,12 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-048 — Table-free Hamming distance
+
+The fused-table Hamming distance pays a fixed cost of about 410 bytes and 258
+extra stack items. **Accept when:** a Script construction computes the same
+distance for hostile 16-nibble vectors without a resident table in fewer
+policy-compiled script bytes than 874 on the same boundary, with exact peaks and
+hint counts, or a consumer (a proximity or error-bound check) shows the
+table-free metrics suffice. Core validation is required for any deployment claim.

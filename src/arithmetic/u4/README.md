@@ -22,6 +22,10 @@ these operations, but this module contains no hash-specific round logic.
 - `count::u4_nibbles_count(value, nibble_count)` takes a checked batch size in
   `1..=997` without preserved stack items; composition must satisfy
   `nibble_count + 3 + preserved_items <= 1000`.
+- `distance::u4_nibbles_l1_distance(len)` and `u4_nibbles_lee_distance(len)` take
+  two vectors of `1..=498` nibbles (peak `2*len + 3`);
+  `u4_nibbles_hamming_distance(len)` takes `1..=371` (peak `2*len + 258`) and
+  `u4_nibbles_hamming_distance_composed(len)` takes `1..=363` (peak `2*len + 274`).
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -250,6 +254,10 @@ words as data, with no hint items.
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
+| L1 distance, 16 + 16 nibbles | <!-- metric:u4_distance_l1_16 -->334<!-- /metric:u4_distance_l1_16 --> bytes | <!-- metric:u4_distance_l1_16_stack -->35<!-- /metric:u4_distance_l1_16_stack --> items | <!-- metric:u4_distance_l1_16_opcodes -->253<!-- /metric:u4_distance_l1_16_opcodes --> |
+| Lee distance, 16 + 16 nibbles | <!-- metric:u4_distance_lee_16 -->414<!-- /metric:u4_distance_lee_16 --> bytes | <!-- metric:u4_distance_lee_16_stack -->35<!-- /metric:u4_distance_lee_16_stack --> items | <!-- metric:u4_distance_lee_16_opcodes -->317<!-- /metric:u4_distance_lee_16_opcodes --> |
+| Hamming distance, fused table, 16 + 16 nibbles | <!-- metric:u4_distance_hamming_16 -->874<!-- /metric:u4_distance_hamming_16 --> bytes | <!-- metric:u4_distance_hamming_16_stack -->290<!-- /metric:u4_distance_hamming_16_stack --> items | <!-- metric:u4_distance_hamming_16_opcodes -->514<!-- /metric:u4_distance_hamming_16_opcodes --> |
+| Hamming distance, XOR then popcount, 16 + 16 nibbles | <!-- metric:u4_distance_composed_16 -->962<!-- /metric:u4_distance_composed_16 --> bytes | <!-- metric:u4_distance_composed_16_stack -->306<!-- /metric:u4_distance_composed_16_stack --> items | <!-- metric:u4_distance_composed_16_opcodes -->554<!-- /metric:u4_distance_composed_16_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -295,6 +303,8 @@ generated table setup is <!-- metric:u4_odd_inverse_mod16_table -->16<!-- /metri
 The fixed-symbol count fixture uses <!-- metric:u4_symbol_count_16_witness -->33<!-- /metric:u4_symbol_count_16_witness --> serialized witness bytes for <!-- metric:u4_symbol_count_16_witness_items -->16<!-- /metric:u4_symbol_count_16_witness_items --> canonical data items and returns one numeric count. Nonminimal numeric encodings may be accepted under a permissive execution profile and can serialize larger.
 
 The 16-nibble presence-bit batch uses <!-- metric:u4_presence_bits_16_witness -->33<!-- /metric:u4_presence_bits_16_witness --> serialized witness bytes for <!-- metric:u4_presence_bits_16_witness_items -->16<!-- /metric:u4_presence_bits_16_witness_items --> data items, zero hint items, and returns 16 Boolean outputs; all data items coexist at script entry. This is the canonical 16-item profile. Membership uses `OP_NUMEQUAL`, so non-minimal numeric aliases such as `[0x01, 0x00]`, negative zero `[0x80]` and `[0x02, 0x00]` produce the numeric presence bits under the local `TapscriptProfile::Consensus` profile and can serialize larger; the local `Policy` profile rejects them with `MinimalData`. Compose `verify_canonical_nibble()` when byte-unique witness encoding is required.
+
+The distance fixtures use `a[i] = i` and `b[i] = (7i + 3) mod 16`: <!-- metric:u4_distance_16_witness -->63<!-- /metric:u4_distance_16_witness --> serialized witness bytes for <!-- metric:u4_distance_16_witness_items -->32<!-- /metric:u4_distance_16_witness_items --> data items and zero hints. All four fragments are straight-line, so executed non-push opcodes equal the static counts.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 

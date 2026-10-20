@@ -11,6 +11,7 @@ pub mod compare;
 pub mod count;
 pub mod cyclic_equality;
 pub mod damm;
+pub mod distance;
 pub mod equality;
 pub mod gray;
 pub mod gray_inverse;

@@ -463,3 +463,13 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Distances between u4 vectors
+
+At 16 nibbles the table-free L1 and Lee distances cost 334 and 414 script bytes
+with a 35-item peak, and Hamming through a fused 256-entry table 874 bytes with
+a 290-item peak, against 962 bytes and 306 items for XOR-then-popcount
+composition (63 witness bytes over 32 items, zero hints, strict local
+`unclassified` tapscript, `locally-reproduced`). The fused table is 6.3% to
+10.7% smaller across 1 to 64 nibbles. See [the primitive](../primitives/u4-distance.md)
+and NR-092.

@@ -1991,3 +1991,14 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-092: XOR-then-popcount Hamming composition is dominated by a fused table
+
+Composing the shared 256-entry XOR table with a 16-entry popcount table costs
+443, 962 and 2,698 script bytes at 1, 16 and 64 nibbles, against 415, 874 and
+2,410 for one fused `popcount(a ^ b)` table, and needs 16 more resident items
+(306 versus 290 peak at 16 nibbles). The composition never wins in the measured
+range because the second lookup costs about four bytes per pair that the fused
+table avoids. Byte figures are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-distance.md).
