@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,115 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/subset-sum",
+      "name": "Subset-sum verification with canonical selectors",
+      "class": "arithmetic/word",
+      "summary": "Verify a witness selection against public weights and a public target with OP_IF additions, using tapscript MINIMALIF for canonical selectors, plus an explicit-check variant for contexts without it.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/subset-sum.md",
+      "implementation": "src/arithmetic/knapsack/mod.rs",
+      "documentation": "src/arithmetic/knapsack/README.md",
+      "tests": [
+        "arithmetic::knapsack::tests",
+        "primitive_metrics::subset_sum_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "branching",
+        "native-minimalif",
+        "witness-shape",
+        "constant-embedding"
+      ],
+      "security": "The selection is hostile; in tapscript MINIMALIF aborts non-canonical selectors and the explicit variant checks them elsewhere. The sum is exact over a four-byte total. No hint, key or cryptographic security claim; the target and weights are public.",
+      "stack_contract": "Consumes the witness selectors s[0..n-1] (s[n-1] on top; empty or [1]) and returns ok in {0,1}; peak n+1; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "plain-32",
+          "label": "subset_sum_verify, 32 weights",
+          "parameters": {
+            "weights": 32,
+            "form": "plain (tapscript MINIMALIF)",
+            "fixture": "w[i]=(37i+11)%65535+1; selected i%3!=0",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-weight selector test, conditional addition and the target comparison; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every selector item; no hints beyond the selection",
+          "script_bytes": 224,
+          "witness_bytes": 54,
+          "witness_bytes_max": null,
+          "max_stack_items": 33,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 129,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 224,
+          "metric_keys": [
+            "subset_sum_32",
+            "subset_sum_32_witness",
+            "subset_sum_32_stack",
+            "subset_sum_32_opcodes"
+          ]
+        },
+        {
+          "id": "explicit-32",
+          "label": "subset_sum_verify_explicit, 32 weights",
+          "parameters": {
+            "weights": 32,
+            "form": "explicit canonical checks",
+            "fixture": "w[i]=(37i+11)%65535+1; selected i%3!=0",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: per-weight selector test, conditional addition and the target comparison; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every selector item; no hints beyond the selection",
+          "script_bytes": 544,
+          "witness_bytes": 54,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 353,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 544,
+          "metric_keys": [
+            "subset_sum_explicit_32",
+            "subset_sum_32_witness",
+            "subset_sum_explicit_32_stack",
+            "subset_sum_explicit_32_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Non-tapscript MINIMALIF leniency could not be exercised locally; the explicit variant is tested only in the tapscript executor",
+        "The claim that MINIMALIF is a consensus rule in tapscript is from BIP 342, not re-verified against Core here",
+        "Static non-push opcode counts equal executed counts only because the fragment is straight-line",
+        "Total weights are limited to 2^31 - 1",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-059"
       ]
     }
   ]

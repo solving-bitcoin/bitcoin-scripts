@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-059 — MINIMALIF differential and subset-sum consumer
+
+The canonical-selector behavior rests on the local tapscript executor. **Accept
+when:** a complete Taproot spend containing the plain and explicit verifiers is
+validated against a pinned Bitcoin Core revision with canonical, aliased and
+negative-zero selectors, recording consensus and policy outcomes, and a concrete
+consumer (for example a partition or cardinality condition) compares the plain
+form with an alternative encoding on equal complete-leaf boundaries with witness
+bytes and items, hint counts, executed opcodes and combined peaks.

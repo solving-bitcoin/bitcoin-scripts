@@ -8023,6 +8023,77 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures subset-sum verification at 32 weights.
+#[test]
+fn subset_sum_metrics_are_current() {
+    use bitcoin_lab::arithmetic::knapsack::{subset_sum_verify, subset_sum_verify_explicit};
+    const N: u32 = 32;
+    let weights: Vec<u32> = (0..N).map(|i| (37 * i + 11) % 65_535 + 1).collect();
+    let selected: Vec<bool> = (0..N).map(|i| i % 3 != 0).collect();
+    let target: u32 = weights
+        .iter()
+        .zip(&selected)
+        .filter(|(_, &s)| s)
+        .map(|(&w, _)| w)
+        .sum();
+    let witness: Vec<Vec<u8>> = selected
+        .iter()
+        .map(|&s| if s { vec![1u8] } else { Vec::new() })
+        .collect();
+    let plain = subset_sum_verify(&weights, target);
+    let explicit = subset_sum_verify_explicit(&weights, target);
+    let measure = |fragment: bitcoin_script::Script| {
+        let leaf = script! {
+            { fragment }
+            OP_VERIFY
+            OP_TRUE
+        };
+        max_stack_items_strict(leaf, witness.clone())
+    };
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32",
+            value: script_len(plain.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_stack",
+            value: measure(plain.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_opcodes",
+            value: static_non_push_opcodes(plain),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32",
+            value: script_len(explicit.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32_stack",
+            value: measure(explicit.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32_opcodes",
+            value: static_non_push_opcodes(explicit),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -463,3 +463,12 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Subset-sum witness verification
+
+Verifying a 32-weight subset-sum selection costs 224 script bytes (7 per weight,
+peak 33, 54 witness bytes over 32 selectors, zero hints beyond the selection) when
+tapscript MINIMALIF supplies the canonical-selector check, against 544 bytes with
+explicit range and reserialization checks (strict local tapscript executor,
+`unclassified`, `locally-reproduced`). See
+[the primitive](../primitives/subset-sum.md) and NR-103.

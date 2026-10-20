@@ -1991,3 +1991,16 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-103: Explicit selector checks are dominated in tapscript
+
+Adding a numeric `0..=1` range check and a reserialization check to every
+subset-sum selector raises the verifier from 7 to 17 script bytes per weight
+(224 to 544 bytes at 32 weights, 896 to 2,176 at 128) and the peak from 33 to
+36, while tapscript MINIMALIF already aborts every selector other than the empty
+item and `[1]`. The explicit form is therefore only for contexts without consensus
+MINIMALIF (legacy and segwit v0), which the local tapscript executor cannot
+exercise. Byte counts are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`; the BIP 342 rule itself is
+not re-verified against Bitcoin Core here. See the
+[primitive](../primitives/subset-sum.md).
