@@ -463,3 +463,12 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Inversion count of u4 vectors
+
+Exact inversion counting uses 822 script bytes, 32 witness bytes, zero hints,
+a 19-item peak and 537 executed non-push opcodes at 16 nibbles (strict local
+`unclassified` tapscript, `locally-reproduced`); cost is quadratic, 3,709 bytes
+at 32 and 15,629 at 64. The linear nondecreasing predicate needs 263, 588 and
+1,244 bytes at those lengths, so a zero-inversion test should not use the
+count (NR-089). See [the primitive](../primitives/u4-inversions.md).

@@ -15,6 +15,7 @@ pub mod equality;
 pub mod gray;
 pub mod gray_inverse;
 pub mod interleave;
+pub mod inversions;
 pub mod leading_zeros;
 pub mod logic;
 pub mod lowbit;

@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,80 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-inversions",
+      "name": "Checked u4 inversion count",
+      "class": "arithmetic/word",
+      "summary": "Zero-hint exact count of pairs i<j with a[i]>a[j] in a range-checked u4 vector using n(n-1)/2 in-place comparisons.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-inversions.md",
+      "implementation": "src/arithmetic/u4/inversions.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::inversions::tests",
+        "primitive_metrics::u4_inversions_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "permutation",
+        "stack-scheduling"
+      ],
+      "security": "Every nibble is range-checked before use; the output depends only on witness values the script has validated. No hint, key or cryptographic security claim.",
+      "stack_contract": "Consumes preserved | a[0..n-1] (last item on top) and returns preserved | count in 0..=n(n-1)/2; out-of-range nibbles abort. Peak is n+3+preserved combined items.",
+      "configurations": [
+        {
+          "id": "checked-len16-descending",
+          "label": "u4_nibbles_inversions(16), fully descending input",
+          "parameters": {
+            "length": 16,
+            "pairs": 120,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: one range check per nibble, n(n-1)/2 in-place comparisons with Boolean accumulation, and input cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 822,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 19,
+          "executed_opcodes": 537,
+          "static_non_push_opcodes": 537,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 822,
+          "metric_keys": [
+            "u4_inversions_16",
+            "u4_inversions_16_witness",
+            "u4_inversions_16_stack",
+            "u4_inversions_16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Quadratic script size; the 128-nibble maximum is 64,178 unoptimized bytes",
+        "Zero-inversion questions are answered 3.1x smaller at 16 nibbles by the nondecreasing predicate",
+        "The Lehmer-code cross-check uses separately written Rust code, not an independent Script implementation",
+        "Static non-push opcode count equals executed count only because the fragment is straight-line",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-045"
       ]
     }
   ]

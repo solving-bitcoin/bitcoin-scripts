@@ -1991,3 +1991,15 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-089: Inversion count is dominated as a sortedness test
+
+Testing `inversions == 0` instead of calling the nondecreasing predicate costs
+822 versus 263 script bytes at 16 nibbles, 3,709 versus 588 at 32, and 15,629
+versus 1,244 at 64, because it compares all `n(n-1)/2` pairs while sortedness
+needs only the `n-1` adjacent ones. Every figure is a policy-compiled fragment
+under strict local `unclassified` tapscript rules, `locally-reproduced`. The
+count is justified only when its magnitude is consumed. Sums of lane-packed
+histograms were not attempted: extracting a lane would need division or
+remainder, and no such opcode is available, which is reasoning rather than
+measurement. See the [primitive](../primitives/u4-inversions.md).

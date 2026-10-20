@@ -8023,6 +8023,55 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the exact u4 inversion count at length 16.
+#[test]
+fn u4_inversions_metrics_are_current() {
+    const LEN: u32 = 16;
+    let fragment = u4::inversions::u4_nibbles_inversions(LEN);
+    // Strictly descending: every pair is an inversion, 120 in total.
+    let witness: Vec<Vec<u8>> = (0..16).rev().map(|nibble| scriptnum(nibble)).collect();
+    let leaf = script! {
+        { fragment.clone() }
+        120 OP_EQUALVERIFY
+        OP_TRUE
+    };
+    let result = execute_script_with_inputs_strict(leaf, witness.clone());
+    assert!(result.success, "strict metric execution failed: {result}");
+    let nondecreasing = script_len(u4::nondecreasing::u4_nibbles_nondecreasing(LEN));
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_stack",
+            value: result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_nondecreasing",
+            value: nondecreasing,
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

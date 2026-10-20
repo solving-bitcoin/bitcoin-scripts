@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-045 — Sub-quadratic inversion counting
+
+The pairwise count is quadratic in script bytes. **Accept when:** a Script
+construction computes the same exact count for hostile 32-nibble vectors in
+fewer policy-compiled script bytes than 3,709 plus witness bytes on the same
+complete-leaf boundary, with exact hint counts, executed opcodes and combined
+peaks, or a consumer of the count (permutation parity, Kendall-tau distance)
+measures a hinted certificate that dominates it. Core validation is required for
+any deployment claim.

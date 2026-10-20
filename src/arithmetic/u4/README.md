@@ -22,6 +22,9 @@ these operations, but this module contains no hash-specific round logic.
 - `count::u4_nibbles_count(value, nibble_count)` takes a checked batch size in
   `1..=997` without preserved stack items; composition must satisfy
   `nibble_count + 3 + preserved_items <= 1000`.
+- `inversions::u4_nibbles_inversions(len)` takes a checked vector of `1..=128`
+  nibbles; the bound is script size (`len*(len-1)/2` comparisons), not stack
+  depth (the peak is `len + 3 + preserved`).
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -250,6 +253,7 @@ words as data, with no hint items.
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
+| Inversion count, 16 nibbles | <!-- metric:u4_inversions_16 -->822<!-- /metric:u4_inversions_16 --> bytes | <!-- metric:u4_inversions_16_stack -->19<!-- /metric:u4_inversions_16_stack --> items | <!-- metric:u4_inversions_16_opcodes -->537<!-- /metric:u4_inversions_16_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -295,6 +299,8 @@ generated table setup is <!-- metric:u4_odd_inverse_mod16_table -->16<!-- /metri
 The fixed-symbol count fixture uses <!-- metric:u4_symbol_count_16_witness -->33<!-- /metric:u4_symbol_count_16_witness --> serialized witness bytes for <!-- metric:u4_symbol_count_16_witness_items -->16<!-- /metric:u4_symbol_count_16_witness_items --> canonical data items and returns one numeric count. Nonminimal numeric encodings may be accepted under a permissive execution profile and can serialize larger.
 
 The 16-nibble presence-bit batch uses <!-- metric:u4_presence_bits_16_witness -->33<!-- /metric:u4_presence_bits_16_witness --> serialized witness bytes for <!-- metric:u4_presence_bits_16_witness_items -->16<!-- /metric:u4_presence_bits_16_witness_items --> data items, zero hint items, and returns 16 Boolean outputs; all data items coexist at script entry. This is the canonical 16-item profile. Membership uses `OP_NUMEQUAL`, so non-minimal numeric aliases such as `[0x01, 0x00]`, negative zero `[0x80]` and `[0x02, 0x00]` produce the numeric presence bits under the local `TapscriptProfile::Consensus` profile and can serialize larger; the local `Policy` profile rejects them with `MinimalData`. Compose `verify_canonical_nibble()` when byte-unique witness encoding is required.
+
+The inversion-count fixture (strictly descending, 120 inversions) uses <!-- metric:u4_inversions_16_witness -->32<!-- /metric:u4_inversions_16_witness --> serialized witness bytes for <!-- metric:u4_inversions_16_witness_items -->16<!-- /metric:u4_inversions_16_witness_items --> data items and zero hints. The fragment is straight-line, so its executed non-push opcodes equal the static count above. The specialized nondecreasing check on the same 16 nibbles is <!-- metric:u4_inversions_16_nondecreasing -->263<!-- /metric:u4_inversions_16_nondecreasing --> bytes.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 
