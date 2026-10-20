@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,117 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-presence-hinted",
+      "name": "Hint-checked presence bits",
+      "class": "arithmetic/word",
+      "summary": "Verify prover-supplied presence flags for a u4 vector with n flag lookups and 16 witnessed-index checks instead of 16*n equality scans.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-presence-hinted.md",
+      "implementation": "src/arithmetic/u4/presence_hinted.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::presence_hinted::tests",
+        "primitive_metrics::u4_presence_hinted_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "witness-hints",
+        "membership-projection",
+        "native-minimalif"
+      ],
+      "security": "Nibbles, indices and flags are hostile. Every nibble must have its flag set and every set flag must be witnessed by an in-range index of an element equal to the symbol, so the returned flags equal the presence bits. In tapscript MINIMALIF makes the flags canonical Booleans. No key or cryptographic security claim.",
+      "stack_contract": "Witness x[0..n-1] | idx[0..15] | p[15]..p[0] (p[0] on top) returns p[15]..p[0]; the vector and indices are consumed; peak n+36; hint items 32 per invocation.",
+      "configurations": [
+        {
+          "id": "zero-hint-len64",
+          "label": "u4_nibbles_to_presence_bits(64)",
+          "parameters": {
+            "length": 64,
+            "form": "zero-hint",
+            "fixture": "x[i]=(7i+3)%16",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: nibble range checks, flag lookups, witnessed-index checks (hinted) or the 16 equality scans (zero-hint), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item",
+          "script_bytes": 6733,
+          "witness_bytes": 125,
+          "witness_bytes_max": null,
+          "max_stack_items": 82,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 3648,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 6733,
+          "metric_keys": [
+            "u4_presence_zero_64",
+            "u4_presence_zero_64_witness",
+            "u4_presence_zero_64_stack",
+            "u4_presence_zero_64_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-len64",
+          "label": "u4_nibbles_to_presence_bits_hinted(64)",
+          "parameters": {
+            "length": 64,
+            "form": "hint-checked",
+            "fixture": "x[i]=(7i+3)%16",
+            "data_items": 96,
+            "hint_items": 32,
+            "hint_bytes": 63,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: nibble range checks, flag lookups, witnessed-index checks (hinted) or the 16 equality scans (zero-hint), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item",
+          "script_bytes": 1029,
+          "witness_bytes": 188,
+          "witness_bytes_max": null,
+          "max_stack_items": 100,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 632,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1029,
+          "metric_keys": [
+            "u4_presence_hinted_64",
+            "u4_presence_hinted_64_witness",
+            "u4_presence_hinted_64_stack",
+            "u4_presence_hinted_64_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Flag canonicality relies on tapscript MINIMALIF; other contexts need explicit checks",
+        "Output order is the reverse of the zero-hint projection",
+        "32 hint items per invocation limit batching under the 1,000-item stack bound",
+        "Static non-push opcode counts are not dynamic measurements (the checks branch)",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-061"
       ]
     }
   ]

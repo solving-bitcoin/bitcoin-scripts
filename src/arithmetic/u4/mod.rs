@@ -34,6 +34,7 @@ pub mod popcount;
 pub mod power_of_two;
 pub mod prefix_sum;
 pub mod presence;
+pub mod presence_hinted;
 pub mod quarter_square;
 pub mod reflection;
 pub mod rotate;

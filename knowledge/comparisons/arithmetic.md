@@ -463,3 +463,11 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Presence bits of u4 vectors
+
+At 64 nibbles the zero-hint presence projection costs 6,733 script bytes and the
+hint-checked form 1,029 bytes (32 hint items, 188 witness bytes over 96 items, peak
+100 against 82): 85% smaller on script and 82% in total including witness (strict
+local `unclassified` tapscript, `locally-reproduced`). The hinted form wins from
+about five nibbles. See [the primitive](../primitives/u4-presence-hinted.md) and NR-105.

@@ -8023,6 +8023,65 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures hint-checked presence bits at 64 nibbles.
+#[test]
+fn u4_presence_hinted_metrics_are_current() {
+    use u4::presence::u4_nibbles_to_presence_bits;
+    use u4::presence_hinted::u4_nibbles_to_presence_bits_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut flags = [false; 16];
+    let mut first = [0i64; 16];
+    for (i, &v) in values.iter().enumerate() {
+        if !flags[v as usize] {
+            flags[v as usize] = true;
+            first[v as usize] = i as i64;
+        }
+    }
+    let zero_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = zero_witness.clone();
+    hinted_witness.extend(first.iter().map(|&i| scriptnum(i)));
+    hinted_witness.extend(
+        (0..16)
+            .rev()
+            .map(|s| if flags[s] { vec![1u8] } else { Vec::new() }),
+    );
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_nibbles_to_presence_bits(N), zero_witness),
+        (
+            "hinted",
+            u4_nibbles_to_presence_bits_hinted(N),
+            hinted_witness,
+        ),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            for _ in 0..16 { OP_DROP }
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_presence_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -1200,3 +1200,26 @@ See [the knowledge page](../../../knowledge/primitives/u4-reflection.md),
 catalog record `arithmetic/u4-reflection`. The palindromic coefficient
 interpretation is reported in [Gao, arXiv:2109.09006v1](https://arxiv.org/abs/2109.09006v1);
 our nibble encoding and cost results are local.
+
+## Hint-checked presence bits
+
+`presence_hinted::u4_nibbles_to_presence_bits_hinted(n)` (`n` in `1..=964`, peak
+`n + 36`) returns the same 16 presence bits as `presence::u4_nibbles_to_presence_bits`
+but verifies a witness instead of scanning the vector once per symbol. The witness is
+the `n` nibbles, then 16 indices (`idx[s]`, only used for a set flag), then the 16
+flags `p[15] ... p[0]` with `p[0]` on top; the output keeps that order (the
+zero-hint form returns `present[0]` deepest). Every nibble's flag must be set, and
+every set flag must be witnessed by an in-range index whose element equals the
+symbol. In tapscript MINIMALIF rejects any flag other than the empty item or `[1]`.
+Hint items per invocation: **32** (16 indices and 16 flags).
+
+Fragment-only boundary: nibble range checks, flag lookups, witnessed-index checks
+and cleanup; input pushes and terminal predicate excluded. Fixture
+`x[i] = (7i + 3) mod 16` over 64 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Zero-hint projection, 64 nibbles | <!-- metric:u4_presence_zero_64 -->6733<!-- /metric:u4_presence_zero_64 --> | <!-- metric:u4_presence_zero_64_witness -->125<!-- /metric:u4_presence_zero_64_witness --> | <!-- metric:u4_presence_zero_64_witness_items -->64<!-- /metric:u4_presence_zero_64_witness_items --> | 0 | <!-- metric:u4_presence_zero_64_stack -->82<!-- /metric:u4_presence_zero_64_stack --> | <!-- metric:u4_presence_zero_64_opcodes -->3648<!-- /metric:u4_presence_zero_64_opcodes --> |
+| Hint-checked projection, 64 nibbles | <!-- metric:u4_presence_hinted_64 -->1029<!-- /metric:u4_presence_hinted_64 --> | <!-- metric:u4_presence_hinted_64_witness -->188<!-- /metric:u4_presence_hinted_64_witness --> | <!-- metric:u4_presence_hinted_64_witness_items -->96<!-- /metric:u4_presence_hinted_64_witness_items --> | 32 | <!-- metric:u4_presence_hinted_64_stack -->100<!-- /metric:u4_presence_hinted_64_stack --> | <!-- metric:u4_presence_hinted_64_opcodes -->632<!-- /metric:u4_presence_hinted_64_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-presence-hinted.md).
