@@ -8023,6 +8023,53 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures strict-majority detection at 16 nibbles.
+#[test]
+fn u4_majority_metrics_are_current() {
+    use u4::majority::{u4_nibbles_majority, u4_nibbles_majority_hinted};
+    const LEN: u32 = 16;
+    // Seven occurs ten times in sixteen positions, a strict majority.
+    let values: [i64; 16] = [7, 3, 7, 1, 7, 7, 2, 7, 7, 5, 7, 7, 9, 7, 0, 7];
+    let zero_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = zero_witness.clone();
+    hinted_witness.push(scriptnum(7));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_nibbles_majority(LEN), zero_witness),
+        ("hinted", u4_nibbles_majority_hinted(LEN), hinted_witness),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            7 OP_EQUALVERIFY
+            OP_TRUE
+        };
+        let result = execute_script_with_inputs_strict(leaf, witness.clone());
+        assert!(result.success, "strict metric execution failed: {result}");
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_majority_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_majority_16_count_baseline",
+        value: 16 * script_len(u4::count::u4_nibbles_count(0, LEN)),
+    });
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

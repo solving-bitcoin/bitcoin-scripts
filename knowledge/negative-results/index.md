@@ -1991,3 +1991,14 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-094: Per-symbol counting is dominated for strict majority
+
+Deciding a strict majority by counting each of the 16 symbols costs at least
+4,256 script bytes at 16 nibbles (sixteen `u4_nibbles_count` fragments, before
+vector copies and comparisons), against 486 bytes for a Boyer-Moore vote plus
+verification count, a factor of 8.8 that grows with length (18,448 versus 2,046
+at 64). The counting figure is an estimate, not a built comparator; the
+Boyer-Moore figure is a policy-compiled fragment under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-majority.md).

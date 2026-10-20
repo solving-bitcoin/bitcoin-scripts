@@ -1185,3 +1185,13 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-050 — Frequent-element generalization
+
+Boyer-Moore decides only a strict majority. **Accept when:** a Script construction
+decides, for hostile 16-nibble vectors, whether any nibble exceeds a threshold
+`n/k` for `k > 2` (a Misra-Gries summary with a verification pass), rejects
+out-of-range nibbles, and reports script bytes, witness items, hint count, peak
+and executed opcodes on the same boundary as the 486-byte majority fragment, or
+a consumer shows the strict-majority form suffices. Core validation is required
+for any deployment claim.

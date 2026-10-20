@@ -1,6 +1,6 @@
 {
   "schema_version": 1.1,
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "cost_model": "knowledge/cost-model.md",
   "records": [
     {
@@ -21521,6 +21521,115 @@
       ],
       "open_problems": [
         "OP-042"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-majority",
+      "name": "Checked u4 strict majority",
+      "class": "arithmetic/word",
+      "summary": "Hint-free Boyer-Moore strict-majority decision (including none) over a range-checked u4 vector, with a witness-claimed majority verifier.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-10-20",
+      "knowledge_page": "knowledge/primitives/u4-majority.md",
+      "implementation": "src/arithmetic/u4/majority.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "arithmetic::u4::majority::tests",
+        "primitive_metrics::u4_majority_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "range-check",
+        "finite-state-fold",
+        "witness-hints"
+      ],
+      "security": "Every nibble and the claim are range-checked; the hint-free decision verifies its candidate with a full count, and the claim check accepts only true strict majorities. No key or cryptographic security claim.",
+      "stack_contract": "Hint-free: preserved | a[0..n-1] -> preserved | m (nibble or -1). Claim check: preserved | a[0..n-1] | claim -> preserved | claim or abort. Peak n+4; unrelated main/alt state preserved.",
+      "configurations": [
+        {
+          "id": "zero-len16",
+          "label": "u4_nibbles_majority(16)",
+          "parameters": {
+            "length": 16,
+            "fixture": "seven x10 of 16",
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": null,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 486,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 20,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 353,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 486,
+          "metric_keys": [
+            "u4_majority_zero_16",
+            "u4_majority_zero_16_witness",
+            "u4_majority_zero_16_stack",
+            "u4_majority_zero_16_opcodes"
+          ]
+        },
+        {
+          "id": "hinted-len16",
+          "label": "u4_nibbles_majority_hinted(16)",
+          "parameters": {
+            "length": 16,
+            "fixture": "seven x10 of 16",
+            "data_items": 17,
+            "hint_items": 1,
+            "hint_bytes": 2,
+            "all_data_present_at_entry": true,
+            "context": "tapscript",
+            "enforce_stack_limit": true,
+            "require_minimal": false,
+            "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
+          },
+          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; excludes input pushes, witness serialization beyond the CompactSize count, terminal predicate, transaction framing and unrelated live state",
+          "script_bytes": 213,
+          "witness_bytes": 34,
+          "witness_bytes_max": null,
+          "max_stack_items": 20,
+          "executed_opcodes": 129,
+          "static_non_push_opcodes": 129,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 213,
+          "metric_keys": [
+            "u4_majority_hinted_16",
+            "u4_majority_hinted_16_witness",
+            "u4_majority_hinted_16_stack",
+            "u4_majority_hinted_16_opcodes"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only strict majority over a 16-symbol alphabet; heavy hitters below one half are not decided",
+        "The claim check cannot report that no majority exists",
+        "Boyer-Moore executed opcodes are branch dependent and recorded as null",
+        "The per-symbol baseline is a lower-bound estimate, not a built comparator",
+        "Scripts above the 32 KiB optimizer cutoff (near the 996 limit) are unoptimized",
+        "The model is ordinary Rust, not an independent Script interpreter",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-050"
       ]
     }
   ]
