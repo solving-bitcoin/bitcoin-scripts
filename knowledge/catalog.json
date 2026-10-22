@@ -5210,6 +5210,78 @@
       ]
     },
     {
+      "id": "introspection/binohash-subset-toy",
+      "name": "Binohash 2-of-3 subset and Script-consumer fixture",
+      "class": "introspection/transaction",
+      "summary": "Checks a toy 2-of-3 OP_ROLL signature subset, size predicate, and downstream index-selected preimage commitment against Bitcoin Core.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-10-22",
+      "knowledge_page": "knowledge/primitives/binohash-subset-toy.md",
+      "implementation": "examples/binohash_subset_fixtures.rs",
+      "documentation": "research/binohash-subset/README.md",
+      "tests": [
+        "examples/binohash_subset_fixtures.rs",
+        "tools/test_binohash_subset_regtest.py",
+        "tools/binohash_subset_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "selector-validation",
+        "stack-routing",
+        "sighash-single-bug",
+        "signature-size-constraint"
+      ],
+      "security": "Three public test preimages and a 71-byte signature-size filter validate data flow only. No transaction pinning, meaningful work factor, two-round extraction, or collision-security claim is provided.",
+      "stack_contract": "P2SH scriptSig supplies dummy, puzzle signature, preimage, ascending canonical indices, and redeemScript; the script selects two embedded signatures, verifies ECDSA and size, then consumes the indices to check one preimage commitment and leaves one boolean.",
+      "configurations": [
+        {
+          "id": "funded-2-of-3-core-v30.3",
+          "label": "Two selected 2-of-3 P2SH spends with malformed controls",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "pool_signatures": 3,
+            "selected_signatures": 2,
+            "consensus_validated_pairs": [[0, 1], [0, 2]],
+            "puzzle_signature_max_bytes": 71,
+            "redeem_script_bytes": 493,
+            "complete_transaction_weight_wu": 2908,
+            "script_sig_bytes": [2, 588],
+            "script_sig_data_items": 6,
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "rejected: Signature is found in scriptCode"
+          },
+          "includes": "complete-transaction: each of two disjoint funded two-input one-output legacy P2SH spends with both complete scriptSigs and prevout context; both weigh 2908 WU; script_bytes is the 23-byte P2SH locking scriptPubKey and the 493-byte redeemScript is included in scriptSig; witness_bytes is zero; excludes the separate funding transaction and full Binohash pinning/grinding costs",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binohash_subset_lock"
+          ]
+        }
+      ],
+      "limitations": [
+        "Toy 3-choose-2 nonce space has no meaningful collision-security bound",
+        "Funding fee search establishes a deterministic size-control fixture but does not validate transaction pinning",
+        "Valid Core consensus spend fails default relay policy under CONST_SCRIPTCODE",
+        "Combined stack peak and executed opcode count are not measured"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash",
       "name": "Binohash transaction digest",
       "class": "introspection/transaction",

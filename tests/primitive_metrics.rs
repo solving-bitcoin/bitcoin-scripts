@@ -12273,3 +12273,59 @@ fn adler32_state_metrics_are_current() {
         },
     ]);
 }
+
+#[test]
+fn binohash_subset_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-subset-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    let mut metrics = vec![
+        Metric {
+            readme,
+            key: "binohash_subset_lock",
+            value: hex_bytes(&fixture["binohash_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_subset_redeem",
+            value: hex_bytes(&fixture["redeem_script_hex"]),
+        },
+    ];
+    for (index, keys) in [
+        (
+            0,
+            [
+                "binohash_subset_first_weight",
+                "binohash_subset_first_easy_sig",
+                "binohash_subset_first_main_sig",
+            ],
+        ),
+        (
+            1,
+            [
+                "binohash_subset_second_weight",
+                "binohash_subset_second_easy_sig",
+                "binohash_subset_second_main_sig",
+            ],
+        ),
+    ] {
+        let transaction = &report["spends"][index]["valid"]["transaction"];
+        for (key, value) in [
+            (keys[0], transaction["weight"].as_u64().unwrap() as usize),
+            (
+                keys[1],
+                transaction["input_script_sig_bytes"][0].as_u64().unwrap() as usize,
+            ),
+            (
+                keys[2],
+                transaction["input_script_sig_bytes"][1].as_u64().unwrap() as usize,
+            ),
+        ] {
+            metrics.push(Metric { readme, key, value });
+        }
+    }
+    check_readme_metrics(metrics);
+}

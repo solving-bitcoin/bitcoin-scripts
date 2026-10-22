@@ -75,7 +75,7 @@ jobs:
           path: target/core-regtest/*.tar.gz
           key: bitcoin-core-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/bitcoin_core_release.json') }}
       - name: Test fixture determinism and local execution contracts
-        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures --example tapscript_budget_fixtures --example tapscript_csv_fixtures --example binohash_core_fixtures
+        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures --example tapscript_budget_fixtures --example tapscript_csv_fixtures --example binohash_core_fixtures --example binohash_subset_fixtures
       - name: Compare Tapscript resource and policy profiles
         run: python3 tools/core_regtest.py --download-core --output target/ci-reports/core-profiles.json
       - name: Compare transaction-aware signature behavior
@@ -94,6 +94,8 @@ jobs:
         run: python3 tools/shake256_prefix_regtest.py --download-core --output target/ci-reports/shake256-prefix.json
       - name: Compare funded Binohash legacy subset behavior
         run: python3 tools/binohash_core_regtest.py --download-core --output target/ci-reports/binohash-core.json
+      - name: Compare Binohash 2-of-3 subset and Script consumer
+        run: python3 tools/binohash_subset_regtest.py --download-core --output target/ci-reports/binohash-subset.json
       - name: Upload Core comparison reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
