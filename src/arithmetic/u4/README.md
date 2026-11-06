@@ -91,6 +91,9 @@ these operations, but this module contains no hash-specific round logic.
   batch size in `1..=997` and returns one monotonicity bit.
 - `sum::u4_nibbles_sum_exact(nibble_count)` takes a checked batch size in
   `1..=997` and returns the exact sum in `0..=15*nibble_count`.
+- [`binomial_moments::u4_centered_binomial_moments(n)`](binomial_moments/)
+  consumes `0..=997` canonical nibbles and returns three exact centered
+  positional sums with weights `1`, `i`, and `binomial(i,2)`.
 - `mirror::u4_nibbles_to_mirror(nibble_count)` canonicalizes each nibble under
   complement reflection to the range `0..=7`.
 - `leading_zeros::u4_nibbles_to_leading_zeros(nibble_count)` maps checked

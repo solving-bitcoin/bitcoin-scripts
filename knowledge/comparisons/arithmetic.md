@@ -436,6 +436,17 @@ fragment measures 766 bytes, 61 witness bytes, 32 data items, zero hints and a
 prices matched alternatives; the shared contract tests preserve the existing
 sum-family semantics and deployment classes.
 
+## Centered positional binomial moments
+
+The [centered binomial recurrence](../primitives/u4-binomial-moments.md)
+returns exact order-zero, order-one and order-two weighted sums. With
+128 nibbles it uses 2,814 leaf bytes and 2,292 executed non-push
+operations at combined peak 131. Eager initialization uses 2,832,
+2,307 and 134. Computing each weight separately uses 8,424, 7,896
+and 139. Every row checks the same three outputs from 249 serialized
+data bytes, 128 ordinary items and zero hints. See the
+[arithmetic and collision limits](../negative-results/u4-binomial-moments.md).
+
 ## Integer floor roots
 
 The [ScriptNum root](../primitives/scriptnum-isqrt.md) consumes one checked

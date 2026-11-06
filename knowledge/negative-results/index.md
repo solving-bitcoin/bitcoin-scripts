@@ -180,6 +180,13 @@ The lab now adopts repaired pin `4b7269a` as described in
 retains its original local panic outcomes; current profile revalidation is
 reported separately in the [Core experiment](../core-validation.md).
 
+## Centered positional moment limits
+
+The [binomial moment experiment](u4-binomial-moments.md) reproduces an
+eager initialization stack failure and a collision across three exact
+outputs. The uncentered quadratic sum exceeds four-byte numeric range
+for an all-15 vector at width 952.
+
 ## NR-044: Optimized lifecycle lengths do not isolate cleanup cost
 
 The BLAKE3 `packed_table_lifecycle_metrics` test formerly computed cleanup
