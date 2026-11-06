@@ -8,6 +8,7 @@ pub mod byte_less_mask;
 pub mod byte_parity;
 pub mod byte_planes;
 pub mod cmp;
+pub mod dual_residue;
 pub mod msb_mask;
 pub mod nand;
 pub mod nor;

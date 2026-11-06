@@ -1867,6 +1867,9 @@ seven items for two checked 16-bit lanes and a signed difference. Both have
 four data items, the same 13-byte witness and zero hints. See the
 [exact-boundary negative result](u32-mod65537-bitwise.md).
 
+The [joint small-residue result](u32-dual-residue.md) records a dominated
+separate reduction and an exact collision between distinct u32 words under
+the same pair of residue checks.
 
 ## NR-075: Prefix-scan table/branch Pareto frontier
 

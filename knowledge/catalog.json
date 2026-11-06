@@ -15603,6 +15603,163 @@
       ]
     },
     {
+      "id": "arithmetic/u32-dual-residue",
+      "name": "Joint u32 residues modulo 7 and 9",
+      "class": "arithmetic/word",
+      "summary": "Check a canonical four-byte u32 and recover both residues from a shared modulo-63 byte-weighted sum.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u32-dual-residue.md",
+      "implementation": "src/arithmetic/u32/dual_residue/mod.rs",
+      "documentation": "src/arithmetic/u32/dual_residue/README.md",
+      "tests": [
+        "arithmetic::u32::dual_residue::tests",
+        "u32_dual_residue_metrics_are_current"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "canonical-scriptnum",
+        "periodic-radix-weights",
+        "bounded-reduction"
+      ],
+      "security": "Canonical word inputs and exact residues are checked; the pair is many-to-one and does not authenticate the original word.",
+      "stack_contract": "caller | b0 b1 b2 b3 -> caller | canonical r7 r9; altstack preserved",
+      "configurations": [
+        {
+          "id": "fused-01234567-leaf",
+          "label": "fused, word 01234567, complete output-checking leaf",
+          "parameters": {
+            "schedule": "fused",
+            "word_hex": "01234567",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte verification, arithmetic, both exact residue checks and terminal true; witness includes all four items and their serialization prefixes, excluding script, control block, annex and transaction; executed non-push counts include encountered branch delimiters",
+          "script_bytes": 210,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 115,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 210,
+          "metric_keys": [
+            "dual_residue_fused_low_script",
+            "dual_residue_fused_low_witness",
+            "dual_residue_fused_low_stack",
+            "dual_residue_fused_low_executed"
+          ]
+        },
+        {
+          "id": "separate-01234567-leaf",
+          "label": "separate, word 01234567, complete output-checking leaf",
+          "parameters": {
+            "schedule": "separate",
+            "word_hex": "01234567",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte verification, arithmetic, both exact residue checks and terminal true; witness includes all four items and their serialization prefixes, excluding script, control block, annex and transaction; executed non-push counts include encountered branch delimiters",
+          "script_bytes": 248,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 136,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 248,
+          "metric_keys": [
+            "dual_residue_separate_low_script",
+            "dual_residue_separate_low_witness",
+            "dual_residue_separate_low_stack",
+            "dual_residue_separate_low_executed"
+          ]
+        },
+        {
+          "id": "fused-fedcba98-leaf",
+          "label": "fused, word fedcba98, complete output-checking leaf",
+          "parameters": {
+            "schedule": "fused",
+            "word_hex": "fedcba98",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte verification, arithmetic, both exact residue checks and terminal true; witness includes all four items and their serialization prefixes, excluding script, control block, annex and transaction; executed non-push counts include encountered branch delimiters",
+          "script_bytes": 210,
+          "witness_bytes": 13,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 113,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 210,
+          "metric_keys": [
+            "dual_residue_fused_high_script",
+            "dual_residue_fused_high_witness",
+            "dual_residue_fused_high_stack",
+            "dual_residue_fused_high_executed"
+          ]
+        },
+        {
+          "id": "separate-fedcba98-leaf",
+          "label": "separate, word fedcba98, complete output-checking leaf",
+          "parameters": {
+            "schedule": "separate",
+            "word_hex": "fedcba98",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte verification, arithmetic, both exact residue checks and terminal true; witness includes all four items and their serialization prefixes, excluding script, control block, annex and transaction; executed non-push counts include encountered branch delimiters",
+          "script_bytes": 248,
+          "witness_bytes": 13,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 136,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 248,
+          "metric_keys": [
+            "dual_residue_separate_high_script",
+            "dual_residue_separate_high_witness",
+            "dual_residue_separate_high_stack",
+            "dual_residue_separate_high_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The two residues represent a class modulo 63; distinct words can have the same outputs.",
+        "The shared schedule requires seven combined items plus both caller stacks and all preloaded future state.",
+        "No funded Core or relay validation for these leaves."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/u32-mod65537",
       "name": "Canonical u32 residue modulo 65,537",
       "class": "arithmetic/word",
