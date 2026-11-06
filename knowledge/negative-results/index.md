@@ -485,6 +485,15 @@ at the two smallest tested widths and loses for the local 15- and 29-bit limb
 uses, so it is not retained as a general splitter. This is an `inspected`
 frontier for the tested widths, not a universal domination claim.
 
+## Exact signed extrema from a sum can require a five-byte operand
+
+[Recovering the larger input from the sum and the minimum](signed-min-max.md)
+fails for the valid four-byte pair `[2147483646, 2147483647]` because the
+next subtraction consumes the five-byte sum. Also, the paired schedule's
+fewer value comparisons leave the measured width-997 total executed count
+unchanged when every conditional swap runs. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
 ## NR-015: The single-ScriptNum right shift omits one 32-bit word
 
 The pinned `op_rshift.md` construction treats ScriptNum's sign as logical bit

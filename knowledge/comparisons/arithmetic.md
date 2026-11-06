@@ -12,6 +12,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
 | Canonical ScriptNum boundary | `scriptint::verify_canonical()` | 5 | 4-item peak; rejects raw aliases and oversized items |
+| Exact signed min and max, 128 values | [Paired checked reduction](signed-min-max.md) | 1,927 | 131-item peak; 641-byte data witness; zero hints; complete output checks included |
 | Conditional u32 sign routing | `u32_conditional_negate()` | 83 | 9-item peak; condition normalized before branch |
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |

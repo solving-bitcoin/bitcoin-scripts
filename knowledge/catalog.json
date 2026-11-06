@@ -74,6 +74,256 @@
       ]
     },
     {
+      "id": "arithmetic/signed-min-max",
+      "name": "Paired signed ScriptNum extrema",
+      "class": "arithmetic/scriptnum",
+      "summary": "Compute exact minimum and maximum of a canonical signed vector by pairing the inputs before updating both extrema.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/signed-min-max.md",
+      "implementation": "src/arithmetic/extrema/mod.rs",
+      "documentation": "src/arithmetic/extrema/README.md",
+      "tests": [
+        "arithmetic::extrema::tests::every_short_ternary_vector_matches_both_host_extrema",
+        "arithmetic::extrema::tests::signed_endpoints_and_numeric_aliases_are_checked",
+        "arithmetic::extrema::tests::reconstructing_max_from_the_sum_can_fail_on_valid_inputs",
+        "arithmetic::extrema::tests::standalone_and_caller_frontiers_are_observable",
+        "primitive_metrics::signed_extrema_metrics_are_current"
+      ],
+      "references": [
+        "pohl-minmax-1972",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "scriptnum-canonicality",
+        "stack-scheduling"
+      ],
+      "security": "Checks hostile numeric width and canonicality before use. The extrema alone do not bind order, multiplicity or provenance.",
+      "stack_contract": "caller | x[0] ... x[width-1] -> caller | minimum maximum. Width 1..=997. Both caller stacks survive within the combined item limit.",
+      "configurations": [
+        {
+          "id": "paired-2",
+          "label": "Paired signed extrema, width 2",
+          "parameters": {
+            "width": 2,
+            "schedule": "paired",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 2,
+            "value_comparisons": 1
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 37,
+          "witness_bytes": 11,
+          "witness_bytes_max": 11,
+          "max_stack_items": 5,
+          "executed_opcodes": 21,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_2_paired_script",
+            "extrema_2_paired_witness",
+            "extrema_2_paired_stack",
+            "extrema_2_paired_executed"
+          ]
+        },
+        {
+          "id": "streaming-2",
+          "label": "Streaming signed extrema, width 2",
+          "parameters": {
+            "width": 2,
+            "schedule": "streaming",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 2,
+            "value_comparisons": 1
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 37,
+          "witness_bytes": 11,
+          "witness_bytes_max": 11,
+          "max_stack_items": 5,
+          "executed_opcodes": 21,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_2_streaming_script",
+            "extrema_2_streaming_witness",
+            "extrema_2_streaming_stack",
+            "extrema_2_streaming_executed"
+          ]
+        },
+        {
+          "id": "paired-32",
+          "label": "Paired signed extrema, width 32",
+          "parameters": {
+            "width": 32,
+            "schedule": "paired",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 32,
+            "value_comparisons": 46
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 487,
+          "witness_bytes": 161,
+          "witness_bytes_max": 161,
+          "max_stack_items": 35,
+          "executed_opcodes": 396,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_32_paired_script",
+            "extrema_32_paired_witness",
+            "extrema_32_paired_stack",
+            "extrema_32_paired_executed"
+          ]
+        },
+        {
+          "id": "streaming-32",
+          "label": "Streaming signed extrema, width 32",
+          "parameters": {
+            "width": 32,
+            "schedule": "streaming",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 32,
+            "value_comparisons": 61
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 487,
+          "witness_bytes": 161,
+          "witness_bytes_max": 161,
+          "max_stack_items": 35,
+          "executed_opcodes": 411,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_32_streaming_script",
+            "extrema_32_streaming_witness",
+            "extrema_32_streaming_stack",
+            "extrema_32_streaming_executed"
+          ]
+        },
+        {
+          "id": "paired-128",
+          "label": "Paired signed extrema, width 128",
+          "parameters": {
+            "width": 128,
+            "schedule": "paired",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 128,
+            "value_comparisons": 190
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 1927,
+          "witness_bytes": 641,
+          "witness_bytes_max": 641,
+          "max_stack_items": 131,
+          "executed_opcodes": 1596,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_128_paired_script",
+            "extrema_128_paired_witness",
+            "extrema_128_paired_stack",
+            "extrema_128_paired_executed"
+          ]
+        },
+        {
+          "id": "streaming-128",
+          "label": "Streaming signed extrema, width 128",
+          "parameters": {
+            "width": 128,
+            "schedule": "streaming",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 128,
+            "value_comparisons": 253
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 1927,
+          "witness_bytes": 641,
+          "witness_bytes_max": 641,
+          "max_stack_items": 131,
+          "executed_opcodes": 1659,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_128_streaming_script",
+            "extrema_128_streaming_witness",
+            "extrema_128_streaming_stack",
+            "extrema_128_streaming_executed"
+          ]
+        },
+        {
+          "id": "paired-997",
+          "label": "Paired signed extrema, width 997",
+          "parameters": {
+            "width": 997,
+            "schedule": "paired",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 997,
+            "value_comparisons": 1494
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 14962,
+          "witness_bytes": 4988,
+          "witness_bytes_max": 4988,
+          "max_stack_items": 1000,
+          "executed_opcodes": 12957,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_997_paired_script",
+            "extrema_997_paired_witness",
+            "extrema_997_paired_stack",
+            "extrema_997_paired_executed"
+          ]
+        },
+        {
+          "id": "streaming-997",
+          "label": "Streaming signed extrema, width 997",
+          "parameters": {
+            "width": 997,
+            "schedule": "streaming",
+            "hint_items_per_invocation": 0,
+            "complete_input_items": 997,
+            "value_comparisons": 1991
+          },
+          "includes": "complete-leaf: input checks, routing, both exact output checks and terminal true. Data witness includes item count and lengths and excludes leaf, control block, annex, and transaction. All data items coexist. Combined main and alt peak, with no caller items.",
+          "script_bytes": 14962,
+          "witness_bytes": 4988,
+          "witness_bytes_max": 4988,
+          "max_stack_items": 1000,
+          "executed_opcodes": 12957,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "extrema_997_streaming_script",
+            "extrema_997_streaming_witness",
+            "extrema_997_streaming_stack",
+            "extrema_997_streaming_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Each conditional swap can offset the reduction in value comparisons.",
+        "At width 997 no combined stack room remains for unrelated state.",
+        "Funded Bitcoin Core spends and relay acceptance have not been measured."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/scriptnum-constant-mul",
       "name": "ScriptNum constant multiplication",
       "class": "arithmetic/scriptnum",

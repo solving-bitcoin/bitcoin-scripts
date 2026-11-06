@@ -2,6 +2,7 @@
 
 pub mod bigint;
 pub mod checksums;
+pub mod extrema;
 pub mod factoradic;
 pub mod integer_root;
 pub mod permutation;
