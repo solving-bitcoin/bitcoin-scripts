@@ -1052,6 +1052,14 @@ succinct proof system, or interactive/optimistic trace protocol could change
 the boundary. Wider radix, quotient packing, ordinary Straus/JSF recoding,
 projective coordinates, and local BLAKE3 optimization do not.
 
+## Two changed nibbles can cancel the erasure check
+
+The [erasure counterexample](u4-erasure-recovery.md) reproduces
+two distinct three-nibble vectors with identical residues. The
+single-substitution proof requires distinct coordinate weights.
+Width 18 violates that requirement under modulus 17. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
 ## NR-033: Carry-centered H16 challenge recoding wastes the top table
 
 The former challenge schedule propagated a centered carry through the low

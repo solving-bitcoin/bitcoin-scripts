@@ -9,6 +9,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)
 - [Integer commitments](commitments.md)
+- [Checked nibble erasure recovery schedules](u4-erasure-recovery.md)
 - [Transaction introspection](introspection.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
