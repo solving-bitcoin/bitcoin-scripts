@@ -1905,6 +1905,10 @@ with 996 ordinary inputs and zero hints. Five-byte positive inputs remain
 outside the arithmetic domain; root calculation is not input authentication.
 See [the complete record](integer-root-bounds.md), locally-reproduced/unclassified.
 
+See also the [saturating-addition boundary](scriptnum-saturation.md), where
+numeric clamping after addition fails on a five-byte result and regrouping
+mixed-sign saturated sums changes their output.
+
 ## NR-081: CRC-8 feedback startup and memory frontier
 
 [CRC-8 nibble feedback](crc8-nibble-feedback.md) wins code growth from two

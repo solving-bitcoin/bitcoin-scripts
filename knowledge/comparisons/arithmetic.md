@@ -490,6 +490,18 @@ runs enforce the stack limit. Packed wins witness and live items but loses total
 bytes (NR-084); these rows are not directly comparable with fragment-only u4
 projections or offchain signature multiset ranking.
 
+## Signed saturating ScriptNum addition
+
+The [two-operand saturation experiment](../primitives/scriptnum-saturation.md)
+compares pre-addition headroom with post-addition raw width detection.
+Matched output-checking leaves both use 32 script bytes, 8 data witness bytes,
+2 ordinary data items, zero hints and a combined peak of 4. Headroom
+executes 11 non-push operations on each fixture. Width detection executes
+12 in range and 13 at either saturation endpoint. Both are locally reproduced
+under stack-limited tapscript with optimizer `ALL`; execution is unclassified.
+The [negative result](../negative-results/scriptnum-saturation.md) records the
+invalid numeric post-clamp and mixed-sign regrouping counterexamples.
+
 ## Reflection-constrained vectors
 
 Equal-reflection width 32 complete leaves measure 309 + 32 script/data bytes for
