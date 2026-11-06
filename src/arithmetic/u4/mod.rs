@@ -16,6 +16,7 @@ pub mod gray;
 pub mod gray_inverse;
 pub mod interleave;
 pub mod leading_zeros;
+pub mod lee_step;
 pub mod logic;
 pub mod lowbit;
 pub mod lsb;
