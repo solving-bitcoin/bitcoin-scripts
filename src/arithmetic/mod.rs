@@ -5,6 +5,7 @@ pub mod checksums;
 pub mod factoradic;
 pub mod integer_root;
 pub mod permutation;
+pub mod progression;
 pub mod rns;
 pub mod scriptint;
 pub mod signed_window;

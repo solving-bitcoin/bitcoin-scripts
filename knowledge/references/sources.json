@@ -10,6 +10,13 @@
       "revision": "accepted specification"
     },
     {
+      "id": "bitcoin-core-scriptnum-v30.3",
+      "title": "Bitcoin Core v30.3: CScriptNum operand width and arithmetic result encoding",
+      "kind": "reference-implementation",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/script.h#L211",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); src/script/script.h, CScriptNum"
+    },
+    {
       "id": "bip-66",
       "title": "BIP 66: Strict DER signatures",
       "kind": "specification",

@@ -17,6 +17,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum integer floor root](scriptnum-isqrt.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [u4 digit arithmetic](u4.md)
+- [Exact signed ScriptNum arithmetic progression](signed-progression.md)
 - [Exact u4 sorting with destructive-selection hints](u4-sort.md)
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
