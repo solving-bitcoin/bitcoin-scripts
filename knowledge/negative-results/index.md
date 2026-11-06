@@ -485,6 +485,14 @@ at the two smallest tested widths and loses for the local 15- and 29-bit limb
 uses, so it is not retained as a general splitter. This is an `inspected`
 frontier for the tested widths, not a universal domination claim.
 
+## Even-only midpoint equality rejects odd sums
+
+The [midpoint counterexample](hinted-midpoint.md) shows that comparing
+only with twice the proposed value rejects the correct floor of a
+negative odd sum. Deriving parity avoids a separate hint and raises
+the tested batch frontier from 249 to 332.
+Evidence is `locally-reproduced`. Execution is `unclassified`.
+
 ## NR-015: The single-ScriptNum right shift omits one 32-bit word
 
 The pinned `op_rshift.md` construction treats ScriptNum's sign as logical bit

@@ -5,6 +5,7 @@ They summarize the current catalog rather than claiming global completeness.
 
 - [Arithmetic representations](arithmetic.md)
 - [Arithmetic checksums](checksums.md)
+- [Signed midpoint hint schedules](hinted-midpoint.md)
 - [Stable stack selection schedules](stack-selection.md)
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)
