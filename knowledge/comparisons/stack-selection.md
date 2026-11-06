@@ -39,3 +39,33 @@ See the [source-bound report](../../research/stable-stack-compaction/README.md),
 [primitive](../primitives/stable-selection.md),
 [NR-078](../negative-results/stable-selection.md) and
 [composition obligations](../techniques/composition.md#stable-selection-with-native-binary-flags).
+
+## Fixed-count sparse indices versus binary flags
+
+| Retained from 32 | Encoding | Complete leaf bytes | Witness bytes | Data items | Hint items | Peak | Executed non-push ops |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 | Indices | 114 | 72 | 36 | 0 | 40 | 87 |
+| 4 | Flags | 511 | 101 | 64 | 0 | 65 | 309 |
+| 16 | Indices | 402 | 96 | 48 | 0 | 52 | 297 |
+| 16 | Flags | 547 | 113 | 64 | 0 | 65 | 369 |
+| 32 | Indices | 792 | 128 | 64 | 0 | 68 | 575 |
+| 32 | Flags | 596 | 129 | 64 | 0 | 65 | 449 |
+| 32 | Identity | 97 | 65 | 32 | 0 | 33 | 32 |
+
+Each leaf checks the same count and ordered raw bytes for its subset. Payload
+`i` is `0x20 + i`, and the retained original depths are
+`floor(j * 32 / k)` for `0 <= j < k`. Witness includes every entry item
+and its serialization overhead, excluding script, control block, annex and
+transaction. All rows are `ALL`, `locally-reproduced` and `unclassified`
+with the stack-limited local tapscript `Consensus` profile. Opcode traces
+include active non-push operations and encountered branch delimiters.
+
+For sparse subsets, the index schedule saves bytes and live items. Its
+`n + k + 4` bound admits 995 payloads when retaining one, with no caller state.
+Flags support variable counts and fit up to 499 pairs. At full density,
+the identity baseline consumes no selectors and is cheapest on every
+measured resource except hints, which tie. See
+[indexed selection](../primitives/indexed-selection.md) for the boundary,
+assumptions and reproduction, and
+[NR-078](../negative-results/stable-selection.md#sparse-indices-at-full-density)
+for the dominated case.

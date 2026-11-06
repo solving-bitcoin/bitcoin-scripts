@@ -146,3 +146,55 @@ Catalog `support/stable-selection`; [knowledge page](../../../knowledge/primitiv
 [composition](../../../knowledge/techniques/composition.md#stable-selection-with-native-binary-flags),
 [NR-078](../../../knowledge/negative-results/stable-selection.md) and
 [OP-036](../../../knowledge/open-problems.md#op-036--stable-selection-protocol-composition).
+
+## Sparse index input
+
+`support::selection::compact_indexed_items(n, k)` selects a generation-time
+count `k` from `n` opaque payloads, using `k` canonical numeric selectors.
+Use `1 <= k <= n` and `n + k <= 996`. The input suffix, bottom to top, is
+`payload[0] ... payload[n-1] depth[k-1] ... depth[0]`. Depth zero identifies
+the last original payload. Depths must be strictly increasing when consumed,
+with each less than `n`. The output matches binary-flag selection: retained
+payloads in original order followed by the canonical count.
+
+The fragment consumes an exact suffix, preserving both caller stacks. It
+checks selector bytes and ranges before using each depth in `OP_ROLL`.
+The caller must establish the input boundary when other data is present and
+bind the chosen subset and output bytes where the application requires it.
+Payloads remain opaque, including empty and nonnumeric items up to 520 bytes
+in the tested local profile. There are `n + k` ordinary entry items and zero
+hints. The combined peak is `n + k + 4` plus both caller stacks, including
+any preloaded future input. Consume or verify the outputs and add a terminal
+predicate when forming a complete leaf.
+
+| Retained from 32 | Encoding | Leaf bytes | Witness bytes | Data items | Hint items | Combined peak | Executed non-push ops |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 4 | Indices | <!-- metric:indexed32_k4_script -->114<!-- /metric:indexed32_k4_script --> | <!-- metric:indexed32_k4_witness -->72<!-- /metric:indexed32_k4_witness --> | <!-- metric:indexed32_k4_items -->36<!-- /metric:indexed32_k4_items --> | 0 | <!-- metric:indexed32_k4_stack -->40<!-- /metric:indexed32_k4_stack --> | <!-- metric:indexed32_k4_executed -->87<!-- /metric:indexed32_k4_executed --> |
+| 4 | Flags | <!-- metric:flags32_k4_script -->511<!-- /metric:flags32_k4_script --> | <!-- metric:flags32_k4_witness -->101<!-- /metric:flags32_k4_witness --> | <!-- metric:flags32_k4_items -->64<!-- /metric:flags32_k4_items --> | 0 | <!-- metric:flags32_k4_stack -->65<!-- /metric:flags32_k4_stack --> | <!-- metric:flags32_k4_executed -->309<!-- /metric:flags32_k4_executed --> |
+| 16 | Indices | <!-- metric:indexed32_k16_script -->402<!-- /metric:indexed32_k16_script --> | <!-- metric:indexed32_k16_witness -->96<!-- /metric:indexed32_k16_witness --> | <!-- metric:indexed32_k16_items -->48<!-- /metric:indexed32_k16_items --> | 0 | <!-- metric:indexed32_k16_stack -->52<!-- /metric:indexed32_k16_stack --> | <!-- metric:indexed32_k16_executed -->297<!-- /metric:indexed32_k16_executed --> |
+| 16 | Flags | <!-- metric:flags32_k16_script -->547<!-- /metric:flags32_k16_script --> | <!-- metric:flags32_k16_witness -->113<!-- /metric:flags32_k16_witness --> | <!-- metric:flags32_k16_items -->64<!-- /metric:flags32_k16_items --> | 0 | <!-- metric:flags32_k16_stack -->65<!-- /metric:flags32_k16_stack --> | <!-- metric:flags32_k16_executed -->369<!-- /metric:flags32_k16_executed --> |
+| 32 | Indices | <!-- metric:indexed32_k32_script -->792<!-- /metric:indexed32_k32_script --> | <!-- metric:indexed32_k32_witness -->128<!-- /metric:indexed32_k32_witness --> | <!-- metric:indexed32_k32_items -->64<!-- /metric:indexed32_k32_items --> | 0 | <!-- metric:indexed32_k32_stack -->68<!-- /metric:indexed32_k32_stack --> | <!-- metric:indexed32_k32_executed -->575<!-- /metric:indexed32_k32_executed --> |
+| 32 | Flags | <!-- metric:flags32_k32_script -->596<!-- /metric:flags32_k32_script --> | <!-- metric:flags32_k32_witness -->129<!-- /metric:flags32_k32_witness --> | <!-- metric:flags32_k32_items -->64<!-- /metric:flags32_k32_items --> | 0 | <!-- metric:flags32_k32_stack -->65<!-- /metric:flags32_k32_stack --> | <!-- metric:flags32_k32_executed -->449<!-- /metric:flags32_k32_executed --> |
+| 32 | Identity | <!-- metric:identity32_k32_script -->97<!-- /metric:identity32_k32_script --> | <!-- metric:identity32_k32_witness -->65<!-- /metric:identity32_k32_witness --> | <!-- metric:identity32_k32_items -->32<!-- /metric:identity32_k32_items --> | 0 | <!-- metric:identity32_k32_stack -->33<!-- /metric:identity32_k32_stack --> | <!-- metric:identity32_k32_executed -->32<!-- /metric:identity32_k32_executed --> |
+
+The fixtures use payload byte `0x20 + i` at index `i` and depths
+`floor(j * 32 / k)` for `0 <= j < k`. The identity baseline supplies only the
+payloads because every position must be selected. All leaves verify the same
+canonical count and each selected raw payload, then leave true. Script bytes include
+validation, routing, cleanup and output checks, with the entire leaf compiled
+using policy `ALL`. Witness bytes include count and length prefixes for every
+entry item and exclude the script, control block, annex and transaction.
+Executed non-push opcodes include active operations and encountered branch
+delimiters. Signature weight charged is zero.
+
+The evidence is `locally-reproduced` and execution is `unclassified`.
+The test uses the local tapscript `Consensus` profile and traces the same
+compiled leaf with a synthetic empty transaction. Stack limits and MINIMALIF
+are enabled, numeric minimality and experimental OP_CAT are disabled. See
+the [indexed selection research note](../../../knowledge/primitives/indexed-selection.md)
+for the comparison and exact resource assumptions.
+
+```sh
+cargo test --locked --test selection_contract indexed_selection
+cargo test --locked --test primitive_metrics indexed_selection_metrics_are_current
+```

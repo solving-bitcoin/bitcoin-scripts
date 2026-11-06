@@ -32,3 +32,23 @@ specifications are in the [reproduction guide](../../research/stable-stack-compa
 Dynamic executed-opcode counts are unavailable; zero signature charge is not
 a transaction budget. Protocol composition remains
 [OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
+
+## Sparse indices at full density
+
+At `n = k = 32`, a valid index list names every payload. The index leaf saves
+one serialized witness byte against the all-true flag leaf but spends 196 more
+script bytes, three more peak items and 126 more executed non-push operations.
+The one-byte saving comes from canonical zero encoding as the empty item.
+
+The matched identity baseline provides only the payloads and emits the fixed
+count. It costs 97 script bytes, 65 witness bytes, 32 data items, a peak of 33
+and 32 executed non-push operations. The full index and flag leaves cost
+792/128/64/68/575 and 596/129/64/65/449, respectively, in the same units.
+All three need zero hints, check the same exact outputs and count, and use
+optimizer `ALL` under the local stack-limited tapscript `Consensus` profile.
+Identity's dominance applies to the full-subset contract.
+
+Output checks alone also cannot distinguish two positions holding the same
+bytes. The focused test selects each position from a pair of equal items and
+both witnesses pass the same checked leaf. A position-sensitive caller needs a
+separate binding. See the [reproduction](../primitives/indexed-selection.md#composition-and-reproduction).

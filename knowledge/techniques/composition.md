@@ -91,6 +91,15 @@ These measurements are locally-reproduced / unclassified, with zero hints and
 explicit stack-limited local tapscript profiles. Protocol/Core composition is
 [OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
 
+[Sparse indexed selection](../primitives/indexed-selection.md) uses
+`n + k` data items, zero hints and a peak of `n + k + 4` plus both caller
+stacks. It requires the retained count `k` at generation time and an exact
+suffix at invocation time. A preloaded later invocation contributes all of
+its input items. With one caller item on each stack, `(993, 1)` fits exactly
+and `(994, 1)` exceeds the combined limit. When positions carry meaning,
+bind them separately from payload bytes because two positions may contain
+identical bytes.
+
 ## Destructive sorting pools
 
 The [u4 sorting certificate](../primitives/u4-sort.md) requires a contiguous

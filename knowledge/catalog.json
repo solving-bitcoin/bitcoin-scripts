@@ -16834,6 +16834,294 @@
       ]
     },
     {
+      "id": "support/indexed-selection",
+      "name": "Sparse indexed selection of opaque stack items",
+      "class": "support/stack",
+      "summary": "Strictly increasing top-relative ScriptNum depths select a fixed-size stable raw payload subsequence with one selector per retained item.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-05",
+      "knowledge_page": "knowledge/primitives/indexed-selection.md",
+      "implementation": "src/support/selection/mod.rs",
+      "documentation": "src/support/selection/README.md",
+      "tests": [
+        "tests/selection_contract.rs",
+        "indexed_selection_metrics_are_current"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bitcoin-core-v30.3-regtest",
+        "cpp-draft-stable-copy-if-20261002"
+      ],
+      "techniques": [
+        "stable-selection",
+        "reverse-consumption",
+        "checked-index-routing"
+      ],
+      "security": "Canonical, strictly increasing bounded depths are checked before use. The caller binds the exact suffix, chosen positions where needed, and retained bytes/count. Opaque payloads are unauthenticated.",
+      "stack_contract": "caller | payload[0] ... payload[n-1] | depth[k-1] ... depth[0] -> caller | stable retained payloads | canonical k; caller altstack preserved",
+      "configurations": [
+        {
+          "id": "n32-k4-indexed-leaf",
+          "label": "32 one-byte payloads, 4 retained, indexed, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 4,
+            "encoding": "indexed",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 36,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 114,
+          "witness_bytes": 72,
+          "witness_bytes_max": null,
+          "max_stack_items": 40,
+          "executed_opcodes": 87,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 114,
+          "metric_keys": [
+            "indexed32_k4_script",
+            "indexed32_k4_witness",
+            "indexed32_k4_stack",
+            "indexed32_k4_executed"
+          ]
+        },
+        {
+          "id": "n32-k4-flags-leaf",
+          "label": "32 one-byte payloads, 4 retained, flags, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 4,
+            "encoding": "flags",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 511,
+          "witness_bytes": 101,
+          "witness_bytes_max": null,
+          "max_stack_items": 65,
+          "executed_opcodes": 309,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 511,
+          "metric_keys": [
+            "flags32_k4_script",
+            "flags32_k4_witness",
+            "flags32_k4_stack",
+            "flags32_k4_executed"
+          ]
+        },
+        {
+          "id": "n32-k16-indexed-leaf",
+          "label": "32 one-byte payloads, 16 retained, indexed, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 16,
+            "encoding": "indexed",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 48,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 402,
+          "witness_bytes": 96,
+          "witness_bytes_max": null,
+          "max_stack_items": 52,
+          "executed_opcodes": 297,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 402,
+          "metric_keys": [
+            "indexed32_k16_script",
+            "indexed32_k16_witness",
+            "indexed32_k16_stack",
+            "indexed32_k16_executed"
+          ]
+        },
+        {
+          "id": "n32-k16-flags-leaf",
+          "label": "32 one-byte payloads, 16 retained, flags, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 16,
+            "encoding": "flags",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 547,
+          "witness_bytes": 113,
+          "witness_bytes_max": null,
+          "max_stack_items": 65,
+          "executed_opcodes": 369,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 547,
+          "metric_keys": [
+            "flags32_k16_script",
+            "flags32_k16_witness",
+            "flags32_k16_stack",
+            "flags32_k16_executed"
+          ]
+        },
+        {
+          "id": "n32-k32-indexed-leaf",
+          "label": "32 one-byte payloads, 32 retained, indexed, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 32,
+            "encoding": "indexed",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 792,
+          "witness_bytes": 128,
+          "witness_bytes_max": 128,
+          "max_stack_items": 68,
+          "executed_opcodes": 575,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 792,
+          "metric_keys": [
+            "indexed32_k32_script",
+            "indexed32_k32_witness",
+            "indexed32_k32_stack",
+            "indexed32_k32_executed"
+          ]
+        },
+        {
+          "id": "n32-k32-flags-leaf",
+          "label": "32 one-byte payloads, 32 retained, flags, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 32,
+            "encoding": "flags",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "floor(j * 32 / k), 0 <= j < k",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 596,
+          "witness_bytes": 129,
+          "witness_bytes_max": 129,
+          "max_stack_items": 65,
+          "executed_opcodes": 449,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 596,
+          "metric_keys": [
+            "flags32_k32_script",
+            "flags32_k32_witness",
+            "flags32_k32_stack",
+            "flags32_k32_executed"
+          ]
+        },
+        {
+          "id": "n32-k32-identity-leaf",
+          "label": "32 one-byte payloads, 32 retained, identity, complete checked leaf",
+          "parameters": {
+            "payload_count": 32,
+            "retained_count": 32,
+            "encoding": "identity",
+            "payload_pattern": "one byte 0x20 + i",
+            "original_depths": "all positions, no selectors",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_inputs_coexist_at_entry": true,
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "local Consensus tapscript; synthetic empty transaction; stack limit and MINIMALIF on; numeric minimality and experimental OP_CAT off",
+            "compile_options": "ALL",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks the canonical count and every retained raw payload, with validation, routing, cleanup and terminal true included; witness serializes all entry data and excludes script, control block, annex and transaction; executed counts include active non-push operations and encountered branch delimiters",
+          "script_bytes": 97,
+          "witness_bytes": 65,
+          "witness_bytes_max": 65,
+          "max_stack_items": 33,
+          "executed_opcodes": 32,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 97,
+          "metric_keys": [
+            "identity32_k32_script",
+            "identity32_k32_witness",
+            "identity32_k32_stack",
+            "identity32_k32_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The retained count must be fixed when the fragment is generated; 1 <= k <= n and n + k <= 996.",
+        "Peak is n + k + 4 plus all caller state; all ordinary inputs coexist at entry and hints are exactly zero.",
+        "Equal payloads at different positions need separate binding when position matters.",
+        "Full-density selection is dominated by a selector-free identity baseline.",
+        "Local fragment evidence only; complete Taproot transaction and relay validation are open."
+      ],
+      "open_problems": [
+        "OP-036"
+      ]
+    },
+    {
       "id": "arithmetic/u4-damm",
       "name": "Numeric decimal Damm finite-state checksum",
       "class": "arithmetic/word",
