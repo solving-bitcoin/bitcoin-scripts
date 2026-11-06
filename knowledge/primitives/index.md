@@ -75,6 +75,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Embedded-constant u32 XNOR](u32-xnor-constant.md)
 - [u32 word arithmetic](u32.md) — includes the checked seven-bit rotation boundary
 - [Compressed total-domain u32 addition](u32-compressed-add.md)
+- [Compressed u32 carry-out](compressed-u32-carry.md)
 - [Compressed total-domain u32 equality](u32-compressed-equal.md)
 - [Compressed total-domain u32 unsigned less-than](u32-compressed-lessthan.md)
 - [Checked compressed u32 less-than with an embedded threshold](u32-compressed-lessthan-constant.md)
