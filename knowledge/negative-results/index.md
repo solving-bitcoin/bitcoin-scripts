@@ -1742,6 +1742,10 @@ signature does not remove its per-check charge. The additive constructor fixes
 this boundary while legacy fragment APIs intentionally retain compatibility;
 commitment and complete-transaction validation remain separate obligations.
 
+The [sparse threshold comparison](sparse-tapscript-threshold.md) uses the
+full-witness constructor and observes the same signature charge for indexed
+and dense witnesses even when their complete sizes differ.
+
 
 ## NR-065: Narrowing five-byte CSV operands before masking panics
 

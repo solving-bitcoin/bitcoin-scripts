@@ -7021,6 +7021,238 @@
       ]
     },
     {
+      "id": "signature/sparse-tapscript-threshold",
+      "name": "Sparse exact-threshold tapscript signatures",
+      "class": "signature/schnorr",
+      "summary": "Check an exact number of nonempty signatures for distinct fixed x-only keys by routing strictly ordered witness depths into a resident key table.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/sparse-tapscript-threshold.md",
+      "implementation": "src/signatures/sparse_threshold/mod.rs",
+      "documentation": "src/signatures/sparse_threshold/README.md",
+      "tests": [
+        "tests/sparse_threshold_contract.rs",
+        "sparse_threshold_metrics_are_current"
+      ],
+      "references": [
+        "bip-340",
+        "bip-341",
+        "bip-342",
+        "bip-387",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "checked-index-routing",
+        "native-schnorr",
+        "complete-witness-budget"
+      ],
+      "security": "Typed distinct x-only keys and canonical strictly increasing bounded depths prevent duplicate signers or witness-selected public key types for an exact suffix. The protocol supplies key and sighash policy.",
+      "stack_contract": "caller | signature[k-1] depth[k-1] ... signature[0] depth[0] -> caller; altstack preserved",
+      "configurations": [
+        {
+          "id": "sparse-4-of-16-leaf",
+          "label": "sparse, 4 of 16, complete signed leaf",
+          "parameters": {
+            "key_count": 16,
+            "threshold": 4,
+            "schedule": "sparse",
+            "depths": [
+              0,
+              4,
+              8,
+              15
+            ],
+            "data_items": 4,
+            "hint_items": 4,
+            "hint_bytes": 7,
+            "total_entry_items": 8,
+            "complete_witness_items": 10,
+            "all_data_and_hints_at_entry": true,
+            "complete_witness_bytes": 940,
+            "initial_validation_weight": 990,
+            "compile_options": "ALL",
+            "profile": "local transaction-aware tapscript, complete-witness budget, preflight commitment, synthetic outpoint, default sighash, no annex, stack limit and MINIMALIF on, numeric minimality and OP_CAT off"
+          },
+          "includes": "complete-leaf: exact signature checks, key routing or dense accumulation and terminal truth; witness_bytes includes serialized data and hints but excludes tapscript and control block, which are included in complete_witness_bytes; validation_weight is charged units; no other transaction serialization",
+          "script_bytes": 635,
+          "witness_bytes": 268,
+          "witness_bytes_max": null,
+          "max_stack_items": 28,
+          "executed_opcodes": 77,
+          "validation_weight": 200,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sparse_threshold_16_script",
+            "sparse_threshold_16_data",
+            "sparse_threshold_16_peak",
+            "sparse_threshold_16_executed",
+            "sparse_threshold_16_charged"
+          ]
+        },
+        {
+          "id": "dense-4-of-16-leaf",
+          "label": "dense, 4 of 16, complete signed leaf",
+          "parameters": {
+            "key_count": 16,
+            "threshold": 4,
+            "schedule": "dense",
+            "depths": [
+              0,
+              4,
+              8,
+              15
+            ],
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "total_entry_items": 16,
+            "complete_witness_items": 18,
+            "all_data_and_hints_at_entry": true,
+            "complete_witness_bytes": 856,
+            "initial_validation_weight": 906,
+            "compile_options": "ALL",
+            "profile": "local transaction-aware tapscript, complete-witness budget, preflight commitment, synthetic outpoint, default sighash, no annex, stack limit and MINIMALIF on, numeric minimality and OP_CAT off"
+          },
+          "includes": "complete-leaf: exact signature checks, key routing or dense accumulation and terminal truth; witness_bytes includes serialized data and hints but excludes tapscript and control block, which are included in complete_witness_bytes; validation_weight is charged units; no other transaction serialization",
+          "script_bytes": 546,
+          "witness_bytes": 273,
+          "witness_bytes_max": null,
+          "max_stack_items": 17,
+          "executed_opcodes": 17,
+          "validation_weight": 200,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 546,
+          "metric_keys": [
+            "dense_threshold_16_script",
+            "dense_threshold_16_data",
+            "dense_threshold_16_peak",
+            "dense_threshold_16_executed",
+            "dense_threshold_16_charged"
+          ]
+        },
+        {
+          "id": "sparse-2-of-64-leaf",
+          "label": "sparse, 2 of 64, complete signed leaf",
+          "parameters": {
+            "key_count": 64,
+            "threshold": 2,
+            "schedule": "sparse",
+            "depths": [
+              0,
+              63
+            ],
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 3,
+            "total_entry_items": 4,
+            "complete_witness_items": 6,
+            "all_data_and_hints_at_entry": true,
+            "complete_witness_bytes": 2368,
+            "initial_validation_weight": 2418,
+            "compile_options": "ALL",
+            "profile": "local transaction-aware tapscript, complete-witness budget, preflight commitment, synthetic outpoint, default sighash, no annex, stack limit and MINIMALIF on, numeric minimality and OP_CAT off"
+          },
+          "includes": "complete-leaf: exact signature checks, key routing or dense accumulation and terminal truth; witness_bytes includes serialized data and hints but excludes tapscript and control block, which are included in complete_witness_bytes; validation_weight is charged units; no other transaction serialization",
+          "script_bytes": 2197,
+          "witness_bytes": 134,
+          "witness_bytes_max": null,
+          "max_stack_items": 72,
+          "executed_opcodes": 67,
+          "validation_weight": 100,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sparse_threshold_64_script",
+            "sparse_threshold_64_data",
+            "sparse_threshold_64_peak",
+            "sparse_threshold_64_executed",
+            "sparse_threshold_64_charged"
+          ]
+        },
+        {
+          "id": "dense-2-of-64-leaf",
+          "label": "dense, 2 of 64, complete signed leaf",
+          "parameters": {
+            "key_count": 64,
+            "threshold": 2,
+            "schedule": "dense",
+            "depths": [
+              0,
+              63
+            ],
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "total_entry_items": 64,
+            "complete_witness_items": 66,
+            "all_data_and_hints_at_entry": true,
+            "complete_witness_bytes": 2408,
+            "initial_validation_weight": 2458,
+            "compile_options": "ALL",
+            "profile": "local transaction-aware tapscript, complete-witness budget, preflight commitment, synthetic outpoint, default sighash, no annex, stack limit and MINIMALIF on, numeric minimality and OP_CAT off"
+          },
+          "includes": "complete-leaf: exact signature checks, key routing or dense accumulation and terminal truth; witness_bytes includes serialized data and hints but excludes tapscript and control block, which are included in complete_witness_bytes; validation_weight is charged units; no other transaction serialization",
+          "script_bytes": 2178,
+          "witness_bytes": 193,
+          "witness_bytes_max": null,
+          "max_stack_items": 65,
+          "executed_opcodes": 65,
+          "validation_weight": 100,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 2178,
+          "metric_keys": [
+            "dense_threshold_64_script",
+            "dense_threshold_64_data",
+            "dense_threshold_64_peak",
+            "dense_threshold_64_executed",
+            "dense_threshold_64_charged"
+          ]
+        },
+        {
+          "id": "sparse-1-of-994-leaf",
+          "label": "sparse, 1 of 994, complete signed leaf",
+          "parameters": {
+            "key_count": 994,
+            "threshold": 1,
+            "schedule": "sparse",
+            "depths": [
+              993
+            ],
+            "data_items": 1,
+            "hint_items": 1,
+            "hint_bytes": 3,
+            "total_entry_items": 2,
+            "complete_witness_items": 4,
+            "all_data_and_hints_at_entry": true,
+            "complete_witness_bytes": 33933,
+            "initial_validation_weight": 33983,
+            "compile_options": "NONE",
+            "profile": "local transaction-aware tapscript, complete-witness budget, preflight commitment, synthetic outpoint, default sighash, no annex, stack limit and MINIMALIF on, numeric minimality and OP_CAT off"
+          },
+          "includes": "complete-leaf: exact signature checks, key routing or dense accumulation and terminal truth; witness_bytes includes serialized data and hints but excludes tapscript and control block, which are included in complete_witness_bytes; validation_weight is charged units; no other transaction serialization",
+          "script_bytes": 33827,
+          "witness_bytes": 69,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 1012,
+          "validation_weight": 50,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "Sparse peak is at most n + 2k + 4 plus both caller stacks; all k ordinary signatures and k hint items coexist at entry.",
+        "Indexed leaves save complete bytes at the tested 2-of-64 point and lose at 4 of 16. Both have larger peaks than the dense comparison.",
+        "The 1-of-994 fixture is unoptimized NONE. No funded Core or relay validation for these threshold leaves."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "signature/secp256k1-schnorr-fixed",
       "name": "Instance-specialized secp256k1 Schnorr verification",
       "class": "signature/schnorr",
