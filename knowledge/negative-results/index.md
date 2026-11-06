@@ -1601,6 +1601,13 @@ its 9/11 counted opcodes per bit can be replaced by 5/7 with changed digests.
 Keeping its old hash function permits 7 counted opcodes for saved normalized
 bits, plus the old terminal hash. These alternatives must not share digests.
 
+## Full length-keyed digest table loses its caller frontier
+
+The [length-keyed SHA-256 resource test](length-keyed-sha256.md) shows a
+521-entry table failing with 478 preserved caller items. Eight-entry
+blocks verify the same digest mapping with those caller items.
+Evidence is `locally-reproduced`; execution is `unclassified`.
+
 ## NR-057: Native Taproot Merkle-branch adapter is not available
 
 Taproot `TapBranch` requires tagged SHA256 over the lexicographically ordered

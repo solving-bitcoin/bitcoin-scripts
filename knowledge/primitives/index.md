@@ -113,6 +113,8 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Commitments
 
+- [Length-keyed SHA-256 opening](length-keyed-sha256.md)
+
 - [Mixed-hash path commitment](hash-path-integer.md)
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
