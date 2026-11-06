@@ -119,6 +119,10 @@ the source. Read a page together with its comparison page and evidence record.
 - [Preimage-length integer](preimage-length.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
+## Opaque vector relations
+
+- [Unique mismatch index of opaque item vectors](opaque-unique-mismatch.md)
+
 ## Introspection
 
 - [Binohash transaction digest](binohash.md)

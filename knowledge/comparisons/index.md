@@ -12,4 +12,5 @@ They summarize the current catalog rather than claiming global completeness.
 - [Transaction introspection](introspection.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
+- [Unique mismatch schedules for opaque items](opaque-unique-mismatch.md)
 - [BN254 layers](bn254.md)

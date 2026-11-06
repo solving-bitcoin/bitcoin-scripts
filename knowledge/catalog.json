@@ -15027,6 +15027,316 @@
       ]
     },
     {
+      "id": "support/opaque-unique-mismatch",
+      "name": "Unique mismatch index of opaque item vectors",
+      "class": "support/stack",
+      "summary": "Finds the zero-based index of exactly one unequal opaque pair while keeping one private index slot.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/opaque-unique-mismatch.md",
+      "implementation": "src/support/mismatch/mod.rs",
+      "documentation": "src/support/mismatch/README.md",
+      "tests": [
+        "src/support/mismatch/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "stack-scheduling"
+      ],
+      "security": "Every item is hostile and opaque. Raw equality detects byte differences, including numeric aliases. The checker rejects zero or multiple mismatches. The caller binds intended alignment and provenance separately.",
+      "stack_contract": "Consumes an interleaved suffix of 1..=500 pairs and returns the canonical index of its only mismatch. Both caller stacks survive. All 2*n ordinary items and zero hints coexist at entry. Combined peak equals 2*n plus caller state.",
+      "configurations": [
+        {
+          "id": "1-fused",
+          "label": "1 pairs, mismatch at 0, fused reverse scan",
+          "parameters": {
+            "pairs": 1,
+            "mismatch_index": 0,
+            "schedule": "fused",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 8,
+          "witness_bytes": 6,
+          "witness_bytes_max": null,
+          "max_stack_items": 2,
+          "executed_opcodes": 6,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_1_fused_script",
+            "unique_mismatch_1_fused_witness",
+            "unique_mismatch_1_fused_stack",
+            "unique_mismatch_1_fused_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "1-dense",
+          "label": "1 pairs, mismatch at 0, materialized equality mask",
+          "parameters": {
+            "pairs": 1,
+            "mismatch_index": 0,
+            "schedule": "dense",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 15,
+          "witness_bytes": 6,
+          "witness_bytes_max": null,
+          "max_stack_items": 2,
+          "executed_opcodes": 10,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_1_dense_script",
+            "unique_mismatch_1_dense_witness",
+            "unique_mismatch_1_dense_stack",
+            "unique_mismatch_1_dense_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-fused",
+          "label": "32 pairs, mismatch at 0, fused reverse scan",
+          "parameters": {
+            "pairs": 32,
+            "mismatch_index": 0,
+            "schedule": "fused",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 278,
+          "witness_bytes": 192,
+          "witness_bytes_max": null,
+          "max_stack_items": 64,
+          "executed_opcodes": 106,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_32_fused_script",
+            "unique_mismatch_32_fused_witness",
+            "unique_mismatch_32_fused_stack",
+            "unique_mismatch_32_fused_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-dense",
+          "label": "32 pairs, mismatch at 0, materialized equality mask",
+          "parameters": {
+            "pairs": 32,
+            "mismatch_index": 0,
+            "schedule": "dense",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 279,
+          "witness_bytes": 192,
+          "witness_bytes_max": null,
+          "max_stack_items": 64,
+          "executed_opcodes": 165,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_32_dense_script",
+            "unique_mismatch_32_dense_witness",
+            "unique_mismatch_32_dense_stack",
+            "unique_mismatch_32_dense_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-fused",
+          "label": "128 pairs, mismatch at 43, fused reverse scan",
+          "parameters": {
+            "pairs": 128,
+            "mismatch_index": 43,
+            "schedule": "fused",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 1144,
+          "witness_bytes": 770,
+          "witness_bytes_max": null,
+          "max_stack_items": 256,
+          "executed_opcodes": 394,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_128_fused_script",
+            "unique_mismatch_128_fused_witness",
+            "unique_mismatch_128_fused_stack",
+            "unique_mismatch_128_fused_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-dense",
+          "label": "128 pairs, mismatch at 43, materialized equality mask",
+          "parameters": {
+            "pairs": 128,
+            "mismatch_index": 43,
+            "schedule": "dense",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 1145,
+          "witness_bytes": 770,
+          "witness_bytes_max": null,
+          "max_stack_items": 256,
+          "executed_opcodes": 645,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_128_dense_script",
+            "unique_mismatch_128_dense_witness",
+            "unique_mismatch_128_dense_stack",
+            "unique_mismatch_128_dense_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "500-fused",
+          "label": "500 pairs, mismatch at 499, fused reverse scan",
+          "parameters": {
+            "pairs": 500,
+            "mismatch_index": 499,
+            "schedule": "fused",
+            "data_items": 1000,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 4865,
+          "witness_bytes": 3002,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 1507,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_500_fused_script",
+            "unique_mismatch_500_fused_witness",
+            "unique_mismatch_500_fused_stack",
+            "unique_mismatch_500_fused_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "500-dense",
+          "label": "500 pairs, mismatch at 499, materialized equality mask",
+          "parameters": {
+            "pairs": 500,
+            "mismatch_index": 499,
+            "schedule": "dense",
+            "data_items": 1000,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: raw pair comparisons, uniqueness, exact returned index equality and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 4866,
+          "witness_bytes": 3002,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 2505,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "unique_mismatch_500_dense_script",
+            "unique_mismatch_500_dense_witness",
+            "unique_mismatch_500_dense_stack",
+            "unique_mismatch_500_dense_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "Only a fixed-width interleaved suffix is supported.",
+        "At width 500 all combined stack slots are occupied at entry.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-equality",
       "name": "Checked u4 embedded-equality mask",
       "class": "arithmetic/word",
