@@ -13,6 +13,13 @@ all at entry, and a 66-item combined peak. Two preloaded batches have 62 hints,
 bound is essential: native `OP_ROLL` only bounds an index against the entire
 main stack, including other hints and preserved protocol state.
 
+The [opaque multiset verifier](../primitives/opaque-multiset.md) interleaves
+one hint with each right item except the last one consumed. The bounded roll
+removes a left item and binds it by raw-byte equality. A width-16 invocation
+uses 32 ordinary items and 15 hints, with a measured peak of 50. Two such
+invocations preload 64 ordinary items and 30 hints and peak at 97. Equal
+values can share a meaning while still using separate pool positions.
+
 For every hinted construction, document:
 
 - hint generation algorithm and serialization order;

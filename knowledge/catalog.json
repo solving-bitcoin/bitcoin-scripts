@@ -16324,6 +16324,238 @@
       ]
     },
     {
+      "id": "support/opaque-multiset",
+      "name": "Exact equality of two opaque multisets",
+      "class": "support/stack",
+      "summary": "Check exact raw-byte multiplicity by interleaving canonical deletion depths with right-side values and destructively matching a shrinking left pool.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/opaque-multiset.md",
+      "implementation": "src/support/raw_multiset/mod.rs",
+      "documentation": "src/support/raw_multiset/README.md",
+      "tests": [
+        "support::raw_multiset::tests",
+        "opaque_multiset_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bip-342"
+      ],
+      "techniques": [
+        "destructive-selection",
+        "canonical-scriptnum",
+        "byte-equality",
+        "interleaved-hints"
+      ],
+      "security": "Checked hints address only the shrinking left pool for an exact suffix. Consuming each selected item prevents repeated matches. Caller binds payload meanings and exact suffix.",
+      "stack_contract": "caller | left[0] ... left[n-1] | right[0] right[1] hint[1] ... right[n-1] hint[n-1] -> caller; altstack preserved",
+      "configurations": [
+        {
+          "id": "greedy-n4-times1",
+          "label": "greedy, 1 width-4 invocation, complete checked leaf",
+          "parameters": {
+            "width": 4,
+            "invocations": 1,
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "total_entry_items": 8,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 74,
+          "witness_bytes": 25,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 38,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 74,
+          "metric_keys": [
+            "opaque_greedy4_script",
+            "opaque_greedy4_witness",
+            "opaque_greedy4_stack",
+            "opaque_greedy4_executed"
+          ]
+        },
+        {
+          "id": "hinted-n4-times1",
+          "label": "hinted, 1 width-4 invocation, complete checked leaf",
+          "parameters": {
+            "width": 4,
+            "invocations": 1,
+            "data_items": 8,
+            "hint_items": 3,
+            "hint_bytes": 4,
+            "total_entry_items": 11,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 44,
+          "witness_bytes": 29,
+          "witness_bytes_max": null,
+          "max_stack_items": 14,
+          "executed_opcodes": 31,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 44,
+          "metric_keys": [
+            "opaque_hinted4_script",
+            "opaque_hinted4_witness",
+            "opaque_hinted4_stack",
+            "opaque_hinted4_executed"
+          ]
+        },
+        {
+          "id": "greedy-n16-times1",
+          "label": "greedy, 1 width-16 invocation, complete checked leaf",
+          "parameters": {
+            "width": 16,
+            "invocations": 1,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "total_entry_items": 32,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 1477,
+          "witness_bytes": 97,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 599,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1477,
+          "metric_keys": [
+            "opaque_greedy16_script",
+            "opaque_greedy16_witness",
+            "opaque_greedy16_stack",
+            "opaque_greedy16_executed"
+          ]
+        },
+        {
+          "id": "hinted-n16-times1",
+          "label": "hinted, 1 width-16 invocation, complete checked leaf",
+          "parameters": {
+            "width": 16,
+            "invocations": 1,
+            "data_items": 32,
+            "hint_items": 15,
+            "hint_bytes": 27,
+            "total_entry_items": 47,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 219,
+          "witness_bytes": 124,
+          "witness_bytes_max": null,
+          "max_stack_items": 50,
+          "executed_opcodes": 151,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 219,
+          "metric_keys": [
+            "opaque_hinted16_script",
+            "opaque_hinted16_witness",
+            "opaque_hinted16_stack",
+            "opaque_hinted16_executed"
+          ]
+        },
+        {
+          "id": "greedy-n16-times2",
+          "label": "greedy, 2 width-16 invocations, complete checked leaf",
+          "parameters": {
+            "width": 16,
+            "invocations": 2,
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "total_entry_items": 64,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 2953,
+          "witness_bytes": 193,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 1190,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_greedy16_twice_script",
+            "opaque_greedy16_twice_witness",
+            "opaque_greedy16_twice_stack",
+            "opaque_greedy16_twice_executed"
+          ]
+        },
+        {
+          "id": "hinted-n16-times2",
+          "label": "hinted, 2 width-16 invocations, complete checked leaf",
+          "parameters": {
+            "width": 16,
+            "invocations": 2,
+            "data_items": 64,
+            "hint_items": 30,
+            "hint_bytes": 54,
+            "total_entry_items": 94,
+            "all_data_and_hints_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "fixture": "left[i] = [0xc2+b, (7*i) mod (n-1)]; right[i] = left[(5*i+2*b+1) mod n]",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: raw multiplicity checks, cleanup and terminal true; witness includes all entry payload and hint items and prefixes, excluding script, control block, annex and transaction; hint bytes exclude the shared count prefix; executed counts include encountered branch delimiters",
+          "script_bytes": 437,
+          "witness_bytes": 247,
+          "witness_bytes_max": null,
+          "max_stack_items": 97,
+          "executed_opcodes": 302,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_hinted16_twice_script",
+            "opaque_hinted16_twice_witness",
+            "opaque_hinted16_twice_stack",
+            "opaque_hinted16_twice_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Public hinted width is 1 through 332. Bound the exact input suffix and all caller items.",
+        "There are n-1 hints per invocation. Future preloaded data and hints both contribute to the combined stack limit.",
+        "Exact byte equality alone does not bind external payload identities.",
+        "Funded Core and relay validation for these leaves are unclassified."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "support/stable-selection",
       "name": "Stable selection of opaque stack items",
       "class": "support/stack",
