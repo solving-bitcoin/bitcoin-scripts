@@ -6,6 +6,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Stack support
 
+- [Longest common prefix of opaque item vectors](opaque-common-prefix.md)
 - [Stable selection of opaque stack items](stable-selection.md)
 
 ## Arithmetic

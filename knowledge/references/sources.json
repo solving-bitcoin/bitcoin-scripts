@@ -318,6 +318,13 @@
       "revision": "bf9ee0bb34987a9130ad9dc13a06e18fef137296; identity and source inspected; field arithmetic tests excluded"
     },
     {
+      "id": "cpp-n4950-mismatch",
+      "title": "C++ working draft N4950, mismatch algorithm",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, 2023-05-10, [alg.mismatch]"
+    },
+    {
       "id": "cpp-draft-stable-copy-if-20261002",
       "title": "C++ draft [alg.copy]: stable copy_if semantics",
       "kind": "specification",

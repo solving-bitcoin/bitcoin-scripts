@@ -41,6 +41,10 @@ guards raise the backward fragment to 816 bytes and peak to 68, reducing its
 frontier to 498 pairs. Discarding cannot repair entry element or policy limits.
 Evidence is `locally-reproduced`; deployment `unclassified`.
 
+In the [common-prefix experiment](opaque-common-prefix.md), counting all
+equal pairs would include matches after the first mismatch. The matched
+forward prefix state is correct but uses more bytes and one more peak item.
+
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes
