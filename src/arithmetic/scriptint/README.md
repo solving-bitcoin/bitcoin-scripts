@@ -1,5 +1,35 @@
 # ScriptNum arithmetic
 
+## Exact equality of two signed sums
+
+`arithmetic::sum_equality::verify_equal_sums()` consumes the exact suffix
+`a b c d`, preserving both caller stacks, and verifies `a + b = c + d`.
+Each input is a ScriptNum of at most four bytes. Arithmetic produces
+canonical sum encodings, possibly five bytes, and byte equality checks
+them without a second numeric parse. The fragment returns no items and
+needs a terminal predicate when used as a complete leaf.
+
+| Schedule | Leaf bytes | Witness bytes | Data items | Hint items | Max peak across fixtures | Positive executed non-push ops | Negative executed non-push ops |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Byte equality of wide sums | <!-- metric:equal_sums_bytes_script -->6<!-- /metric:equal_sums_bytes_script --> | <!-- metric:equal_sums_bytes_witness -->21<!-- /metric:equal_sums_bytes_witness --> | 4 | 0 | <!-- metric:equal_sums_bytes_stack -->4<!-- /metric:equal_sums_bytes_stack --> | <!-- metric:equal_sums_bytes_positive_executed -->5<!-- /metric:equal_sums_bytes_positive_executed --> | <!-- metric:equal_sums_bytes_negative_executed -->5<!-- /metric:equal_sums_bytes_negative_executed --> |
+| Signed radix-2³⁰ carry limbs | <!-- metric:equal_sums_limbs_script -->240<!-- /metric:equal_sums_limbs_script --> | <!-- metric:equal_sums_limbs_witness -->21<!-- /metric:equal_sums_limbs_witness --> | 4 | 0 | <!-- metric:equal_sums_limbs_stack -->7<!-- /metric:equal_sums_limbs_stack --> | <!-- metric:equal_sums_limbs_positive_executed -->95<!-- /metric:equal_sums_limbs_positive_executed --> | <!-- metric:equal_sums_limbs_negative_executed -->91<!-- /metric:equal_sums_limbs_negative_executed --> |
+
+Both complete leaves verify the relation and leave true. Fixtures set all
+four operands to `+(2³¹−1)` or all four to `−(2³¹−1)`, so both sums need
+five bytes. Witness serialization includes data count and length prefixes.
+All four ordinary data items are at entry, excluding script, control block,
+annex and transaction. Whole-artifact compilation uses `ALL`. The reported
+execution is `unclassified` and evidence is `locally-reproduced`, with the
+local stack-limited tapscript `Consensus` profile and a synthetic transaction.
+
+Numeric aliases follow the caller's execution profile. Add explicit operand
+canonicality checks if the protocol must bind exact input encodings. Bind the
+input values externally when the equality represents an authenticated
+statement. See the [research note](../../../knowledge/primitives/scriptnum-equal-sums.md)
+for the matched carry-limb comparison and the failed numeric comparator.
+
+## Constant multiplication and hinted division
+
 This module contains arithmetic over Bitcoin's four-byte Script integers. It
 implements multiplication by a compile-time constant and Euclidean division
 by a positive compile-time constant. Division uses a witness-supplied quotient

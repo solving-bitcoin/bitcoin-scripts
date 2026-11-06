@@ -8,6 +8,7 @@ pub mod permutation;
 pub mod rns;
 pub mod scriptint;
 pub mod signed_window;
+pub mod sum_equality;
 pub mod u31;
 pub mod u32;
 pub mod u4;

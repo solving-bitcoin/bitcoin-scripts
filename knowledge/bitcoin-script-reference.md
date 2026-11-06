@@ -109,6 +109,10 @@ element* from the empty vector even though both are false. This distinction caus
   and sit on the stack, but feeding it into another arithmetic opcode fails. Script therefore has no
   native 64-bit arithmetic, which is why satoshi amounts (needing 51 bits) cannot be manipulated
   directly — a major obstacle for on-chain amount logic.
+- [Exact sum equality](primitives/scriptnum-equal-sums.md) compares canonical
+  arithmetic results as byte vectors, including five-byte sums. The pinned
+  local interpreter has a [documented discrepancy](negative-results/scriptnum-wide-sum.md)
+  when a later numeric opcode reads a computed negative five-byte sum.
 - `OP_CHECKLOCKTIMEVERIFY` and `OP_CHECKSEQUENCEVERIFY` accept **5-byte** operands `[C]`, so
   locktimes beyond the 4-byte signed range are expressible.
 - **Minimal encoding** (`SCRIPT_VERIFY_MINIMALDATA`) `[P]`: numbers must use the fewest bytes

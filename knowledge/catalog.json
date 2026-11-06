@@ -130,6 +130,171 @@
       ]
     },
     {
+      "id": "arithmetic/scriptnum-equal-sums",
+      "name": "Exact equality of two signed ScriptNum sums",
+      "class": "arithmetic/scriptnum",
+      "summary": "Compare the canonical byte vectors of two pairwise sums without reparsing five-byte arithmetic outputs.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "unclassified",
+      "as_of": "2026-11-05",
+      "knowledge_page": "knowledge/primitives/scriptnum-equal-sums.md",
+      "implementation": "src/arithmetic/sum_equality.rs",
+      "documentation": "src/arithmetic/scriptint/README.md",
+      "tests": [
+        "arithmetic::sum_equality::tests",
+        "scriptnum_equal_sums_metrics_are_current",
+        "tools/scriptnum_equal_sums_regtest.py"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bip-342"
+      ],
+      "techniques": [
+        "byte-equality",
+        "stack-routing",
+        "canonical-arithmetic-result"
+      ],
+      "security": "Equality only; the caller establishes the exact suffix and authenticates inputs where required. The numeric profile governs input aliases.",
+      "stack_contract": "caller | a b c d -> caller, rejecting unless exact integer a+b=c+d; caller altstack preserved",
+      "configurations": [
+        {
+          "id": "bytes-local-extreme-leaves",
+          "label": "bytes comparator, both equal signed extreme fixtures, local leaf",
+          "parameters": {
+            "schedule": "bytes",
+            "operands": "four copies of +2147483647 or four copies of -2147483647",
+            "data_items": 4,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "profile": "local Consensus tapscript, numeric minimality and OP_CAT off, stack limit and MINIMALIF on",
+            "compile_options": "ALL",
+            "executed_positive": 5,
+            "executed_negative": 5,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: both pair sums, exact comparison and terminal true, excluding input pushes; data witness includes all items and serialization prefixes, excluding script, control block, annex and transaction; stack and executed counts are maxima across the two fixtures",
+          "evidence": "locally-reproduced",
+          "execution": "unclassified",
+          "script_bytes": 6,
+          "witness_bytes": 21,
+          "witness_bytes_max": 21,
+          "max_stack_items": 4,
+          "executed_opcodes": 5,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 6,
+          "metric_keys": [
+            "equal_sums_bytes_script",
+            "equal_sums_bytes_witness",
+            "equal_sums_bytes_stack",
+            "equal_sums_bytes_positive_executed"
+          ]
+        },
+        {
+          "id": "bytes-funded-extreme-leaves",
+          "label": "bytes comparator, both equal signed extreme fixtures, funded Core v30.3 spends",
+          "parameters": {
+            "schedule": "bytes",
+            "fixtures": [
+              "raw-positive",
+              "raw-negative"
+            ],
+            "data_items": 4,
+            "taproot_witness_items": 6,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "compile_options": "ALL",
+            "manifest_sha256": "917b479869a5bf29cfa4334d7198f483a92cd45f83493a5b2342be8c5dfa27ec"
+          },
+          "includes": "complete-leaf: exact funded leaf under generateblock and testmempoolaccept; complete serialized witness includes four ordinary operands, the tapscript and control block, excluding transaction serialization and annex; Core stack and opcode counts are unreported",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "script_bytes": 6,
+          "witness_bytes": 62,
+          "witness_bytes_max": 62,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 6,
+          "metric_keys": []
+        },
+        {
+          "id": "limbs-local-extreme-leaves",
+          "label": "limbs comparator, both equal signed extreme fixtures, local leaf",
+          "parameters": {
+            "schedule": "limbs",
+            "operands": "four copies of +2147483647 or four copies of -2147483647",
+            "data_items": 4,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "profile": "local Consensus tapscript, numeric minimality and OP_CAT off, stack limit and MINIMALIF on",
+            "compile_options": "ALL",
+            "executed_positive": 95,
+            "executed_negative": 91,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: both pair sums, exact comparison and terminal true, excluding input pushes; data witness includes all items and serialization prefixes, excluding script, control block, annex and transaction; stack and executed counts are maxima across the two fixtures",
+          "evidence": "locally-reproduced",
+          "execution": "unclassified",
+          "script_bytes": 240,
+          "witness_bytes": 21,
+          "witness_bytes_max": 21,
+          "max_stack_items": 7,
+          "executed_opcodes": 95,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 240,
+          "metric_keys": [
+            "equal_sums_limbs_script",
+            "equal_sums_limbs_witness",
+            "equal_sums_limbs_stack",
+            "equal_sums_limbs_positive_executed"
+          ]
+        },
+        {
+          "id": "limbs-funded-extreme-leaves",
+          "label": "limbs comparator, both equal signed extreme fixtures, funded Core v30.3 spends",
+          "parameters": {
+            "schedule": "limbs",
+            "fixtures": [
+              "limbs-positive",
+              "limbs-negative"
+            ],
+            "data_items": 4,
+            "taproot_witness_items": 6,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "compile_options": "ALL",
+            "manifest_sha256": "917b479869a5bf29cfa4334d7198f483a92cd45f83493a5b2342be8c5dfa27ec"
+          },
+          "includes": "complete-leaf: exact funded leaf under generateblock and testmempoolaccept; complete serialized witness includes four ordinary operands, the tapscript and control block, excluding transaction serialization and annex; Core stack and opcode counts are unreported",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "script_bytes": 240,
+          "witness_bytes": 296,
+          "witness_bytes_max": 296,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 240,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "Four at-most-four-byte ScriptNum operands; zero hints. Intermediate five-byte results are consumed by byte equality only.",
+        "The pinned local interpreter incorrectly reparses internally computed negative overflow in the numeric-equality control case.",
+        "Only the funded extreme-sign configurations shown separately have a policy-validated class."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/scriptnum-canonical",
       "name": "Canonical ScriptNum boundary",
       "class": "arithmetic/scriptnum",

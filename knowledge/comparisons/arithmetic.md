@@ -501,3 +501,16 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Equality across the four-byte ScriptNum result boundary
+
+The [exact two-sum verifier](../primitives/scriptnum-equal-sums.md) accepts four
+signed ScriptNum operands and checks their two pair sums as raw bytes.
+For both extreme-sign fixtures, the complete byte-equality leaf is six bytes,
+with a 21-byte data witness, four data items, zero hints, a peak of four and
+five executed non-push opcodes. A matched signed radix-2³⁰ comparator costs 240
+bytes, peaks at seven and executes 95 or 91 non-push operations. Both preserve
+exact equality. The limb representation also supports further numeric work.
+The local metrics use optimizer `ALL` and the stack-limited tapscript
+`Consensus` profile. Funded Core cases classify the exact accepted spends
+separately and expose a [negative-overflow interpreter mismatch](../negative-results/scriptnum-wide-sum.md).
