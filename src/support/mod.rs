@@ -3,6 +3,7 @@
 pub mod absolute_finality;
 pub mod bip68;
 pub mod execution;
+pub mod lag_count;
 pub mod provenance;
 pub mod script;
 pub mod script_ops;
