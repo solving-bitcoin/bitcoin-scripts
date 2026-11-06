@@ -3,6 +3,7 @@
 pub mod bigint;
 pub mod checksums;
 pub mod factoradic;
+pub mod hamming;
 pub mod integer_root;
 pub mod permutation;
 pub mod rns;

@@ -1895,6 +1895,10 @@ StackSize. All invocations have zero hints. A ten-state checksum is forgeable:
 `locally-reproduced`/`unclassified`, not authentication or Core validation.
 See [the complete negative result](damm-finite-state.md).
 
+The [Hamming decoder comparison](hamming84-decoder.md) has a different
+correction contract. It records a three-bit corruption that decodes to
+another nibble and the stack cost of sharing a full byte lookup table.
+
 ## NR-080: Integer-root trials lose small widths and do not widen ScriptNum
 
 Residual root-bit trials cost 27/48/72 bytes at 1/4/6 bits versus threshold
