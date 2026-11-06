@@ -67,6 +67,16 @@ budget that live prefix, consume every ciphertext output and add authorization
 where the protocol requires it. The three Core-validated complete spends do
 not transfer their deployment class to a differently composed leaf.
 
+## Exact signed sum descriptors
+
+The [wide ScriptNum split](../primitives/wide-scriptnum-sum.md) turns an
+exact sum into a residual and an ordered class. A numeric consumer can
+compare generated descriptors by class then residual without reparsing
+the raw wide sum. The two-sum fixture starts with four ordinary items
+and zero hints, and peaks at seven combined items for post-add dispatch
+or six for pre-add headroom. A consumer of witness-supplied descriptors
+needs its own validation and binding.
+
 ## Stable selection with native binary flags
 
 [Opaque-item stable selection](../primitives/stable-selection.md) uses no hints
