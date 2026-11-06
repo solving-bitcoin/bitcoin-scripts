@@ -1,5 +1,8 @@
 # Signature verification and one-time authentication
 
+The [HASH160 signer-set comparison](hash160-schnorr-keyset.md) measures
+one native Schnorr check after hashed or embedded key selection.
+
 ## Point locks
 
 | Construction | Script family | Script bytes | Revelation data | Setup / security boundary |

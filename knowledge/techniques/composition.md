@@ -31,6 +31,13 @@ boundaries with zero hints and all data items present at entry. Reusing a
 signature in Script does not remove the 50-unit charge for each executed
 nonempty check.
 
+The [HASH160 signer set](../primitives/hash160-schnorr-keyset.md) uses
+one native signature check after membership. Budget includes its exact
+revealed leaf and control block. The hash scan has two ordinary items
+and zero hints, while the multi-key embedded-index baseline has one
+ordinary signature and one selector hint. The hash scan peaks at six
+plus caller state, independent of its public list length.
+
 Certificate provenance is part of that edge trust status. The prime-RNS
 composable multiplier, for example, is globally sound only when each operand
 vector is a verified-path output of its shared-integer field binder or a prior
