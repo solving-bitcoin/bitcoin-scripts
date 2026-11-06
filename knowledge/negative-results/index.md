@@ -814,6 +814,14 @@ This is an `inspected` boundary argument, not a measured universal lower bound.
 Full points may still help a spend-time verifier whose surrounding protocol
 already authenticates normalized affine coordinates or projective state.
 
+## Counting ascents can accept multiple peaks
+
+The [signed peak counterexample](signed-single-peak.md) has two
+ascents and two descents. Counting its ascents returns an index
+without proving that all ascents precede all descents. The checked
+phase transition rejects it. Evidence is `locally-reproduced`.
+Execution is `unclassified`.
+
 ## NR-028: Projective and GLV machinery do not shrink the standalone CSFS trace
 
 In the spend-time verifier, affine inversion is already an off-chain hint.

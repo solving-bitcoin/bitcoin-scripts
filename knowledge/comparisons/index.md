@@ -13,3 +13,4 @@ They summarize the current catalog rather than claiming global completeness.
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
 - [BN254 layers](bn254.md)
+- [Strict signed peak verification schedules](signed-single-peak.md)
