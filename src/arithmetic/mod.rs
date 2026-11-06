@@ -1,6 +1,7 @@
 //! Modulus-agnostic integer, residue, and finite-field arithmetic backends.
 
 pub mod bigint;
+pub mod byte_encoding;
 pub mod checksums;
 pub mod factoradic;
 pub mod integer_root;

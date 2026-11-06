@@ -16,6 +16,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [ScriptNum integer floor root](scriptnum-isqrt.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
+- [Materialize one raw byte from a numeric ScriptNum](raw-scriptnum-byte.md)
 - [u4 digit arithmetic](u4.md)
 - [Exact u4 sorting with destructive-selection hints](u4-sort.md)
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)

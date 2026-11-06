@@ -13071,6 +13071,167 @@
       ]
     },
     {
+      "id": "arithmetic/raw-scriptnum-byte",
+      "name": "Materialize one raw byte from a numeric ScriptNum",
+      "class": "arithmetic/scriptnum",
+      "summary": "Convert canonical numeric bytes to exact one-byte vectors using sign-magnitude arithmetic and explicit zero and negative-zero byte literals.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/raw-scriptnum-byte.md",
+      "implementation": "src/arithmetic/byte_encoding/mod.rs",
+      "documentation": "src/arithmetic/byte_encoding/README.md",
+      "tests": [
+        "arithmetic::byte_encoding::tests",
+        "numeric_raw_byte_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "fips-180-4",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "sign-magnitude",
+        "canonical-scriptnum",
+        "byte-encoding"
+      ],
+      "security": "Checks canonical numeric input and exact raw byte conversion. Caller supplies any message or digest binding.",
+      "stack_contract": "caller | canonical ScriptNum in 0..255 -> caller | exactly one raw byte; altstack preserved",
+      "configurations": [
+        {
+          "id": "sign-00-hash-leaf",
+          "label": "sign, numeric 0x00, complete raw-byte hash check",
+          "parameters": {
+            "schedule": "sign",
+            "byte_hex": "00",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "conditional_table_items": 0,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical numeric byte guard, raw one-byte conversion, native SHA-256, exact digest verification and terminal true; witness includes entry item and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 72,
+          "witness_bytes": 2,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 20,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 72,
+          "metric_keys": [
+            "raw_byte_sign_zero_script",
+            "raw_byte_sign_zero_witness",
+            "raw_byte_sign_zero_stack",
+            "raw_byte_sign_zero_executed"
+          ]
+        },
+        {
+          "id": "table-00-hash-leaf",
+          "label": "table, numeric 0x00, complete raw-byte hash check",
+          "parameters": {
+            "schedule": "table",
+            "byte_hex": "00",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "conditional_table_items": 128,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical numeric byte guard, raw one-byte conversion, native SHA-256, exact digest verification and terminal true; witness includes entry item and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 391,
+          "witness_bytes": 2,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 19,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 391,
+          "metric_keys": [
+            "raw_byte_table_zero_script",
+            "raw_byte_table_zero_witness",
+            "raw_byte_table_zero_stack",
+            "raw_byte_table_zero_executed"
+          ]
+        },
+        {
+          "id": "sign-c8-hash-leaf",
+          "label": "sign, numeric 0xc8, complete raw-byte hash check",
+          "parameters": {
+            "schedule": "sign",
+            "byte_hex": "c8",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "conditional_table_items": 0,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical numeric byte guard, raw one-byte conversion, native SHA-256, exact digest verification and terminal true; witness includes entry item and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 72,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 22,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 72,
+          "metric_keys": [
+            "raw_byte_sign_high_script",
+            "raw_byte_sign_high_witness",
+            "raw_byte_sign_high_stack",
+            "raw_byte_sign_high_executed"
+          ]
+        },
+        {
+          "id": "table-c8-hash-leaf",
+          "label": "table, numeric 0xc8, complete raw-byte hash check",
+          "parameters": {
+            "schedule": "table",
+            "byte_hex": "c8",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "conditional_table_items": 128,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical numeric byte guard, raw one-byte conversion, native SHA-256, exact digest verification and terminal true; witness includes entry item and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 391,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 129,
+          "executed_opcodes": 86,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 391,
+          "metric_keys": [
+            "raw_byte_table_high_script",
+            "raw_byte_table_high_witness",
+            "raw_byte_table_high_stack",
+            "raw_byte_table_high_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "One byte per invocation. The result has raw-byte semantics, including false truthiness for 00 and 80.",
+        "The native hash tests cover the local Consensus and Policy profiles only; no funded Core or relay classification."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/u4-batch-pack",
       "name": "Checked u4 batch nibble packing",
       "class": "arithmetic/word",

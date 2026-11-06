@@ -2013,6 +2013,10 @@ local tapscript execution is `locally-reproduced`; deployment remains
 are in the [u4 implementation README](../../src/arithmetic/u4/README.md) and
 `primitive_metrics::u4_unpack_metrics_are_current`.
 
+The [raw-byte adapter experiment](raw-scriptnum-byte.md) records a separate
+serialization boundary. Hashing a numeric byte directly changes the
+message at zero and at values from 128 through 255.
+
 ## NR-086: Short BLAKE3 generator variants that did not pay
 
 Porting the stack-modelled short-input generator onto upstream `374d076`
