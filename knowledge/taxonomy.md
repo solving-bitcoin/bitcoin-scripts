@@ -5,7 +5,8 @@ constructions from being hidden behind local module names.
 
 ## Primitive classes
 
-- `support/stack`: routing and stable selection of opaque stack items.
+- `support/stack`: routing, stable selection, and byte accounting for opaque
+  stack items.
 - `arithmetic/scriptnum`: arithmetic on minimally encoded Bitcoin Script
   integers.
 - `arithmetic/word`: fixed-width bit or digit representations such as u4/u32.

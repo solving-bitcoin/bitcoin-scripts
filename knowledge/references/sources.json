@@ -38,6 +38,13 @@
       "revision": "24e96e870fffaa257b465ce1f0370c14aac588e8; accepted specification"
     },
     {
+      "id": "bip-144",
+      "title": "BIP 144: Segregated Witness (Peer Services)",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0144.mediawiki",
+      "revision": "24e96e870fffaa257b465ce1f0370c14aac588e8, Serialization"
+    },
+    {
       "id": "bip-341",
       "title": "BIP 341: Taproot",
       "kind": "specification",

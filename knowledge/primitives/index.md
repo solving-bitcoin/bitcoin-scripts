@@ -7,6 +7,7 @@ the source. Read a page together with its comparison page and evidence record.
 ## Stack support
 
 - [Stable selection of opaque stack items](stable-selection.md)
+- [Serialized witness-data byte cap](witness-data-size.md)
 
 ## Arithmetic
 
