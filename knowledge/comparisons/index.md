@@ -7,6 +7,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Arithmetic checksums](checksums.md)
 - [Stable stack selection schedules](stack-selection.md)
 - [Lookup strategies](lookup-strategies.md)
+- [CompactSize byte representations](compactsize-encoding.md)
 - [Hash constructions](hashes.md)
 - [Integer commitments](commitments.md)
 - [Transaction introspection](introspection.md)

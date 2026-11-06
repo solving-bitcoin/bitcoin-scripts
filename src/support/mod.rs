@@ -2,6 +2,7 @@
 
 pub mod absolute_finality;
 pub mod bip68;
+pub mod compact_size;
 pub mod execution;
 pub mod provenance;
 pub mod script;

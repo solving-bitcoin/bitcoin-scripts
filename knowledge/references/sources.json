@@ -318,6 +318,13 @@
       "revision": "bf9ee0bb34987a9130ad9dc13a06e18fef137296; identity and source inspected; field arithmetic tests excluded"
     },
     {
+      "id": "bitcoin-core-compactsize-v30.3",
+      "title": "Bitcoin Core v30.3 CompactSize serialization",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/serialize.h",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227; GetSizeOfCompactSize and ReadCompactSize"
+    },
+    {
       "id": "cpp-draft-stable-copy-if-20261002",
       "title": "C++ draft [alg.copy]: stable copy_if semantics",
       "kind": "specification",

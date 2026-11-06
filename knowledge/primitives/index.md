@@ -8,6 +8,10 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Stable selection of opaque stack items](stable-selection.md)
 
+## Serialization
+
+- [CompactSize through 65,535 from separate raw byte items](compactsize-u16-items.md)
+
 ## Arithmetic
 
 - [Canonical Adler-32 state](adler32-state.md) — non-cryptographic checksum with deferred reduction
