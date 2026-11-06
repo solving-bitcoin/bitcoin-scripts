@@ -506,6 +506,14 @@ encoding, conversion, and strict Bitcoin Core validation remain open under
 OP-014. Source: `coins-bitcoin-scripts-8f442e4b` at
 [`op_rshift.md`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/op_rshift.md).
 
+## Multiply-first negabinary loses a valid boundary value
+
+The [negabinary counterexample](negabinary-decoder.md) produces a
+five-byte intermediate double even though the final signed result
+fits in four bytes. The two-subtraction schedule keeps its first
+intermediate in range. Evidence is `locally-reproduced`.
+Execution is `unclassified`.
+
 ## NR-016: Half XOR tables lose BLAKE3 byte efficiency
 
 The BLAKE3 generator's half-table mode saves 120 persistent stack items, but it

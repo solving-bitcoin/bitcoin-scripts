@@ -21,6 +21,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
+- [Checked negabinary decoding](negabinary-decoder.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)
 - [Checked u4 embedded-equality mask](u4-equality.md)

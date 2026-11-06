@@ -374,6 +374,13 @@
       "revision": "arXiv:2109.09006v1, 2021-09-18; palindromic coefficient-vector definition only"
     },
     {
+      "id": "negative-bases-frougny-lai-2011",
+      "title": "Frougny and Lai: Negative bases and automata",
+      "kind": "paper",
+      "url": "https://doi.org/10.46298/dmtcs.538",
+      "revision": "DMTCS 13(1), 2011, pages 75–94. Introduction describes integer negative-radix digit alphabets."
+    },
+    {
       "id": "rfc-1950-adler32",
       "title": "RFC 1950: ZLIB Compressed Data Format Specification version 3.3",
       "kind": "specification",

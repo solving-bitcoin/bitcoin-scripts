@@ -11064,6 +11064,326 @@
       ]
     },
     {
+      "id": "arithmetic/negabinary-decoder",
+      "name": "Checked negabinary decoding",
+      "class": "arithmetic/scriptnum",
+      "summary": "Decodes canonical base -2 digits by subtracting the accumulator twice and checks the final four-byte output bound.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/negabinary-decoder.md",
+      "implementation": "src/arithmetic/negabinary/mod.rs",
+      "documentation": "src/arithmetic/negabinary/README.md",
+      "tests": [
+        "src/arithmetic/negabinary/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "negative-bases-frougny-lai-2011",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "canonical-encoding"
+      ],
+      "security": "Every input bit is hostile. Raw equality accepts only empty and 01. Arithmetic results are canonical, and width 32 rejects any result wider than four bytes before further numeric use. The numeric result does not authenticate its provenance.",
+      "stack_contract": "Consumes 1..=32 bits, least significant deepest, and returns one canonical signed ScriptNum. Both caller stacks survive. All bits are ordinary data and zero hints coexist at entry. Width-32 preloaded n-call peak is 32*n+3 plus caller state.",
+      "configurations": [
+        {
+          "id": "8-subtract",
+          "label": "1 call(s), width 8, two subtractions",
+          "parameters": {
+            "fixture": "8",
+            "width": 8,
+            "calls": 1,
+            "schedule": "subtract",
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 103,
+          "witness_bytes": 14,
+          "witness_bytes_max": null,
+          "max_stack_items": 11,
+          "executed_opcodes": 84,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_8_subtract_script",
+            "negabinary_8_subtract_witness",
+            "negabinary_8_subtract_stack",
+            "negabinary_8_subtract_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "8-multiply",
+          "label": "1 call(s), width 8, checked multiply first",
+          "parameters": {
+            "fixture": "8",
+            "width": 8,
+            "calls": 1,
+            "schedule": "multiply",
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 103,
+          "witness_bytes": 14,
+          "witness_bytes_max": null,
+          "max_stack_items": 11,
+          "executed_opcodes": 84,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_8_multiply_script",
+            "negabinary_8_multiply_witness",
+            "negabinary_8_multiply_stack",
+            "negabinary_8_multiply_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "31-subtract",
+          "label": "1 call(s), width 31, two subtractions",
+          "parameters": {
+            "fixture": "31",
+            "width": 31,
+            "calls": 1,
+            "schedule": "subtract",
+            "data_items": 31,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 405,
+          "witness_bytes": 48,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 337,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_31_subtract_script",
+            "negabinary_31_subtract_witness",
+            "negabinary_31_subtract_stack",
+            "negabinary_31_subtract_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "31-multiply",
+          "label": "1 call(s), width 31, checked multiply first",
+          "parameters": {
+            "fixture": "31",
+            "width": 31,
+            "calls": 1,
+            "schedule": "multiply",
+            "data_items": 31,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 405,
+          "witness_bytes": 48,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 337,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_31_multiply_script",
+            "negabinary_31_multiply_witness",
+            "negabinary_31_multiply_stack",
+            "negabinary_31_multiply_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-subtract",
+          "label": "1 call(s), width 32, two subtractions",
+          "parameters": {
+            "fixture": "32",
+            "width": 32,
+            "calls": 1,
+            "schedule": "subtract",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 422,
+          "witness_bytes": 35,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 351,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_32_subtract_script",
+            "negabinary_32_subtract_witness",
+            "negabinary_32_subtract_stack",
+            "negabinary_32_subtract_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-multiply",
+          "label": "1 call(s), width 32, checked multiply first",
+          "parameters": {
+            "fixture": "32",
+            "width": 32,
+            "calls": 1,
+            "schedule": "multiply",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 444,
+          "witness_bytes": 35,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 352,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_32_multiply_script",
+            "negabinary_32_multiply_witness",
+            "negabinary_32_multiply_stack",
+            "negabinary_32_multiply_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "batch-subtract",
+          "label": "16 call(s), width 32, two subtractions",
+          "parameters": {
+            "fixture": "batch",
+            "width": 32,
+            "calls": 16,
+            "schedule": "subtract",
+            "data_items": 512,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 6705,
+          "witness_bytes": 595,
+          "witness_bytes_max": null,
+          "max_stack_items": 515,
+          "executed_opcodes": 5616,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_batch_subtract_script",
+            "negabinary_batch_subtract_witness",
+            "negabinary_batch_subtract_stack",
+            "negabinary_batch_subtract_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "batch-multiply",
+          "label": "16 call(s), width 32, checked multiply first",
+          "parameters": {
+            "fixture": "batch",
+            "width": 32,
+            "calls": 16,
+            "schedule": "multiply",
+            "data_items": 512,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: exact bit checks, signed decoding, output equality for every call and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 7057,
+          "witness_bytes": 595,
+          "witness_bytes_max": null,
+          "max_stack_items": 515,
+          "executed_opcodes": 5680,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "negabinary_batch_multiply_script",
+            "negabinary_batch_multiply_witness",
+            "negabinary_batch_multiply_stack",
+            "negabinary_batch_multiply_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "Width 32 accepts only the intersection of its mathematical range and the four-byte ScriptNum range.",
+        "Measured widths eight and 31 tie the multiply-first baseline in script, witness, peak and executed count.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/signed-radix32-decoder",
       "name": "Signed radix-32 window decoder",
       "class": "arithmetic/word",

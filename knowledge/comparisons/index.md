@@ -10,6 +10,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Hash constructions](hashes.md)
 - [Integer commitments](commitments.md)
 - [Transaction introspection](introspection.md)
+- [Checked negabinary decoder schedules](negabinary-decoder.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
 - [BN254 layers](bn254.md)
