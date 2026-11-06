@@ -1,5 +1,6 @@
-//! Integer commitment primitives.
+//! Commitment primitives.
 
+pub mod dual_digest;
 pub mod four_way_hash_path;
 pub mod hash_path;
 pub mod preimage_length;

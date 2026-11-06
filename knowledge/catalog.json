@@ -5014,6 +5014,190 @@
       ]
     },
     {
+      "id": "commitment/dual-digest-preimage",
+      "name": "Joint HASH160 and HASH256 preimage verification",
+      "class": "commitment/hash",
+      "summary": "Check two public native digest constants on one raw opening by sharing the first SHA-256.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/dual-digest-preimage.md",
+      "implementation": "src/commitments/dual_digest/mod.rs",
+      "documentation": "src/commitments/dual_digest/README.md",
+      "tests": [
+        "commitments::dual_digest::tests",
+        "dual_digest_preimage_metrics_are_current"
+      ],
+      "references": [
+        "fips-180-4",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "native-hash",
+        "shared-hash-prefix",
+        "constant-embedding"
+      ],
+      "security": "Both raw digest values are checked. Any collision at the shared SHA-256 intermediate propagates to both outputs. No independent security bound.",
+      "stack_contract": "caller | raw opening -> caller; both caller stacks preserved for the exact one-item suffix",
+      "configurations": [
+        {
+          "id": "shared-1-checked-leaf",
+          "label": "shared, 1 preloaded opening, complete checked leaf",
+          "parameters": {
+            "openings": 1,
+            "input_lengths": [
+              520
+            ],
+            "input_pattern": "byte i = (17*i+5) mod 251",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack/element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "sha256_blocks_derived": 10,
+            "ripemd160_blocks_derived": 1,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks both raw digest constants per opening and leaves true; witness includes all data and serialization prefixes, excluding script, control block, annex and transaction; compression counts are derived, not wall time",
+          "script_bytes": 61,
+          "witness_bytes": 524,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": 6,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 61,
+          "metric_keys": [
+            "dual_digest_shared_one_script",
+            "dual_digest_shared_one_witness",
+            "dual_digest_shared_one_stack",
+            "dual_digest_shared_one_executed"
+          ]
+        },
+        {
+          "id": "separate-1-checked-leaf",
+          "label": "separate, 1 preloaded opening, complete checked leaf",
+          "parameters": {
+            "openings": 1,
+            "input_lengths": [
+              520
+            ],
+            "input_pattern": "byte i = (17*i+5) mod 251",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack/element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "sha256_blocks_derived": 19,
+            "ripemd160_blocks_derived": 1,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks both raw digest constants per opening and leaves true; witness includes all data and serialization prefixes, excluding script, control block, annex and transaction; compression counts are derived, not wall time",
+          "script_bytes": 60,
+          "witness_bytes": 524,
+          "witness_bytes_max": 524,
+          "max_stack_items": 3,
+          "executed_opcodes": 5,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 60,
+          "metric_keys": [
+            "dual_digest_separate_one_script",
+            "dual_digest_separate_one_witness",
+            "dual_digest_separate_one_stack",
+            "dual_digest_separate_one_executed"
+          ]
+        },
+        {
+          "id": "shared-4-checked-leaf",
+          "label": "shared, 4 preloaded openings, complete checked leaf",
+          "parameters": {
+            "openings": 4,
+            "input_lengths": [
+              0,
+              55,
+              56,
+              520
+            ],
+            "input_pattern": "byte i = (17*i+5) mod 251",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack/element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "sha256_blocks_derived": 17,
+            "ripemd160_blocks_derived": 4,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks both raw digest constants per opening and leaves true; witness includes all data and serialization prefixes, excluding script, control block, annex and transaction; compression counts are derived, not wall time",
+          "script_bytes": 241,
+          "witness_bytes": 638,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 24,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "dual_digest_shared_four_script",
+            "dual_digest_shared_four_witness",
+            "dual_digest_shared_four_stack",
+            "dual_digest_shared_four_executed"
+          ]
+        },
+        {
+          "id": "separate-4-checked-leaf",
+          "label": "separate, 4 preloaded openings, complete checked leaf",
+          "parameters": {
+            "openings": 4,
+            "input_lengths": [
+              0,
+              55,
+              56,
+              520
+            ],
+            "input_pattern": "byte i = (17*i+5) mod 251",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack/element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "sha256_blocks_derived": 30,
+            "ripemd160_blocks_derived": 4,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: checks both raw digest constants per opening and leaves true; witness includes all data and serialization prefixes, excluding script, control block, annex and transaction; compression counts are derived, not wall time",
+          "script_bytes": 237,
+          "witness_bytes": 638,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 20,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "dual_digest_separate_four_script",
+            "dual_digest_separate_four_witness",
+            "dual_digest_separate_four_stack",
+            "dual_digest_separate_four_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Sharing costs one Script byte and one executed non-push operation per opening compared with the separate native opcodes.",
+        "Derived compression counts do not measure wall-clock performance.",
+        "The local policy profile rejects openings above 80 bytes. No funded Core or relay classification for the paired checks."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "commitment/preimage-length",
       "name": "Preimage-length integer",
       "class": "commitment/integer",

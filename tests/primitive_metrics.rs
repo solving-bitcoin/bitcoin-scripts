@@ -8449,6 +8449,100 @@ fn u4_bit_reverse_canonical_metrics_are_current() {
 }
 
 #[test]
+fn dual_digest_preimage_metrics_are_current() {
+    use bitcoin::hashes::{hash160, sha256d};
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/shared-digest-preimage/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (lengths, shared_keys, separate_keys) in [
+        (
+            &[520][..],
+            keys!("dual_digest_shared_one"),
+            keys!("dual_digest_separate_one"),
+        ),
+        (
+            &[0, 55, 56, 520][..],
+            keys!("dual_digest_shared_four"),
+            keys!("dual_digest_separate_four"),
+        ),
+    ] {
+        let witness: Vec<Vec<u8>> = lengths
+            .iter()
+            .map(|length| {
+                (0..*length)
+                    .map(|index| ((17 * index + 5) % 251) as u8)
+                    .collect()
+            })
+            .collect();
+        let pairs: Vec<_> = witness
+            .iter()
+            .rev()
+            .map(|opening| {
+                (
+                    hash160::Hash::hash(opening).to_byte_array(),
+                    sha256d::Hash::hash(opening).to_byte_array(),
+                )
+            })
+            .collect();
+        for (generate, keys) in [
+            (
+                bitcoin_lab::commitments::dual_digest::verify_hash160_hash256
+                    as fn([u8; 20], [u8; 32]) -> bitcoin_script::Script,
+                shared_keys,
+            ),
+            (baseline::verify_separate_hashes, separate_keys),
+        ] {
+            let leaf = script! {
+                for (short, long) in pairs.iter().copied() {{generate(short, long)}}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/commitments/dual_digest/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn hash160_metrics_are_current() {
     check_readme_metrics(hash160_composition_metrics());
 }
@@ -11965,50 +12059,53 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
+}
+
 /// Compare equal complete leaves for packed-rank and separate-digit witnesses.
 #[test]
 fn permutation_rank_metrics_are_current() {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
     use bitcoin_lab::{arithmetic::permutation, support::provenance};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Options, TxTemplate};
-
-    fn measure(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-        let mut exec = Exec::new(
-            ExecCtx::Tapscript,
-            Options {
-                require_minimal: false,
-                enforce_stack_limit: true,
-                ..Default::default()
-            },
-            TxTemplate {
-                tx: Transaction {
-                    version: transaction::Version::TWO,
-                    lock_time: absolute::LockTime::ZERO,
-                    input: vec![],
-                    output: vec![],
-                },
-                prevouts: vec![],
-                input_idx: 0,
-                taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-            },
-            script,
-            witness,
-        )
-        .unwrap();
-        let mut executed = 0;
-        loop {
-            let instruction = exec.remaining_script().instructions().next();
-            let active = exec.cond_stack().all_true();
-            let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-            if exec.exec_next().is_err() {
-                break;
-            }
-            executed += usize::from(counted);
-        }
-        assert!(exec.result().unwrap().success);
-        assert_eq!(exec.stack().len(), 1);
-        (exec.stats().max_nb_stack_items, executed)
-    }
 
     let mut report = Vec::new();
     for width in [4, 8, 12] {
@@ -12036,7 +12133,7 @@ fn permutation_rank_metrics_are_current() {
                 OP_TRUE
             };
             let compiled = leaf.clone().compile_with_policy();
-            let (peak, executed) = measure(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (width, encoding) {
                 (4, "rank") => [
                     "permutation_rank_4_script",

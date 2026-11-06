@@ -453,6 +453,11 @@ SHA-256/RIPEMD-160 schedules unless an underlying or cross-function collision
 is found. This removes the exact alias but does not turn the non-standard
 mixed-hash construction into a cryptographically reviewed scheme.
 
+A separate [joint-digest experiment](dual-digest-preimage.md) reuses the
+shared SHA-256 pass in HASH160 and HASH256. It reduces derived compression
+work while increasing Script bytes and leaves the common collision
+dependency intact.
+
 ## NR-013: The published combined nibble table is misaligned
 
 The combined table in `split-into-bits.md` creates four equal indices and then
