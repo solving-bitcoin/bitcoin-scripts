@@ -8,7 +8,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Stable stack selection schedules](stack-selection.md)
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)
-- [Integer commitments](commitments.md)
+- [Commitments and opening relations](commitments.md)
 - [Transaction introspection](introspection.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)

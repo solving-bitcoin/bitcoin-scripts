@@ -8939,6 +8939,127 @@ fn hors_index_boundary_metrics_are_current() {
     ]);
 }
 
+mod sha256_pool_baseline {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+    include!("../research/distinct-sha256-openings/baseline.rs");
+}
+
+mod sha256_pool_fixture {
+    use bitcoin::hashes::{sha256, Hash};
+    include!("../research/distinct-sha256-openings/fixture.rs");
+}
+
+/// Compare two-opening leaves over the same unique public SHA-256 digests.
+#[test]
+fn sha256_pool_metrics_are_current() {
+    use bitcoin::opcodes::all::OP_SHA256;
+    use bitcoin_lab::{
+        commitments::sha256_pool::verify_two_distinct_sha256_openings,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("sha256_pool_", $n, "_", $schedule, "_script"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_witness"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_hints"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_hint_bytes"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_stack"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, ranks, fixed, scan) in [
+        (3, keys!(3, "ranks"), keys!(3, "fixed"), keys!(3, "scan")),
+        (
+            32,
+            keys!(32, "ranks"),
+            keys!(32, "fixed"),
+            keys!(32, "scan"),
+        ),
+        (
+            129,
+            keys!(129, "ranks"),
+            keys!(129, "fixed"),
+            keys!(129, "scan"),
+        ),
+        (
+            993,
+            keys!(993, "ranks"),
+            keys!(993, "fixed"),
+            keys!(993, "scan"),
+        ),
+    ] {
+        let (preimages, digests) = sha256_pool_fixture::pool(n);
+        let i = usize::from(n > 3);
+        let j = n - 1;
+        let hints = [
+            sha256_pool_fixture::scriptnum(j - 1),
+            sha256_pool_fixture::scriptnum(i),
+        ];
+        let fixed_hints = [sha256_pool_fixture::scriptnum(j), hints[1].clone()];
+        let input = |ranks: &[Vec<u8>; 2]| {
+            vec![
+                preimages[j].clone(),
+                ranks[0].clone(),
+                preimages[i].clone(),
+                ranks[1].clone(),
+            ]
+        };
+        let plain = vec![preimages[j].clone(), preimages[i].clone()];
+        for (keys, fragment, witness, hint_count) in [
+            (
+                ranks,
+                verify_two_distinct_sha256_openings(&digests),
+                input(&hints),
+                2,
+            ),
+            (
+                fixed,
+                sha256_pool_baseline::fixed_indices(&digests),
+                input(&fixed_hints),
+                2,
+            ),
+            (scan, sha256_pool_baseline::scan(&digests), plain.clone(), 0),
+        ] {
+            assert_eq!(witness.len(), 2 + hint_count);
+            let hint_bytes = witness_size(&witness) - witness_size(&plain);
+            let leaf = script! {{fragment} OP_TRUE}.compile_with_policy();
+            assert_eq!(
+                leaf.instructions()
+                    .filter(|ins| matches!(ins, Ok(Instruction::Op(op)) if *op == OP_SHA256))
+                    .count(),
+                2
+            );
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            let values = [
+                leaf.len(),
+                witness_size(&witness),
+                hint_count,
+                hint_bytes,
+                peak,
+                executed,
+            ];
+            for (key, value) in keys.into_iter().zip(values) {
+                report.push(Metric {
+                    readme: "src/commitments/sha256_pool/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn hors_witness_boundary_metrics_are_current() {
     let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
@@ -11965,50 +12086,53 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
+}
+
 /// Compare equal complete leaves for packed-rank and separate-digit witnesses.
 #[test]
 fn permutation_rank_metrics_are_current() {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
     use bitcoin_lab::{arithmetic::permutation, support::provenance};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Options, TxTemplate};
-
-    fn measure(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-        let mut exec = Exec::new(
-            ExecCtx::Tapscript,
-            Options {
-                require_minimal: false,
-                enforce_stack_limit: true,
-                ..Default::default()
-            },
-            TxTemplate {
-                tx: Transaction {
-                    version: transaction::Version::TWO,
-                    lock_time: absolute::LockTime::ZERO,
-                    input: vec![],
-                    output: vec![],
-                },
-                prevouts: vec![],
-                input_idx: 0,
-                taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-            },
-            script,
-            witness,
-        )
-        .unwrap();
-        let mut executed = 0;
-        loop {
-            let instruction = exec.remaining_script().instructions().next();
-            let active = exec.cond_stack().all_true();
-            let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-            if exec.exec_next().is_err() {
-                break;
-            }
-            executed += usize::from(counted);
-        }
-        assert!(exec.result().unwrap().success);
-        assert_eq!(exec.stack().len(), 1);
-        (exec.stats().max_nb_stack_items, executed)
-    }
 
     let mut report = Vec::new();
     for width in [4, 8, 12] {
@@ -12036,7 +12160,7 @@ fn permutation_rank_metrics_are_current() {
                 OP_TRUE
             };
             let compiled = leaf.clone().compile_with_policy();
-            let (peak, executed) = measure(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (width, encoding) {
                 (4, "rank") => [
                     "permutation_rank_4_script",

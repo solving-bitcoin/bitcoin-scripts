@@ -117,6 +117,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
+- [Two distinct SHA-256 openings from one public pool](sha256-pair-pool.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
 ## Introspection

@@ -1,4 +1,6 @@
-# Integer commitments
+# Commitments and opening relations
+
+## Integer commitments
 
 | Construction | Value mechanism | Script bytes | Witness bytes | Peak items | Main caveat |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -62,3 +64,27 @@ at 1,060,200 unoptimized script bytes and 770,481 static non-push opcodes,
 with a 129-byte one-byte fixture witness or 193-byte canonical maximum for 64
 data items and zero hints. This is a backend-specific compile-only profile,
 not a universal lower bound or a complete branch verifier; see [NR-066](../negative-results/merkle-branch-composition.md).
+
+## Two distinct SHA-256 openings
+
+The [two-opening comparison](../primitives/sha256-pair-pool.md) measures
+complete leaves with the same unique digest list and the same two
+32-byte preimages. Each row executes two native SHA-256 operations.
+Both selectors coexist with the preimages at entry in the hinted rows.
+The scan takes only the two preimages.
+
+| Pool | Schedule | Leaf bytes | Data witness bytes | Ordinary items | Hint items | Hint bytes | Combined peak | Executed non-push ops |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 32 | Destructive ranks | 1112 | 71 | 2 | 2 | 4 | 39 | 39 |
+| 32 | Fixed indices | 1119 | 71 | 2 | 2 | 4 | 39 | 46 |
+| 32 | Scan | 1388 | 67 | 2 | 0 | 0 | 6 | 265 |
+| 129 | Destructive ranks | 4368 | 71 | 2 | 2 | 4 | 136 | 88 |
+| 129 | Fixed indices | 4375 | 72 | 2 | 2 | 5 | 136 | 95 |
+| 129 | Scan | 5559 | 67 | 2 | 0 | 0 | 6 | 1041 |
+
+Leaf bytes include setup, both checks, cleanup, and terminal true. Witness
+bytes include only serialized data and selectors. The scan saves live
+stack state and witness bytes. Removing the first selected slot eliminates
+an explicit inequality and maps original slot 128 to rank 127 for the
+width-129 fixture. The [checked markers](../../src/commitments/sha256_pool/README.md#script-metrics)
+include width three and the unoptimized width-993 frontier.

@@ -1,4 +1,4 @@
-# Integer commitments
+# Commitments and opening relations
 
 Each construction has its own implementation, tests, and parameter documentation:
 
@@ -10,6 +10,8 @@ Each construction has its own implementation, tests, and parameter documentation
   two-hash codewords per base-3 trit, with explicit trit and integer-width checks.
 - [Preimage length](preimage_length/README.md): authenticate a SHA-256 preimage
   and return its length minus an offset.
+- [Two distinct SHA-256 openings](sha256_pool/README.md) consumes two
+  preimages and their checked ranks in a public digest pool.
 - **TapBranch u4 hash:** compute BIP341's tagged hash over two already ordered
   32-byte nodes represented as 128 range-checked u4 items. Ordering remains a
   caller precondition; the fragment returns 64 digest nibbles.
