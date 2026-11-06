@@ -1315,10 +1315,10 @@
       "execution": "unclassified",
       "as_of": "2026-11-06",
       "knowledge_page": "knowledge/primitives/u4-xor-lanes.md",
-      "implementation": "src/arithmetic/u4/xor_lanes/mod.rs",
-      "documentation": "src/arithmetic/u4/xor_lanes/README.md",
+      "implementation": "src/arithmetic/u4/xor_signed_lanes/mod.rs",
+      "documentation": "src/arithmetic/u4/xor_signed_lanes/README.md",
       "tests": [
-        "src/arithmetic/u4/xor_lanes/mod.rs",
+        "src/arithmetic/u4/xor_signed_lanes/mod.rs",
         "tests/primitive_metrics.rs"
       ],
       "references": [

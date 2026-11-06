@@ -7867,7 +7867,7 @@ fn xor_lanes_metrics_are_current() {
             .map(|value| scriptnum(i64::from(value)))
             .collect();
         for (keys, fragment) in [
-            (packed, u4::xor_lanes::u4_xor_packed_lanes(n)),
+            (packed, u4::xor_signed_lanes::u4_xor_packed_lanes(n)),
             (triangular, xor_lanes_baseline::triangular_table(n)),
             (full, xor_lanes_baseline::full_table(n)),
         ] {
@@ -7884,7 +7884,7 @@ fn xor_lanes_metrics_are_current() {
                     .zip([leaf.len(), witness_size(&witness), peak, executed])
             {
                 report.push(Metric {
-                    readme: "src/arithmetic/u4/xor_lanes/README.md",
+                    readme: "src/arithmetic/u4/xor_signed_lanes/README.md",
                     key,
                     value,
                 });

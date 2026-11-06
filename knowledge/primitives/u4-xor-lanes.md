@@ -49,5 +49,5 @@ collide under same-parity changes and permutations. The measured leaf
 checks its exact output, and the fragment does not authenticate a message.
 
 Evidence is `locally-reproduced`; execution is `unclassified`. The
-[implementation README](../../src/arithmetic/u4/xor_lanes/README.md)
+[implementation README](../../src/arithmetic/u4/xor_signed_lanes/README.md)
 gives exact matched costs and reproduction commands.

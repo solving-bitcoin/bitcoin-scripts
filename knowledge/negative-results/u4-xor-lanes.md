@@ -20,5 +20,5 @@ The measured packed route has peak `n + 20` for non-singleton widths,
 including its resident 16-entry table. Width 254 with 726 preserved
 caller items reaches the local limit; adding one fails.
 
-See the [fixture and reproduction](../../src/arithmetic/u4/xor_lanes/README.md).
+See the [fixture and reproduction](../../src/arithmetic/u4/xor_signed_lanes/README.md).
 Evidence is `locally-reproduced` and execution is `unclassified`.

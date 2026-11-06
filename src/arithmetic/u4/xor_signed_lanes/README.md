@@ -82,7 +82,7 @@ and [standardness](../../../../docs/standardness.md).
 ## Reproduction
 
 ```sh
-cargo test --locked --lib arithmetic::u4::xor_lanes::tests
+cargo test --locked --lib arithmetic::u4::xor_signed_lanes::tests
 cargo test --locked --test primitive_metrics xor_lanes_metrics_are_current
 python3 tools/kb.py validate
 cargo test --locked -- --skip fields::
