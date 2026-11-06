@@ -311,6 +311,13 @@
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
     },
     {
+      "id": "rfc-20-ascii",
+      "title": "RFC 20 §2: ASCII format for Network Interchange",
+      "kind": "specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc20.html#section-2",
+      "revision": "RFC 20, October 16, 1969; §2 code table defines the uppercase and lowercase letter byte values"
+    },
+    {
       "id": "bitcoin-scripts-quarter-square-20261002",
       "title": "Existing Bitcoin Scripts quarter-square identity and field table construction",
       "kind": "reference-implementation",

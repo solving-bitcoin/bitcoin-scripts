@@ -1,6 +1,7 @@
 //! Shared execution and Script-building support.
 
 pub mod absolute_finality;
+pub mod ascii_case;
 pub mod bip68;
 pub mod execution;
 pub mod provenance;

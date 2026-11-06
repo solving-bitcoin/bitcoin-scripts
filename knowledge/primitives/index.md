@@ -161,3 +161,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [BN254 fields](bn254-fields.md)
 - [BN254 groups and MSM](bn254-groups.md)
 - [BN254 pairing verifier](bn254-pairing.md)
+
+## Text encodings
+
+- [Opposite-case ASCII pair check](ascii-opposite-case.md)

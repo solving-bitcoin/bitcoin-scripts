@@ -5,6 +5,7 @@ They summarize the current catalog rather than claiming global completeness.
 
 - [Arithmetic representations](arithmetic.md)
 - [Arithmetic checksums](checksums.md)
+- [Opposite-case ASCII pair schedules](ascii-pair-checks.md)
 - [Stable stack selection schedules](stack-selection.md)
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)

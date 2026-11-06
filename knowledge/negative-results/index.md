@@ -41,6 +41,13 @@ guards raise the backward fragment to 816 bytes and peak to 68, reducing its
 frontier to 498 pairs. Discarding cannot repair entry element or policy limits.
 Evidence is `locally-reproduced`; deployment `unclassified`.
 
+## Opposite-case ASCII gap admits punctuation
+
+The [gap-only counterexample](ascii-pair-checks.md) shows that two exact
+one-byte items separated by 32 can be punctuation. Checking the lower
+value's uppercase interval and both byte widths closes that gap.
+Evidence is `locally-reproduced`; execution is `unclassified`.
+
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes
