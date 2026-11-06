@@ -35,6 +35,15 @@ transaction budgets are unavailable. The 499-pair complete leaf binding 520-byte
 payloads is 270,319 bytes, explicitly unoptimized `NONE`; fragment remains
 `ALL`. Local policy rejects payloads over 80 bytes even when discarded.
 
+The [single-run mask decoder](../primitives/single-run-mask.md) checks that
+binary flags form one nonempty interval and returns its start and length.
+It has no payload inputs. At 32 flags and eight selected positions, its
+signed-length schedule is 602 bytes, compared with 698 for a separate closed
+flag. Both use a 41-byte serialized witness, 32 ordinary items and zero
+hints. Their combined peaks are 33 and 35, and their executed non-push
+counts are 352 and 354. These are matched interval predicates under the
+same local profile, a separate contract from stable payload compaction.
+
 See the [source-bound report](../../research/stable-stack-compaction/README.md),
 [primitive](../primitives/stable-selection.md),
 [NR-078](../negative-results/stable-selection.md) and

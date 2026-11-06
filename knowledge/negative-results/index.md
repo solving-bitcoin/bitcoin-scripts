@@ -1953,6 +1953,9 @@ separately from these witness-specific peaks. For eight runs of width 16 the
 bound is 26, above the length-2 fixture's 21. No variable run count and no
 byte-winning layout is claimed. See [OP-040](../open-problems.md#op-040--byte-competitive-variable-run-length-decoder).
 
+For interval decoding, [plain transition count](single-run-mask.md) accepts
+both a single run and a split mask with the same number of changes.
+
 ## NR-084: Packed permutation ranks lose combined bytes
 
 Canonical, hint-free factoradic decoding saves data witness items and stack peak,
