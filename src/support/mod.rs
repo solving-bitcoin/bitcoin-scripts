@@ -4,6 +4,7 @@ pub mod absolute_finality;
 pub mod bip68;
 pub mod execution;
 pub mod provenance;
+pub mod rotation;
 pub mod script;
 pub mod script_ops;
 pub mod selection;

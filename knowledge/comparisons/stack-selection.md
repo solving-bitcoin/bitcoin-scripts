@@ -1,4 +1,17 @@
-# Stable stack selection schedules
+# Opaque stack routing
+
+## Runtime rotation
+
+The [runtime rotation](../primitives/opaque-runtime-rotation.md) checks a
+canonical offset and routes every opaque input into its rotated order.
+At width 499, destructive selection uses 8,856 leaf bytes and executes
+4,999 non-push operations at peak 503. Copying uses 9,749 bytes and
+5,749 operations at peak 1,000. Both check every output byte-for-byte
+and take the same 1,503-byte data witness, 500 ordinary items including
+the offset, and zero hints. The [stack and offset limits](../negative-results/opaque-runtime-rotation.md)
+record the copying frontier and the ambiguity of periodic inputs.
+
+## Stable filtering
 
 Compare stable filtering of opaque payloads under the same native tapscript
 MINIMALIF flag contract, then compare explicit canonical/range guard variants

@@ -10344,6 +10344,77 @@ fn u4_vector_rotate_metrics_are_current() {
     ]);
 }
 
+mod opaque_rotation_baseline {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+    include!("../research/runtime-opaque-rotation/baseline.rs");
+}
+
+mod opaque_rotation_fixture {
+    include!("../research/runtime-opaque-rotation/fixture.rs");
+}
+
+/// Compare the same runtime left rotation with destructive and copying routes.
+#[test]
+fn opaque_rotation_metrics_are_current() {
+    use bitcoin_lab::support::{
+        rotation::rotate_opaque_left,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("opaque_rotation_", $n, "_", $schedule, "_script"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_witness"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_stack"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, destructive, copy) in [
+        (8u32, keys!(8, "roll"), keys!(8, "copy")),
+        (32, keys!(32, "roll"), keys!(32, "copy")),
+        (128, keys!(128, "roll"), keys!(128, "copy")),
+        (499, keys!(499, "roll"), keys!(499, "copy")),
+    ] {
+        let k = n - 2;
+        let mut witness = opaque_rotation_fixture::payloads(n);
+        let mut expected = witness.clone();
+        expected.rotate_left(k as usize);
+        witness.push(opaque_rotation_fixture::scriptnum(k));
+        for (keys, fragment) in [
+            (destructive, rotate_opaque_left(n)),
+            (copy, opaque_rotation_baseline::copy(n)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for value in expected.iter().rev() {{value.clone()} OP_EQUALVERIFY}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/rotation/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures only the checked u4 vector interleave.
 #[test]
 fn u4_interleave_metrics_are_current() {
@@ -11965,50 +12036,53 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
+}
+
 /// Compare equal complete leaves for packed-rank and separate-digit witnesses.
 #[test]
 fn permutation_rank_metrics_are_current() {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
     use bitcoin_lab::{arithmetic::permutation, support::provenance};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Options, TxTemplate};
-
-    fn measure(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-        let mut exec = Exec::new(
-            ExecCtx::Tapscript,
-            Options {
-                require_minimal: false,
-                enforce_stack_limit: true,
-                ..Default::default()
-            },
-            TxTemplate {
-                tx: Transaction {
-                    version: transaction::Version::TWO,
-                    lock_time: absolute::LockTime::ZERO,
-                    input: vec![],
-                    output: vec![],
-                },
-                prevouts: vec![],
-                input_idx: 0,
-                taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-            },
-            script,
-            witness,
-        )
-        .unwrap();
-        let mut executed = 0;
-        loop {
-            let instruction = exec.remaining_script().instructions().next();
-            let active = exec.cond_stack().all_true();
-            let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-            if exec.exec_next().is_err() {
-                break;
-            }
-            executed += usize::from(counted);
-        }
-        assert!(exec.result().unwrap().success);
-        assert_eq!(exec.stack().len(), 1);
-        (exec.stats().max_nb_stack_items, executed)
-    }
 
     let mut report = Vec::new();
     for width in [4, 8, 12] {
@@ -12036,7 +12110,7 @@ fn permutation_rank_metrics_are_current() {
                 OP_TRUE
             };
             let compiled = leaf.clone().compile_with_policy();
-            let (peak, executed) = measure(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (width, encoding) {
                 (4, "rank") => [
                     "permutation_rank_4_script",

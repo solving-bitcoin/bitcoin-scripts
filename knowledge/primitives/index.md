@@ -6,6 +6,7 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Stack support
 
+- [Runtime left rotation of opaque stack items](opaque-runtime-rotation.md)
 - [Stable selection of opaque stack items](stable-selection.md)
 
 ## Arithmetic

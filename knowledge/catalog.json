@@ -18660,6 +18660,301 @@
       ]
     },
     {
+      "id": "support/opaque-runtime-rotation",
+      "name": "Runtime left rotation of opaque stack items",
+      "class": "support/stack",
+      "summary": "Runtime rotation of a fixed-width opaque stack suffix by a canonical offset, using destructive routing at a single depth.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/opaque-runtime-rotation.md",
+      "implementation": "src/support/rotation/mod.rs",
+      "documentation": "src/support/rotation/README.md",
+      "tests": [
+        "src/support/rotation/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "cpp-n4950-rotate",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling"
+      ],
+      "security": "The runtime offset is checked for canonical encoding and 0 <= k < n before routing. Payloads are opaque and only reordered. Periodic vectors can satisfy the same output predicate for different canonical offsets.",
+      "stack_contract": "Consumes a canonical offset after n opaque inputs, rotates them left, and preserves both caller stacks for the exact suffix. All n outputs retain their exact bytes. No hints.",
+      "configurations": [
+        {
+          "id": "roll-8",
+          "label": "Destructive, 8 payloads",
+          "parameters": {
+            "payload_count": 8,
+            "offset": 6,
+            "payload_bytes": 2,
+            "data_items": 9,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 141,
+          "witness_bytes": 27,
+          "witness_bytes_max": null,
+          "max_stack_items": 12,
+          "executed_opcodes": 89,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_8_roll_script",
+            "opaque_rotation_8_roll_witness",
+            "opaque_rotation_8_roll_stack",
+            "opaque_rotation_8_roll_executed"
+          ]
+        },
+        {
+          "id": "copy-8",
+          "label": "Copying, 8 payloads",
+          "parameters": {
+            "payload_count": 8,
+            "offset": 6,
+            "payload_bytes": 2,
+            "data_items": 9,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 155,
+          "witness_bytes": 27,
+          "witness_bytes_max": null,
+          "max_stack_items": 18,
+          "executed_opcodes": 103,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_8_copy_script",
+            "opaque_rotation_8_copy_witness",
+            "opaque_rotation_8_copy_stack",
+            "opaque_rotation_8_copy_executed"
+          ]
+        },
+        {
+          "id": "roll-32",
+          "label": "Destructive, 32 payloads",
+          "parameters": {
+            "payload_count": 32,
+            "offset": 30,
+            "payload_bytes": 2,
+            "data_items": 33,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 543,
+          "witness_bytes": 99,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 329,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_32_roll_script",
+            "opaque_rotation_32_roll_witness",
+            "opaque_rotation_32_roll_stack",
+            "opaque_rotation_32_roll_executed"
+          ]
+        },
+        {
+          "id": "copy-32",
+          "label": "Copying, 32 payloads",
+          "parameters": {
+            "payload_count": 32,
+            "offset": 30,
+            "payload_bytes": 2,
+            "data_items": 33,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 609,
+          "witness_bytes": 99,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 379,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_32_copy_script",
+            "opaque_rotation_32_copy_witness",
+            "opaque_rotation_32_copy_stack",
+            "opaque_rotation_32_copy_executed"
+          ]
+        },
+        {
+          "id": "roll-128",
+          "label": "Destructive, 128 payloads",
+          "parameters": {
+            "payload_count": 128,
+            "offset": 126,
+            "payload_bytes": 2,
+            "data_items": 129,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2178,
+          "witness_bytes": 387,
+          "witness_bytes_max": null,
+          "max_stack_items": 132,
+          "executed_opcodes": 1289,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_128_roll_script",
+            "opaque_rotation_128_roll_witness",
+            "opaque_rotation_128_roll_stack",
+            "opaque_rotation_128_roll_executed"
+          ]
+        },
+        {
+          "id": "copy-128",
+          "label": "Copying, 128 payloads",
+          "parameters": {
+            "payload_count": 128,
+            "offset": 126,
+            "payload_bytes": 2,
+            "data_items": 129,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2515,
+          "witness_bytes": 387,
+          "witness_bytes_max": null,
+          "max_stack_items": 258,
+          "executed_opcodes": 1483,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_128_copy_script",
+            "opaque_rotation_128_copy_witness",
+            "opaque_rotation_128_copy_stack",
+            "opaque_rotation_128_copy_executed"
+          ]
+        },
+        {
+          "id": "roll-499",
+          "label": "Destructive, 499 payloads",
+          "parameters": {
+            "payload_count": 499,
+            "offset": 497,
+            "payload_bytes": 2,
+            "data_items": 500,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 8856,
+          "witness_bytes": 1503,
+          "witness_bytes_max": null,
+          "max_stack_items": 503,
+          "executed_opcodes": 4999,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_499_roll_script",
+            "opaque_rotation_499_roll_witness",
+            "opaque_rotation_499_roll_stack",
+            "opaque_rotation_499_roll_executed"
+          ]
+        },
+        {
+          "id": "copy-499",
+          "label": "Copying, 499 payloads",
+          "parameters": {
+            "payload_count": 499,
+            "offset": 497,
+            "payload_bytes": 2,
+            "data_items": 500,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Payload i is the two-byte little-endian index i"
+          },
+          "includes": "complete-leaf: canonical offset validation, payload routing and cleanup, byte equality of all outputs, terminal true. Data witness includes the offset and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 9749,
+          "witness_bytes": 1503,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 5749,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_rotation_499_copy_script",
+            "opaque_rotation_499_copy_witness",
+            "opaque_rotation_499_copy_stack",
+            "opaque_rotation_499_copy_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The destructive route requires n+4 peak stack items plus caller state. The width-996 frontier has no caller headroom.",
+        "Copying reaches the combined limit at width 499 and fails at 500 in the strict local test.",
+        "Periodic data can make several offsets yield the same bytes.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/crc8-smbus",
       "name": "CRC-8/SMBus nibble feedback",
       "class": "arithmetic/word",
