@@ -55,6 +55,13 @@ lookup on both counts. Its two-nibble-group variant keeps the 34-item peak at
 This is scoped to `n=32`. Evidence is `locally-reproduced` for the retained
 and lookup rows; deployment is `unclassified`.
 
+## Recomputed stable split depth fails at 499 pairs
+
+The [stable bipartition boundary](stable-bipartition.md) shows why carrying
+the live width allows 499 pairs while recomputing each roll depth exceeds
+1,000 combined items. Evidence is `locally-reproduced` and execution
+is `unclassified`.
+
 ## NR-049: Signature opcodes still diverge after resource repairs
 
 The [funded signature experiment](../tapscript-signature-validation.md) records

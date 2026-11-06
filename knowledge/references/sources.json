@@ -360,6 +360,13 @@
       "revision": "Linux v6.18 commit 7d0a66e4bb9081d75c82ec4957c50034cb0ea449; inspected context only, not copied/executed"
     },
     {
+      "id": "cpp-draft-stable-partition-20261002",
+      "title": "C++ draft [alg.partitions]: stable partition semantics",
+      "kind": "specification",
+      "url": "https://github.com/Eelis/draft/blob/c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1/source/algorithms.tex#L9799",
+      "revision": "c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1; source/algorithms.tex, [alg.partitions]; relative order within each group; semantic context only"
+    },
+    {
       "id": "tarau-factoradic-2008",
       "title": "Ranking and Unranking of Hereditarily Finite Functions and Permutations",
       "kind": "paper",

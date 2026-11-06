@@ -1139,6 +1139,11 @@ Report policy separately, including oversized discarded payloads and whole-leaf
 optimizer options. A locally accepted routing fragment or constant literal
 consumer alone does not close this criterion; see NR-078.
 
+The [stable bipartition](primitives/stable-bipartition.md) retains both
+groups. For a two-group consumer, use the same acceptance criteria and
+include both output stacks and the cleanup of every payload. Compare the
+single-cursor and recomputed-depth schedules at a width that both support.
+
 ## OP-037 — Authenticated decimal transducer composition
 
 Determine whether the Damm table schedule is useful inside a real authenticated

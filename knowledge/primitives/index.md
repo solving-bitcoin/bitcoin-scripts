@@ -111,6 +111,10 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Canonical reflection-constrained u4 witnesses](u4-reflection.md)
 
+## Stack grouping
+
+- [Stable bipartition of opaque stack items](stable-bipartition.md)
+
 ## Commitments
 
 - [Mixed-hash path commitment](hash-path-integer.md)

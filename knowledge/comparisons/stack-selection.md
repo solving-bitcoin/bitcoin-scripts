@@ -27,6 +27,9 @@ aliases when allowed by the profile, and rejects overlong numbers. It is not
 a substitute for variable-length filtering or native exact binary validation.
 The shared contract audit preserves that API and makes no limb-validity claim.
 
+The [stable bipartition comparison](stack-bipartition.md) covers keeping
+both groups on separate stacks.
+
 Every configuration is `locally-reproduced` / `unclassified`, using the explicit
 local `Consensus` tapscript profile with stack checks and native MINIMALIF,
 numeric minimality off, OP_CAT disabled and a synthetic data-only transaction
