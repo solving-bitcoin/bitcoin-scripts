@@ -31,6 +31,13 @@ transaction context are excluded on both sides. No optimized Batcher/bitonic
 network has yet been measured; see OP-043.
 
 
+## Earliest u4 minimum schedules
+
+The [packed argmin table](u4-argmin-schedules.md) loses on script bytes,
+executed instructions and combined peak at width four. At width 128 it trades
+additional stack items for smaller code and fewer operations. A minimum-only
+scan cannot bind the earliest position, and resident state limits composition.
+
 ## NR-078: Forward stable filtering and redundant flag guards
 
 The [stable-selection experiment](stable-selection.md) reproduces 970/1,070

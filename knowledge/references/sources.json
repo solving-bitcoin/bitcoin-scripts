@@ -3,6 +3,13 @@
   "as_of": "2026-09-20",
   "sources": [
     {
+      "id": "cpp-n4950-min-element",
+      "title": "C++23 Working Draft: minimum and maximum algorithms",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, section [alg.min.max]"
+    },
+    {
       "id": "bip-16",
       "title": "BIP 16: Pay to Script Hash",
       "kind": "specification",
