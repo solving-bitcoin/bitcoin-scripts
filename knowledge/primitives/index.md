@@ -31,6 +31,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked inverse u4 Gray projection](u4-gray-inverse.md)
 - [Checked u4 nonzero-power-of-two predicate](u4-power-of-two.md)
 - [Checked u4 modulo-three projection](u4-mod3.md)
+- [Sliding modulo-three sums over u4 inputs](u4-sliding-mod3.md)
 - [Checked u4 run-length expansion](u4-run-length.md)
 - [Checked u4 parity projection](u4-parity.md)
 - [Checked fixed-symbol u4 occurrence count](u4-count.md)

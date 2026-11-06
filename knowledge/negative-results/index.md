@@ -41,6 +41,13 @@ guards raise the backward fragment to 816 bytes and peak to 68, reducing its
 frontier to 498 pairs. Discarding cannot repair entry element or policy limits.
 Evidence is `locally-reproduced`; deployment `unclassified`.
 
+## Sliding modulo-three window limits
+
+The [rolling-window comparison](u4-sliding-mod3.md) loses at width one,
+retains the rescan stack peak, and shares a 16-entry lookup boundary
+that cannot address the maximal width-eight initial sum. Its entire
+output vector can collide for two different valid input vectors.
+
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes
