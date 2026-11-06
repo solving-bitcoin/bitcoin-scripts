@@ -16843,10 +16843,10 @@
       "execution": "unclassified",
       "as_of": "2026-11-05",
       "knowledge_page": "knowledge/primitives/indexed-selection.md",
-      "implementation": "src/support/selection/mod.rs",
+      "implementation": "src/support/indexed_selection.rs",
       "documentation": "src/support/selection/README.md",
       "tests": [
-        "tests/selection_contract.rs",
+        "tests/indexed_selection_contract.rs",
         "indexed_selection_metrics_are_current"
       ],
       "references": [

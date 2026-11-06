@@ -12010,7 +12010,9 @@ fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) 
 
 #[test]
 fn indexed_selection_metrics_are_current() {
-    use bitcoin_lab::support::selection::{compact_indexed_items, compact_selected_items};
+    use bitcoin_lab::support::{
+        indexed_selection::compact_indexed_items, selection::compact_selected_items,
+    };
 
     macro_rules! keys {
         ($prefix:literal) => {

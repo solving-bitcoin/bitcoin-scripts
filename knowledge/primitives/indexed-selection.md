@@ -88,7 +88,7 @@ validation for a real consumer are tracked in
 [OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
 
 ```sh
-cargo test --locked --test selection_contract indexed_selection
+cargo test --locked --test indexed_selection_contract
 cargo test --locked --test primitive_metrics indexed_selection_metrics_are_current
 python3 tools/kb.py validate
 cargo test --locked -- --skip fields::

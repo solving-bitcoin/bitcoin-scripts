@@ -149,7 +149,7 @@ Catalog `support/stable-selection`; [knowledge page](../../../knowledge/primitiv
 
 ## Sparse index input
 
-`support::selection::compact_indexed_items(n, k)` selects a generation-time
+`support::indexed_selection::compact_indexed_items(n, k)` selects a generation-time
 count `k` from `n` opaque payloads, using `k` canonical numeric selectors.
 Use `1 <= k <= n` and `n + k <= 996`. The input suffix, bottom to top, is
 `payload[0] ... payload[n-1] depth[k-1] ... depth[0]`. Depth zero identifies
@@ -195,6 +195,6 @@ the [indexed selection research note](../../../knowledge/primitives/indexed-sele
 for the comparison and exact resource assumptions.
 
 ```sh
-cargo test --locked --test selection_contract indexed_selection
+cargo test --locked --test indexed_selection_contract
 cargo test --locked --test primitive_metrics indexed_selection_metrics_are_current
 ```
