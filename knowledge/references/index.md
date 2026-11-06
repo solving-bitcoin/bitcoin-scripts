@@ -181,3 +181,5 @@ and complete-leaf comparison are local results, not claims from that paper.
 The u4 half-witness adapter's complement rule, Script implementation and measured
 costs are local contributions; no polynomial irreducibility or security claim
 is imported from the paper.
+
+The [pinned-chain experiment](../primitives/pinned-hash-path-chain.md) uses the existing immutable compiler, interpreter and Core v30.3 source IDs. Its committed report records the verified release binary and distinguishes Core verdicts from the local transaction trace.

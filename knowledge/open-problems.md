@@ -994,6 +994,11 @@ and exactly 88 hints.
 
 ## OP-020 — Bound-start hash paths and Binohash composition
 
+The [pinned checkpoint experiment](primitives/pinned-hash-path-chain.md) now
+prices a SHA-256 start pin and reproduces the substitution rejection in Core
+v30.3. This covers the pinned start and checkpoint stream; the retained-bit
+Lamport/Binohash consumer and general binding analysis remain open.
+
 The optional-SHA256 binary path has a deterministic first-bit substitution
 when its starting preimage is free (NR-056). **Complete when:** a complete
 wrapper independently binds the start, rejects the known substituted opening,

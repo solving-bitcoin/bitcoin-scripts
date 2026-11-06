@@ -264,3 +264,5 @@ Its measured complete leaf peaks at 33 versus 36 for raw verification, before
 unrelated state; all hints are zero. Exact frontier probes move a runtime witness
 item into the altstack and verify runtime caller data, because known constants
 checked against themselves can optimize away and understate live occupancy.
+
+[Pinning a streamed hash-path start](../primitives/pinned-hash-path-chain.md) adds two transient items with no hints. For `k` preloaded selectors, one preimage and `p` live caller items, the exact peak is `k+3+p`; streaming checkpoints cannot reduce the initial selector occupancy.

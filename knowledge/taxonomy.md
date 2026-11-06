@@ -13,6 +13,7 @@ constructions from being hidden behind local module names.
 - `arithmetic/bigint`: multi-limb integers.
 - `arithmetic/rns`: residue-number representations.
 - `commitment/integer`: openings that authenticate and return small integers.
+- `commitment/hash-state`: ordered, unary hash-state openings and checkpoint checks.
 - `hash/fixed`: fixed-output hashes.
 - `hash/xof`: extendable-output functions.
 - `signature/schnorr`: secp256k1 Schnorr verification constructions.

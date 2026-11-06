@@ -22109,6 +22109,164 @@
         "OP-002",
         "OP-043"
       ]
+    },
+    {
+      "id": "commitment/pinned-hash-path-chain",
+      "name": "Pinned-start mixed-hash checkpoint chain",
+      "class": "commitment/hash-state",
+      "summary": "Independently pin the initial preimage and check ordered checkpoints of a streamed binary hash path without hints.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-05",
+      "knowledge_page": "knowledge/primitives/pinned-hash-path-chain.md",
+      "implementation": "src/commitments/hash_path/pinned.rs",
+      "documentation": "src/commitments/hash_path/README.md",
+      "tests": [
+        "commitments::hash_path::pinned::tests",
+        "primitive_metrics::pinned_chain_metrics_are_current",
+        "examples/core_validation_fixtures.rs",
+        "tests/data/pinned-hash-path-v30.3.json"
+      ],
+      "references": [
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bitcoin-core-v30.3-regtest"
+      ],
+      "techniques": [
+        "mixed-hash-path",
+        "constant-embedding"
+      ],
+      "security": "Independent start pin excludes the recorded first-bit substitution; the mixed-hash path has no general binding proof or participant authorization.",
+      "stack_contract": "Consumes reverse-order selector groups and top preimage; leaves one Boolean and preserves unrelated main/alt items. Callers must enforce the result.",
+      "configurations": [
+        {
+          "id": "4-3",
+          "label": "pinned-chain-valid-4-plus-3",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "widths": [
+              4,
+              3
+            ],
+            "fixture": "pinned-chain-valid-4-plus-3",
+            "preimage_bytes": 32,
+            "data_witness_bytes": 46,
+            "data_items": 8,
+            "complete_witness_items": 10,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "transaction_weight": 575,
+            "initial_validation_budget": 247,
+            "remaining_validation_budget": 247,
+            "core_report": "tests/data/pinned-hash-path-v30.3.json"
+          },
+          "includes": "complete-transaction: pinned starting preimage, all checkpoints and clean result, Taproot script/control block and CompactSize witness framing, P2WSH output; local trace on exact serialized Core-checked transaction",
+          "script_bytes": 116,
+          "witness_bytes": 197,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 39,
+          "static_non_push_opcodes": 41,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "pinned_chain_4_3_script",
+            "pinned_chain_4_3_witness",
+            "pinned_chain_4_3_stack",
+            "pinned_chain_4_3_executed"
+          ]
+        },
+        {
+          "id": "997-zeroes",
+          "label": "pinned-chain-997-zeroes",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "widths": [
+              997
+            ],
+            "fixture": "pinned-chain-997-zeroes",
+            "preimage_bytes": 32,
+            "data_witness_bytes": 1033,
+            "data_items": 998,
+            "complete_witness_items": 1000,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "transaction_weight": 6491,
+            "initial_validation_budget": 6163,
+            "remaining_validation_budget": 6163,
+            "core_report": "tests/data/pinned-hash-path-v30.3.json"
+          },
+          "includes": "complete-transaction: pinned starting preimage, all checkpoints and clean result, Taproot script/control block and CompactSize witness framing, P2WSH output; local trace on exact serialized Core-checked transaction",
+          "script_bytes": 5043,
+          "witness_bytes": 6113,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 3992,
+          "static_non_push_opcodes": 4989,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "pinned_chain_997_zeroes_script",
+            "pinned_chain_997_zeroes_witness",
+            "pinned_chain_997_zeroes_stack",
+            "pinned_chain_997_zeroes_executed"
+          ]
+        },
+        {
+          "id": "997-ones",
+          "label": "pinned-chain-997-ones",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "widths": [
+              997
+            ],
+            "fixture": "pinned-chain-997-ones",
+            "preimage_bytes": 32,
+            "data_witness_bytes": 2030,
+            "data_items": 998,
+            "complete_witness_items": 1000,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_present_at_entry": true,
+            "transaction_weight": 7488,
+            "initial_validation_budget": 7160,
+            "remaining_validation_budget": 7160,
+            "core_report": "tests/data/pinned-hash-path-v30.3.json"
+          },
+          "includes": "complete-transaction: pinned starting preimage, all checkpoints and clean result, Taproot script/control block and CompactSize witness framing, P2WSH output; local trace on exact serialized Core-checked transaction",
+          "script_bytes": 5043,
+          "witness_bytes": 7110,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 4989,
+          "static_non_push_opcodes": 4989,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "pinned_chain_997_ones_script",
+            "pinned_chain_997_ones_witness",
+            "pinned_chain_997_ones_stack",
+            "pinned_chain_997_ones_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The configuration evidence applies to Core verdicts and transaction serialization; dynamic counters and validation budgets are local traces.",
+        "Core evidence is scoped to the recorded spends and pinned policy.",
+        "No retained-bit Lamport or Binohash consumer."
+      ],
+      "open_problems": [
+        "OP-020"
+      ]
     }
   ]
 }

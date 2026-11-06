@@ -12273,3 +12273,199 @@ fn adler32_state_metrics_are_current() {
         },
     ]);
 }
+
+#[test]
+fn pinned_chain_metrics_are_current() {
+    use bitcoin::secp256k1::{Keypair, Secp256k1, SecretKey};
+    use bitcoin::taproot::{LeafVersion, TaprootBuilder};
+    use bitcoin::{
+        absolute, transaction, Amount, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut,
+    };
+    use bitcoin_lab::{
+        commitments::hash_path::{hash_path_commitment, pinned::verify},
+        support::provenance,
+    };
+    use bitcoin_scriptexec::{Exec, Options, TxTemplate};
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_data"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_items"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_budget"),
+                concat!($prefix, "_weight"),
+            ]
+        };
+    }
+    let oracle: serde_json::Value =
+        serde_json::from_str(include_str!("data/pinned-hash-path-v30.3.json")).unwrap();
+    assert_eq!(oracle["all_expectations_met"], true);
+    assert_eq!(
+        oracle["compiler"]["commit"],
+        provenance::compiler().unwrap().commit
+    );
+    assert_eq!(
+        oracle["local_interpreter"]["commit"],
+        provenance::interpreter().unwrap().commit
+    );
+    let x = [0x42; 32];
+    let start = bitcoin_sha256::Hash::hash(&x).to_byte_array();
+    let a = hash_path_integer_commitment(&x, 13, 4);
+    let b = hash_path_integer_commitment(&a, 3, 3);
+    let mut small = hash_path_integer_witness(&a, 3, 3);
+    small.pop();
+    small.extend(hash_path_integer_witness(&x, 13, 4));
+    let unbound = verify_hash_path_chain(4, a, 3, b);
+    let mut measured = 0;
+    for (index, row) in oracle["results"].as_array().unwrap().iter().enumerate() {
+        let (generated, data, keys) = match row["name"].as_str().unwrap() {
+            "pinned-chain-valid-4-plus-3" => (
+                verify(start, &[(4, a), (3, b)]),
+                small.clone(),
+                keys!("pinned_chain_4_3"),
+            ),
+            "pinned-chain-control-unbound-valid" => (
+                unbound.clone(),
+                small.clone(),
+                keys!("pinned_chain_unbound_4_3"),
+            ),
+            "pinned-chain-control-length-only-valid" => (
+                script! {OP_SIZE 32 OP_EQUALVERIFY {unbound.clone()}},
+                small.clone(),
+                keys!("pinned_chain_length_4_3"),
+            ),
+            "pinned-chain-997-zeroes" | "pinned-chain-997-ones" => {
+                let bit = row["name"] == "pinned-chain-997-ones";
+                let digest = hash_path_commitment(&x, &vec![bit; 997]);
+                let mut data = vec![if bit { vec![1] } else { vec![] }; 997];
+                data.push(x.to_vec());
+                (
+                    verify(start, &[(997, digest)]),
+                    data,
+                    if bit {
+                        keys!("pinned_chain_997_ones")
+                    } else {
+                        keys!("pinned_chain_997_zeroes")
+                    },
+                )
+            }
+            _ => continue,
+        };
+        assert_eq!(row["deployment"], "policy-validated");
+        let leaf = generated.compile_with_policy();
+        assert_eq!(
+            bitcoin_sha256::Hash::hash(leaf.as_bytes()).to_string(),
+            row["script_sha256"].as_str().unwrap()
+        );
+        let secp = Secp256k1::new();
+        let key = Keypair::from_secret_key(&secp, &SecretKey::from_slice(&[1; 32]).unwrap())
+            .x_only_public_key()
+            .0;
+        let tree = TaprootBuilder::new()
+            .add_leaf(0, leaf.clone())
+            .unwrap()
+            .finalize(&secp, key)
+            .unwrap();
+        let control = tree
+            .control_block(&(leaf.clone(), LeafVersion::TapScript))
+            .unwrap()
+            .serialize();
+        let prevout = TxOut {
+            value: Amount::from_sat(1_000_000),
+            script_pubkey: ScriptBuf::new_p2tr_tweaked(tree.output_key()),
+        };
+        let mut complete = data.clone();
+        complete.push(leaf.to_bytes());
+        complete.push(control);
+        let witness = Witness::from_slice(&complete);
+        let tx = Transaction {
+            version: transaction::Version::TWO,
+            lock_time: absolute::LockTime::ZERO,
+            input: vec![TxIn {
+                previous_output: OutPoint {
+                    txid: oracle["funding_txid"].as_str().unwrap().parse().unwrap(),
+                    vout: index as u32,
+                },
+                script_sig: ScriptBuf::new(),
+                sequence: Sequence::MAX,
+                witness: witness.clone(),
+            }],
+            output: vec![TxOut {
+                value: Amount::from_sat(990_000),
+                script_pubkey: ScriptBuf::new_p2wsh(
+                    &ScriptBuf::from_bytes(vec![0x51]).wscript_hash(),
+                ),
+            }],
+        };
+        assert_eq!(
+            tx.compute_txid().to_string(),
+            row["transaction"]["txid"].as_str().unwrap()
+        );
+        assert_eq!(
+            tx.compute_wtxid().to_string(),
+            row["transaction"]["wtxid"].as_str().unwrap()
+        );
+        assert_eq!(
+            tx.weight().to_wu(),
+            row["transaction"]["weight"].as_u64().unwrap()
+        );
+        let mut exec = Exec::new_tapscript(
+            Options {
+                require_minimal: false,
+                enforce_stack_limit: true,
+                ..Default::default()
+            },
+            TxTemplate {
+                tx: tx.clone(),
+                prevouts: vec![prevout],
+                input_idx: 0,
+                taproot_annex_scriptleaf: None,
+            },
+        )
+        .unwrap();
+        let mut executed = 0;
+        loop {
+            let active = exec.cond_stack().all_true();
+            let counted = matches!(exec.remaining_script().instructions().next(),Some(Ok(Instruction::Op(op))) if op.to_u8()>0x60&&(active||(0x63..=0x68).contains(&op.to_u8())));
+            if exec.exec_next().is_err() {
+                break;
+            }
+            executed += usize::from(counted);
+        }
+        assert!(exec.result().unwrap().success);
+        assert_eq!(
+            exec.stats().start_validation_weight,
+            50 + serialize(&witness).len() as i64
+        );
+        assert_eq!(
+            exec.stats().validation_weight,
+            exec.stats().start_validation_weight
+        );
+        let values = [
+            leaf.len(),
+            witness_size(&data),
+            serialize(&witness).len(),
+            data.len(),
+            exec.stats().max_nb_stack_items,
+            executed,
+            exec.stats().start_validation_weight as usize,
+            tx.weight().to_wu() as usize,
+        ];
+        check_readme_metrics(
+            keys.into_iter()
+                .zip(values)
+                .map(|(key, value)| Metric {
+                    readme: "src/commitments/hash_path/README.md",
+                    key,
+                    value,
+                })
+                .collect(),
+        );
+        measured += 1;
+    }
+    assert_eq!(measured, 5);
+}
