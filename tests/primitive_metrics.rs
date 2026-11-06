@@ -8964,6 +8964,118 @@ fn hors_witness_boundary_metrics_are_current() {
     ]);
 }
 
+#[path = "support/weighted_quorum.rs"]
+mod weighted_quorum_fixture;
+
+/// Compare grouped and per-key scripts with independently signed Taproot leaves.
+#[test]
+fn weighted_quorum_metrics_are_current() {
+    use bitcoin_lab::{
+        signatures::quorum::{verify_weighted_quorum, MAX_KEYS},
+        support::script::MAX_OPTIMIZER_INPUT_BYTES,
+    };
+    use weighted_quorum_fixture::{groups, individual, keypairs, Spend};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("weighted_quorum_", $n, "_", $schedule, "_script"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_data"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_complete"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_stack"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_executed"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_charge"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (spec, selected, threshold, grouped, direct) in [
+        (
+            &[(1, 1), (2, 1), (5, 1)][..],
+            &[0, 2][..],
+            6,
+            keys!(3, "grouped"),
+            keys!(3, "direct"),
+        ),
+        (
+            &[(1, 2), (2, 2), (5, 2)][..],
+            &[0, 2, 4][..],
+            7,
+            keys!(6, "grouped"),
+            keys!(6, "direct"),
+        ),
+        (
+            &[(1, 8), (2, 12), (5, 12)][..],
+            &[0, 3, 8, 11, 17, 20, 23, 26, 29][..],
+            28,
+            keys!(32, "grouped"),
+            keys!(32, "direct"),
+        ),
+        (
+            &[(1, 16), (2, 24), (5, 24)][..],
+            &[0, 7, 16, 21, 27, 32, 40, 45, 50, 55, 60, 63][..],
+            40,
+            keys!(64, "grouped"),
+            keys!(64, "direct"),
+        ),
+        (
+            &[(15, 1), (1, MAX_KEYS - 1)][..],
+            &[0][..],
+            15,
+            keys!(995, "grouped"),
+            keys!(995, "direct"),
+        ),
+    ] {
+        let count = spec.iter().map(|&(_, n)| n).sum();
+        let pairs = keypairs(count);
+        let public: Vec<_> = pairs.iter().map(|key| key.x_only_public_key().0).collect();
+        let policy = groups(&public, spec);
+        for (keys, fragment) in [
+            (grouped, verify_weighted_quorum(&policy, threshold)),
+            (direct, individual(&policy, threshold)),
+        ] {
+            let spend = Spend::new(fragment, &pairs);
+            let data = spend.data(selected);
+            assert_eq!(data.len(), count);
+            assert_eq!(
+                data.iter().filter(|item| !item.is_empty()).count(),
+                selected.len()
+            );
+            let data_bytes = witness_size(&data);
+            let tx = spend.with_data(data);
+            let complete_bytes = tx.input[0].witness.size();
+            assert_eq!(tx.input[0].witness.len(), count + 2);
+            let trace = spend.trace(&tx);
+            assert!(trace.success, "{:?}", trace.error);
+            assert_eq!(trace.initial_budget, 50 + complete_bytes as i64);
+            assert_eq!(trace.charged, 50 * selected.len() as i64);
+            assert_eq!(
+                spend.raw_script_bytes > MAX_OPTIMIZER_INPUT_BYTES,
+                count == MAX_KEYS
+            );
+            if count == MAX_KEYS {
+                assert_eq!(spend.leaf.len(), spend.raw_script_bytes);
+            }
+            let values = [
+                spend.leaf.len(),
+                data_bytes,
+                complete_bytes,
+                trace.peak,
+                trace.executed,
+                trace.charged as usize,
+            ];
+            for (key, value) in keys.into_iter().zip(values) {
+                report.push(Metric {
+                    readme: "src/signatures/quorum/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 fn u254_sub_noborrow_metrics() -> Vec<Metric> {
     let fragment = U254::sub_noborrow(1, 0);
     let witness = vec![Vec::new(); (2 * U254::N_LIMBS) as usize];

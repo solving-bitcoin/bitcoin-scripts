@@ -237,6 +237,13 @@ The lab now pins integration revision `4b7269a`, and the shared driver delegates
 these checks to the repaired dependency; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Earlier measurements
 keep their original tool provenance and evidence classes.
+## Weighted quorum limits
+
+The [weighted Schnorr comparison](weighted-schnorr-quorum.md) shows that
+grouping singleton keys increases cost and leaves the signature charge
+unchanged. It also checks that malformed nonempty signatures still
+reject after enough valid weight is present.
+
 ## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
 
 **Status (2026-10-11): reasoning retracted; derive-key is implemented.** The

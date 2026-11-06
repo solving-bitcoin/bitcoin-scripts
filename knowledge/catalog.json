@@ -7100,6 +7100,594 @@
       ]
     },
     {
+      "id": "signature/weighted-schnorr-quorum",
+      "name": "Weighted native Schnorr quorum",
+      "class": "signature/schnorr",
+      "summary": "Weighted quorum for native tapscript Schnorr signatures with one count per equal-weight key group and dense signer slots.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/weighted-schnorr-quorum.md",
+      "implementation": "src/signatures/quorum/mod.rs",
+      "documentation": "src/signatures/quorum/README.md",
+      "tests": [
+        "tests/weighted_quorum_contract.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bip-340",
+        "bip-341",
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Typed x-only public keys must be unique and each dense nonempty signature is checked under the exact leaf and transaction digest. Empty items count as absent. Other leaves and the key path are outside this fragment.",
+      "stack_contract": "Consumes one dense signature item per listed key in reverse flattening order. Success leaves no output and preserves both caller stacks for an exact suffix. No hints.",
+      "configurations": [
+        {
+          "id": "grouped-3",
+          "label": "Grouped, 3 keys",
+          "parameters": {
+            "key_count": 3,
+            "groups": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "selected": [
+              0,
+              2
+            ],
+            "threshold": 6,
+            "data_items": 3,
+            "nonempty_signatures": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 5,
+            "complete_witness_bytes": 292,
+            "initial_validation_weight": 342,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 125,
+          "witness_bytes": 132,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 20,
+          "validation_weight": 100,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_3_grouped_script",
+            "weighted_quorum_3_grouped_data",
+            "weighted_quorum_3_grouped_stack",
+            "weighted_quorum_3_grouped_executed",
+            "weighted_quorum_3_grouped_charge"
+          ]
+        },
+        {
+          "id": "direct-3",
+          "label": "Per-key, 3 keys",
+          "parameters": {
+            "key_count": 3,
+            "groups": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "selected": [
+              0,
+              2
+            ],
+            "threshold": 6,
+            "data_items": 3,
+            "nonempty_signatures": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 5,
+            "complete_witness_bytes": 288,
+            "initial_validation_weight": 338,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 121,
+          "witness_bytes": 132,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 19,
+          "validation_weight": 100,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_3_direct_script",
+            "weighted_quorum_3_direct_data",
+            "weighted_quorum_3_direct_stack",
+            "weighted_quorum_3_direct_executed",
+            "weighted_quorum_3_direct_charge"
+          ]
+        },
+        {
+          "id": "grouped-6",
+          "label": "Grouped, 6 keys",
+          "parameters": {
+            "key_count": 6,
+            "groups": [
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "selected": [
+              0,
+              2,
+              4
+            ],
+            "threshold": 7,
+            "data_items": 6,
+            "nonempty_signatures": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 8,
+            "complete_witness_bytes": 461,
+            "initial_validation_weight": 511,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 227,
+          "witness_bytes": 199,
+          "witness_bytes_max": null,
+          "max_stack_items": 8,
+          "executed_opcodes": 23,
+          "validation_weight": 150,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_6_grouped_script",
+            "weighted_quorum_6_grouped_data",
+            "weighted_quorum_6_grouped_stack",
+            "weighted_quorum_6_grouped_executed",
+            "weighted_quorum_6_grouped_charge"
+          ]
+        },
+        {
+          "id": "direct-6",
+          "label": "Per-key, 6 keys",
+          "parameters": {
+            "key_count": 6,
+            "groups": [
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "selected": [
+              0,
+              2,
+              4
+            ],
+            "threshold": 7,
+            "data_items": 6,
+            "nonempty_signatures": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 8,
+            "complete_witness_bytes": 471,
+            "initial_validation_weight": 521,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 237,
+          "witness_bytes": 199,
+          "witness_bytes_max": null,
+          "max_stack_items": 8,
+          "executed_opcodes": 36,
+          "validation_weight": 150,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_6_direct_script",
+            "weighted_quorum_6_direct_data",
+            "weighted_quorum_6_direct_stack",
+            "weighted_quorum_6_direct_executed",
+            "weighted_quorum_6_direct_charge"
+          ]
+        },
+        {
+          "id": "grouped-32",
+          "label": "Grouped, 32 keys",
+          "parameters": {
+            "key_count": 32,
+            "groups": [
+              [
+                1,
+                8
+              ],
+              [
+                2,
+                12
+              ],
+              [
+                5,
+                12
+              ]
+            ],
+            "selected": [
+              0,
+              3,
+              8,
+              11,
+              17,
+              20,
+              23,
+              26,
+              29
+            ],
+            "threshold": 28,
+            "data_items": 32,
+            "nonempty_signatures": 9,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 34,
+            "complete_witness_bytes": 1758,
+            "initial_validation_weight": 1808,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 1112,
+          "witness_bytes": 609,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 49,
+          "validation_weight": 450,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_32_grouped_script",
+            "weighted_quorum_32_grouped_data",
+            "weighted_quorum_32_grouped_stack",
+            "weighted_quorum_32_grouped_executed",
+            "weighted_quorum_32_grouped_charge"
+          ]
+        },
+        {
+          "id": "direct-32",
+          "label": "Per-key, 32 keys",
+          "parameters": {
+            "key_count": 32,
+            "groups": [
+              [
+                1,
+                8
+              ],
+              [
+                2,
+                12
+              ],
+              [
+                5,
+                12
+              ]
+            ],
+            "selected": [
+              0,
+              3,
+              8,
+              11,
+              17,
+              20,
+              23,
+              26,
+              29
+            ],
+            "threshold": 28,
+            "data_items": 32,
+            "nonempty_signatures": 9,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 34,
+            "complete_witness_bytes": 1900,
+            "initial_validation_weight": 1950,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 1254,
+          "witness_bytes": 609,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 194,
+          "validation_weight": 450,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_32_direct_script",
+            "weighted_quorum_32_direct_data",
+            "weighted_quorum_32_direct_stack",
+            "weighted_quorum_32_direct_executed",
+            "weighted_quorum_32_direct_charge"
+          ]
+        },
+        {
+          "id": "grouped-64",
+          "label": "Grouped, 64 keys",
+          "parameters": {
+            "key_count": 64,
+            "groups": [
+              [
+                1,
+                16
+              ],
+              [
+                2,
+                24
+              ],
+              [
+                5,
+                24
+              ]
+            ],
+            "selected": [
+              0,
+              7,
+              16,
+              21,
+              27,
+              32,
+              40,
+              45,
+              50,
+              55,
+              60,
+              63
+            ],
+            "threshold": 40,
+            "data_items": 64,
+            "nonempty_signatures": 12,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 66,
+            "complete_witness_bytes": 3070,
+            "initial_validation_weight": 3120,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 2200,
+          "witness_bytes": 833,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 81,
+          "validation_weight": 600,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_64_grouped_script",
+            "weighted_quorum_64_grouped_data",
+            "weighted_quorum_64_grouped_stack",
+            "weighted_quorum_64_grouped_executed",
+            "weighted_quorum_64_grouped_charge"
+          ]
+        },
+        {
+          "id": "direct-64",
+          "label": "Per-key, 64 keys",
+          "parameters": {
+            "key_count": 64,
+            "groups": [
+              [
+                1,
+                16
+              ],
+              [
+                2,
+                24
+              ],
+              [
+                5,
+                24
+              ]
+            ],
+            "selected": [
+              0,
+              7,
+              16,
+              21,
+              27,
+              32,
+              40,
+              45,
+              50,
+              55,
+              60,
+              63
+            ],
+            "threshold": 40,
+            "data_items": 64,
+            "nonempty_signatures": 12,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 66,
+            "complete_witness_bytes": 3372,
+            "initial_validation_weight": 3422,
+            "compile_options": "ALL",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 2502,
+          "witness_bytes": 833,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 386,
+          "validation_weight": 600,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_64_direct_script",
+            "weighted_quorum_64_direct_data",
+            "weighted_quorum_64_direct_stack",
+            "weighted_quorum_64_direct_executed",
+            "weighted_quorum_64_direct_charge"
+          ]
+        },
+        {
+          "id": "grouped-995",
+          "label": "Grouped, 995 keys",
+          "parameters": {
+            "key_count": 995,
+            "groups": [
+              [
+                15,
+                1
+              ],
+              [
+                1,
+                994
+              ]
+            ],
+            "selected": [
+              0
+            ],
+            "threshold": 15,
+            "data_items": 995,
+            "nonempty_signatures": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 997,
+            "complete_witness_bytes": 34956,
+            "initial_validation_weight": 35006,
+            "compile_options": "NONE",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 33857,
+          "witness_bytes": 1062,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 1017,
+          "validation_weight": 50,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_995_grouped_script",
+            "weighted_quorum_995_grouped_data",
+            "weighted_quorum_995_grouped_stack",
+            "weighted_quorum_995_grouped_executed",
+            "weighted_quorum_995_grouped_charge"
+          ]
+        },
+        {
+          "id": "direct-995",
+          "label": "Per-key, 995 keys",
+          "parameters": {
+            "key_count": 995,
+            "groups": [
+              [
+                15,
+                1
+              ],
+              [
+                1,
+                994
+              ]
+            ],
+            "selected": [
+              0
+            ],
+            "threshold": 15,
+            "data_items": 995,
+            "nonempty_signatures": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "complete_witness_items": 997,
+            "complete_witness_bytes": 36936,
+            "initial_validation_weight": 36986,
+            "compile_options": "NONE",
+            "profile": "transaction-aware local tapscript, synthetic outpoint, default sighash, no annex, stack limit on, OP_CAT and numeric minimality off"
+          },
+          "includes": "complete-leaf: native signature checks, weighting, threshold and terminal true. The primary witness column is data-only. Complete witness includes the leaf and a 33-byte control block; transaction body is excluded.",
+          "script_bytes": 35837,
+          "witness_bytes": 1062,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 2999,
+          "validation_weight": 50,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "weighted_quorum_995_direct_script",
+            "weighted_quorum_995_direct_data",
+            "weighted_quorum_995_direct_stack",
+            "weighted_quorum_995_direct_executed",
+            "weighted_quorum_995_direct_charge"
+          ]
+        }
+      ],
+      "limitations": [
+        "Grouping singleton key weights can increase cost.",
+        "Grouping preserves the dense witness count and does not reduce native signature validation charge.",
+        "The 995-key leaves are unoptimized and have no spare stack items.",
+        "Synthetic transaction-aware evidence only; no funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "signature/secp256k1-schnorr-csfs",
       "name": "Explicit witness-driven secp256k1 Schnorr verification",
       "class": "signature/schnorr",
