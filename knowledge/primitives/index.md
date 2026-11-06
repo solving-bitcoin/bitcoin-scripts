@@ -57,6 +57,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 vector interleave](u4-interleave.md)
 - [Checked u4 reflected Gray-code projection](u4-gray.md)
 - [Checked u4 one-hot mask projection](u4-one-hot.md)
+- [Carry-checked distinct nibble set mask](u4-distinct-mask.md)
 - [Checked u4 centered-signed projection](u4-centered.md)
 - [Checked u4 complement-reflection projection](u4-mirror.md)
 - [Checked u4 embedded-threshold trichotomy](u4-trichotomy.md)

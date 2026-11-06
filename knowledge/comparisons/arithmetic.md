@@ -478,6 +478,17 @@ independent repeated messages have separate measured artifacts. These are
 locally-reproduced/unclassified outcomes, not cryptographic or deployment
 claims; see [NR-081](../negative-results/crc8-nibble-feedback.md).
 
+## Compact distinct-nibble sets
+
+The [carry-checked set mask](../primitives/u4-distinct-mask.md) returns one
+canonical ScriptNum and rejects repeated values. At width 16 it costs 316
+leaf bytes and 189 executed non-push operations versus 1,121 and 787 for
+pairwise checks followed by the same encoder. Both leaves consume the
+same 32-byte data witness with 16 ordinary items, zero hints, and a
+36-item combined peak. The two schedules reverse order on both byte and
+operation cost at width four. [The negative result](../negative-results/u4-distinct-mask.md)
+records why the sum requires a weight check and why the mask cannot bind order.
+
 ## Small permutation witnesses
 
 The [factoradic decoder](../primitives/factoradic-permutation.md) compares equal

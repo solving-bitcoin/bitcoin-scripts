@@ -55,6 +55,12 @@ lookup on both counts. Its two-nibble-group variant keeps the 34-item peak at
 This is scoped to `n=32`. Evidence is `locally-reproduced` for the retained
 and lookup rows; deployment is `unclassified`.
 
+## Carry checks for compact nibble sets
+
+The [distinct-mask comparison](u4-distinct-mask.md) records the fixed
+threshold cost at small widths and a duplicate carry that passes a
+sum-only wrapper. Valid set masks preserve membership but discard order.
+
 ## NR-049: Signature opcodes still diverge after resource repairs
 
 The [funded signature experiment](../tapscript-signature-validation.md) records

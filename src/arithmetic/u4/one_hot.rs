@@ -3,23 +3,14 @@
 use super::stack::u4_drop;
 use crate::support::script::*;
 
+pub(super) mod table;
+use table::push_one_hot_table;
+
 /// Persistent items used by the nibble one-hot lookup table.
 pub const U4_ONE_HOT_TABLE_ITEMS: u32 = 16;
 
 /// Largest batch that fits the 1,000-item stack limit without unrelated state.
 pub const U4_ONE_HOT_MAX_BATCH: u32 = 1_000 - U4_ONE_HOT_TABLE_ITEMS - 2;
-
-fn one_hot(value: u32) -> u32 {
-    1 << value
-}
-
-fn push_one_hot_table() -> Script {
-    script! {
-        for value in (0..U4_ONE_HOT_TABLE_ITEMS).rev() {
-            { one_hot(value) }
-        }
-    }
-}
 
 /// Consume canonical nibbles and replace each with its one-hot 16-bit mask.
 ///
@@ -61,7 +52,7 @@ mod tests {
             { u4_hex_to_nibbles("0123456789abcdef") }
             { u4_nibbles_to_one_hot(16) }
             for nibble in (0..16u32).rev() {
-                { one_hot(nibble) } OP_EQUALVERIFY
+                { 1u32 << nibble } OP_EQUALVERIFY
             }
             OP_TRUE
         });
