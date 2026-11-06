@@ -375,6 +375,23 @@ scheduler and [OP-031](../open-problems.md#op-031--positional-nibble-checksum-co
 for the complete-leaf validation criterion. All new configurations remain
 `locally-reproduced` / `unclassified`; dynamic opcodes are unavailable.
 
+## Checked nibble XOR reduction
+
+The [signed packed lanes](../primitives/u4-xor-lanes.md) derive one
+canonical XOR nibble with no hints. At width 16, packed, triangular,
+and full-table leaves use 534, 622, and 775 bytes and peak at 36, 170,
+and 273 combined items. At width 254 they use 4,536, 7,058, and 7,086
+bytes, execute 2,958, 4,895, and 5,453 non-push operations, and peak
+at 274, 408, and 511. The width-254 rows all use 490 witness bytes,
+254 ordinary items and zero hints. All leaves include canonical checks,
+table setup and cleanup, and byte equality against the expected output.
+
+[PR #285](https://github.com/solving-bitcoin/bitcoin-scripts/pull/285)
+reports a 367-byte width-16 parity certificate with five mandatory hint
+items at its own fragment boundary. Its packed counts are closely
+related, and its reported bytes do not share the zero-hint complete-leaf
+boundary. See [exact-count and collision limits](../negative-results/u4-xor-lanes.md).
+
 ## U32 word to modulo-65,537 residue
 
 For the same four canonical byte inputs and one canonical numeric residue,

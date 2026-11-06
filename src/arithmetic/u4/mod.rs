@@ -52,6 +52,7 @@ pub mod transition_count;
 pub mod trichotomy;
 pub mod unpack;
 pub mod vector_rotate;
+pub mod xor_lanes;
 pub mod xor_reduce;
 pub mod zero;
 pub mod zero_bitmask;

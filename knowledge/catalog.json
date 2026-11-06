@@ -1306,6 +1306,418 @@
       ]
     },
     {
+      "id": "arithmetic/u4-xor-packed-lanes",
+      "name": "Checked XOR reduction with signed packed lanes",
+      "class": "arithmetic/word",
+      "summary": "Derive the XOR of a canonical nibble sequence by decoding four carry-separated bit-count lanes, using signed top-lane centering above 127 inputs.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-xor-lanes.md",
+      "implementation": "src/arithmetic/u4/xor_lanes/mod.rs",
+      "documentation": "src/arithmetic/u4/xor_lanes/README.md",
+      "tests": [
+        "src/arithmetic/u4/xor_lanes/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "fips-197",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Every input is a byte-canonical nibble. The signed count representation stays within the four-byte arithmetic range and the decoder determines the XOR with no hints. XOR has deliberate collisions and does not bind order or authenticate inputs.",
+      "stack_contract": "Consumes n canonical nibble items and returns a single canonical XOR nibble. Both caller stacks are preserved for the exact suffix. No hints.",
+      "configurations": [
+        {
+          "id": "packed-2",
+          "label": "Packed lanes, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 145,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 22,
+          "executed_opcodes": 71,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_2_packed_script",
+            "xor_lanes_2_packed_witness",
+            "xor_lanes_2_packed_stack",
+            "xor_lanes_2_packed_executed"
+          ]
+        },
+        {
+          "id": "triangular-2",
+          "label": "Triangular table, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 152,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 287,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 156,
+          "executed_opcodes": 107,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_2_triangular_script",
+            "xor_lanes_2_triangular_witness",
+            "xor_lanes_2_triangular_stack",
+            "xor_lanes_2_triangular_executed"
+          ]
+        },
+        {
+          "id": "full-2",
+          "label": "Full table, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 256,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 426,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 161,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_2_full_script",
+            "xor_lanes_2_full_witness",
+            "xor_lanes_2_full_stack",
+            "xor_lanes_2_full_executed"
+          ]
+        },
+        {
+          "id": "packed-16",
+          "label": "Packed lanes, 16 nibbles",
+          "parameters": {
+            "nibble_count": 16,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 534,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 273,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_16_packed_script",
+            "xor_lanes_16_packed_witness",
+            "xor_lanes_16_packed_stack",
+            "xor_lanes_16_packed_executed"
+          ]
+        },
+        {
+          "id": "triangular-16",
+          "label": "Triangular table, 16 nibbles",
+          "parameters": {
+            "nibble_count": 16,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 152,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 622,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 170,
+          "executed_opcodes": 373,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_16_triangular_script",
+            "xor_lanes_16_triangular_witness",
+            "xor_lanes_16_triangular_stack",
+            "xor_lanes_16_triangular_executed"
+          ]
+        },
+        {
+          "id": "full-16",
+          "label": "Full table, 16 nibbles",
+          "parameters": {
+            "nibble_count": 16,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 256,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 775,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 273,
+          "executed_opcodes": 455,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_16_full_script",
+            "xor_lanes_16_full_witness",
+            "xor_lanes_16_full_stack",
+            "xor_lanes_16_full_executed"
+          ]
+        },
+        {
+          "id": "packed-128",
+          "label": "Packed lanes, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16, clear the high bit of item 2"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 2520,
+          "witness_bytes": 246,
+          "witness_bytes_max": null,
+          "max_stack_items": 148,
+          "executed_opcodes": 1570,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_128_packed_script",
+            "xor_lanes_128_packed_witness",
+            "xor_lanes_128_packed_stack",
+            "xor_lanes_128_packed_executed"
+          ]
+        },
+        {
+          "id": "triangular-128",
+          "label": "Triangular table, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 152,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16, clear the high bit of item 2"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 3531,
+          "witness_bytes": 246,
+          "witness_bytes_max": null,
+          "max_stack_items": 282,
+          "executed_opcodes": 2501,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_128_triangular_script",
+            "xor_lanes_128_triangular_witness",
+            "xor_lanes_128_triangular_stack",
+            "xor_lanes_128_triangular_executed"
+          ]
+        },
+        {
+          "id": "full-128",
+          "label": "Full table, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 256,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16, clear the high bit of item 2"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 3685,
+          "witness_bytes": 246,
+          "witness_bytes_max": null,
+          "max_stack_items": 385,
+          "executed_opcodes": 2807,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_128_full_script",
+            "xor_lanes_128_full_witness",
+            "xor_lanes_128_full_stack",
+            "xor_lanes_128_full_executed"
+          ]
+        },
+        {
+          "id": "packed-254",
+          "label": "Packed lanes, 254 nibbles",
+          "parameters": {
+            "nibble_count": 254,
+            "data_items": 254,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 4536,
+          "witness_bytes": 490,
+          "witness_bytes_max": null,
+          "max_stack_items": 274,
+          "executed_opcodes": 2958,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_254_packed_script",
+            "xor_lanes_254_packed_witness",
+            "xor_lanes_254_packed_stack",
+            "xor_lanes_254_packed_executed"
+          ]
+        },
+        {
+          "id": "triangular-254",
+          "label": "Triangular table, 254 nibbles",
+          "parameters": {
+            "nibble_count": 254,
+            "data_items": 254,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 152,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 7058,
+          "witness_bytes": 490,
+          "witness_bytes_max": null,
+          "max_stack_items": 408,
+          "executed_opcodes": 4895,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_254_triangular_script",
+            "xor_lanes_254_triangular_witness",
+            "xor_lanes_254_triangular_stack",
+            "xor_lanes_254_triangular_executed"
+          ]
+        },
+        {
+          "id": "full-254",
+          "label": "Full table, 254 nibbles",
+          "parameters": {
+            "nibble_count": 254,
+            "data_items": 254,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 256,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+5*floor(i/3)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input checks, reduction, setup and cleanup, identical output equality, and terminal true. Data witness excludes leaf, control block, annex and transaction. The executed trace counts visited branch delimiters.",
+          "script_bytes": 7086,
+          "witness_bytes": 490,
+          "witness_bytes_max": null,
+          "max_stack_items": 511,
+          "executed_opcodes": 5453,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "xor_lanes_254_full_script",
+            "xor_lanes_254_full_witness",
+            "xor_lanes_254_full_stack",
+            "xor_lanes_254_full_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Unsigned base-256 packing can overflow at width 128, and a single four-byte ScriptNum cannot encode all exact bit-count tuples at width 255.",
+        "XOR does not bind the witness vector or its order.",
+        "Opcode counts use the fixed witness and are not timing.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-xor-reduction",
       "name": "Checked u4 XOR reduction",
       "class": "arithmetic/word",
