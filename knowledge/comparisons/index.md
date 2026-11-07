@@ -6,6 +6,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Arithmetic representations](arithmetic.md)
 - [Arithmetic checksums](checksums.md)
 - [Stable stack selection schedules](stack-selection.md)
+- [Unique opaque pair orientation schedules](opaque-pair-orientation.md)
 - [Lookup strategies](lookup-strategies.md)
 - [Hash constructions](hashes.md)
 - [Integer commitments](commitments.md)

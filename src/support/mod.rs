@@ -9,3 +9,4 @@ pub mod script_ops;
 pub mod selection;
 pub mod taproot;
 pub mod tapscript;
+pub mod unique_pair_orientation;

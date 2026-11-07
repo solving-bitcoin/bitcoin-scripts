@@ -453,6 +453,14 @@ SHA-256/RIPEMD-160 schedules unless an underlying or cross-function collision
 is found. This removes the exact alias but does not turn the non-standard
 mixed-hash construction into a cryptographically reviewed scheme.
 
+## An opaque unordered match can admit both orientations
+
+[Selecting the first matching orientation](opaque-pair-orientation.md)
+accepts an all-equal quartet and produces a deterministic bit without
+certifying uniqueness. The matched branch checks distinctness explicitly
+on the straight path and implies it from the reversed path. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
 ## NR-013: The published combined nibble table is misaligned
 
 The combined table in `split-into-bits.md` creates four equal indices and then

@@ -124,6 +124,10 @@ the source. Read a page together with its comparison page and evidence record.
 - [Binohash transaction digest](binohash.md)
 - [Binohash legacy core](binohash-legacy-core.md)
 
+## Opaque pair relations
+
+- [Unique opaque pair orientation](opaque-pair-orientation.md)
+
 ## Hashes and ciphers
 
 - [SHA-1 over u32 bytes](sha1-u32.md)
