@@ -17,6 +17,9 @@ transaction-dependent digest that Bitcoin Script can extract and authenticate.
   values pass default relay policy.
   A [CODESEPARATOR fixture](binohash-codesep-core.md) differentially validates
   selected signature pushes on both sides of the operative legacy boundary.
+  A [fixed-digest nonce-size probe](binohash-der-size-grind.md) validates a
+  70-byte ECDSA signature and two controls in a funded, default-policy-accepted
+  P2SH spend.
 - **Reported profile:** the paper proposes a two-round nonce extraction design
   with tunable work/collision parameters and a Lamport-signable output.
 - **Execution context:** relies on legacy signature semantics, not the local

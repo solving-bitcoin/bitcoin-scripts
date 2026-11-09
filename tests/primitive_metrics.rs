@@ -60,6 +60,38 @@ use num_traits::One;
 // FullWidth comparison rows remain stable when the public default changes.
 type FullWidthWots32 = FastWinternitz<32, Hash160, FullWidth>;
 
+#[test]
+fn binohash_der_size_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-der-size-grind-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let valid = &fixture["transactions"]["valid"];
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_der_lock",
+            value: fixture["locking_script_bytes"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_der_redeem",
+            value: fixture["redeem_script_bytes"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_der_weight",
+            value: valid["weight"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_der_scriptsig",
+            value: valid["script_sig_bytes"].as_u64().unwrap() as usize,
+        },
+    ]);
+}
+
 fn ripemd160_midstate_42x64() -> [u32; 5] {
     let mut engine = bitcoin_ripemd160::HashEngine::default();
     engine.input(&[0x42; 64]);

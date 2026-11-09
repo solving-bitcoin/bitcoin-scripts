@@ -1,0 +1,168 @@
+{
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "controls": {
+    "invalid_ecdsa": {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 0 of 627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e (wtxid 627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e), spending c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57:0",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 205,
+        "txid": "627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e",
+        "vsize": 205,
+        "weight": 820
+      },
+      "policy": {
+        "allowed": false,
+        "reject-details": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation), input 0 of 627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e (wtxid 627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e), spending c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57:0",
+        "reject-reason": "mempool-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)",
+        "txid": "627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e",
+        "wtxid": "627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e"
+      }
+    },
+    "invalid_size": {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81 (wtxid c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81), spending c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57:0",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 207,
+        "txid": "c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81",
+        "vsize": 207,
+        "weight": 828
+      },
+      "policy": {
+        "allowed": false,
+        "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81 (wtxid c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81), spending c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57:0",
+        "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+        "txid": "c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81",
+        "wtxid": "c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81"
+      }
+    }
+  },
+  "destination_script_pubkey_hex": "00204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+  "experiment": "funded-binohash-der-size-grind",
+  "fixture": {
+    "attempts": 188,
+    "digest_hex": "380ce2d8ddcdc5f8ad06888fe68fff5a3917d3ca78d50deafd5e9970eb652c55",
+    "experiment": "binohash-der-size-grind",
+    "fee_sat": 10000,
+    "funding_txid": "c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57",
+    "good_signature_hex": "304302207858ee4c4f02e1d894a49de6fd54cc622d45ea1377e57f24f917a87c491d39ca021f0342cab294adb7ad6da7a2c79416371fe9155e47a75142a93681a223e6385c01",
+    "hint_items": 0,
+    "input_value_sat": 1000000,
+    "locking_script_bytes": 23,
+    "locking_script_hex": "a914d370f2ee82b36dd73e3563e9e21abbca085221d687",
+    "max_attempts": 10000,
+    "nonce_derivation": "SHA256(seed || counter_le32), supplied to secp256k1 RFC6979 noncedata",
+    "other_counter": 0,
+    "other_signature_bytes": 72,
+    "public_key_hex": "035be5e9478209674a96e60f1f037f6176540fd001fa1d64694770c56a7709c42c",
+    "redeem_script_bytes": 39,
+    "redeem_script_hex": "8201468821035be5e9478209674a96e60f1f037f6176540fd001fa1d64694770c56a7709c42cac",
+    "redeem_static_non_push_opcodes": 3,
+    "seed_hex": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+    "selected_counter": 187,
+    "sighash_flag_hex": "01",
+    "target_signature_bytes": 70,
+    "transactions": {
+      "invalid_ecdsa": {
+        "base_bytes": 205,
+        "hex": "0200000001578f10910ba375172f63437097efef9b8bd62e05fa93a6c85862c87a4cdda0c8000000006f46304302207858ee4c4f02e1d894a49de6fd54cc622d45ea1377e57f24f917a87c491d39ca021f0342cab294adb7ad6da7a2c79416371fe9155e47a75142a93681a223e6385d01278201468821035be5e9478209674a96e60f1f037f6176540fd001fa1d64694770c56a7709c42cacffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "script_sig_bytes": 111,
+        "total_bytes": 205,
+        "txid": "627be54ca96ad63c875c2585afccb08b37351673cba45e51797cd5c32f23908e",
+        "vsize": 205,
+        "weight": 820
+      },
+      "invalid_size": {
+        "base_bytes": 207,
+        "hex": "0200000001578f10910ba375172f63437097efef9b8bd62e05fa93a6c85862c87a4cdda0c80000000071483045022100d1ed8e562add688587b28e17b4dfc025ca2e466cf5a3819e03fb9f249b6ecf2d02203c5c5bf7acc84435099e0602455fba3a51ddd3d90e76ef0184877e826af49ab401278201468821035be5e9478209674a96e60f1f037f6176540fd001fa1d64694770c56a7709c42cacffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "script_sig_bytes": 113,
+        "total_bytes": 207,
+        "txid": "c601a49def4f8686f40248833f95eab70488dc3f8286e6a144666d761eba4f81",
+        "vsize": 207,
+        "weight": 828
+      },
+      "valid": {
+        "base_bytes": 205,
+        "hex": "0200000001578f10910ba375172f63437097efef9b8bd62e05fa93a6c85862c87a4cdda0c8000000006f46304302207858ee4c4f02e1d894a49de6fd54cc622d45ea1377e57f24f917a87c491d39ca021f0342cab294adb7ad6da7a2c79416371fe9155e47a75142a93681a223e6385c01278201468821035be5e9478209674a96e60f1f037f6176540fd001fa1d64694770c56a7709c42cacffffffff01301b0f00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "script_sig_bytes": 111,
+        "total_bytes": 205,
+        "txid": "0318295f0fbe47139c5ee2e72ec366f432a9ca00accf3c895723f8b0af81ec13",
+        "vsize": 205,
+        "weight": 820
+      }
+    },
+    "witness_items": 0,
+    "wrong_ecdsa_signature_hex": "304302207858ee4c4f02e1d894a49de6fd54cc622d45ea1377e57f24f917a87c491d39ca021f0342cab294adb7ad6da7a2c79416371fe9155e47a75142a93681a223e6385d01",
+    "wrong_size_signature_hex": "3045022100d1ed8e562add688587b28e17b4dfc025ca2e466cf5a3819e03fb9f249b6ecf2d02203c5c5bf7acc84435099e0602455fba3a51ddd3d90e76ef0184877e826af49ab401"
+  },
+  "funding_block_hash": "5bb54f445e1ccd096f01092061712b297995cfa28c609f86ea3d693dc7aa9e17",
+  "funding_transaction": {
+    "base_bytes": 126,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0240420f000000000017a914d370f2ee82b36dd73e3563e9e21abbca085221d687b088f629010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "total_bytes": 131,
+    "txid": "c8a0dd4c7ac86258c8a693fa052ed68b9befef977043632f1775a30b91108f57",
+    "vsize": 128,
+    "weight": 509,
+    "witness_bytes": 3,
+    "wtxid": "daa4185cbe9b593a4b22dbfbe8291c1d4bb5f9a52ed36ed03e544531b97be78b"
+  },
+  "initial_mocktime": 1800000000,
+  "mining_address": "bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85",
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "run_passed": true,
+  "schema_version": 1,
+  "scope": "One fixed-digest legacy P2SH ECDSA nonce search for a 70-byte signature, with non-target-size and same-size-invalid-ECDSA controls; no full Binohash work or security claim.",
+  "valid_consensus": {
+    "accepted": true,
+    "block_hash": "7d0bce6083204477ca0256a7b17bfd2cf38d52445ff608ff282b57a2561eeb3f",
+    "block_height": 103
+  },
+  "valid_decoded": {
+    "size": 205,
+    "txid": "0318295f0fbe47139c5ee2e72ec366f432a9ca00accf3c895723f8b0af81ec13",
+    "vsize": 205,
+    "weight": 820
+  },
+  "valid_policy": {
+    "allowed": true,
+    "fees": {
+      "base": 0.0001,
+      "effective-feerate": 0.0004878,
+      "effective-includes": [
+        "0318295f0fbe47139c5ee2e72ec366f432a9ca00accf3c895723f8b0af81ec13"
+      ]
+    },
+    "txid": "0318295f0fbe47139c5ee2e72ec366f432a9ca00accf3c895723f8b0af81ec13",
+    "vsize": 205,
+    "wtxid": "0318295f0fbe47139c5ee2e72ec366f432a9ca00accf3c895723f8b0af81ec13"
+  }
+}

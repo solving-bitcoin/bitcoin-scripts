@@ -41,6 +41,16 @@ checks which transaction-field changes affect the selected digest in a fixed
 host-side template. It also isolates the non-committing out-of-range
 `SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.
 
+The [exact DER-size nonce probe](../../research/binohash-der-size-grind/README.md)
+keeps one legacy digest fixed while varying deterministic ECDSA nonce data.
+Its first 70-byte signature appears after 188 trials. A funded P2SH spend
+passes pinned Core consensus and default policy; valid but wrong-size and
+same-size invalid-ECDSA controls fail.
+
+| P2SH scriptPubKey | RedeemScript | Complete spend | scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_der_lock -->23<!-- /metric:binohash_der_lock --> bytes | <!-- metric:binohash_der_redeem -->39<!-- /metric:binohash_der_redeem --> bytes | <!-- metric:binohash_der_weight -->820<!-- /metric:binohash_der_weight --> WU | <!-- metric:binohash_der_scriptsig -->111<!-- /metric:binohash_der_scriptsig --> bytes | 0 | 0 |
+
 The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
 independently signs all 256 flag values in P2SH spends. Its canonical `01`
 sample has this complete-transaction boundary:

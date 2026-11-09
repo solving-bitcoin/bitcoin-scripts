@@ -33,6 +33,12 @@ its upper-clamped openings do not bind the raw index sequence; see
 [NR-110](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices).
 See `introspection/binohash` and `OP-011`.
 
+The [exact DER-size nonce probe](../primitives/binohash-der-size-grind.md)
+isolates the paper's signature-length mechanism with one fixed legacy digest.
+It records 188 deterministic attempts for a 70-byte signature and validates
+the resulting P2SH spend under Core consensus and default policy. The probe
+does not include subset selection, multiple pinning checks, or a second round.
+
 A separate [2-of-3 toy subset](../primitives/binohash-subset-toy.md) now
 exercises the paper's dynamic `OP_ROLL` selection, a small signature-size
 condition, and a downstream Script predicate selected by the surviving
