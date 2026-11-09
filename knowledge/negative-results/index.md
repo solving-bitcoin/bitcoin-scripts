@@ -188,6 +188,13 @@ Historical metric and Core reports retain their original `ba96bc2` provenance;
 adoption alone does not relabel their evidence or execution classes. Current
 Core revalidation is recorded separately in the [differential experiment](../core-validation.md).
 
+## Exact-count boundaries for packed XOR
+
+The [packed XOR lane experiment](u4-xor-lanes.md) reproduces unsigned
+overflow at width 128. Signed centering covers width 254, but a single
+canonical four-byte ScriptNum has too few states to encode all exact
+count tuples at width 255. Equal XOR values do not bind distinct inputs.
+
 ## NR-047: Constant cleanup erases the stack peak under test
 
 The former BLAKE3 maximum-altstack test computed a known digest, dropped it
