@@ -156,6 +156,10 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Pinned-start checkpoint chains](pinned-hash-path-chain.md)
 
+## Opaque vector relations
+
+- [Unique mismatch index of opaque item vectors](opaque-unique-mismatch.md)
+
 ## Introspection
 
 - [Binohash transaction digest](binohash.md)

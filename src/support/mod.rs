@@ -7,6 +7,7 @@ pub mod common_prefix;
 pub mod compact_size;
 pub mod execution;
 pub mod indexed_selection;
+pub mod mismatch;
 pub mod provenance;
 pub mod raw_multiset;
 pub mod rotation;

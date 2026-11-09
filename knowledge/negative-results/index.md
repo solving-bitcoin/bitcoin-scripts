@@ -30,6 +30,14 @@ whether repeated or reordered indices are legal before claiming subset
 authentication. See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
 and [OP-011](../open-problems.md#op-011--reproduce-binohash).
 
+## Eager mismatch state exceeds the 500-pair frontier
+
+The [unique-mismatch boundary](opaque-unique-mismatch.md) shows that
+allocating a state item before consuming any pair fails at width 500.
+The fused scan consumes the first pair before allocating state and
+reaches exactly 1,000 combined items. Evidence is `locally-reproduced`;
+execution is `unclassified`.
+
 ## NR-087: Hinted u4 sorting loses at small widths
 
 The [exact sorter](../primitives/u4-sort.md) replaces repeated min/max scans

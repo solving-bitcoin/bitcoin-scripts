@@ -22,6 +22,13 @@ cases after the shared helper repair documented in
 The helper's explicit stack-limit flag is local execution evidence, not a
 complete consensus-validation result.
 
+The [unique mismatch scan](../primitives/opaque-unique-mismatch.md) begins
+with a byte comparison that reduces depth before allocating private state.
+This permits 500 interleaved pairs at the exact 1,000-item frontier. The
+eager-state variant fails on that same witness. Preserved state and
+preloaded future data still count at entry, and neither schedule needs
+hints.
+
 Budget repeated signature checks against the serialized complete witness,
 including the leaf, control path, annex and CompactSize prefixes. Data-only
 fragment accounting can falsely reject a valid complete spend; byte boundaries
