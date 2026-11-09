@@ -11,6 +11,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Script caps on serialized witness data](witness-data-size.md)
 - [Lookup strategies](lookup-strategies.md)
 - [CompactSize byte representations](compactsize-encoding.md)
+- [Opaque lag-match count schedules](opaque-lag-count.md)
 - [Hash constructions](hashes.md)
 - [Commitments and opening relations](commitments.md)
 - [Signed arithmetic progression schedules](signed-progression.md)

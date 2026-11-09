@@ -44,6 +44,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)
+- [Opaque lag-match count](opaque-lag-count.md)
 - [Checked u4 embedded-equality mask](u4-equality.md)
 - [Checked u4 leading-zero projection](u4-leading-zeros.md)
 - [Checked u4 intra-nibble bit-transition projection](u4-bit-transitions.md)

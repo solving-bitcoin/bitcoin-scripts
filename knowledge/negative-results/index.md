@@ -377,6 +377,13 @@ grouping singleton keys increases cost and leaves the signature charge
 unchanged. It also checks that malformed nonempty signatures still
 reject after enough valid weight is present.
 
+## Eager lag counting loses its final input slot
+
+The [lag-count frontier](opaque-lag-count.md) shows that pushing an
+initial count causes a stack-limit failure at width 999. Deferring
+initialization to the first comparison reaches 1,000 exactly.
+Evidence is `locally-reproduced`; execution is `unclassified`.
+
 ## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
 
 **Status (2026-10-11): reasoning retracted; derive-key is implemented.** The

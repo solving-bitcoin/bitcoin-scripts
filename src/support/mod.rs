@@ -8,6 +8,7 @@ pub mod compact_size;
 pub mod execution;
 pub mod indexed_selection;
 pub mod mismatch;
+pub mod lag_count;
 pub mod provenance;
 pub mod raw_multiset;
 pub mod rotation;
