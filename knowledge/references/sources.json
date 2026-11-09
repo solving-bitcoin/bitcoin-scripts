@@ -484,6 +484,13 @@
       "kind": "reference-implementation",
       "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/f6624f6edcf52257811eec1fd3e1d05967385fca/src/arithmetic/permutation/mod.rs",
       "revision": "f6624f6edcf52257811eec1fd3e1d05967385fca; inline bounded quotient core inspected and extracted into a checked public API on 2026-10-27; not a new division algorithm"
+    },
+    {
+      "id": "bitcoin-core-compactsize-v30.3",
+      "title": "Bitcoin Core v30.3 CompactSize serialization",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/serialize.h",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227; GetSizeOfCompactSize and ReadCompactSize"
     }
   ]
 }

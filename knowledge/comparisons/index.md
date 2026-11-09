@@ -8,6 +8,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Stable stack selection schedules](stack-selection.md)
 - [Script caps on serialized witness data](witness-data-size.md)
 - [Lookup strategies](lookup-strategies.md)
+- [CompactSize byte representations](compactsize-encoding.md)
 - [Hash constructions](hashes.md)
 - [Commitments and opening relations](commitments.md)
 - [Transaction introspection](introspection.md)

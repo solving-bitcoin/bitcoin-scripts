@@ -3,6 +3,7 @@
 pub mod absolute_finality;
 pub mod bip68;
 pub mod common_prefix;
+pub mod compact_size;
 pub mod execution;
 pub mod indexed_selection;
 pub mod provenance;

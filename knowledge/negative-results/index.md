@@ -387,6 +387,12 @@ implementation must match official context/material vectors, report both
 compression phases and their mode flags, and measure the derived-key boundary
 under the combined 1,000-item stack limit.
 
+## CompactSize item decoding limits
+
+The [decoder comparison](compactsize-u16-items.md) reproduces raw
+negative zero being interpreted as numeric zero and prices the
+additional script needed to keep exact byte semantics.
+
 ## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
 
 The [PRINCEv2 layout search](princev2-layout.md) records the discarded shared

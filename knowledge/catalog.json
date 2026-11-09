@@ -22282,6 +22282,384 @@
       ]
     },
     {
+      "id": "support/compactsize-u16-items",
+      "name": "CompactSize through 65,535 from separate raw byte items",
+      "class": "support/stack",
+      "summary": "Decodes the canonical one-byte or fd-prefixed three-byte CompactSize token from raw stack items to an unsigned canonical ScriptNum.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/compactsize-u16-items.md",
+      "implementation": "src/support/compact_size/mod.rs",
+      "documentation": "src/support/compact_size/README.md",
+      "tests": [
+        "src/support/compact_size/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-core-compactsize-v30.3",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic"
+      ],
+      "security": "All token items are hostile. Exact one-byte item guards, canonical prefix dispatch, and a minimum decoded value of 253 in the long form are checked. Item boundaries and any caller prefix are supplied by the stack contract.",
+      "stack_contract": "Consumes caller | prefix or caller | high low fd, with the prefix on top, and returns caller | canonical value. Preserves caller altstack. Zero hints. Complete callers bind the result and enforce the expected surrounding stack shape.",
+      "configurations": [
+        {
+          "id": "0-raw",
+          "label": "0, raw byte items",
+          "parameters": {
+            "value": 0,
+            "wire_bytes": 1,
+            "encoding": "raw",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 139,
+          "witness_bytes": 3,
+          "witness_bytes_max": null,
+          "max_stack_items": 3,
+          "executed_opcodes": 38,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_0_raw_script",
+            "compactsize_0_raw_witness",
+            "compactsize_0_raw_stack",
+            "compactsize_0_raw_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "0-numeric",
+          "label": "0, numeric byte items",
+          "parameters": {
+            "value": 0,
+            "wire_bytes": 1,
+            "encoding": "numeric",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 77,
+          "witness_bytes": 2,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 16,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_0_numeric_script",
+            "compactsize_0_numeric_witness",
+            "compactsize_0_numeric_stack",
+            "compactsize_0_numeric_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-raw",
+          "label": "128, raw byte items",
+          "parameters": {
+            "value": 128,
+            "wire_bytes": 1,
+            "encoding": "raw",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 141,
+          "witness_bytes": 3,
+          "witness_bytes_max": null,
+          "max_stack_items": 3,
+          "executed_opcodes": 40,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_128_raw_script",
+            "compactsize_128_raw_witness",
+            "compactsize_128_raw_stack",
+            "compactsize_128_raw_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-numeric",
+          "label": "128, numeric byte items",
+          "parameters": {
+            "value": 128,
+            "wire_bytes": 1,
+            "encoding": "numeric",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 79,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 16,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_128_numeric_script",
+            "compactsize_128_numeric_witness",
+            "compactsize_128_numeric_stack",
+            "compactsize_128_numeric_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "253-raw",
+          "label": "253, raw byte items",
+          "parameters": {
+            "value": 253,
+            "wire_bytes": 3,
+            "encoding": "raw",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 141,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 67,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_253_raw_script",
+            "compactsize_253_raw_witness",
+            "compactsize_253_raw_stack",
+            "compactsize_253_raw_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "253-numeric",
+          "label": "253, numeric byte items",
+          "parameters": {
+            "value": 253,
+            "wire_bytes": 3,
+            "encoding": "numeric",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 79,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 42,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_253_numeric_script",
+            "compactsize_253_numeric_witness",
+            "compactsize_253_numeric_stack",
+            "compactsize_253_numeric_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32768-raw",
+          "label": "32768, raw byte items",
+          "parameters": {
+            "value": 32768,
+            "wire_bytes": 3,
+            "encoding": "raw",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 142,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 64,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_32768_raw_script",
+            "compactsize_32768_raw_witness",
+            "compactsize_32768_raw_stack",
+            "compactsize_32768_raw_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32768-numeric",
+          "label": "32768, numeric byte items",
+          "parameters": {
+            "value": 32768,
+            "wire_bytes": 3,
+            "encoding": "numeric",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 80,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 42,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_32768_numeric_script",
+            "compactsize_32768_numeric_witness",
+            "compactsize_32768_numeric_stack",
+            "compactsize_32768_numeric_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "65535-raw",
+          "label": "65535, raw byte items",
+          "parameters": {
+            "value": 65535,
+            "wire_bytes": 3,
+            "encoding": "raw",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 142,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 72,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_65535_raw_script",
+            "compactsize_65535_raw_witness",
+            "compactsize_65535_raw_stack",
+            "compactsize_65535_raw_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "65535-numeric",
+          "label": "65535, numeric byte items",
+          "parameters": {
+            "value": 65535,
+            "wire_bytes": 3,
+            "encoding": "numeric",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; representative Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: token dispatch, validation, decoding, exact numeric output equality, and terminal true. Witness is count plus length-prefixed data items; excludes leaf, control block, annex, and transaction framing. Opcode count includes executed non-push control delimiters.",
+          "script_bytes": 80,
+          "witness_bytes": 10,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 42,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "compactsize_65535_numeric_script",
+            "compactsize_65535_numeric_witness",
+            "compactsize_65535_numeric_stack",
+            "compactsize_65535_numeric_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "Only the one-byte and fd-prefixed forms are supported; input bytes occupy separate items.",
+        "Raw items require 62 more leaf bytes in the matched fixtures; the largest observed witness saving is three bytes.",
+        "Combined peak is five for the measured long leaves and increases with caller state; no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/scriptnum-isqrt",
       "name": "Zero-hint ScriptNum integer floor root",
       "class": "arithmetic/scriptnum",
