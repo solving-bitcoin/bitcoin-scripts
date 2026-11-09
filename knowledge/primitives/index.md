@@ -77,6 +77,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 squaring modulo 16](u4-square-mod16.md)
 - [Checked u4 nondecreasing predicate](u4-nondecreasing.md)
 - [Earliest minimum over u4 inputs](u4-argmin.md)
+- [Strict single peak of signed ScriptNums](signed-single-peak.md)
 - [Checked u4 exact sum](u4-exact-sum.md)
 - [Centered positional binomial moments](u4-binomial-moments.md)
 - [Exact u4 quarter-square products](u4-exact-product.md)

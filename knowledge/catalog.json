@@ -18245,6 +18245,318 @@
       ]
     },
     {
+      "id": "arithmetic/signed-single-peak",
+      "name": "Strict single peak of signed ScriptNums",
+      "class": "arithmetic/scriptnum",
+      "summary": "Checks strict ascent followed by strict descent and returns the interior peak index using one ascent count.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/signed-single-peak.md",
+      "implementation": "src/arithmetic/single_peak/mod.rs",
+      "documentation": "src/arithmetic/single_peak/README.md",
+      "tests": [
+        "src/arithmetic/single_peak/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bringmann-strongly-unimodal-2018",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "stack-scheduling"
+      ],
+      "security": "All signed operands are hostile and checked for numeric width. Strict numeric comparisons reject plateaus even under aliases. The phase test rejects another descent after ascent is observed in reverse. The output is a numeric shape relation without witness provenance.",
+      "stack_contract": "Consumes a fixed suffix of 3..=998 at-most-four-byte signed ScriptNums and returns a canonical interior peak index. Both caller stacks survive. All ordinary inputs and zero hints coexist at entry. Combined peak is width+2 plus caller state.",
+      "configurations": [
+        {
+          "id": "32-1-arithmetic",
+          "label": "32 values, peak 1, arithmetic phase",
+          "parameters": {
+            "width": 32,
+            "expected_peak_index": 1,
+            "schedule": "arithmetic",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 556,
+          "witness_bytes": 90,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 521,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_32_1_arithmetic_script",
+            "single_peak_32_1_arithmetic_witness",
+            "single_peak_32_1_arithmetic_stack",
+            "single_peak_32_1_arithmetic_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-1-branch",
+          "label": "32 values, peak 1, branched phase",
+          "parameters": {
+            "width": 32,
+            "expected_peak_index": 1,
+            "schedule": "branch",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 649,
+          "witness_bytes": 90,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 494,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_32_1_branch_script",
+            "single_peak_32_1_branch_witness",
+            "single_peak_32_1_branch_stack",
+            "single_peak_32_1_branch_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-30-arithmetic",
+          "label": "32 values, peak 30, arithmetic phase",
+          "parameters": {
+            "width": 32,
+            "expected_peak_index": 30,
+            "schedule": "arithmetic",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 557,
+          "witness_bytes": 93,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 521,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_32_30_arithmetic_script",
+            "single_peak_32_30_arithmetic_witness",
+            "single_peak_32_30_arithmetic_stack",
+            "single_peak_32_30_arithmetic_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-30-branch",
+          "label": "32 values, peak 30, branched phase",
+          "parameters": {
+            "width": 32,
+            "expected_peak_index": 30,
+            "schedule": "branch",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 650,
+          "witness_bytes": 93,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 494,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_32_30_branch_script",
+            "single_peak_32_30_branch_witness",
+            "single_peak_32_30_branch_stack",
+            "single_peak_32_30_branch_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-arithmetic",
+          "label": "128 values, peak 53, arithmetic phase",
+          "parameters": {
+            "width": 128,
+            "expected_peak_index": 53,
+            "schedule": "arithmetic",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 2285,
+          "witness_bytes": 375,
+          "witness_bytes_max": null,
+          "max_stack_items": 130,
+          "executed_opcodes": 2153,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_128_arithmetic_script",
+            "single_peak_128_arithmetic_witness",
+            "single_peak_128_arithmetic_stack",
+            "single_peak_128_arithmetic_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-branch",
+          "label": "128 values, peak 53, branched phase",
+          "parameters": {
+            "width": 128,
+            "expected_peak_index": 53,
+            "schedule": "branch",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 2666,
+          "witness_bytes": 375,
+          "witness_bytes_max": null,
+          "max_stack_items": 130,
+          "executed_opcodes": 2030,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_128_branch_script",
+            "single_peak_128_branch_witness",
+            "single_peak_128_branch_stack",
+            "single_peak_128_branch_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "998-arithmetic",
+          "label": "998 values, peak 497, arithmetic phase",
+          "parameters": {
+            "width": 998,
+            "expected_peak_index": 497,
+            "schedule": "arithmetic",
+            "data_items": 998,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 17946,
+          "witness_bytes": 2993,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 16943,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_998_arithmetic_script",
+            "single_peak_998_arithmetic_witness",
+            "single_peak_998_arithmetic_stack",
+            "single_peak_998_arithmetic_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "998-branch",
+          "label": "998 values, peak 497, branched phase",
+          "parameters": {
+            "width": 998,
+            "expected_peak_index": 497,
+            "schedule": "branch",
+            "data_items": 998,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus with local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: signed input width checks, strict edge checks, phase verification, exact peak index equality and terminal true. Data witness includes count and item lengths and excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 20937,
+          "witness_bytes": 2993,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 15950,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "single_peak_998_branch_script",
+            "single_peak_998_branch_witness",
+            "single_peak_998_branch_stack",
+            "single_peak_998_branch_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "Requires both slopes and rejects equal adjacent values.",
+        "The arithmetic phase is smaller but executes more operations than the branched baseline in measured fixtures.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-nondecreasing",
       "name": "Checked u4 nondecreasing predicate",
       "class": "arithmetic/word",

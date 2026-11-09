@@ -458,6 +458,13 @@
       "revision": "arXiv:0808.0554v1, 2008-08-05; sections 7.1 and 7.2"
     },
     {
+      "id": "bringmann-strongly-unimodal-2018",
+      "title": "Bringmann et al.: Peak positions of strongly unimodal sequences",
+      "kind": "paper",
+      "url": "https://arxiv.org/abs/1806.03217v2",
+      "revision": "arXiv:1806.03217v2, November 22, 2018. The introductory definition supplies the strict peak order pattern."
+    },
+    {
       "id": "gao-palindromic-2021",
       "title": "Enumeration of self-reciprocal irreducible monic polynomials with prescribed leading coefficients over a finite field",
       "kind": "paper",

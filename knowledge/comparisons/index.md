@@ -22,3 +22,4 @@ They summarize the current catalog rather than claiming global completeness.
 - [Block ciphers](ciphers.md)
 - [Unique mismatch schedules for opaque items](opaque-unique-mismatch.md)
 - [BN254 layers](bn254.md)
+- [Strict signed peak verification schedules](signed-single-peak.md)
