@@ -13919,6 +13919,101 @@ fn u4_sort_metrics_are_current() {
 }
 
 /// This isolated fixture measures checked canonical u4 run-length expansion.
+mod wide_sum_research {
+    use bitcoin_lab::support::script::*;
+
+    const BOUND: i64 = i32::MAX as i64;
+
+    include!("../research/exact-signed-sum-spill/baseline.rs");
+    include!("../research/exact-signed-sum-spill/fixture.rs");
+}
+
+#[test]
+fn wide_sum_split_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::wide_sum::split_scriptnum_sum,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("wide_sum_", $fixture, "_", $schedule, "_script"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_witness"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_stack"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let bound = i64::from(i32::MAX);
+    let mut report = Vec::new();
+    for (inputs, post, pre) in [
+        (
+            vec![bound, -bound],
+            keys!("central", "post"),
+            keys!("central", "pre"),
+        ),
+        (
+            vec![bound, 1],
+            keys!("positive", "post"),
+            keys!("positive", "pre"),
+        ),
+        (
+            vec![-bound, -1],
+            keys!("negative", "post"),
+            keys!("negative", "pre"),
+        ),
+        (
+            vec![bound, 1, bound, 2],
+            keys!("order", "post"),
+            keys!("order", "pre"),
+        ),
+    ] {
+        let witness: Vec<_> = inputs.iter().copied().map(scriptnum).collect();
+        for (keys, split) in [
+            (post, split_scriptnum_sum()),
+            (pre, wide_sum_research::precheck_headroom()),
+        ] {
+            let leaf = match inputs.as_slice() {
+                &[a, b] => {
+                    let (residual, class) = wide_sum_research::expected(a, b);
+                    script! {
+                        { split } { class } OP_EQUALVERIFY
+                        { residual } OP_EQUALVERIFY OP_TRUE
+                    }
+                }
+                &[a, b, c, d] => {
+                    let predicate = wide_sum_research::compare_sums(split);
+                    let expected = u32::from(a + b < c + d);
+                    script! { { predicate } { expected } OP_EQUALVERIFY OP_TRUE }
+                }
+                _ => unreachable!(),
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/wide_sum/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_run_length_metrics_are_current() {
     let repetitive = u4::run_length::u4_expand_canonical_runs(16, 2);
@@ -15875,6 +15970,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

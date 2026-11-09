@@ -4,6 +4,7 @@ These pages compare only configurations whose inclusion boundaries are stated.
 They summarize the current catalog rather than claiming global completeness.
 
 - [Arithmetic representations](arithmetic.md)
+- [Exact signed sum representation schedules](wide-scriptnum-sum.md)
 - [Arithmetic checksums](checksums.md)
 - [Opposite-case ASCII pair schedules](ascii-pair-checks.md)
 - [Stable stack selection schedules](stack-selection.md)

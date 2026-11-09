@@ -40,6 +40,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)
 - [Extended Hamming (8,4) byte decoder](hamming84-decoder.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
+- [Exact wide ScriptNum sum](wide-scriptnum-sum.md)
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)

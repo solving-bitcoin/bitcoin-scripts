@@ -2925,6 +2925,336 @@
       ]
     },
     {
+      "id": "arithmetic/wide-scriptnum-sum",
+      "name": "Exact wide ScriptNum sum with two numeric outputs",
+      "class": "arithmetic/scriptnum",
+      "summary": "Represents an exact signed sum as a canonical residual and ordered signed class, enabling numeric comparisons across the four-byte boundary.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/wide-scriptnum-sum.md",
+      "implementation": "src/arithmetic/wide_sum/mod.rs",
+      "documentation": "src/arithmetic/wide_sum/README.md",
+      "tests": [
+        "src/arithmetic/wide_sum/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic"
+      ],
+      "security": "Inputs are hostile. Both widths are checked before arithmetic. Within-width numeric aliases depend on the profile. Generated residual and class are canonical. The numeric relation does not authenticate the input bytes or witness-supplied descriptors.",
+      "stack_contract": "Consumes caller | a b and returns caller | residual class. Both caller stacks survive. Exact sum equals residual + class*2147483647. Two ordinary inputs and zero hints coexist at entry. Post-add combined peak is five plus preserved caller items.",
+      "configurations": [
+        {
+          "id": "central-post",
+          "label": "central, post-add size",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              -2147483647
+            ],
+            "schedule": "post",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 49,
+          "witness_bytes": 11,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 22,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_central_post_script",
+            "wide_sum_central_post_witness",
+            "wide_sum_central_post_stack",
+            "wide_sum_central_post_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "central-pre",
+          "label": "central, pre-add headroom",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              -2147483647
+            ],
+            "schedule": "pre",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 69,
+          "witness_bytes": 11,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 27,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_central_pre_script",
+            "wide_sum_central_pre_witness",
+            "wide_sum_central_pre_stack",
+            "wide_sum_central_pre_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "positive-post",
+          "label": "positive, post-add size",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              1
+            ],
+            "schedule": "post",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 49,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 27,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_positive_post_script",
+            "wide_sum_positive_post_witness",
+            "wide_sum_positive_post_stack",
+            "wide_sum_positive_post_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "positive-pre",
+          "label": "positive, pre-add headroom",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              1
+            ],
+            "schedule": "pre",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 69,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 28,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_positive_pre_script",
+            "wide_sum_positive_pre_witness",
+            "wide_sum_positive_pre_stack",
+            "wide_sum_positive_pre_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "negative-post",
+          "label": "negative, post-add size",
+          "parameters": {
+            "inputs": [
+              -2147483647,
+              -1
+            ],
+            "schedule": "post",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 49,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 27,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_negative_post_script",
+            "wide_sum_negative_post_witness",
+            "wide_sum_negative_post_stack",
+            "wide_sum_negative_post_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "negative-pre",
+          "label": "negative, pre-add headroom",
+          "parameters": {
+            "inputs": [
+              -2147483647,
+              -1
+            ],
+            "schedule": "pre",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: both signed operand guards, one exact split, both output equality checks, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 69,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 28,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_negative_pre_script",
+            "wide_sum_negative_pre_witness",
+            "wide_sum_negative_pre_stack",
+            "wide_sum_negative_pre_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "order-post",
+          "label": "order, post-add size",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              1,
+              2147483647,
+              2
+            ],
+            "schedule": "post",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: two exact splits, class/residual numeric ordering, exact Boolean equality, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 106,
+          "witness_bytes": 15,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 63,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_order_post_script",
+            "wide_sum_order_post_witness",
+            "wide_sum_order_post_stack",
+            "wide_sum_order_post_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "order-pre",
+          "label": "order, pre-add headroom",
+          "parameters": {
+            "inputs": [
+              2147483647,
+              1,
+              2147483647,
+              2
+            ],
+            "schedule": "pre",
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: two exact splits, class/residual numeric ordering, exact Boolean equality, and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. Executed count excludes pushes and includes processed branch delimiters.",
+          "script_bytes": 146,
+          "witness_bytes": 15,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 65,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "wide_sum_order_pre_script",
+            "wide_sum_order_pre_witness",
+            "wide_sum_order_pre_stack",
+            "wide_sum_order_pre_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "The split is a two-item representation; numeric consumers must follow the class and residual semantics.",
+        "Post-add size dispatch uses one more live item than pre-add headroom in the matched leaves.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-triplet",
       "name": "Checked u4 triplet-to-u12 packing",
       "class": "arithmetic/word",

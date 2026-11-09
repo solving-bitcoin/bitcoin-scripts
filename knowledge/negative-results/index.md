@@ -1672,6 +1672,14 @@ pin `4b7269a` addresses the executor bounds bug; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Historical measurements
 retain their original evidence; complete-protocol validation remains under OP-009.
 
+## Raw wide sums fail numeric ordering
+
+The [wide-sum counterexample](wide-scriptnum-sum.md) shows that direct
+numeric ordering fails on the five-byte sums `M+1` and `M+2`, and that
+clipping to `M` collapses their order. The split representation
+preserves their order with two canonical numeric items. Evidence is
+`locally-reproduced`; execution is `unclassified`.
+
 ## NR-050: Signed-window lookup tables lose short batches
 
 The seed-directed signed radix-32 decoder uses ScriptNum's native sign and a

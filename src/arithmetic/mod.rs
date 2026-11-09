@@ -18,6 +18,7 @@ pub mod sum_equality;
 pub mod u31;
 pub mod u32;
 pub mod u4;
+pub mod wide_sum;
 
 #[cfg(test)]
 mod test_helpers {
