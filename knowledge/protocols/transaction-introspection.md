@@ -24,3 +24,12 @@ with the default tapscript executor: its legacy signature context and
 transaction template are essential semantics. Full reproduction still needs
 grinding parameters, mutation constraints, Script extraction, and full costs.
 See `introspection/binohash` and `OP-011`.
+
+A separate [2-of-3 toy subset](../primitives/binohash-subset-toy.md) now
+exercises the paper's dynamic `OP_ROLL` selection, a small signature-size
+condition, and a downstream Script predicate selected by the surviving
+indices. Pinned Core accepts two disjoint funded P2SH spends selecting
+`[0,1]` and `[0,2]` and rejects malformed selectors and mismatched preimages
+for each. The preimages are public, and the
+fixture has no transaction pinning, two-round grind, or meaningful security
+parameter. Default policy still rejects both consensus-valid spends.

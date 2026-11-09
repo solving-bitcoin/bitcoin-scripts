@@ -43,6 +43,7 @@ python3 tools/kb.py validate
 - [Five-byte CSV differential experiment](tapscript-csv-validation.md)
 - [Absolute transaction-finality differential experiment](tapscript-finality-validation.md)
 - [Binohash legacy Core comparison](primitives/binohash-legacy-core.md)
+- [Binohash 2-of-3 subset Core comparison](primitives/binohash-subset-toy.md)
 - [Checked PRINCEv2 complete-leaf experiment](prince-core-validation.md)
 - [Primitive entries](primitives/index.md)
 - [Reusable implementation techniques](techniques/index.md)

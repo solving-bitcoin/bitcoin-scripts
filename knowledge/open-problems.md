@@ -530,9 +530,12 @@ pushes are removed at opcode boundaries before rust-bitcoin's legacy sighash,
 including the out-of-range `SIGHASH_SINGLE` constant. A reduced two-choice
 fixture now uses valid ECDSA signatures and confirms selected funded P2SH
 spends and wrong-selection failures against pinned Core v30.3. Default Core
-relay policy rejects the valid spends under `CONST_SCRIPTCODE`. The full
-protocol remains open because two-round grinding, transaction mutation
-boundaries, Script extraction, and complete protocol costs are not reproduced.
+relay policy rejects the valid spends under `CONST_SCRIPTCODE`. A second toy
+fixture now checks 2-of-3 `OP_ROLL` selection, a signature-size condition, and
+an index-selected preimage predicate against pinned Core, including malformed
+controls. The full protocol remains open because transaction pinning, two-round
+grinding, authenticated Script extraction, and complete protocol costs are not
+reproduced.
 
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
