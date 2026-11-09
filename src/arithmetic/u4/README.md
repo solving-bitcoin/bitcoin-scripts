@@ -116,6 +116,8 @@ these operations, but this module contains no hash-specific round logic.
   canonical nibbles and returns their XOR using four packed count lanes.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
   multiple of eight in `8..=992` and returns one byte mask per eight nibbles.
+- [`lee_step::u4_uniform_lee_step(n)`](lee_step/) consumes `2..=997`
+  canonical nibbles and verifies and returns their common circular step length.
 - `nondecreasing::u4_nibbles_nondecreasing(nibble_count)` takes a checked
   batch size in `1..=997` and returns one monotonicity bit.
 - [`argmin::u4_earliest_argmin(n)`](argmin/) consumes `1..=980` canonical

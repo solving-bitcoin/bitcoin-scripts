@@ -15266,6 +15266,287 @@
       ]
     },
     {
+      "id": "arithmetic/u4-uniform-lee-step",
+      "name": "Uniform circular step over canonical nibbles",
+      "class": "arithmetic/word",
+      "summary": "Verify a common shortest circular distance across adjacent canonical nibbles and return that distance, allowing direction changes.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-lee-step.md",
+      "implementation": "src/arithmetic/u4/lee_step/mod.rs",
+      "documentation": "src/arithmetic/u4/lee_step/README.md",
+      "tests": [
+        "src/arithmetic/u4/lee_step/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "lee-metric-1958",
+        "alderson-huntemann-lee-2013",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Every hostile input must be a canonical nibble. The check enforces a common length for each adjacent edge and allows direction changes. It does not identify the walk or authenticate the input.",
+      "stack_contract": "Consumes n canonical nibble items and returns their common circular distance as a canonical ScriptNum in 0..=8. A differing edge fails. Caller state survives an exact suffix. No hints.",
+      "configurations": [
+        {
+          "id": "centered-2",
+          "label": "Centered magnitude, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 35,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 25,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_2_centered_script",
+            "lee_step_2_centered_witness",
+            "lee_step_2_centered_stack",
+            "lee_step_2_centered_executed"
+          ]
+        },
+        {
+          "id": "direct-2",
+          "label": "Direct distance, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 34,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 25,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_2_direct_script",
+            "lee_step_2_direct_witness",
+            "lee_step_2_direct_stack",
+            "lee_step_2_direct_executed"
+          ]
+        },
+        {
+          "id": "centered-4",
+          "label": "Centered magnitude, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 77,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 59,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_4_centered_script",
+            "lee_step_4_centered_witness",
+            "lee_step_4_centered_stack",
+            "lee_step_4_centered_executed"
+          ]
+        },
+        {
+          "id": "direct-4",
+          "label": "Direct distance, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 80,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 63,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_4_direct_script",
+            "lee_step_4_direct_witness",
+            "lee_step_4_direct_stack",
+            "lee_step_4_direct_executed"
+          ]
+        },
+        {
+          "id": "centered-32",
+          "label": "Centered magnitude, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 665,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 535,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_32_centered_script",
+            "lee_step_32_centered_witness",
+            "lee_step_32_centered_stack",
+            "lee_step_32_centered_executed"
+          ]
+        },
+        {
+          "id": "direct-32",
+          "label": "Direct distance, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 724,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 595,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_32_direct_script",
+            "lee_step_32_direct_witness",
+            "lee_step_32_direct_stack",
+            "lee_step_32_direct_executed"
+          ]
+        },
+        {
+          "id": "centered-128",
+          "label": "Centered magnitude, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2681,
+          "witness_bytes": 248,
+          "witness_bytes_max": null,
+          "max_stack_items": 131,
+          "executed_opcodes": 2167,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_128_centered_script",
+            "lee_step_128_centered_witness",
+            "lee_step_128_centered_stack",
+            "lee_step_128_centered_executed"
+          ]
+        },
+        {
+          "id": "direct-128",
+          "label": "Direct distance, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "Start at 14; add 3 mod 16 except subtract 3 at indices divisible by three"
+          },
+          "includes": "complete-leaf: canonical input checks, all adjacent edges, scratch cleanup and identical output byte equality. Data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2932,
+          "witness_bytes": 248,
+          "witness_bytes_max": null,
+          "max_stack_items": 131,
+          "executed_opcodes": 2419,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "lee_step_128_direct_script",
+            "lee_step_128_direct_witness",
+            "lee_step_128_direct_stack",
+            "lee_step_128_direct_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The direct schedule is one byte smaller at width two.",
+        "The predicate permits reversals and does not compare an extra closing edge.",
+        "Peak n+3 includes no unrelated state; add all caller items before applying the 1,000-item limit.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-adjacent-delta",
       "name": "Checked u4 adjacent forward delta",
       "class": "arithmetic/word",

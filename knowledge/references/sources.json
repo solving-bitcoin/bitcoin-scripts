@@ -283,6 +283,20 @@
       "revision": "updated edition 2023"
     },
     {
+      "id": "lee-metric-1958",
+      "title": "Lee: Some properties of nonbinary error-correcting codes",
+      "kind": "paper",
+      "url": "https://doi.org/10.1109/TIT.1958.1057446",
+      "revision": "IRE Transactions on Information Theory 4(2), pages 77–82, 1958"
+    },
+    {
+      "id": "alderson-huntemann-lee-2013",
+      "title": "Alderson and Huntemann: On Maximum Lee Distance Codes",
+      "kind": "paper",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1155/2013/625912",
+      "revision": "2013, article 625912, section 2.1"
+    },
+    {
       "id": "blake3-spec",
       "title": "BLAKE3 specification and reference implementation",
       "kind": "reference-implementation",

@@ -71,6 +71,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Exact u4 quarter-square products](u4-exact-product.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)
 - [Checked u4 adjacent forward delta](u4-adjacent-delta.md)
+- [Uniform circular step over canonical nibbles](u4-lee-step.md)
 - [Canonical u4 modulo-16 prefix scan](u4-prefix-sum.md)
 - [Checked u4 cyclic vector rotation](u4-vector-rotation.md)
 - [Checked u4 vector interleave](u4-interleave.md)

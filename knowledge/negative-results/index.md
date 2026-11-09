@@ -204,6 +204,12 @@ the temporary peak. The [reproduction and scope](compiler-validation-runtime.md#
 record exact inputs, output hashes, and the timeout on the larger baseline
 probe. Resource tests need an observable output boundary after compilation.
 
+## Uniform circular step limits
+
+The [Lee-step comparison](u4-lee-step.md) records a small-width loss and
+counterexamples to using directed-delta equality or equal total distance
+as substitutes for uniform circular distance.
+
 ## NR-046: Unchanged stack runs repeat redundant optimizer searches
 
 The [compiler-runtime experiment](compiler-validation-runtime.md) reproduces

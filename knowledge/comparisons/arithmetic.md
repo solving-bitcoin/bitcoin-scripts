@@ -454,6 +454,17 @@ words. Each witness has four ordinary items and zero hints. The fixture
 witnesses are 9 and 13 serialized bytes, with equal bytes within each
 comparison. The evidence is locally reproduced with unclassified execution.
 
+## Uniform circular step
+
+The [uniform Lee-step scan](../primitives/u4-lee-step.md) compares
+centered absolute distances and decodes the common result once. At 128
+nibbles, the centered and direct complete leaves use 2,681 and 2,932
+bytes and execute 2,167 and 2,419 non-push operations. Each has a
+248-byte data witness with 128 ordinary items, zero hints, and a
+131-item combined peak. Both check the same output and every canonical
+input. The direct schedule is one byte smaller for a single edge.
+See [negative results](../negative-results/u4-lee-step.md).
+
 ## Canonical modulo-16 prefix vectors
 
 The [prefix scan](../primitives/u4-prefix-sum.md) returns every prefix, unlike

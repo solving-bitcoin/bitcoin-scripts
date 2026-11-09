@@ -26,6 +26,7 @@ pub mod histogram;
 pub mod interleave;
 pub mod inversions;
 pub mod leading_zeros;
+pub mod lee_step;
 pub mod logic;
 pub mod lowbit;
 pub mod lsb;
