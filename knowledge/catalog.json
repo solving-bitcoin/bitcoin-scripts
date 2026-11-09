@@ -15122,6 +15122,294 @@
       ]
     },
     {
+      "id": "arithmetic/u4-distinct-mask",
+      "name": "Carry-checked distinct nibble set mask",
+      "class": "arithmetic/word",
+      "summary": "Validate a canonical nibble sequence and its distinctness while encoding the unordered set as one numeric mask.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-distinct-mask.md",
+      "implementation": "src/arithmetic/u4/distinct_mask/mod.rs",
+      "documentation": "src/arithmetic/u4/distinct_mask/README.md",
+      "tests": [
+        "src/arithmetic/u4/distinct_mask/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "regin-alldifferent-1994",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Each witness item is checked for canonical range and encoding. The bit-count equality excludes duplicate carries. The mask describes the set and allows permutations of the same members.",
+      "stack_contract": "Consumes n canonical nibble items and returns one canonical set mask in 0..=65535. Rejects repeated values and restores both caller stacks for an exact input suffix. No hints.",
+      "configurations": [
+        {
+          "id": "carry-4",
+          "label": "Carry check, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 324,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 24,
+          "executed_opcodes": 140,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_4_carry_script",
+            "distinct_mask_4_carry_witness",
+            "distinct_mask_4_carry_stack",
+            "distinct_mask_4_carry_executed"
+          ]
+        },
+        {
+          "id": "pairwise-4",
+          "label": "Pairwise, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 154,
+          "witness_bytes": 9,
+          "witness_bytes_max": null,
+          "max_stack_items": 24,
+          "executed_opcodes": 85,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_4_pairwise_script",
+            "distinct_mask_4_pairwise_witness",
+            "distinct_mask_4_pairwise_stack",
+            "distinct_mask_4_pairwise_executed"
+          ]
+        },
+        {
+          "id": "carry-8",
+          "label": "Carry check, 8 nibbles",
+          "parameters": {
+            "nibble_count": 8,
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 389,
+          "witness_bytes": 17,
+          "witness_bytes_max": null,
+          "max_stack_items": 28,
+          "executed_opcodes": 200,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_8_carry_script",
+            "distinct_mask_8_carry_witness",
+            "distinct_mask_8_carry_stack",
+            "distinct_mask_8_carry_executed"
+          ]
+        },
+        {
+          "id": "pairwise-8",
+          "label": "Pairwise, 8 nibbles",
+          "parameters": {
+            "nibble_count": 8,
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 365,
+          "witness_bytes": 17,
+          "witness_bytes_max": null,
+          "max_stack_items": 28,
+          "executed_opcodes": 239,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_8_pairwise_script",
+            "distinct_mask_8_pairwise_witness",
+            "distinct_mask_8_pairwise_stack",
+            "distinct_mask_8_pairwise_executed"
+          ]
+        },
+        {
+          "id": "carry-12",
+          "label": "Carry check, 12 nibbles",
+          "parameters": {
+            "nibble_count": 12,
+            "data_items": 12,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 453,
+          "witness_bytes": 24,
+          "witness_bytes_max": null,
+          "max_stack_items": 32,
+          "executed_opcodes": 256,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_12_carry_script",
+            "distinct_mask_12_carry_witness",
+            "distinct_mask_12_carry_stack",
+            "distinct_mask_12_carry_executed"
+          ]
+        },
+        {
+          "id": "pairwise-12",
+          "label": "Pairwise, 12 nibbles",
+          "parameters": {
+            "nibble_count": 12,
+            "data_items": 12,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 687,
+          "witness_bytes": 24,
+          "witness_bytes_max": null,
+          "max_stack_items": 32,
+          "executed_opcodes": 473,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_12_pairwise_script",
+            "distinct_mask_12_pairwise_witness",
+            "distinct_mask_12_pairwise_stack",
+            "distinct_mask_12_pairwise_executed"
+          ]
+        },
+        {
+          "id": "carry-16",
+          "label": "Carry check, 16 nibbles",
+          "parameters": {
+            "nibble_count": 16,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 316,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 189,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_16_carry_script",
+            "distinct_mask_16_carry_witness",
+            "distinct_mask_16_carry_stack",
+            "distinct_mask_16_carry_executed"
+          ]
+        },
+        {
+          "id": "pairwise-16",
+          "label": "Pairwise, 16 nibbles",
+          "parameters": {
+            "nibble_count": 16,
+            "data_items": 16,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i+3) mod 16"
+          },
+          "includes": "complete-leaf: checked one-hot fold, duplicate rejection, cleanup and byte equality against the expected mask. Witness includes data only, excluding leaf, control block, annex and transaction. The trace counts visited branch delimiters.",
+          "script_bytes": 1121,
+          "witness_bytes": 32,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 787,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "distinct_mask_16_pairwise_script",
+            "distinct_mask_16_pairwise_witness",
+            "distinct_mask_16_pairwise_stack",
+            "distinct_mask_16_pairwise_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "At width four, the partial carry check is larger and executes more operations than the matched pairwise baseline.",
+        "The one-hot table costs stack space in both measured schedules; the nonempty peak is n+20 plus preserved caller state.",
+        "The output cannot distinguish orders of the same set.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-one-hot",
       "name": "Checked u4 one-hot mask projection",
       "class": "arithmetic/word",

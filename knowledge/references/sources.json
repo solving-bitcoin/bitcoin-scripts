@@ -45,6 +45,13 @@
       "revision": "final specification"
     },
     {
+      "id": "regin-alldifferent-1994",
+      "title": "Régin: A Filtering Algorithm for Constraints of Difference in CSPs",
+      "kind": "paper",
+      "url": "https://cse.unl.edu/~choueiry/Documents/ReginAAAI-1994.pdf",
+      "revision": "AAAI-94 proceedings, pages 362–367"
+    },
+    {
       "id": "bip-112",
       "title": "BIP 112: CHECKSEQUENCEVERIFY",
       "kind": "specification",

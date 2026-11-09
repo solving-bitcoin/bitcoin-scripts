@@ -78,6 +78,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=982` and projects each nibble to reflected Gray code.
 - `one_hot::u4_nibbles_to_one_hot(nibble_count)` takes a checked batch size in
   `1..=982` and returns one 16-bit selector mask per input nibble.
+- [`distinct_mask::u4_distinct_to_set_mask(n)`](distinct_mask/) consumes
+  `0..=16` canonical nibbles, rejects duplicates, and emits one set mask.
 - `trailing_zeros::u4_nibbles_to_trailing_zeros(nibble_count)` maps checked
   nibbles to their trailing-zero count in `0..=4`.
 - `lowbit::u4_nibbles_to_lowbit(nibble_count)` maps checked nibbles to their
