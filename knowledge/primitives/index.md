@@ -179,6 +179,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
 - [Sparse exact-threshold tapscript signatures](sparse-tapscript-threshold.md)
 - [BLAKE3 Ed25519-style Montgomery slope verifier candidate](ed25519-blake3-montgomery-slope.md) — historical G29 hinted/q-free leaves and the G32 hybrid-u5 zero-hint successor
+- [Weighted native Schnorr quorum](weighted-schnorr-quorum.md)
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)
 - [Base-16 Winternitz signatures](winternitz-base16.md)

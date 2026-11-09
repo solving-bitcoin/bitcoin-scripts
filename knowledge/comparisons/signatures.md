@@ -120,6 +120,19 @@ components have focused local or differential validation. See the
 [construction page](../primitives/ed25519-blake3-montgomery-slope.md) for the
 exact boundary and security obligations.
 
+## Weighted native Schnorr quorum
+
+The [weighted quorum](../primitives/weighted-schnorr-quorum.md) counts
+signatures by equal-weight group before applying each public weight.
+At 64 keys the grouped and per-key leaves use 2,200 and 2,502 script
+bytes, 81 and 386 executed non-push operations, and the same 66-item
+combined peak. Each takes an 833-byte serialized data witness with
+64 ordinary slots, 12 nonempty signatures, zero hints and a
+600-unit validation charge. The complete witnesses serialize to
+3,070 and 3,372 bytes. Both signatures and commitments are bound to
+their exact synthetic leaves. The [singleton loss](../negative-results/weighted-schnorr-quorum.md)
+records the cost of grouping with no same-weight reuse.
+
 ## One-time authentication
 
 The original Winternitz rows below use HASH160 with full-width 20-byte starts

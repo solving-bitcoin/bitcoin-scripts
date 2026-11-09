@@ -340,6 +340,13 @@ occurs when numeric equality reparses an internally computed five-byte
 negative sum. Pinned Core rejects that funded leaf while the current local
 interpreter accepts it.
 
+## Weighted quorum limits
+
+The [weighted Schnorr comparison](weighted-schnorr-quorum.md) shows that
+grouping singleton keys increases cost and leaves the signature charge
+unchanged. It also checks that malformed nonempty signatures still
+reject after enough valid weight is present.
+
 ## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
 
 **Status (2026-10-11): reasoning retracted; derive-key is implemented.** The
