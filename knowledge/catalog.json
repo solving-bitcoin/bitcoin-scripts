@@ -7949,6 +7949,70 @@
       ]
     },
     {
+      "id": "introspection/binohash-two-round-subsets",
+      "name": "Binohash reduced two-round subset composition",
+      "class": "introspection/transaction",
+      "summary": "Executes two separate one-of-two FindAndDelete signature-pool selections in one funded legacy P2SH spend under pinned Bitcoin Core.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-two-round-subsets.md",
+      "implementation": "examples/binohash_two_round_subsets.rs",
+      "documentation": "research/binohash-two-round-subsets/README.md",
+      "tests": [
+        "examples/binohash_two_round_subsets.rs",
+        "tools/binohash_two_round_regtest.py",
+        "tools/test_binohash_two_round_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [],
+      "security": "Two tiny one-of-two pools and 71-byte puzzle signatures demonstrate execution only; no security-scale pinning, nonce grind, authenticated Script extraction, or collision bound.",
+      "stack_contract": "Legacy P2SH scriptSig pushes two CHECKMULTISIG dummy items, two puzzle signatures, two Boolean selectors, and redeemScript; each round consumes one selector, puzzle signature, and selected embedded pool signature, then final OP_TRUE leaves clean truth.",
+      "configurations": [
+        {
+          "id": "two-1-of-2-rounds-core-v30.3",
+          "label": "Two ordered one-of-two legacy signature-pool rounds",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "selected_indices": [0, 1],
+            "round_candidate_counts": [1, 2],
+            "pool_variant_attempts": 12,
+            "funding_template_attempts": 92,
+            "target_puzzle_signature_bytes": 71,
+            "redeem_script_bytes": 454,
+            "complete_transaction_bytes": 744,
+            "complete_transaction_weight_wu": 2976,
+            "script_sig_bytes": [2, 605],
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "rejected: Signature is found in scriptCode"
+          },
+          "includes": "complete-transaction: two funded inputs, one output, complete scriptSigs, two selected FindAndDelete rounds, three malformed-selection/size controls, and Core consensus/policy verdicts; script_bytes is the 23-byte P2SH locking scriptPubKey; excludes funding transaction, pinning, security-scale grind, and authenticated Script extraction",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": ["binohash_two_round_lock"],
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated"
+        }
+      ],
+      "limitations": [
+        "Default relay policy rejects embedded signatures under CONST_SCRIPTCODE",
+        "Selectors are consumed and no authenticated indices are exported"
+      ],
+      "open_problems": ["OP-011"]
+    },
+    {
       "id": "introspection/binohash-legacy-core",
       "name": "Binohash legacy core",
       "class": "introspection/transaction",

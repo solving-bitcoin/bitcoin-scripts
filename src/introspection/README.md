@@ -20,6 +20,16 @@ uses `OP_ROLL` to choose two embedded signatures and consumes their canonical
 indices in a later Script predicate. Its public preimages and small size
 filter demonstrate execution only; the full protocol remains open.
 
+The [reduced two-round fixture](../../research/binohash-two-round-subsets/README.md)
+executes two separate one-of-two embedded-signature selections in one funded
+legacy P2SH spend. Its selected indices are `[0,1]` across the rounds. Core
+mines the valid spend, rejects either flipped selector and a valid wrong-size
+signature, while default policy rejects the valid spend under `CONST_SCRIPTCODE`.
+
+| P2SH scriptPubKey | RedeemScript | Complete spend | Easy scriptSig | Selected scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_two_round_lock -->23<!-- /metric:binohash_two_round_lock --> bytes | <!-- metric:binohash_two_round_redeem -->454<!-- /metric:binohash_two_round_redeem --> bytes | <!-- metric:binohash_two_round_weight -->2976<!-- /metric:binohash_two_round_weight --> WU | <!-- metric:binohash_two_round_easy_sig -->2<!-- /metric:binohash_two_round_easy_sig --> bytes | <!-- metric:binohash_two_round_main_sig -->605<!-- /metric:binohash_two_round_main_sig --> bytes | 0 | 0 |
+
 The checked Core report fixes its complete-transaction measurement boundary:
 
 | Pair | P2SH scriptPubKey | RedeemScript in scriptSig | Complete spend | First scriptSig | Selected scriptSig | Hint items |

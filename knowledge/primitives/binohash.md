@@ -17,6 +17,9 @@ transaction-dependent digest that Bitcoin Script can extract and authenticate.
   values pass default relay policy.
   A [CODESEPARATOR fixture](binohash-codesep-core.md) differentially validates
   selected signature pushes on both sides of the operative legacy boundary.
+  A [reduced two-round fixture](binohash-two-round-subsets.md) executes two
+  separate one-of-two signature pools in one funded P2SH spend under Core
+  consensus, without exporting authenticated indices.
 - **Reported profile:** the paper proposes a two-round nonce extraction design
   with tunable work/collision parameters and a Lamport-signable output.
 - **Execution context:** relies on legacy signature semantics, not the local

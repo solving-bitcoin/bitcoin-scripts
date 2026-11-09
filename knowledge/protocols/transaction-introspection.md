@@ -42,6 +42,13 @@ for each. The preimages are public, and the
 fixture has no transaction pinning, two-round grind, or meaningful security
 parameter. Default policy still rejects both consensus-valid spends.
 
+The [reduced two-round fixture](../primitives/binohash-two-round-subsets.md)
+executes two independent one-of-two signature-pool selections and puzzle
+checks in one funded legacy spend. Core accepts the valid combination and
+rejects selector flips. The selectors are consumed, so this does not yet
+expose an authenticated Script-readable digest or reproduce security-scale
+two-round grinding. Default policy rejects the valid spend.
+
 The [raw sighash-byte census](../primitives/binohash-sighash-flags.md)
 confirms that 256 byte values can be signed under legacy consensus while
 default relay policy accepts only six canonical values. This is an input to

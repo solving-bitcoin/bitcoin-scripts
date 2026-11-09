@@ -1,0 +1,220 @@
+{
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "controls": {
+    "flip_first": {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKMULTISIGVERIFY operation), input 1 of 5a626bee73c409fb5e2d1a5215a10226207ef2df56353c86a087d345da5736bd (wtxid 5a626bee73c409fb5e2d1a5215a10226207ef2df56353c86a087d345da5736bd), spending d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e:1",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 744,
+        "txid": "5a626bee73c409fb5e2d1a5215a10226207ef2df56353c86a087d345da5736bd",
+        "vsize": 744,
+        "weight": 2976
+      }
+    },
+    "flip_second": {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKMULTISIGVERIFY operation), input 1 of 097df516ab5d21ac3d2d72d448105f7257618ffe917b46626f9715ce8488edf6 (wtxid 097df516ab5d21ac3d2d72d448105f7257618ffe917b46626f9715ce8488edf6), spending d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e:1",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 744,
+        "txid": "097df516ab5d21ac3d2d72d448105f7257618ffe917b46626f9715ce8488edf6",
+        "vsize": 744,
+        "weight": 2976
+      }
+    },
+    "wrong_size": {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 743a0e7d7ac78580197b8b9b6b2fd1d9307a788ee63f3efd49d150181ca342be (wtxid 743a0e7d7ac78580197b8b9b6b2fd1d9307a788ee63f3efd49d150181ca342be), spending d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e:1",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 745,
+        "txid": "743a0e7d7ac78580197b8b9b6b2fd1d9307a788ee63f3efd49d150181ca342be",
+        "vsize": 745,
+        "weight": 2980
+      }
+    }
+  },
+  "destination_script_pubkey_hex": "00204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+  "experiment": "funded-binohash-two-round-subsets",
+  "fixture": {
+    "easy_script_pubkey_hex": "a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b87",
+    "experiment": "binohash-two-round-subsets",
+    "fee_sat": 20000,
+    "funding_txid": "d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e",
+    "hint_items": 0,
+    "input_value_sat": 1000000,
+    "locking_script_bytes": 23,
+    "locking_script_hex": "a914ac38c3a9fc223afd7d16107b4e5110422c92bca687",
+    "pool_signatures_hex": [
+      "30450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee5503",
+      "3044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a103",
+      "30450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee03",
+      "3045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b53413069103"
+    ],
+    "pool_variant_attempts": 12,
+    "redeem_script_bytes": 454,
+    "redeem_script_hex": "6b634830450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee550367473044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a10368788201478875522103d793631af7aa0e709439dd47fc001acd0b0727670b6670ea528ac83cb0127f4a2102552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8452af6c634830450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee0367483045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b5341306910368788201478875522102a8397a935f0dfceba6ba9618f6451ef4d80637abf4e6af2669fbc9de6a8fd2ac21030f0fb9a244ad31a369ee02b7abfbbb0bfa3812b9a39ed93346d03d67d412d17752af51",
+    "round_candidate_counts": [
+      1,
+      2
+    ],
+    "round_candidates": [
+      [
+        {
+          "choice": 0,
+          "digest_hex": "f4f12dad177874f4bc31861a38423d471479e730a2e65eef73c0aabb99bcf8f3",
+          "passes_size": true,
+          "signature_bytes": 71
+        }
+      ],
+      [
+        {
+          "choice": 0,
+          "digest_hex": "2813fde3f498d35d3e05210260474afaea9cf9c8408dd695df0f46a58bafcf44",
+          "passes_size": false,
+          "signature_bytes": 72
+        },
+        {
+          "choice": 1,
+          "digest_hex": "01d059b1c8931de7890495a2cfd1cfeed3e5c2af52b460a5d38746c9198083c4",
+          "passes_size": true,
+          "signature_bytes": 71
+        }
+      ]
+    ],
+    "selected_digests_hex": [
+      "f4f12dad177874f4bc31861a38423d471479e730a2e65eef73c0aabb99bcf8f3",
+      "01d059b1c8931de7890495a2cfd1cfeed3e5c2af52b460a5d38746c9198083c4"
+    ],
+    "selected_indices": [
+      0,
+      1
+    ],
+    "selected_pool_variant": 11,
+    "selected_puzzle_signatures_hex": [
+      "3044022050824730f79fedfa86f1ea9f1bd6a92b5e18afedfb485e79cb2308e9c0cbb23302200e5805c612339df44b26c21d7fd399a7663e052fac13e3f469e6875510ad445601",
+      "304402203c88324348dff28bf244b0cb4673ba64e4d3d267d95da33d75c3a09d777318b702206f5ececba7a33fa54f9c54a1cd2776ed5dd84054160ab9391cfb9ec307314f0101"
+    ],
+    "target_puzzle_signature_bytes": 71,
+    "transactions": {
+      "flip_first": {
+        "base_bytes": 744,
+        "hex": "02000000024e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d300000000020151ffffffff4e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d301000000fd5d020047304402203c88324348dff28bf244b0cb4673ba64e4d3d267d95da33d75c3a09d777318b702206f5ececba7a33fa54f9c54a1cd2776ed5dd84054160ab9391cfb9ec307314f010100473044022050824730f79fedfa86f1ea9f1bd6a92b5e18afedfb485e79cb2308e9c0cbb23302200e5805c612339df44b26c21d7fd399a7663e052fac13e3f469e6875510ad44560100004dc6016b634830450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee550367473044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a10368788201478875522103d793631af7aa0e709439dd47fc001acd0b0727670b6670ea528ac83cb0127f4a2102552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8452af6c634830450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee0367483045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b5341306910368788201478875522102a8397a935f0dfceba6ba9618f6451ef4d80637abf4e6af2669fbc9de6a8fd2ac21030f0fb9a244ad31a369ee02b7abfbbb0bfa3812b9a39ed93346d03d67d412d17752af51ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "input_script_sig_bytes": [
+          2,
+          605
+        ],
+        "total_bytes": 744,
+        "txid": "5a626bee73c409fb5e2d1a5215a10226207ef2df56353c86a087d345da5736bd",
+        "vsize": 744,
+        "weight": 2976
+      },
+      "flip_second": {
+        "base_bytes": 744,
+        "hex": "02000000024e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d300000000020151ffffffff4e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d301000000fd5d020047304402203c88324348dff28bf244b0cb4673ba64e4d3d267d95da33d75c3a09d777318b702206f5ececba7a33fa54f9c54a1cd2776ed5dd84054160ab9391cfb9ec307314f010100473044022050824730f79fedfa86f1ea9f1bd6a92b5e18afedfb485e79cb2308e9c0cbb23302200e5805c612339df44b26c21d7fd399a7663e052fac13e3f469e6875510ad44560151514dc6016b634830450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee550367473044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a10368788201478875522103d793631af7aa0e709439dd47fc001acd0b0727670b6670ea528ac83cb0127f4a2102552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8452af6c634830450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee0367483045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b5341306910368788201478875522102a8397a935f0dfceba6ba9618f6451ef4d80637abf4e6af2669fbc9de6a8fd2ac21030f0fb9a244ad31a369ee02b7abfbbb0bfa3812b9a39ed93346d03d67d412d17752af51ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "input_script_sig_bytes": [
+          2,
+          605
+        ],
+        "total_bytes": 744,
+        "txid": "097df516ab5d21ac3d2d72d448105f7257618ffe917b46626f9715ce8488edf6",
+        "vsize": 744,
+        "weight": 2976
+      },
+      "valid": {
+        "base_bytes": 744,
+        "hex": "02000000024e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d300000000020151ffffffff4e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d301000000fd5d020047304402203c88324348dff28bf244b0cb4673ba64e4d3d267d95da33d75c3a09d777318b702206f5ececba7a33fa54f9c54a1cd2776ed5dd84054160ab9391cfb9ec307314f010100473044022050824730f79fedfa86f1ea9f1bd6a92b5e18afedfb485e79cb2308e9c0cbb23302200e5805c612339df44b26c21d7fd399a7663e052fac13e3f469e6875510ad44560151004dc6016b634830450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee550367473044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a10368788201478875522103d793631af7aa0e709439dd47fc001acd0b0727670b6670ea528ac83cb0127f4a2102552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8452af6c634830450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee0367483045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b5341306910368788201478875522102a8397a935f0dfceba6ba9618f6451ef4d80637abf4e6af2669fbc9de6a8fd2ac21030f0fb9a244ad31a369ee02b7abfbbb0bfa3812b9a39ed93346d03d67d412d17752af51ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "input_script_sig_bytes": [
+          2,
+          605
+        ],
+        "total_bytes": 744,
+        "txid": "9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979",
+        "vsize": 744,
+        "weight": 2976
+      },
+      "wrong_size": {
+        "base_bytes": 745,
+        "hex": "02000000024e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d300000000020151ffffffff4e6929311c239f2c29c4aa103c9281348167b7eb5899a6bdfd918dc3ffdad7d301000000fd5e020047304402203c88324348dff28bf244b0cb4673ba64e4d3d267d95da33d75c3a09d777318b702206f5ececba7a33fa54f9c54a1cd2776ed5dd84054160ab9391cfb9ec307314f010100483045022100efe4087569270abd4b842bb6b4d57da3ebd3e0c8fcba9769fff5b973eff7bc15022044e3bceeb438786c2aafdff41964716fc07a6e13fee8cd03dd21ecc55d2902c40151004dc6016b634830450221008aed1b81ab8aeef49d4c5e9971a163401e79d11a0a72a71c2a861f391a6f000e022025b53debd8cfa2568fe9abc7ecfe8d193356dff273bedeb75711d703d418ee550367473044022032b5e37892414b206ed90bab9390dfd480730ccb967c3ed706cefd9ca65dbf62022008d9149ba464c09e5374279d77af8392d573d88e9097ef1fd0ba1be0cc6499a10368788201478875522103d793631af7aa0e709439dd47fc001acd0b0727670b6670ea528ac83cb0127f4a2102552c630b64b54bf50210c9e253d38bd4949c72e22873500f6285c2bede312a8452af6c634830450221008400b983ff7151a5c0c48126d9ee375d407163dfa6ff03932f0bc365e315ee4902205add12d2619c88c2ea8be5349d215e766cffc9b0258af1950b883060fcc312ee0367483045022100cf81a03af52927c9f8cb9c752a1a8fec819e0ebdb106c1100dd87d4f0b0b9689022037325d7aac0374717600e654cd3936cf855cc072db804717070331b5341306910368788201478875522102a8397a935f0dfceba6ba9618f6451ef4d80637abf4e6af2669fbc9de6a8fd2ac21030f0fb9a244ad31a369ee02b7abfbbb0bfa3812b9a39ed93346d03d67d412d17752af51ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+        "input_script_sig_bytes": [
+          2,
+          606
+        ],
+        "total_bytes": 745,
+        "txid": "743a0e7d7ac78580197b8b9b6b2fd1d9307a788ee63f3efd49d150181ca342be",
+        "vsize": 745,
+        "weight": 2980
+      }
+    },
+    "witness_items": 0,
+    "wrong_size_counter": 2,
+    "wrong_size_signature_bytes": 72
+  },
+  "funding_block_hash": "2ee05babcf49914a71bc76d22b721bb7d7f6263c33c076d3cdcf32fd07eaa46c",
+  "funding_search_attempt": 91,
+  "funding_transaction": {
+    "base_bytes": 158,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff0340420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914ac38c3a9fc223afd7d16107b4e5110422c92bca6871546e729010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "total_bytes": 163,
+    "txid": "d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e",
+    "vsize": 160,
+    "weight": 637,
+    "witness_bytes": 3,
+    "wtxid": "e7cb56f44c9eefb04e18c409460c9c499bb5b68e862d9c67ef77f48bf1f5fcb8"
+  },
+  "initial_mocktime": 1800000000,
+  "mining_address": "bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85",
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "run_passed": true,
+  "schema_version": 1,
+  "scope": "Two reduced one-of-two FindAndDelete signature pools with distinct selected indices in one funded P2SH spend; no full Binohash security, pinning, or two-round work claim.",
+  "valid_consensus": {
+    "accepted": true,
+    "block_hash": "63f669556594d341b3bcf7f9c197f171fa3f65c08c1aa9dfa93eba02ded2f649",
+    "block_height": 103
+  },
+  "valid_decoded": {
+    "size": 744,
+    "txid": "9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979",
+    "vsize": 744,
+    "weight": 2976
+  },
+  "valid_policy": {
+    "allowed": false,
+    "reject-details": "mempool-script-verify-flag-failed (Signature is found in scriptCode), input 1 of 9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979 (wtxid 9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979), spending d3d7daffc38d91fdbda69958ebb767813481923c10aac4292c9f231c3129694e:1",
+    "reject-reason": "mempool-script-verify-flag-failed (Signature is found in scriptCode)",
+    "txid": "9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979",
+    "wtxid": "9b0de8e61bf2e21638821606bb0486de3c582cbc4d0adedd6169641cc621e979"
+  }
+}
