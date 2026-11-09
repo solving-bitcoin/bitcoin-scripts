@@ -17,6 +17,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Commitments and opening relations](commitments.md)
 - [Signed arithmetic progression schedules](signed-progression.md)
 - [Transaction introspection](introspection.md)
+- [Checked negabinary decoder schedules](negabinary-decoder.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
 - [Unique mismatch schedules for opaque items](opaque-unique-mismatch.md)

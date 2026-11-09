@@ -512,6 +512,13 @@
       "kind": "specification",
       "url": "https://www.rfc-editor.org/rfc/rfc20.html#section-2",
       "revision": "RFC 20, October 16, 1969; §2 code table defines the uppercase and lowercase letter byte values"
+    },
+    {
+      "id": "negative-bases-frougny-lai-2011",
+      "title": "Frougny and Lai: Negative bases and automata",
+      "kind": "paper",
+      "url": "https://doi.org/10.46298/dmtcs.538",
+      "revision": "DMTCS 13(1), 2011, pages 75–94. Introduction describes integer negative-radix digit alphabets."
     }
   ]
 }

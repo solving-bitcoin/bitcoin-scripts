@@ -2,6 +2,10 @@
 
 ## Question and hypothesis
 
+The [negabinary decoder](negabinary-decoder.md) instead reads
+unsigned bits with alternating positional weights and returns
+one signed ScriptNum.
+
 Can ScriptNum's native sign representation make a reusable signed-window
 decoder cheaper than five conditional bit-extraction branches per digit? The
 hypothesis is that a shared staggered table wins locking-script bytes once a

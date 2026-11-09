@@ -13921,6 +13921,92 @@ fn u4_lowbit_metrics_are_current() {
 }
 
 /// This isolated fixture measures only the checked inverse u4 Gray projection.
+mod negabinary_research {
+    use super::scriptnum;
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/arithmetic/negabinary/schedule.rs");
+    }
+
+    include!("../research/checked-negabinary-decoder/baseline.rs");
+    include!("../research/checked-negabinary-decoder/fixture.rs");
+}
+
+#[test]
+fn checked_negabinary_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::negabinary::decode_negabinary,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("negabinary_", $fixture, "_", $schedule, "_script"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_witness"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_stack"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, values, subtract, multiply) in [
+        (8, vec![-37], keys!("8", "subtract"), keys!("8", "multiply")),
+        (
+            31,
+            vec![1_431_655_765],
+            keys!("31", "subtract"),
+            keys!("31", "multiply"),
+        ),
+        (
+            32,
+            vec![-2_147_483_647],
+            keys!("32", "subtract"),
+            keys!("32", "multiply"),
+        ),
+        (
+            32,
+            negabinary_research::values(16),
+            keys!("batch", "subtract"),
+            keys!("batch", "multiply"),
+        ),
+    ] {
+        let witness = negabinary_research::witness(&values, width);
+        assert_eq!(witness.len(), values.len() * width as usize);
+        for (keys, check) in [
+            (subtract, decode_negabinary(width)),
+            (multiply, negabinary_research::multiply_first(width)),
+        ] {
+            let leaf = script! {
+                { negabinary_research::verify_batch(check, &values) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/negabinary/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_gray_inverse_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -16344,6 +16430,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.
