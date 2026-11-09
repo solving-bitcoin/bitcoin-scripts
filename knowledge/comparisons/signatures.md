@@ -22,6 +22,13 @@ case rather than enforcing a small nonce. See the
 [point-lock page](../primitives/point-locks.md) for extraction equations and
 evidence qualifications.
 
+For the committed row, an additional funded P2SH fixture is
+`differentially-validated` and `policy-validated` against Bitcoin Core v30.3:
+the 23-byte scriptPubKey and 71-byte redeemScript spend in a 1,124-WU
+two-input transaction. These complete-transaction costs include two
+scriptSigs and are not comparable to the leaf-only sizes in the table. The
+off-chain setup proof remains a separate unvalidated requirement.
+
 ## Secp256k1 Schnorr
 
 | Construction | Public-input boundary | Script bytes | Witness bytes/items | Stack peak | Execution |

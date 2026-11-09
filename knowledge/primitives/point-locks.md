@@ -2,7 +2,7 @@
 
 A point lock is the discrete-log analogue of a hash lock. Its public instance
 is a secp256k1 point `T = tG`; a successful spend publishes enough signature
-material for an observer to recover `t`. The catalog currently records three
+material for an observer to recover `t`. The catalog currently records four
 constructions with different setup and security boundaries.
 
 ## Comparison objective
@@ -180,6 +180,21 @@ bytes. Tests reproduce the bug-context signature, exact SHA-256 commitment,
 legacy ECDSA validation, extraction, and rejection of substituted signatures,
 wrong points, and wrong sighash flags.
 
+A separate [funded P2SH fixture](../../research/binohash-committed-point-core/README.md)
+compares this exact predicate with Bitcoin Core v30.3 commit
+`49faec4f87f5cd19c88db01a82e5c68b087c8227`. At input index 1 with one
+output, Core accepts the committed signature under consensus and default
+regtest mempool policy. A different valid signature from the same public
+signing key fails the SHA-256 check; adding a second output changes the signed
+digest and fails ECDSA. Local extraction recovers the fixed target scalar from
+the accepted signature. The P2SH scriptPubKey is 23 bytes, the policy-produced
+redeemScript is 71 bytes, and the complete valid transaction weighs 1,124 WU,
+including scriptSigs of 2 and 144 bytes. No witness or hint items are used.
+Combined stack peak and executed opcode count for this complete P2SH spend
+were not measured. This exact fixture is `differentially-validated` and
+`policy-validated`; the off-chain setup proof and full Binohash protocol are
+outside the comparison.
+
 ## Compatibility
 
 The small-R lock is meaningful in bare legacy, P2SH, and P2WSH scripts because
@@ -194,9 +209,10 @@ the required bug. All ECDSA locks are incompatible with tapscript, where
 Schnorr adaptor construction is the tapscript alternative.
 
 The local legacy tests use the pinned `bitcoin-scriptexec` interpreter rather
-than Bitcoin Core. The separate funded small-R P2SH fixture establishes Core
-consensus and policy acceptance for that configuration only. In the local
-small-R success test, semantic NOP padding works around a pinned-interpreter
+than Bitcoin Core. Separate funded P2SH fixtures establish Core consensus and
+policy acceptance for the small-R and committed configurations only. Consult
+each configuration's catalog record for transaction-level evidence. In the
+local small-R success test, semantic NOP padding works around a pinned-interpreter
 FindAndDelete underflow for scriptCode shorter than the signature; the measured
 and Core-spent 40-byte predicate itself is not padded.
 
@@ -209,6 +225,8 @@ and Core-spent 40-byte predicate itself is not padded.
 - Fournier's one-time verifiably encrypted signature paper describes adaptor
   signature creation, adaptation, and extraction.
 
-The three ECDSA implementations are `locally-reproduced` with `unclassified`
-deployment. The Schnorr adaptor construction is `reported` and unimplemented
-locally. None is claimed `policy-validated`.
+The committed ECDSA P2SH fixture is `differentially-validated` and
+`policy-validated` for the exact transaction above; its off-chain setup proof
+remains unimplemented. Evidence and execution classes for other ECDSA
+configurations are recorded in their catalog entries. The Schnorr adaptor
+construction is `reported` and unimplemented locally.

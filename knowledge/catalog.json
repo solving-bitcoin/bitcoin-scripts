@@ -7475,12 +7475,15 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-03",
+      "as_of": "2026-10-29",
       "knowledge_page": "knowledge/primitives/point-locks.md",
       "implementation": "src/signatures/pointlocks/mod.rs",
       "documentation": "src/signatures/pointlocks/README.md",
       "tests": [
-        "signatures::pointlocks::tests"
+        "signatures::pointlocks::tests",
+        "examples/binohash_committed_point_core.rs",
+        "tools/test_binohash_committed_point_regtest.py",
+        "tools/binohash_committed_point_regtest.py"
       ],
       "references": [
         "binohash-paper",
@@ -7518,13 +7521,41 @@
             "pointlock_committed_script",
             "pointlock_committed_witness"
           ]
+        },
+        {
+          "id": "funded-p2sh-core-v30.3",
+          "label": "Funded committed ECDSA point-lock spend under pinned Bitcoin Core",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "public_signing_secret": "02 repeated 32 times",
+            "target_point_secret": "03 repeated 32 times",
+            "redeem_script_bytes": 71,
+            "signature_bytes": 71,
+            "complete_transaction_weight_wu": 1124,
+            "script_sig_bytes": [2, 144],
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "accepted"
+          },
+          "includes": "complete-transaction: funded P2SH prevouts, two inputs, one output, complete scriptSigs and signature extraction check; script_bytes is the P2SH scriptPubKey, with the policy-produced redeemScript included in scriptSig and recorded in parameters; witness_bytes is zero for this legacy spend; excludes the funding transaction, off-chain setup proof, and complete Binohash protocol",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [],
+          "evidence": "differentially-validated",
+          "execution": "policy-validated"
         }
       ],
       "limitations": [
         "Requires an off-chain zero-knowledge setup proof; no proving backend is integrated locally",
         "The constant SIGHASH_SINGLE digest is available only to legacy pre-SegWit signature hashing, not P2WSH",
         "Research signing helpers use non-constant-time bigint arithmetic",
-        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Only the exact funded P2SH fixture has Bitcoin Core consensus and default-policy validation; no off-chain setup proof is included",
         "Tapscript OP_CHECKSIG does not use ECDSA"
       ],
       "open_problems": [

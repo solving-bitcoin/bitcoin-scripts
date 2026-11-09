@@ -723,16 +723,21 @@ deployment criterion.
 ## OP-017 — Point-lock security and deployment validation
 
 Close the remaining gap between functional point-lock tests and protocol
-security. **Complete when:** the three-check ECDSA lock is executed as a
-complete bare and P2SH transaction against a pinned Bitcoin Core revision, its
+security. The exact funded committed-ECDSA P2SH fixture is now
+`differentially-validated` and `policy-validated` against pinned Bitcoin Core
+v30.3, with signature-substitution and output-count controls; its off-chain
+setup proof remains unvalidated. **Complete when:** the three-check ECDSA lock
+is executed as a complete bare and P2SH transaction against a pinned Bitcoin
+Core revision, its
 related-scriptCode reduced-sighash collision assumption receives a concrete
 single- and multi-instance analysis, and its high-S completeness fallback is
 confirmed under legacy consensus; the best generic forgery attack against the
 60-byte `G/2` ECDSA predicate is reproduced or tightly bounded, reconciling the
 conservative roughly 80-bit estimate with the Binohash paper's approximately
-97-bit smaller-R search; the three-check and committed ECDSA leaves are
-validated against a pinned Bitcoin Core revision under consensus and applicable
-relay policy (the funded `G/2` P2SH success branch now passes both); the
+97-bit smaller-R search; all ECDSA leaves have configuration-specific
+validation against a pinned Bitcoin Core revision under consensus and
+applicable relay policy (the funded `G/2` and committed P2SH success fixtures
+now pass both); the
 committed-ECDSA setup statement has a byte-exact circuit and proof transcript
 for at least one pinned zkVM backend; and the Schnorr adaptor flow is tested
 against an independently maintained implementation with explicit nonce,
