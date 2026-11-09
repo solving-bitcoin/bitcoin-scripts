@@ -9,7 +9,9 @@ legacy signature-hash algorithm.
 
 The helper accepts a transaction, input index, raw `scriptCode`, candidate
 dummy-signature byte vectors, selected candidate indices, and a raw legacy
-sighash type. It returns the 32-byte legacy digest. Deletion is performed only
+sighash type. It returns the 32-byte legacy digest. The public `u32` flag
+argument is limited to `0x00..=0xff`, the single byte carried by a legacy ECDSA
+signature; larger values return `InvalidHashType`. Deletion is performed only
 at opcode boundaries, matching the legacy signature-hash construction model.
 
 The host helper stops before the probabilistic parts of the published
@@ -22,8 +24,10 @@ to a Script consumer.
 
 Evidence is `locally-reproduced` for the deterministic core. Focused tests
 cover opcode-boundary deletion versus embedded bytes, subset-dependent digest
-changes, invalid selection/input errors, and the out-of-range-input
-`SIGHASH_SINGLE` digest constant. The external
+changes, invalid selection/input errors, the out-of-range-input
+`SIGHASH_SINGLE` digest constant, and rejection of high-byte sighash types.
+The [high-byte boundary](../negative-results/index.md#nr-111-high-byte-legacy-sighash-types-are-host-only-digests)
+distinguishes raw host hashes from signature-selectable flags. The external
 [`binohash-experiments`](https://github.com/aaron-recompile/binohash-experiments)
 suite also passes its eight covered Python tests with `PYTHONPATH=src` and
 `python-bitcoinlib`.

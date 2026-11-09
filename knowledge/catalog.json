@@ -7956,7 +7956,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-10-29",
+      "as_of": "2026-11-09",
       "knowledge_page": "knowledge/primitives/binohash-legacy-core.md",
       "implementation": "src/introspection/binohash.rs",
       "documentation": "src/introspection/README.md",
@@ -7965,6 +7965,7 @@
         "introspection::binohash::tests::subset_selection_changes_legacy_digest",
         "introspection::binohash::tests::reproduces_legacy_single_bug_digest",
         "introspection::binohash::tests::rejects_invalid_selection_and_input",
+        "introspection::binohash::tests::rejects_unrepresentable_sighash_high_bytes",
         "tests/binohash_sighash_matrix.rs",
         "examples/binohash_core_fixtures.rs",
         "tools/test_binohash_core_regtest.py",
@@ -7979,7 +7980,7 @@
       "techniques": [
         "hash-chain"
       ],
-      "security": "The host helper models deterministic legacy mechanics. A reduced funded fixture verifies fixed ECDSA signatures against Core, but Binohash collision resistance, grinding work, and downstream Script authentication remain unproven.",
+      "security": "The host helper models deterministic legacy mechanics and rejects u32 sighash values above 0xff, which a legacy ECDSA signature cannot carry. A reduced funded fixture verifies fixed ECDSA signatures against Core, but Binohash collision resistance, grinding work, and downstream Script authentication remain unproven.",
       "stack_contract": "Host API: transaction, legacy scriptCode, candidate signature vectors, and selected indices -> 32-byte legacy sighash.",
       "configurations": [
         {

@@ -15,6 +15,12 @@ constructs fixed ECDSA signatures and executes two complete P2SH spends. The
 proof-of-work search and digest extraction into Script remain outside this
 helper.
 
+The public digest API accepts a `u32` for compatibility but rejects values
+above `0xff`: a legacy ECDSA signature appends one sighash byte. The focused
+boundary test shows that rust-bitcoin's raw `0x00` and `0x100` digests differ
+for one fixed template, although `0x100` cannot be selected by such a
+signature. See [NR-111](../../knowledge/negative-results/index.md#nr-111-high-byte-legacy-sighash-types-are-host-only-digests).
+
 The [2-of-3 subset fixture](../../research/binohash-subset/README.md) separately
 uses `OP_ROLL` to choose two embedded signatures and consumes their canonical
 indices in a later Script predicate. Its public preimages and small size
@@ -31,8 +37,8 @@ There are six scriptSig data pushes and zero witness items. The report does
 not measure a combined stack peak or executed opcode count.
 
 The focused tests cover opcode-boundary deletion, subset-dependent digests,
-the legacy `SIGHASH_SINGLE` bug constant, invalid selections, and invalid input
-indices. The host helper alone remains `unclassified`; the separate funded
+the legacy `SIGHASH_SINGLE` bug constant, invalid selections, invalid input
+indices, and out-of-byte-range sighash flags. The host helper alone remains `unclassified`; the separate funded
 configuration is `differentially-validated` against Core v30.3 and
 `consensus-validated`, but fails default relay policy.
 

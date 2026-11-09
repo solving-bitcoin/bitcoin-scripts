@@ -562,6 +562,10 @@ values admit signed legacy P2SH spends, but only six canonical bytes pass
 default `STRICTENC` policy. A fixed host template yields 256 distinct digests;
 this does not establish independent or usable entropy after the full
 Binohash script, pinning and grinding constraints are imposed.
+The host digest helper now rejects `u32` sighash types above `0xff` because
+the ECDSA signature carries only one flag byte. The raw host library does
+produce a distinct `0x100` digest in one fixed template, but that value is
+outside the signed-spend domain ([NR-111](negative-results/index.md#nr-111-high-byte-legacy-sighash-types-are-host-only-digests)).
 
 A host-only 10-choose-5 enumeration now finds distinct digests for all 252
 ascending subsets of one fixed template. It also shows reversed order and
