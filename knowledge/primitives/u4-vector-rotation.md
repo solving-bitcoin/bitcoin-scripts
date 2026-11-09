@@ -46,6 +46,8 @@ canonicality boundary, or commitment: callers must bind the intended vector
 length and use a terminal predicate at the surrounding fragment boundary.
 Existing `u4::rotate` helpers rotate bits within numeric words; this primitive
 rotates the order of vector items and has a different stack contract.
+The [opaque runtime rotation](opaque-runtime-rotation.md) accepts a
+canonical offset and preserves raw payload bytes with a destructive scan.
 
 ## Validation
 

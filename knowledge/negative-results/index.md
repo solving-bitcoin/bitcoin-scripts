@@ -288,6 +288,13 @@ claim that component costs are additive under whole-script optimization.
 The [cost model](../cost-model.md#compilation-policy) still requires accounting
 for any optimizer delta when combining independently measured components.
 
+## Runtime rotation limits
+
+The [rotation comparison](opaque-runtime-rotation.md) shows that copying
+both vectors reaches the combined stack limit at width 499. It also
+reproduces distinct canonical offsets producing the same rotated bytes
+for periodic data.
+
 ## NR-043: Upstream stack-limit enforcement misses entry and data pushes
 
 On 2026-09-10, six deterministic tests reproduced false acceptance through

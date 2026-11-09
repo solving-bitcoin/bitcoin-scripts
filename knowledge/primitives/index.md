@@ -7,6 +7,7 @@ the source. Read a page together with its comparison page and evidence record.
 ## Stack support
 
 - [Longest common prefix of opaque item vectors](opaque-common-prefix.md)
+- [Runtime left rotation of opaque stack items](opaque-runtime-rotation.md)
 - [Stable selection of opaque stack items](stable-selection.md)
 - [Exact equality of two opaque multisets](opaque-multiset.md)
 - [Serialized witness-data byte cap](witness-data-size.md)

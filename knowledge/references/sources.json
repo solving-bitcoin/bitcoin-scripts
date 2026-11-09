@@ -395,6 +395,13 @@
       "revision": "c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1; source/algorithms.tex, [alg.copy]; inspected 2026-10-02; semantic context only, no Bitcoin Script cost or security claim"
     },
     {
+      "id": "cpp-n4950-rotate",
+      "title": "C++23 Working Draft: rotate algorithms",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, [alg.rotate]"
+    },
+    {
       "id": "damm-checkdigits-net-20261002",
       "title": "CheckDigits.Net Damm decimal transition table and fold",
       "kind": "upstream-source",
