@@ -25,6 +25,7 @@ pub mod mod3;
 pub mod msb;
 pub mod mul;
 pub mod mul_constant;
+pub mod multiset_equal;
 pub mod nondecreasing;
 pub mod odd_inverse;
 pub mod one_hot;

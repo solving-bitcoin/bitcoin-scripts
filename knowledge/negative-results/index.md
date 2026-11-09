@@ -2031,3 +2031,16 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-088: Repeated counting helpers cost more for sampled u4 multisets
+
+Deciding whether two u4 vectors have equal multisets by counting each of the
+sixteen symbols in each vector via separately compiled `u4_nibbles_count`
+helpers gives a naive repeated-helper estimate of 8,512 script bytes at 16 + 16
+nibbles, versus 1,158 for the packed form. The helpers destroy their inputs, so
+the omitted copies and comparisons add costs. This is not a lower bound on a
+shared counting construction, which may reuse checks and avoid repeated cleanup. Packing everything into one word is not available either: a
+lane base of `2n + 1` leaves only 20/10/7/6 lanes per four-byte word at
+`n = 1/4/8/16`, so 16 symbols need 1/2/3/3 words and 6 words at `n = 489`.
+Byte figures are `locally-reproduced`; the baseline figure is an estimate, and
+deployment is `unclassified`. See the [primitive](../primitives/u4-multiset-equal.md).

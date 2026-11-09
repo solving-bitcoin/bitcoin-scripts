@@ -8023,6 +8023,75 @@ fn u4_symbol_count_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures exact u4 multiset equality at length 16.
+#[test]
+fn u4_multiset_equal_metrics_are_current() {
+    const LEN: u32 = 16;
+    let fragment = u4::multiset_equal::u4_nibbles_multiset_equal(LEN);
+    // A is 0..=15 and B is its reverse: equal multisets, every symbol present.
+    let witness: Vec<Vec<u8>> = (0..16)
+        .chain((0..16).rev())
+        .map(|nibble| scriptnum(nibble))
+        .collect();
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let compiled = fragment.compile_with_policy();
+    let execution = execute_tapscript(
+        compiled.clone(),
+        witness.clone(),
+        TapscriptProfile::Consensus,
+    );
+    let result = execution.execution().expect("executed fragment");
+    assert!(result.success, "metric execution failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 1);
+    assert_eq!(result.final_stack.get(0), vec![1]);
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    // Naive repeated-helper estimate: 16 symbols x 2 vectors of fixed-symbol counts.
+    let baseline = 32 * script_len(u4::count::u4_nibbles_count(0, LEN));
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_489",
+            value: u4::multiset_equal::u4_nibbles_multiset_equal(489)
+                .compile_with_policy()
+                .len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_stack",
+            value: result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_opcodes",
+            value: opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_count_baseline",
+            value: baseline,
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {
