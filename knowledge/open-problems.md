@@ -1353,3 +1353,13 @@ crossover (or its absence) is recorded against the 479, 958 and 1,916-byte
 two-bit Lamport totals (and 9,580 bytes at 160 bits), including the conversion
 each design needs to deliver the same authenticated data to an identical
 consumer and terminal predicate. Core validation is required for any deployment claim.
+
+## OP-057 — Rank-certificate consumer and network comparison
+
+The claim check and the pairwise selector are measured standalone. **Accept when:**
+the pinned zero-hint sorting baseline is composed with selection and cleanup,
+then reproduced with the same single-result boundary at 16 and 32 nibbles and compared with the claim check
+including the hint item, and a consumer (for example a median-of-reports or
+threshold-ordering protocol) uses the winner with its live state, recording witness
+bytes and items, hint counts, executed opcodes and combined peaks. Core validation
+is required for any deployment claim.

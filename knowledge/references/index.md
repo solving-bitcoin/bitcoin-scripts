@@ -183,3 +183,5 @@ costs are local contributions; no polynomial irreducibility or security claim
 is imported from the paper.
 
 The Luhn arithmetic definition is sourced to [US patent 2,950,048](https://patents.google.com/patent/US2950048A/en), granted 1960-08-23 (`luhn-us2950048a`). The repository’s example vector is local test data, not attributed to the patent.
+
+The 32-item sorting baseline is pinned to [u4-sort at commit 55a61e5](https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md), source ID `u4-sort-baseline-55a61e5`. Its output is a sorted vector, not a selected scalar.

@@ -609,3 +609,13 @@ a 19-item peak for 120 pairwise equality tests (zero hints, strict local
 `unclassified` tapscript, `locally-reproduced`). Sixteen per-symbol counts are at
 least 4,256 bytes (an estimate). See [the primitive](../primitives/u4-composition.md)
 and NR-099.
+
+## Order statistics of u4 vectors
+
+At 16 nibbles a witness-claimed lower median is verified in 312 script bytes (one
+hint, 17 witness items, peak 20), against 3,512 bytes for hint-free pairwise
+selection (peak 22); at 32 nibbles 656 versus 14,223 bytes (strict local
+`unclassified` tapscript, `locally-reproduced`). The pinned sorting reference reports a
+3,044-byte zero-hint sorting network at 32 inputs; it returns all sorted items
+and needs an unmeasured selection/cleanup consumer, so the output boundaries
+are not yet matched. See [the primitive](../primitives/u4-order-statistic.md) and NR-101.

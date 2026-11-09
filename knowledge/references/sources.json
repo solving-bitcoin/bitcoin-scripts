@@ -284,10 +284,10 @@
     },
     {
       "id": "bitvm3s-2025",
-      "title": "BitVM 3s \u2013 Garbled Circuits for Efficient Computation on Bitcoin",
+      "title": "BitVM 3s – Garbled Circuits for Efficient Computation on Bitcoin",
       "kind": "paper",
       "url": "https://bitvm.org/bitvm3.pdf",
-      "revision": "Robin Linus, July 22, 2025; architectural context only, not validation of this repository\u2019s constant-sum verifier"
+      "revision": "Robin Linus, July 22, 2025; architectural context only, not validation of this repository’s constant-sum verifier"
     },
     {
       "id": "nist-dlmf-multiset-permutations",
@@ -386,6 +386,13 @@
       "kind": "specification",
       "url": "https://patents.google.com/patent/US2950048A/en",
       "revision": "US patent 2,950,048, granted 1960-08-23"
+    },
+    {
+      "id": "u4-sort-baseline-55a61e5",
+      "title": "u4 exact sorting reference and measured zero-hint baseline",
+      "kind": "upstream-source",
+      "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md",
+      "revision": "55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6"
     }
   ]
 }

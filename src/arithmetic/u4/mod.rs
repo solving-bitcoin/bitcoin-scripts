@@ -37,6 +37,7 @@ pub mod multiset_equal;
 pub mod nondecreasing;
 pub mod odd_inverse;
 pub mod one_hot;
+pub mod order_statistic;
 pub mod pack;
 pub mod parity;
 pub mod popcount;

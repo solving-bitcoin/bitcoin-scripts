@@ -176,3 +176,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum decimal expansion](u4-scriptnum-decimal.md)
 - [Fixed-composition check of a u4 vector](u4-composition.md)
 - [Multi-digit Lamport commitments](lamport-digits.md)
+- [k-th smallest nibble claim check and selector](u4-order-statistic.md)

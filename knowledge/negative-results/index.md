@@ -2183,3 +2183,17 @@ Lamport returns 80 digits. These boundaries do not establish a like-for-like
 ranking for consumers requiring authenticated data. Matching output and terminal
 contracts remains open. Measurements are locally reproduced and unclassified.
 See the [primitive](../primitives/lamport-digits.md).
+
+## NR-101: Pairwise rank selection grows quadratically
+
+Selecting the k-th smallest nibble without a hint by ranking every element against
+every other costs 286, 956, 3,512 and 14,223 script bytes at 4, 8, 16 and 32
+nibbles, growing quadratically, against 88, 162, 312 and 656 for verifying a
+claimed value with two linear passes. The pinned sorting reference reports a zero-hint
+min/max selection network at 3,044 script bytes plus 63 witness bytes for 32
+inputs (reported there, not reproduced here). That fragment returns all sorted
+items; the cost of selecting one and cleaning up is unmeasured, so these output
+boundaries do not establish like-for-like dominance. The claim check cannot
+select: it only accepts a correct claim. Figures are policy-compiled fragments
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-order-statistic.md).

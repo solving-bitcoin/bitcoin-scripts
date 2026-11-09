@@ -1540,3 +1540,24 @@ disabled; the pairwise comparator checks numeric equality so alias duplicates
 are rejected. Byte-sensitive callers must canonicalize first. Public count
 totals are summed without `u32` overflow and checked before narrowing. Verify
 the result and enforce a clean terminal leaf.
+
+## k-th smallest nibble
+
+`order_statistic::u4_nibbles_kth_smallest_hinted(n, k)` verifies that a witness-
+claimed nibble is the `k`-th smallest (1-based) of `n` checked nibbles with two
+linear counting passes (`L = #{a < claim}`, `U = #{a <= claim}`, accept iff
+`L < k <= U`); `n` is `1..=996` (peak `n + 4`) and `k = (n + 1) / 2` is the lower
+median. `u4_nibbles_kth_smallest(n, k)` selects it with no hint by ranking every
+element against every other element and is quadratic (`n <= 32`). Every nibble
+and the claim are range-checked.
+
+Fragment-only boundary: range checks, counting passes (or pairwise ranks) and
+cleanup; input pushes and terminal predicate excluded. Fixture
+`a[i] = (7i + 3) mod 15 + 1` over 16 nibbles with `k = 8`.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Claim check (hinted) | <!-- metric:u4_kth_hinted_16 -->312<!-- /metric:u4_kth_hinted_16 --> | <!-- metric:u4_kth_hinted_16_witness -->35<!-- /metric:u4_kth_hinted_16_witness --> | <!-- metric:u4_kth_hinted_16_witness_items -->17<!-- /metric:u4_kth_hinted_16_witness_items --> | 1 | <!-- metric:u4_kth_hinted_16_stack -->20<!-- /metric:u4_kth_hinted_16_stack --> | <!-- metric:u4_kth_hinted_16_opcodes -->193<!-- /metric:u4_kth_hinted_16_opcodes --> |
+| Pairwise selector (hint-free) | <!-- metric:u4_kth_select_16 -->3512<!-- /metric:u4_kth_select_16 --> | <!-- metric:u4_kth_select_16_witness -->33<!-- /metric:u4_kth_select_16_witness --> | <!-- metric:u4_kth_select_16_witness_items -->16<!-- /metric:u4_kth_select_16_witness_items --> | 0 | <!-- metric:u4_kth_select_16_stack -->22<!-- /metric:u4_kth_select_16_stack --> | <!-- metric:u4_kth_select_16_opcodes -->2282<!-- /metric:u4_kth_select_16_opcodes --> |
+
+The hinted claim is bound numerically and returned unchanged; numeric aliases can pass when minimality is disabled, so canonicalize before byte-sensitive use. See the [knowledge page](../../../knowledge/primitives/u4-order-statistic.md).
