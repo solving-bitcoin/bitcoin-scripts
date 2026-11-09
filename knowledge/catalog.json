@@ -15855,6 +15855,172 @@
       ]
     },
     {
+      "id": "support/opaque-common-prefix",
+      "name": "Longest common prefix of opaque item vectors",
+      "class": "support/stack",
+      "summary": "Consume two fixed-width raw vectors and return the earliest mismatch index, or full width when every pair matches.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/opaque-common-prefix.md",
+      "implementation": "src/support/common_prefix/mod.rs",
+      "documentation": "src/support/common_prefix/README.md",
+      "tests": [
+        "support::common_prefix::tests",
+        "opaque_common_prefix_metrics_are_current"
+      ],
+      "references": [
+        "cpp-n4950-mismatch",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "reverse-consumption",
+        "byte-equality",
+        "stack-routing"
+      ],
+      "security": "Exact raw prefix relation only. Both witness vectors are hostile, and callers bind the exact suffix and any application identities.",
+      "stack_contract": "caller | left[0] ... left[n-1] | right[0] ... right[n-1] -> caller | canonical prefix length; altstack preserved",
+      "configurations": [
+        {
+          "id": "reverse-32-checked-leaf",
+          "label": "reverse, 32 pairs, complete checked leaf",
+          "parameters": {
+            "schedule": "reverse",
+            "width": 32,
+            "first_mismatch": 5,
+            "payload_pattern": "left[i] = [0xab,i]; right[i] = [0xcd,i] at first mismatch and every seventh position thereafter, otherwise left[i]",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: exact whole-item comparisons, stack routing, verification of canonical common-prefix length and terminal true; witness serializes all entry data and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 292,
+          "witness_bytes": 193,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 165,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 292,
+          "metric_keys": [
+            "opaque_prefix_reverse32_script",
+            "opaque_prefix_reverse32_witness",
+            "opaque_prefix_reverse32_stack",
+            "opaque_prefix_reverse32_executed"
+          ]
+        },
+        {
+          "id": "forward-32-checked-leaf",
+          "label": "forward, 32 pairs, complete checked leaf",
+          "parameters": {
+            "schedule": "forward",
+            "width": 32,
+            "first_mismatch": 5,
+            "payload_pattern": "left[i] = [0xab,i]; right[i] = [0xcd,i] at first mismatch and every seventh position thereafter, otherwise left[i]",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: exact whole-item comparisons, stack routing, verification of canonical common-prefix length and terminal true; witness serializes all entry data and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 334,
+          "witness_bytes": 193,
+          "witness_bytes_max": null,
+          "max_stack_items": 67,
+          "executed_opcodes": 225,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 334,
+          "metric_keys": [
+            "opaque_prefix_forward32_script",
+            "opaque_prefix_forward32_witness",
+            "opaque_prefix_forward32_stack",
+            "opaque_prefix_forward32_executed"
+          ]
+        },
+        {
+          "id": "reverse-128-checked-leaf",
+          "label": "reverse, 128 pairs, complete checked leaf",
+          "parameters": {
+            "schedule": "reverse",
+            "width": 128,
+            "first_mismatch": 17,
+            "payload_pattern": "left[i] = [0xab,i]; right[i] = [0xcd,i] at first mismatch and every seventh position thereafter, otherwise left[i]",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: exact whole-item comparisons, stack routing, verification of canonical common-prefix length and terminal true; witness serializes all entry data and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 1256,
+          "witness_bytes": 771,
+          "witness_bytes_max": null,
+          "max_stack_items": 258,
+          "executed_opcodes": 657,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1256,
+          "metric_keys": [
+            "opaque_prefix_reverse128_script",
+            "opaque_prefix_reverse128_witness",
+            "opaque_prefix_reverse128_stack",
+            "opaque_prefix_reverse128_executed"
+          ]
+        },
+        {
+          "id": "forward-128-checked-leaf",
+          "label": "forward, 128 pairs, complete checked leaf",
+          "parameters": {
+            "schedule": "forward",
+            "width": 128,
+            "first_mismatch": 17,
+            "payload_pattern": "left[i] = [0xab,i]; right[i] = [0xcd,i] at first mismatch and every seventh position thereafter, otherwise left[i]",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: exact whole-item comparisons, stack routing, verification of canonical common-prefix length and terminal true; witness serializes all entry data and prefixes excluding script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 1458,
+          "witness_bytes": 771,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 897,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 1458,
+          "metric_keys": [
+            "opaque_prefix_forward128_script",
+            "opaque_prefix_forward128_witness",
+            "opaque_prefix_forward128_stack",
+            "opaque_prefix_forward128_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Fixed equal widths from 0 through 499. Every one of the 2n ordinary items coexists at entry; no hints.",
+        "Both caller stacks contribute to the combined limit. The fragment requires an exact input suffix and a terminal consumer.",
+        "No funded Core or relay validation for these leaves."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/u4-adjacent-equality",
       "name": "Checked u4 adjacent-equality mask",
       "class": "arithmetic/word",

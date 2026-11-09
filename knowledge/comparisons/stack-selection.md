@@ -36,6 +36,13 @@ aliases when allowed by the profile, and rejects overlong numbers. It is not
 a substitute for variable-length filtering or native exact binary validation.
 The shared contract audit preserves that API and makes no limb-validity claim.
 
+For the separate [common-prefix contract](../primitives/opaque-common-prefix.md),
+the reverse scan uses one candidate index and the forward scan tracks an
+active flag and count. The 128-pair checked leaves use 1,256 versus 1,458
+script bytes, peak at 258 versus 259, and execute 657 versus 897 non-push
+operations. Their 771-byte witnesses contain 256 ordinary items and zero
+hints. Both return the same raw-item prefix length.
+
 Every configuration is `locally-reproduced` / `unclassified`, using the explicit
 local `Consensus` tapscript profile with stack checks and native MINIMALIF,
 numeric minimality off, OP_CAT disabled and a synthetic data-only transaction
