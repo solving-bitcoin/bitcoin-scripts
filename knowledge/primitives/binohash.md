@@ -21,5 +21,10 @@ transaction-dependent digest that Bitcoin Script can extract and authenticate.
   catalog its complete costs and mutation boundaries, and model grinding
   economics. The reduced Core fixtures do not establish these properties.
 
+The [8-of-n parameter frontier](../../research/binohash-parameters/README.md)
+computes the exact subset counts for the paper's `n=120,t=8` example and
+evaluates its byte/opcode formulas as **estimates**. It is host-side arithmetic,
+not a measured full script, grind, or deployment result.
+
 See source `binohash-paper`, the [transaction-introspection discussion](https://delvingbitcoin.org/t/binohash-transaction-introspection-without-softforks/2288),
 and open problem `OP-011`.

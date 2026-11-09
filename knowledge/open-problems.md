@@ -537,6 +537,14 @@ controls. The full protocol remains open because transaction pinning, two-round
 grinding, authenticated Script extraction, and complete protocol costs are not
 reproduced.
 
+The [8-of-n planning report](../research/binohash-parameters/README.md)
+establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
+`2^42` combinations at fixed `t=8`. Under an independent uniform-hit model,
+the paper's `n=120` setting has a 17.39% chance of at least one 42-bit puzzle
+hit per round for a fixed transaction. Its size and opcode margins remain
+paper-formula estimates, not measured Script or Core validation. Reproduce the
+full script and actual grind distribution before drawing protocol conclusions.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and

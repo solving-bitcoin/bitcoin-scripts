@@ -19,3 +19,7 @@ The 2-of-3 toy has a 23-byte P2SH locking scriptPubKey, a 493-byte redeemScript,
 and two 2,908-WU complete spends, also with zero witness/hint items and no measured
 stack peak. The 71-byte size filter is a toy condition, not a work estimate.
 Full protocol costs remain [OP-011](../open-problems.md#op-011--reproduce-binohash).
+The [8-of-n planning report](../../research/binohash-parameters/README.md)
+separately checks exact subset counts and applies the paper's approximate
+resource formulas. Its modeled hit probabilities depend on independent uniform
+trials; they are not a Core execution or security result.
