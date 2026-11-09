@@ -283,3 +283,5 @@ The earlier 44- and 46-case reports remain historical. This extension tests
 Merkle depth one and control shape for these exact leaves; it does not validate
 annex signature binding, future leaf execution, transaction finality, or full
 relay policy in the local API.
+
+The [pinned-chain supplement](../tests/data/pinned-hash-path-v30.3.json) records twelve selected cases, including honest controls, substitution rejections and the exact 1,000-item frontier. `--fixture-prefix pinned-chain-` reproduces this subset; the default harness still runs every generated case. Historical reports are retained.

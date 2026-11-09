@@ -1,8 +1,11 @@
-//! Integer commitment primitives.
+//! Commitment and opening primitives.
 
+pub mod dual_digest;
 pub mod four_way_hash_path;
 pub mod hash_path;
+pub mod length_keyed;
 pub mod preimage_length;
+pub mod sha256_pool;
 pub mod tapbranch;
 pub mod ternary_hash_path;
 

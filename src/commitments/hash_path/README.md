@@ -33,8 +33,8 @@ uses `7n`; OP_0/OP_1 are pushes and do not count. The verification comparison
 adds one counted opcode. Integer reconstruction adds five per bit. Static
 counts include inactive branches and are distinct from executed opcodes.
 For a hypothetical polyglot wrapper with exactly five additional counted
-opcodes, `5n+5` fits 39 bits and `7n+5` fits 28. That wrapper, signature checks,
-checkpoint pinning and Lamport binding are not implemented or measured here.
+opcodes, `5n+5` fits 39 bits and `7n+5` fits 28. The hypothetical polyglot wrapper and signature/Lamport binding remain
+unimplemented. The tapscript checkpoint pin is measured below.
 
 ## Security
 
@@ -118,3 +118,92 @@ The complete chain predicate has <!-- metric:hash_path_chain_4_3_opcodes -->38<!
 eight input data items and **0 hints**, all coexisting at entry. Pinning the
 initial state is excluded. Execution is `research-unlimited` via the tapscript
 helper with stack checks disabled. The final predicate leaves one true item.
+
+## Pinned starting state and streamed checkpoints
+
+`pinned::verify(starting_sha256, checkpoints)` checks an independently committed
+starting preimage before running the existing binary hash paths. The public
+start pin is a 32-byte SHA-256 digest. Supply one or more `(width, digest)`
+checkpoints in processing order, each with positive width and a 20-byte digest;
+total width `k` is at most 997. There are no defaults. The nonce is an arbitrary
+byte vector subject to the 520-byte consensus element limit. Tapscript enforces
+canonical empty/01 selectors.
+
+### Script metrics
+
+`complete-transaction:` all rows include checkpoint verification, a final
+Boolean and clean stack, a one-input Taproot script-path spend with a 33-byte
+control block and no annex, and its P2WSH output. The three 4+3-bit rows use the
+same opening (`[0x42;32]`, LSB-first values 13 and 3). The 997-bit rows use the
+same nonce and separate all-zero/all-one commitments. Data and complete witness
+bytes each include CompactSize counts and lengths. Complete witness bytes
+already include the leaf. No row uses hints (0 items, 0 bytes). All measured
+leaves use the optimizer through `compile_with_policy()`.
+
+| Configuration | Script bytes | Data witness bytes | Complete witness bytes | Data items | Combined peak | Executed non-push ops | Initial / remaining budget (same) | Transaction weight |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Unbound control, 4+3 | <!-- metric:pinned_chain_unbound_4_3_script -->80<!-- /metric:pinned_chain_unbound_4_3_script --> | <!-- metric:pinned_chain_unbound_4_3_data -->46<!-- /metric:pinned_chain_unbound_4_3_data --> | <!-- metric:pinned_chain_unbound_4_3_witness -->161<!-- /metric:pinned_chain_unbound_4_3_witness --> | <!-- metric:pinned_chain_unbound_4_3_items -->8<!-- /metric:pinned_chain_unbound_4_3_items --> | <!-- metric:pinned_chain_unbound_4_3_stack -->8<!-- /metric:pinned_chain_unbound_4_3_stack --> | <!-- metric:pinned_chain_unbound_4_3_executed -->36<!-- /metric:pinned_chain_unbound_4_3_executed --> | <!-- metric:pinned_chain_unbound_4_3_budget -->211<!-- /metric:pinned_chain_unbound_4_3_budget --> | <!-- metric:pinned_chain_unbound_4_3_weight -->539<!-- /metric:pinned_chain_unbound_4_3_weight --> |
+| Length-only control, 4+3 | <!-- metric:pinned_chain_length_4_3_script -->84<!-- /metric:pinned_chain_length_4_3_script --> | <!-- metric:pinned_chain_length_4_3_data -->46<!-- /metric:pinned_chain_length_4_3_data --> | <!-- metric:pinned_chain_length_4_3_witness -->165<!-- /metric:pinned_chain_length_4_3_witness --> | <!-- metric:pinned_chain_length_4_3_items -->8<!-- /metric:pinned_chain_length_4_3_items --> | <!-- metric:pinned_chain_length_4_3_stack -->10<!-- /metric:pinned_chain_length_4_3_stack --> | <!-- metric:pinned_chain_length_4_3_executed -->38<!-- /metric:pinned_chain_length_4_3_executed --> | <!-- metric:pinned_chain_length_4_3_budget -->215<!-- /metric:pinned_chain_length_4_3_budget --> | <!-- metric:pinned_chain_length_4_3_weight -->543<!-- /metric:pinned_chain_length_4_3_weight --> |
+| Pinned start, 4+3 | <!-- metric:pinned_chain_4_3_script -->116<!-- /metric:pinned_chain_4_3_script --> | <!-- metric:pinned_chain_4_3_data -->46<!-- /metric:pinned_chain_4_3_data --> | <!-- metric:pinned_chain_4_3_witness -->197<!-- /metric:pinned_chain_4_3_witness --> | <!-- metric:pinned_chain_4_3_items -->8<!-- /metric:pinned_chain_4_3_items --> | <!-- metric:pinned_chain_4_3_stack -->10<!-- /metric:pinned_chain_4_3_stack --> | <!-- metric:pinned_chain_4_3_executed -->39<!-- /metric:pinned_chain_4_3_executed --> | <!-- metric:pinned_chain_4_3_budget -->247<!-- /metric:pinned_chain_4_3_budget --> | <!-- metric:pinned_chain_4_3_weight -->575<!-- /metric:pinned_chain_4_3_weight --> |
+| Pinned, 997 zeroes | <!-- metric:pinned_chain_997_zeroes_script -->5043<!-- /metric:pinned_chain_997_zeroes_script --> | <!-- metric:pinned_chain_997_zeroes_data -->1033<!-- /metric:pinned_chain_997_zeroes_data --> | <!-- metric:pinned_chain_997_zeroes_witness -->6113<!-- /metric:pinned_chain_997_zeroes_witness --> | <!-- metric:pinned_chain_997_zeroes_items -->998<!-- /metric:pinned_chain_997_zeroes_items --> | <!-- metric:pinned_chain_997_zeroes_stack -->1000<!-- /metric:pinned_chain_997_zeroes_stack --> | <!-- metric:pinned_chain_997_zeroes_executed -->3992<!-- /metric:pinned_chain_997_zeroes_executed --> | <!-- metric:pinned_chain_997_zeroes_budget -->6163<!-- /metric:pinned_chain_997_zeroes_budget --> | <!-- metric:pinned_chain_997_zeroes_weight -->6491<!-- /metric:pinned_chain_997_zeroes_weight --> |
+| Pinned, 997 ones | <!-- metric:pinned_chain_997_ones_script -->5043<!-- /metric:pinned_chain_997_ones_script --> | <!-- metric:pinned_chain_997_ones_data -->2030<!-- /metric:pinned_chain_997_ones_data --> | <!-- metric:pinned_chain_997_ones_witness -->7110<!-- /metric:pinned_chain_997_ones_witness --> | <!-- metric:pinned_chain_997_ones_items -->998<!-- /metric:pinned_chain_997_ones_items --> | <!-- metric:pinned_chain_997_ones_stack -->1000<!-- /metric:pinned_chain_997_ones_stack --> | <!-- metric:pinned_chain_997_ones_executed -->4989<!-- /metric:pinned_chain_997_ones_executed --> | <!-- metric:pinned_chain_997_ones_budget -->7160<!-- /metric:pinned_chain_997_ones_budget --> | <!-- metric:pinned_chain_997_ones_weight -->7488<!-- /metric:pinned_chain_997_ones_weight --> |
+
+The metric test reconstructs the Core transactions, matches their txids,
+wtxids and weights, and steps the exact policy-compiled leaf in local tapscript
+with the combined stack limit enabled and global MINIMALDATA disabled. It counts
+executed non-push operations including IF/ENDIF handlers, excluding skipped
+hashes. The budget is initialized from the complete witness; no signature
+opcode consumes any of it. Opcode and budget counters are local measurements.
+The [Core report](../../../tests/data/pinned-hash-path-v30.3.json) records
+interpreter `a09e87af444034698697f0a2267e755cf72f9aed`, compiler
+`124b561ed75ac3ec4c6ad99207d8dcdd3bc67180`, and Core v30.3
+`49faec4f87f5cd19c88db01a82e5c68b087c8227`. The harness compares both
+embedded Rust identities with `cargo metadata --locked` before the oracle.
+Core checks mined regtest blocks and `testmempoolaccept` with
+`-acceptnonstdtxn=0`. The recorded accepted spends are `policy-validated`;
+the API in general remains `unclassified`.
+
+### Security and composition
+
+The controls accept the known substitution `(x, 1) -> (SHA256(x), 0)` even
+with identical first and final checkpoints. A 32-byte length guard still
+accepts it. The independent SHA-256 pin rejects it for the recorded opening.
+This does not prove general binding for the mixed-hash code. The 160-bit state
+caps generic collision security at 80 bits. Hiding requires adequate secret
+entropy; public intermediate checkpoints can allow enumeration of short later
+rounds. No one-time keys or participant signatures are supplied. Protocols
+must fix widths, checkpoint order and session context externally.
+
+Each invocation has `k+1` data items, all present at entry, and **0 hints**;
+the complete witness adds two items. For repeated invocations the cumulative
+hint count is still **0**. A single invocation with `p` unrelated live main/alt
+items needs `k+3+p <= 1000`. The initial check duplicates the preimage and
+pushes the digest; subsequent checkpoint comparisons have already consumed
+selectors. Include all preloaded data groups and any retained results in `p`.
+The 997-bit accepted cases have 998 data items and 1000 complete witness items.
+A 999th data item reaches 1001 stack items during the pin and is rejected.
+
+Stack contract: `preserved | reversed round/bit groups | preimage -> preserved |
+Boolean`, with top at right. No altstack operations. Standalone tapscript
+requires a clean truthy result. A caller composing the fragment must enforce
+the Boolean; an incorrect final checkpoint returns false.
+
+### Compatibility and reproduction
+
+The opcodes exist in bare, P2SH, P2WSH and tapscript. The small measured
+leaf fits P2SH's 520-byte and legacy/P2WSH's 201-opcode limits, but only
+Taproot spends were tested; legacy does not enforce canonical IF selectors.
+The 997-bit leaves exceed those legacy opcode and P2SH size limits. The exact
+Core policy evidence applies only to the documented Taproot fixtures.
+
+```sh
+cargo test --locked commitments::hash_path::pinned --lib
+cargo test --locked --example core_validation_fixtures
+python3 tools/core_regtest.py --download-core --fixture-prefix pinned-chain- --output target/pinned-chain-core.json
+cargo test --locked --test primitive_metrics pinned_chain_metrics_are_current -- --exact
+python3 tools/kb.py validate
+cargo test --locked -- --skip fields::
+```
+
+See the [knowledge entry](../../../knowledge/primitives/pinned-hash-path-chain.md),
+[comparison](../../../knowledge/comparisons/commitments.md), NR-056 and OP-020.

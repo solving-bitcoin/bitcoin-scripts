@@ -30,6 +30,9 @@ which returns 16 bits rather than one four-bit aggregate.
 The XOR reduction is an output-cardinality adapter, not a general byte-cost
 optimization. Parity is smaller when one bit per input is sufficient; this
 primitive is useful when downstream logic consumes one nibble checksum.
+The [packed-lane comparison](u4-xor-lanes.md) reproduces the same XOR
+output with canonical input checks on the full-table, triangular-table,
+and signed packed schedules at a matched complete-leaf boundary.
 
 ## Evidence and execution class
 

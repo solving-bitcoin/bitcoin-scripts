@@ -415,6 +415,16 @@ script-size/witness-size and raw-chain-length tradeoffs. Durable crash-safe and
 distributed one-time state, concrete multi-target bounds, raw ScriptNum
 canonicality, and complete state-transport transaction costs remain open.
 
+The current HORS-like helper upper-clamps witness indices, so its successful
+openings do not bind the raw index sequence ([NR-110](negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)).
+For an exact-index consumer, implement a distinct verifier while preserving
+the clamped API. **Acceptance criterion:** canonical in-range openings pass;
+out-of-range, negative, nonminimal ScriptNum, and wrong-preimage openings fail
+in strict local tests and an independently pinned Bitcoin Core spend; repeated
+and reordered index semantics are specified; and script bytes, serialized
+witness bytes, combined stack peak, and executed opcode costs are compared
+against the clamped helper under the same execution boundary.
+
 Compatible follow-up improvements add an exact verifier that carries the
 residual digit and a staged Horner checksum. Exhaustive chain-digit tests
 retain strict range and node-length checks. The relevant cost objective is
@@ -530,9 +540,48 @@ pushes are removed at opcode boundaries before rust-bitcoin's legacy sighash,
 including the out-of-range `SIGHASH_SINGLE` constant. A reduced two-choice
 fixture now uses valid ECDSA signatures and confirms selected funded P2SH
 spends and wrong-selection failures against pinned Core v30.3. Default Core
-relay policy rejects the valid spends under `CONST_SCRIPTCODE`. The full
-protocol remains open because two-round grinding, transaction mutation
-boundaries, Script extraction, and complete protocol costs are not reproduced.
+relay policy rejects the valid spends under `CONST_SCRIPTCODE`. A second toy
+fixture now checks 2-of-3 `OP_ROLL` selection, a signature-size condition, and
+an index-selected preimage predicate against pinned Core, including malformed
+controls. A host-side six-mode matrix identifies which transaction-field
+mutations change each canonical legacy sighash in one fixed template, but it
+has no signed-spend or Core verdict. The full protocol remains open because
+transaction pinning, two-round grinding, authenticated Script extraction, and
+complete protocol costs are not reproduced.
+
+The [8-of-n planning report](../research/binohash-parameters/README.md)
+establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
+`2^42` combinations at fixed `t=8`. Under an independent uniform-hit model,
+the paper's `n=120` setting has a 17.39% chance of at least one 42-bit puzzle
+hit per round for a fixed transaction. Its size and opcode margins remain
+paper-formula estimates, not measured Script or Core validation. Reproduce the
+full script and actual grind distribution before drawing protocol conclusions.
+
+A separate pinned-Core raw sighash-byte census confirms that all 256 byte
+values admit signed legacy P2SH spends, but only six canonical bytes pass
+default `STRICTENC` policy. A fixed host template yields 256 distinct digests;
+this does not establish independent or usable entropy after the full
+Binohash script, pinning and grinding constraints are imposed.
+
+A host-only 10-choose-5 enumeration now finds distinct digests for all 252
+ascending subsets of one fixed template. It also shows reversed order and
+duplicate selections alias unless the eventual Script consumer validates
+length, range, uniqueness, order, and canonical encoding. The experiment uses
+DER-shaped deletion targets rather than Core-validated ECDSA signatures.
+
+If HORS is used to authenticate the Script-readable Binohash index sequence,
+the existing clamped verifier is insufficient for exact index binding; see
+[NR-110](negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)
+and the exact-index acceptance criterion in OP-009. This local HORS observation
+does not establish a flaw in the paper's complete protocol.
+
+A separate nine-byte anchor fixture confirms the out-of-range `SIGHASH_SINGLE`
+signature boundary against Core but does not commit to transaction fields.
+
+A separate two-spend fixture differentially checks an executed separator, a
+dead-branch separator, legacy separator stripping, and before/after-boundary
+`FindAndDelete` against pinned Core v30.3. It closes that exact scriptCode-view
+gap without establishing the full protocol.
 
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
@@ -674,15 +723,21 @@ deployment criterion.
 ## OP-017 — Point-lock security and deployment validation
 
 Close the remaining gap between functional point-lock tests and protocol
-security. **Complete when:** the three-check ECDSA lock is executed as a
-complete bare and P2SH transaction against a pinned Bitcoin Core revision, its
+security. The exact funded committed-ECDSA P2SH fixture is now
+`differentially-validated` and `policy-validated` against pinned Bitcoin Core
+v30.3, with signature-substitution and output-count controls; its off-chain
+setup proof remains unvalidated. **Complete when:** the three-check ECDSA lock
+is executed as a complete bare and P2SH transaction against a pinned Bitcoin
+Core revision, its
 related-scriptCode reduced-sighash collision assumption receives a concrete
 single- and multi-instance analysis, and its high-S completeness fallback is
 confirmed under legacy consensus; the best generic forgery attack against the
 60-byte `G/2` ECDSA predicate is reproduced or tightly bounded, reconciling the
 conservative roughly 80-bit estimate with the Binohash paper's approximately
-97-bit smaller-R search; all three ECDSA leaves are validated against a pinned
-Bitcoin Core revision under consensus and applicable relay policy; the
+97-bit smaller-R search; all ECDSA leaves have configuration-specific
+validation against a pinned Bitcoin Core revision under consensus and
+applicable relay policy (the funded `G/2` and committed P2SH success fixtures
+now pass both); the
 committed-ECDSA setup statement has a byte-exact circuit and proof transcript
 for at least one pinned zkVM backend; and the Schnorr adaptor flow is tested
 against an independently maintained implementation with explicit nonce,
@@ -994,6 +1049,11 @@ and exactly 88 hints.
 
 ## OP-020 — Bound-start hash paths and Binohash composition
 
+The [pinned checkpoint experiment](primitives/pinned-hash-path-chain.md) now
+prices a SHA-256 start pin and reproduces the substitution rejection in Core
+v30.3. This covers the pinned start and checkpoint stream; the retained-bit
+Lamport/Binohash consumer and general binding analysis remain open.
+
 The optional-SHA256 binary path has a deterministic first-bit substitution
 when its starting preimage is free (NR-056). **Complete when:** a complete
 wrapper independently binds the start, rejects the known substituted opening,
@@ -1131,13 +1191,24 @@ that complete transaction criterion.
 Determine whether stable filtering improves a real authenticated variable-output
 consumer after binding selector meaning, retained count/vector and cleanup.
 **Accept when:** an identified protocol composes the selector with its actual
-caller state and terminal predicates, prices both reverse and matched forward
-schedules on the same boundary, records all preloaded data items and exactly
+caller state and terminal predicates, prices reverse and matched forward flag
+schedules and the sparse indexed schedule where the count is fixed, records
+all costs on the same boundary, records all preloaded data items and exactly
 zero or explicit hint items, observes a combined peak no greater than 1,000,
 and validates complete transactions against an immutable Bitcoin Core revision.
 Report policy separately, including oversized discarded payloads and whole-leaf
 optimizer options. A locally accepted routing fragment or constant literal
 consumer alone does not close this criterion; see NR-078.
+
+If the consumer requires one contiguous interval, bind the decoded start and
+length to its actual payload positions. Price that guard and its entire entry
+flag vector on the same boundary. See the
+[single-run mask decoder](primitives/single-run-mask.md).
+
+The [stable bipartition](primitives/stable-bipartition.md) retains both
+groups. For a two-group consumer, use the same acceptance criteria and
+include both output stacks and the cleanup of every payload. Compare the
+single-cursor and recomputed-depth schedules at a width that both support.
 
 ## OP-037 — Authenticated decimal transducer composition
 
@@ -1212,6 +1283,24 @@ packed representation or record the consumer as dominated. Complete-spend/Core
 validation is required before strengthening deployment claims. The 49-key
 signature multiset representation is outside the present four-byte rank domain.
 
+## OP-044 — Packed bounded-choice consumers
+
+The [checked bounded divider](primitives/scriptnum-bounded-div.md) decodes
+`x=31*a+b` for choice domains 32 and 31 with one operand, zero additional
+arithmetic hints and a four-item combined peak. Its 85-byte fragment costs
+more locking bytes than the matched 42-byte hinted verifier, which needs a
+second entry item and peaks at eight. This decoder alone does not measure
+sorting or other protocol composition; the packed choice payload would itself
+be a protocol hint when it carries auxiliary selector choices.
+
+**Complete when:** integrate paired decoding into an exact selector/operand
+consumer at widths 16 and 32, compare with independent selectors under the
+same semantics, and publish final whole-script bytes, full data-witness bytes,
+every hint/operand item at entry, executed operations and combined peak.
+Include routing, retained outputs, caller state and malformed/out-of-pool
+selector tests. Record a negative result if decoding/routing erases the saving;
+zero auxiliary arithmetic hints cannot substitute for protocol hint accounting.
+
 ## OP-042 — Reflection witness consumer frontier
 
 Half-vector expansion improves complete-leaf bytes and entry items over raw
@@ -1222,3 +1311,211 @@ encodings on an equal boundary with witness bytes/items, exact hint counts,
 executed opcodes and combined peaks. Record either a consumer-level improvement
 or dominance. A general compression or deployment claim requires its own
 semantics and full-spend/Core validation; odd complement centers remain excluded.
+
+## OP-044 — Multiset-equality consumer frontier
+
+The packed histogram test is measured standalone. **Accept when:** a concrete
+consumer (for example a permutation check on witness-supplied nibbles) uses
+it with its live protocol state and compares it against a hinted sorted-order
+certificate on equal complete-leaf boundaries, with script and witness bytes,
+data and hint items, executed opcodes and combined peaks; record either the
+winning regime or dominance. A cheaper table schedule (reusing one table
+across words) is also open. Complete-spend/Core validation is required before
+any deployment claim.
+
+## OP-045 — Sub-quadratic inversion counting
+
+The pairwise count is quadratic in script bytes. **Accept when:** a Script
+construction computes the same exact count for hostile 32-nibble vectors in
+fewer policy-compiled script bytes than 3,709 plus witness bytes on the same
+complete-leaf boundary, with exact hint counts, executed opcodes and combined
+peaks, or a consumer of the count (permutation parity, Kendall-tau distance)
+measures a hinted certificate that dominates it. Core validation is required for
+any deployment claim.
+
+## OP-046 — Hex-text consumer frontier
+
+The decoders are measured standalone. **Accept when:** a concrete consumer
+(for example comparing a witness-supplied hex digest text with a computed hash
+or authenticating a textual commitment) uses a decoder together with its live
+protocol state and compares it with a raw-byte witness encoding on equal
+complete-leaf boundaries, with witness bytes and items, exact hint counts,
+executed opcodes and combined peaks; record either a winning regime or
+dominance. Base32, Bech32 and Base58 alphabets are unmeasured. Core validation
+is required for any deployment claim.
+
+## OP-047 — Bracket-structure consumer frontier
+
+The balanced check is measured standalone. **Accept when:** a concrete consumer
+(for example validating a serialized tree-shape or nested-script commitment)
+uses it with its live protocol state and compares it with an alternative
+encoding such as depth lists on equal complete-leaf boundaries, with witness
+bytes and items, exact hint counts, executed opcodes and combined peaks.
+Byte-wide (256-entry) summary tables are unmeasured. Core validation is required
+for any deployment claim.
+
+## OP-048 — Table-free Hamming distance
+
+The fused-table Hamming distance pays a fixed cost of about 410 bytes and 258
+extra stack items. **Accept when:** a Script construction computes the same
+distance for hostile 16-nibble vectors without a resident table in fewer
+policy-compiled script bytes than 874 on the same boundary, with exact peaks and
+hint counts, or a consumer (a proximity or error-bound check) shows the
+table-free metrics suffice. Core validation is required for any deployment claim.
+
+## OP-049 — Cheaper hint-free ScriptNum expansion
+
+The hint-free ladder costs about 57 script bytes per nibble. **Accept when:** a
+Script construction expands a hostile 16-bit ScriptNum into four canonical
+nibbles with no hints in fewer than 235 total script-plus-witness bytes on the
+same boundary (the hint-checked form totals 72), or a protocol consumer shows the
+hint-free form is required and measures its complete-leaf cost. Core validation
+is required for any deployment claim.
+
+## OP-050 — Frequent-element generalization
+
+Boyer-Moore decides only a strict majority. **Accept when:** a Script construction
+decides, for hostile 16-nibble vectors, whether any nibble exceeds a threshold
+`n/k` for `k > 2` (a Misra-Gries summary with a verification pass), rejects
+out-of-range nibbles, and reports script bytes, witness items, hint count, peak
+and executed opcodes on the same boundary as the 486-byte majority fragment, or
+a consumer shows the strict-majority form suffices. Core validation is required
+for any deployment claim.
+
+## OP-051 — Residue-check consumer frontier
+
+The residues are measured standalone. **Accept when:** a concrete consumer (for
+example a cheap necessary check on witness-supplied limb arithmetic) combines
+casting-out residues with its live protocol state and compares them with an
+exact check on equal complete-leaf boundaries, with witness bytes and items,
+hint counts, executed opcodes and combined peaks, recording either a winning
+regime or dominance. A delayed-reduction variant of the modulo-65,537 and
+Damm schedules is unmeasured. Core validation is required for any deployment
+claim.
+
+## OP-052 — Luhn-with-repair consumer frontier
+
+Luhn is measured standalone. **Accept when:** a protocol consumer that must
+authenticate decimal codes (see OP-037) uses Luhn, Damm, or a cheaper
+quasigroup together with its live protocol state, and compares them on equal
+complete-leaf boundaries with witness bytes and items, hint counts, executed
+opcodes, combined peaks and the measured undetected-error classes, or a
+construction closes the `0`/`9` blind spot at less than Damm's 766 bytes for 32
+digits. Core validation is required for any deployment claim.
+
+## OP-053 — Delayed reduction in other table-backed folds
+
+The delayed-reduction ladder replaces a resident table for modulus 16. **Accept
+when:** the same replacement is measured for another table-backed or per-step
+normalized fold in the repository (for example the exact-sum and mod-3 batch
+projections) on equal fragment boundaries with script bytes, hints, peaks and
+executed opcodes, recording a win or the regime where the table remains better.
+Core validation is required for any deployment claim.
+
+## OP-054 — Authenticated amount-to-checksum composition
+
+The expansion is measured against Damm but not inside an authenticated protocol.
+**Accept when:** a consumer binds the amount, its decimal meaning and the check
+digit to an authenticated source (see OP-037), compares hint-free, hint-checked
+and digits-only witnesses on equal complete-leaf boundaries with witness bytes
+and items, hint counts, executed opcodes and combined peaks, and handles amounts
+above 2^31 - 1 or records the limit as a constraint. Core validation is required
+for any deployment claim.
+
+## OP-055 — Composition-check consumer frontier
+
+The composition check is measured standalone. **Accept when:** a concrete
+consumer (for example a constant-composition one-time signature verifier or a
+permutation-valued witness) uses it with its live protocol state and compares it
+with a destructive-selection or hint-based design on equal complete-leaf
+boundaries with witness bytes and items, hint counts, executed opcodes and
+combined peaks, recording either a winning regime or dominance. A cheaper
+table schedule that reuses one table across words is unmeasured. Core
+validation is required for any deployment claim.
+
+## OP-056 — Small-message Lamport versus Winternitz crossover
+
+Lamport digits may beat Winternitz for very short messages. **Accept when:** the
+Winternitz constructions are measured at 8, 16, 32 and 160 bits on the same
+fragment-plus-serialized-signature boundary with 16-byte secrets and the
+crossover (or its absence) is recorded against the 479, 958 and 1,916-byte
+two-bit Lamport totals (and 9,580 bytes at 160 bits), including the conversion
+each design needs to deliver the same authenticated data to an identical
+consumer and terminal predicate. Core validation is required for any deployment claim.
+
+## OP-057 — Rank-certificate consumer and network comparison
+
+The claim check and the pairwise selector are measured standalone. **Accept when:**
+the pinned zero-hint sorting baseline is composed with selection and cleanup,
+then reproduced with the same single-result boundary at 16 and 32 nibbles and compared with the claim check
+including the hint item, and a consumer (for example a median-of-reports or
+threshold-ordering protocol) uses the winner with its live state, recording witness
+bytes and items, hint counts, executed opcodes and combined peaks. Core validation
+is required for any deployment claim.
+
+## OP-058 — Hex text round trip and digest-text consumer
+
+Encoding and decoding hexadecimal text are measured separately. **Accept when:** a
+consumer (for example comparing a witness-supplied hexadecimal digest text with a
+computed digest) combines the decoder and encoder with its live protocol state and
+compares text, nibble and raw-byte witnesses on equal complete-leaf boundaries
+with witness bytes and items, hint counts, executed opcodes and combined peaks.
+Core validation is required for any deployment claim.
+
+## OP-059 — MINIMALIF differential and subset-sum consumer
+
+The canonical-selector behavior rests on the local tapscript executor. **Accept
+when:** a complete Taproot spend containing the plain and explicit verifiers is
+validated against a pinned Bitcoin Core revision with canonical, aliased and
+negative-zero selectors, recording consensus and policy outcomes, and a concrete
+consumer (for example a partition or cardinality condition) compares the plain
+form with an alternative encoding on equal complete-leaf boundaries with witness
+bytes and items, hint counts, executed opcodes and combined peaks.
+
+## OP-060 — Ordered-sibling assertion and Taproot consumer
+
+The comparison returns a Boolean over hostile vectors. **Accept when:** a Taproot
+node-ordering consumer uses the packed comparison with `tapbranch-u4` and its live
+state, and compares it with a hinted first-difference-index assertion (claimed
+position, prefix equality and one nibble comparison) on equal complete-leaf
+boundaries with witness bytes and items, exact hint counts, executed opcodes and
+combined peaks, recording either a winning regime or dominance. Complete-spend and
+Core validation are required for any deployment claim.
+
+## OP-061 — Hinted presence composition and duplicate detection
+
+The hinted presence bits are measured standalone with 32 hints per invocation.
+**Accept when:** a consumer such as a distinctness or set-equality check (the flags
+sum to `n` exactly when the vector has no duplicates) uses it with its live protocol
+state and compares it with the zero-hint projection, the packed composition check
+and the pairwise comparator on equal complete-leaf boundaries, with witness bytes
+and items, cumulative hints for repeated use under the 1,000-item bound, executed
+opcodes and combined peaks. Core validation is required for any deployment claim.
+
+## OP-062 — Hinted conversions inside compressed u32 operations
+
+`u32_compressed_add` uses the bit-ladder conversion; the direct compressed shift pair operates on the normalized magnitude instead. **Accept when:** a compressed operation is rebuilt with
+the hint-checked conversion, correctness is preserved on every semantic boundary
+class including `0x80000000`, and the complete operation is compared with the
+existing one on an equal boundary with script bytes, witness bytes and items, hint
+counts per invocation and in batches, executed opcodes and combined peaks. Core
+validation is required for any deployment claim.
+
+## OP-063 — Parity certificates for other GF(2)-linear maps
+
+The lane-sum parity certificate verifies a position-independent XOR. **Accept when:**
+the technique is extended to a position-dependent GF(2)-linear map such as a CRC or a
+Hamming syndrome of a fixed-length message, with exact hint counts, soundness
+established by exhaustive hint search on a small case, and script bytes, witness
+bytes and items, executed opcodes and combined peaks compared with the existing
+table-driven construction on an equal boundary. Supporting 213 nibbles and a
+two-word lane split for vectors at 214 or above are also open. Core validation is required for any deployment claim.
+
+## OP-064 — Histogram consumers and table reuse
+
+The hinted histogram repushes its 16-entry table once per accumulator word. **Accept
+when:** a schedule that reuses one table across words (or a two-sided multiset
+comparison built on the same lanes) is measured on the same boundary, and a consumer
+such as a sortedness or entropy-style certificate uses the histogram with its live
+state, recording witness bytes and items, hint counts under repeated use, executed
+opcodes and combined peaks. Core validation is required for any deployment claim.

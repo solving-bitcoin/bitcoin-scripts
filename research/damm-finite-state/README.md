@@ -133,8 +133,10 @@ breakdowns and four preloaded independent compositions. The new independent
 Python oracle also checks the actual Cargo dependency identities, all composed
 witness hashes, output order and optimizer deltas. Full artifact/catalog
 contracts recompute the report and inspect immutable source bytes when the
-commit is available; a shallow CI checkout still verifies current source hashes
-and recomputed artifacts and must identify itself as shallow.
+commit is available. Current comparisons retain the complete source-file
+inventory, dependency pins and every artifact, allowing unrelated source digest
+changes. A shallow CI checkout must identify itself as shallow and still
+reproduces artifacts and pins; it cannot verify unavailable historical blobs.
 
 The public resident loop is byte-identical to the original prototype at all
 shared valid sizes. Its 32-digit fragment/leaf are 766/769 bytes with the same

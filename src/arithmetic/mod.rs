@@ -1,16 +1,28 @@
 //! Modulus-agnostic integer, residue, and finite-field arithmetic backends.
 
 pub mod bigint;
+pub mod byte_encoding;
 pub mod checksums;
+pub mod extrema;
 pub mod factoradic;
+pub mod hamming;
 pub mod integer_root;
+pub mod interval_mask;
+pub mod knapsack;
+pub mod midpoint;
+pub mod negabinary;
 pub mod permutation;
+pub mod progression;
 pub mod rns;
+pub mod saturating;
 pub mod scriptint;
 pub mod signed_window;
+pub mod single_peak;
+pub mod sum_equality;
 pub mod u31;
 pub mod u32;
 pub mod u4;
+pub mod wide_sum;
 
 #[cfg(test)]
 mod test_helpers {

@@ -38,7 +38,7 @@ For [binary hash paths](../primitives/hash-path-integer.md), bind the starting
 state independently: otherwise changing `(x, 1)` to `(SHA256(x), 0)` preserves
 the result. Nested paths equal the joined path and do not encode round
 boundaries. Binohash/Lamport consumers must bind the normalized branch bits,
-not the original selector bytes. A complete wrapper and its costs remain OP-020.
+not the original selector bytes. That retained-bit integration remains OP-020.
 
 
 A [prefix/delta sequence adapter](../primitives/u4-prefix-sum.md) preserves
@@ -54,3 +54,5 @@ ScriptNum products, not canonical one-byte serialization. Products 128..225 have
 a sign-padding byte; a hash transcript must specify conversion and bind the
 actual product/vector being consumed. Zero hints and a small table do not
 replace that byte contract or the terminal authentication predicate.
+
+The [pinned-start checkpoint wrapper](../primitives/pinned-hash-path-chain.md) now has scoped Core evidence. It fixes a start digest and checks each ordered checkpoint, consuming its selectors. It does not expose retained bits or replace participant signatures and session binding.

@@ -1,4 +1,8 @@
 //! Shared native/explicit filter and numeric-word-selector witness contracts.
+#[path = "common/research_artifacts.rs"]
+mod research_artifacts;
+use research_artifacts::reproduced_measurements;
+
 use bitcoin::{
     hashes::{sha256, Hash},
     ScriptBuf,
@@ -514,7 +518,10 @@ fn report_catalog_and_immutable_source_bind_each_configuration() {
     assert_eq!(revision.len(), 40);
     assert!(revision.bytes().all(|b| b.is_ascii_hexdigit()));
     assert_ne!(revision, "0000000000000000000000000000000000000000");
-    assert_eq!(measure::report(revision), report);
+    assert_eq!(
+        reproduced_measurements(&measure::report(revision)),
+        reproduced_measurements(&report)
+    );
     let commit = std::process::Command::new("git")
         .args(["cat-file", "-e", revision])
         .current_dir(env!("CARGO_MANIFEST_DIR"))

@@ -1,5 +1,11 @@
 # Canonical small-permutation rank decoder
 
+The bounded quotient arithmetic is shared with
+[`scriptint::bounded`](../scriptint/README.md#bounded-division-without-quotient-hints).
+This decoder calls the crate-private arithmetic core with its already-proven
+canonical residual bound. The public arithmetic API adds hostile-input checks;
+the existing permutation metric snapshots remain unchanged.
+
 Decode one hostile canonical ScriptNum into the lexicographic permutation of
 `0..width-1`. This is a representation adapter; it supplies neither authentication
 nor a spending authorization. A separate Lehmer-digit decoder is the measured

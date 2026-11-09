@@ -1,0 +1,1712 @@
+{
+  "active_consensus_deployments": [
+    "segwit",
+    "taproot"
+  ],
+  "all_expectations_met": true,
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "compiler": {
+    "commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+    "name": "bitcoin-script",
+    "source": "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+    "version": "0.4.0"
+  },
+  "consensus_method": "generateblock with raw transactions; verifies connected block contains txid",
+  "fixture_count": 12,
+  "fixture_prefix": "pinned-chain-",
+  "fixture_sha256": "745c2ec7f9b5a374ec8270995b01d5a154f3646e8876c8df1b6cdb61168759a3",
+  "funding_txid": "a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e",
+  "generator_fixture_count": 65,
+  "initial_mocktime": 1800000000,
+  "local_interpreter": {
+    "commit": "a09e87af444034698697f0a2267e755cf72f9aed",
+    "context": "tapscript",
+    "full_consensus_validation": false,
+    "helper": "execute_raw_script_with_inputs_strict",
+    "limitations": "The legacy research helper retains default minimal-number policy and experimental OP_CAT. Explicit profiles use current OP_SUCCESS semantics, no experimental opcodes, consensus numeric encoding or policy MINIMALDATA, and policy's 80-byte witness-data limit. Those profiles remain fragment-only; a separate host-side preflight checks the script-path commitment before combining local verdicts. Neither layer validates the full transaction, annex policy or relay policy. Signature/timelock-dependent opcodes are unsupported by the profiles. Execution opcode and complete-witness budget counters remain unavailable. Panics and unsupported outcomes are distinct, never converted to rejection.",
+    "name": "bitcoin-scriptexec",
+    "profiles": {
+      "consensus": "support::tapscript::execute_tapscript with TapscriptProfile::Consensus",
+      "policy": "support::tapscript::execute_tapscript with TapscriptProfile::Policy; bounded script/witness policy subset"
+    },
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+    "stack_limit_enforced": true,
+    "version": "0.0.0"
+  },
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "policy_method": "testmempoolaccept; -acceptnonstdtxn=0; remaining v30.3 default policy",
+  "resolved_compiler": {
+    "name": "bitcoin-script",
+    "source": "git+https://github.com/BitVM/rust-bitcoin-script#124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+    "version": "0.4.0"
+  },
+  "resolved_interpreter": {
+    "name": "bitcoin-scriptexec",
+    "source": "git+https://github.com/adrienlacombe/rust-bitcoin-scriptexec?rev=a09e87af444034698697f0a2267e755cf72f9aed#a09e87af444034698697f0a2267e755cf72f9aed",
+    "version": "0.0.0"
+  },
+  "results": [
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "1f835b2ada0c3cba59bb8a5c00845b06a57887067aeb3b3bb89029b00e0b49cb",
+          "block_height": 103
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00069444,
+            "effective-includes": [
+              "e09eee2be46ac37790eb4e27dce366c006c577ccaf197d314a4323cd435caa93"
+            ]
+          },
+          "txid": "68a2bf7b1c46804ab8e4a446fbab59b1b3173783e6af9b9ea16adb279845b8fa",
+          "vsize": 144,
+          "wtxid": "e09eee2be46ac37790eb4e27dce366c006c577ccaf197d314a4323cd435caa93"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Both ordered checkpoints and starting hash match.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 10,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 116,
+        "static_non_push_opcodes": 41,
+        "taproot_witness_bytes": 197,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-valid-4-plus-3",
+      "script_pubkey_hex": "5120ebe19e2eb054209c0035191ad26412e014de856fb77c4a6042b89ddda990aaa7",
+      "script_sha256": "382dcea2e1f4f2a7ff29f66e4601c32f8edee4a820e776f0ee3dcd7244121865",
+      "tapleaf_hash": "3410619c6f763f1cc6bf5f892a025e2644c89a0436c7c20eee471ff0338e4204",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 293,
+        "txid": "68a2bf7b1c46804ab8e4a446fbab59b1b3173783e6af9b9ea16adb279845b8fa",
+        "vsize": 144,
+        "weight": 575,
+        "witness_bytes": 197,
+        "wtxid": "e09eee2be46ac37790eb4e27dce366c006c577ccaf197d314a4323cd435caa93"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "21cce6795a677763671366aebdfbcfa34beb44c17583ccb3b4916e0d71f9db2d",
+          "block_height": 104
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00074074,
+            "effective-includes": [
+              "a632f0e04ab484b3dcaa1ce65a7394450639f979c1e67b8a2f2088076dd87973"
+            ]
+          },
+          "txid": "8c3273a91a078638e1a78af45a975d3c73c3d26759d17715811f5ee237b0b824",
+          "vsize": 135,
+          "wtxid": "a632f0e04ab484b3dcaa1ce65a7394450639f979c1e67b8a2f2088076dd87973"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "Unbound control with identical honest data.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 8,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 8,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 8,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 80,
+        "static_non_push_opcodes": 38,
+        "taproot_witness_bytes": 161,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-control-unbound-valid",
+      "script_pubkey_hex": "5120901058241dc46d7314491ac0b9c6065b1330a981d7900f6141d63d348afc8b50",
+      "script_sha256": "4c780018cc7efe741cd655ba9894a29a1fdd52b29ecda1db5a180e579790ec45",
+      "tapleaf_hash": "c2b94d98dfd532655cdf0b87da97ee3cdf4b7dfbf366592209a11a45e68ca80e",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 257,
+        "txid": "8c3273a91a078638e1a78af45a975d3c73c3d26759d17715811f5ee237b0b824",
+        "vsize": 135,
+        "weight": 539,
+        "witness_bytes": 161,
+        "wtxid": "a632f0e04ab484b3dcaa1ce65a7394450639f979c1e67b8a2f2088076dd87973"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "24d1647dc8bf992d04bea078a8e3e8595e335f76a5aa6b1a1cf1d15a7fdb6919",
+          "block_height": 105
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00073529,
+            "effective-includes": [
+              "0756dcfb9d2cc7aecdc490b8382396c57eeccc52b1b13c96c66cacd663dec26f"
+            ]
+          },
+          "txid": "c0b415ef959b945596f8aa47b733a4f22606d83f28ff2b12aaa2fa525620bd86",
+          "vsize": 136,
+          "wtxid": "0756dcfb9d2cc7aecdc490b8382396c57eeccc52b1b13c96c66cacd663dec26f"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "32-byte length control with identical honest data.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 10,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 84,
+        "static_non_push_opcodes": 40,
+        "taproot_witness_bytes": 165,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-control-length-only-valid",
+      "script_pubkey_hex": "51203bade4a90c4048c6f34f47ddb0e85fddfb2e0d3f5069ef8bf885f22615d180c5",
+      "script_sha256": "aaf5fef7333171213ec55731c7f050923df9d96adac638340677c06201c6c2ef",
+      "tapleaf_hash": "6ef35c6f070024b869cd3b7161f6c95fd46c5aff4e7db348d95f6ff78777f5b0",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 261,
+        "txid": "c0b415ef959b945596f8aa47b733a4f22606d83f28ff2b12aaa2fa525620bd86",
+        "vsize": 136,
+        "weight": 543,
+        "witness_bytes": 165,
+        "wtxid": "0756dcfb9d2cc7aecdc490b8382396c57eeccc52b1b13c96c66cacd663dec26f"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "282e99e7c2650085bdc958a8d8503f9840d569dec4cf68fe06b1b5e8fe3960ff",
+          "block_height": 106
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00074074,
+            "effective-includes": [
+              "cf608895b103fd1d75bb312f82b3be16bb306b48926fbff0f0c1302e4de6a607"
+            ]
+          },
+          "txid": "579d749d733897dca9fa8c4516fed0f6827ba29d534a2f40927baf17c4495ea2",
+          "vsize": 135,
+          "wtxid": "cf608895b103fd1d75bb312f82b3be16bb306b48926fbff0f0c1302e4de6a607"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "SHA256(x) with first bit zero preserves the checkpoints.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 8,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 8,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 8,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 45,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 80,
+        "static_non_push_opcodes": 38,
+        "taproot_witness_bytes": 160,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-control-unbound-substitution",
+      "script_pubkey_hex": "5120901058241dc46d7314491ac0b9c6065b1330a981d7900f6141d63d348afc8b50",
+      "script_sha256": "4c780018cc7efe741cd655ba9894a29a1fdd52b29ecda1db5a180e579790ec45",
+      "tapleaf_hash": "c2b94d98dfd532655cdf0b87da97ee3cdf4b7dfbf366592209a11a45e68ca80e",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 256,
+        "txid": "579d749d733897dca9fa8c4516fed0f6827ba29d534a2f40927baf17c4495ea2",
+        "vsize": 135,
+        "weight": 538,
+        "witness_bytes": 160,
+        "wtxid": "cf608895b103fd1d75bb312f82b3be16bb306b48926fbff0f0c1302e4de6a607"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "7842aaa43722e6fd654b943fb32a55818a7dd69972319a9c733d3cb631b4c3da",
+          "block_height": 107
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 0.00073529,
+            "effective-includes": [
+              "93e3ce370b896f1720c2bf4a355c6f902f591f709e229808ca196218479db41f"
+            ]
+          },
+          "txid": "2c944f669a4f5f4e09113b6e5279afc9d6eeb5fc5668e8ebce58432652c4fd69",
+          "vsize": 136,
+          "wtxid": "93e3ce370b896f1720c2bf4a355c6f902f591f709e229808ca196218479db41f"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "The length check accepts the same substitution.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 10,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 45,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 84,
+        "static_non_push_opcodes": 40,
+        "taproot_witness_bytes": 164,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-control-length-only-substitution",
+      "script_pubkey_hex": "51203bade4a90c4048c6f34f47ddb0e85fddfb2e0d3f5069ef8bf885f22615d180c5",
+      "script_sha256": "aaf5fef7333171213ec55731c7f050923df9d96adac638340677c06201c6c2ef",
+      "tapleaf_hash": "6ef35c6f070024b869cd3b7161f6c95fd46c5aff4e7db348d95f6ff78777f5b0",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 260,
+        "txid": "2c944f669a4f5f4e09113b6e5279afc9d6eeb5fc5668e8ebce58432652c4fd69",
+        "vsize": 136,
+        "weight": 542,
+        "witness_bytes": 164,
+        "wtxid": "93e3ce370b896f1720c2bf4a355c6f902f591f709e229808ca196218479db41f"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 6de45db0585d99119aea8fc2e9feeffc195376d1c7ae57af7bb2259f3214f091 (wtxid 1d5d775abdd19052f5563b4a6c6763407576fb13e04794c5d87bfc8d16320b00), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:5",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 6de45db0585d99119aea8fc2e9feeffc195376d1c7ae57af7bb2259f3214f091 (wtxid 1d5d775abdd19052f5563b4a6c6763407576fb13e04794c5d87bfc8d16320b00), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:5",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "6de45db0585d99119aea8fc2e9feeffc195376d1c7ae57af7bb2259f3214f091",
+          "wtxid": "1d5d775abdd19052f5563b4a6c6763407576fb13e04794c5d87bfc8d16320b00"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The independent SHA-256 pin rejects the substituted preimage.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 8,
+        "max_stack_items": 10,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": false,
+          "policy": false
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 8,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 8,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 45,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 116,
+        "static_non_push_opcodes": 41,
+        "taproot_witness_bytes": 196,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-rejects-first-bit-substitution",
+      "script_pubkey_hex": "5120ebe19e2eb054209c0035191ad26412e014de856fb77c4a6042b89ddda990aaa7",
+      "script_sha256": "382dcea2e1f4f2a7ff29f66e4601c32f8edee4a820e776f0ee3dcd7244121865",
+      "tapleaf_hash": "3410619c6f763f1cc6bf5f892a025e2644c89a0436c7c20eee471ff0338e4204",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 292,
+        "txid": "6de45db0585d99119aea8fc2e9feeffc195376d1c7ae57af7bb2259f3214f091",
+        "vsize": 144,
+        "weight": 574,
+        "witness_bytes": 196,
+        "wtxid": "1d5d775abdd19052f5563b4a6c6763407576fb13e04794c5d87bfc8d16320b00"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 42a455299d6a59b614eb5bde176972155e201c922e38c52842ff90b55c8c8445 (wtxid 98523b552b347c041967e4b9999b4fc9274653c41f76d07063ce4535525de453), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:6",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 42a455299d6a59b614eb5bde176972155e201c922e38c52842ff90b55c8c8445 (wtxid 98523b552b347c041967e4b9999b4fc9274653c41f76d07063ce4535525de453), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:6",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "42a455299d6a59b614eb5bde176972155e201c922e38c52842ff90b55c8c8445",
+          "wtxid": "98523b552b347c041967e4b9999b4fc9274653c41f76d07063ce4535525de453"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The first checkpoint is wrong; the final checkpoint is unchanged.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 4,
+        "max_stack_items": 10,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": false,
+          "policy": false
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 4,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 4,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 116,
+        "static_non_push_opcodes": 41,
+        "taproot_witness_bytes": 197,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-stale-first-checkpoint",
+      "script_pubkey_hex": "5120d098346518861d7c5ead8d95311ea6b4f918630b0408e5c3382d2d7da6087f2b",
+      "script_sha256": "ee4ad11ea42abcf4054c88ced45b9264e7a271172839dd7c9f0744341c13cdcb",
+      "tapleaf_hash": "5e736d7fbb0bc40142e5da89fee333f4e3788153374c78a7c15de2b0f7f8a267",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 293,
+        "txid": "42a455299d6a59b614eb5bde176972155e201c922e38c52842ff90b55c8c8445",
+        "vsize": 144,
+        "weight": 575,
+        "witness_bytes": 197,
+        "wtxid": "98523b552b347c041967e4b9999b4fc9274653c41f76d07063ce4535525de453"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 5d80606e2289da674dbc835a35e032d322a590644a80417caec9353a7b792fb1 (wtxid fcdf933c94962ab9ff793cfe2acdc727d765849d18478b14e4a1b9f4a0a3a976), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:7",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 0 of 5d80606e2289da674dbc835a35e032d322a590644a80417caec9353a7b792fb1 (wtxid fcdf933c94962ab9ff793cfe2acdc727d765849d18478b14e4a1b9f4a0a3a976), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:7",
+          "reject-reason": "mempool-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation)",
+          "txid": "5d80606e2289da674dbc835a35e032d322a590644a80417caec9353a7b792fb1",
+          "wtxid": "fcdf933c94962ab9ff793cfe2acdc727d765849d18478b14e4a1b9f4a0a3a976"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "Changing round order breaks the first checkpoint.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "equalverify",
+        "policy": false,
+        "policy_rejection": "equalverify"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "EqualVerify",
+        "final_main_stack_items": 4,
+        "max_stack_items": 10,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": false,
+          "policy": false
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 4,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "EqualVerify",
+            "final_main_stack_items": 4,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 116,
+        "static_non_push_opcodes": 41,
+        "taproot_witness_bytes": 197,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-reordered-rounds",
+      "script_pubkey_hex": "5120ebe19e2eb054209c0035191ad26412e014de856fb77c4a6042b89ddda990aaa7",
+      "script_sha256": "382dcea2e1f4f2a7ff29f66e4601c32f8edee4a820e776f0ee3dcd7244121865",
+      "tapleaf_hash": "3410619c6f763f1cc6bf5f892a025e2644c89a0436c7c20eee471ff0338e4204",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 293,
+        "txid": "5d80606e2289da674dbc835a35e032d322a590644a80417caec9353a7b792fb1",
+        "vsize": 144,
+        "weight": 575,
+        "witness_bytes": 197,
+        "wtxid": "fcdf933c94962ab9ff793cfe2acdc727d765849d18478b14e4a1b9f4a0a3a976"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (OP_IF/NOTIF argument must be minimal in tapscript), input 0 of 19c8880a7a95633f7558fb463641f1ab961457d6ddc565f434f2cd571e5e6193 (wtxid daebc5abd04561e385a10efa00195b46609efde64cae3f764f5663849801077b), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:8",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (OP_IF/NOTIF argument must be minimal in tapscript), input 0 of 19c8880a7a95633f7558fb463641f1ab961457d6ddc565f434f2cd571e5e6193 (wtxid daebc5abd04561e385a10efa00195b46609efde64cae3f764f5663849801077b), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:8",
+          "reject-reason": "mempool-script-verify-flag-failed (OP_IF/NOTIF argument must be minimal in tapscript)",
+          "txid": "19c8880a7a95633f7558fb463641f1ab961457d6ddc565f434f2cd571e5e6193",
+          "wtxid": "daebc5abd04561e385a10efa00195b46609efde64cae3f764f5663849801077b"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "A truthy value other than 01 violates tapscript MINIMALIF.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "tapscript-minimal-if",
+        "policy": false,
+        "policy_rejection": "tapscript-minimal-if"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "TapscriptMinimalIf",
+        "final_main_stack_items": 8,
+        "max_stack_items": 10,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": false,
+          "policy": false
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "TapscriptMinimalIf",
+            "final_main_stack_items": 8,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "TapscriptMinimalIf",
+            "final_main_stack_items": 8,
+            "max_stack_items": 10,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 8,
+        "data_witness_bytes": 46,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 116,
+        "static_non_push_opcodes": 41,
+        "taproot_witness_bytes": 197,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-nonminimal-selector",
+      "script_pubkey_hex": "5120ebe19e2eb054209c0035191ad26412e014de856fb77c4a6042b89ddda990aaa7",
+      "script_sha256": "382dcea2e1f4f2a7ff29f66e4601c32f8edee4a820e776f0ee3dcd7244121865",
+      "tapleaf_hash": "3410619c6f763f1cc6bf5f892a025e2644c89a0436c7c20eee471ff0338e4204",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 293,
+        "txid": "19c8880a7a95633f7558fb463641f1ab961457d6ddc565f434f2cd571e5e6193",
+        "vsize": 144,
+        "weight": 575,
+        "witness_bytes": 197,
+        "wtxid": "daebc5abd04561e385a10efa00195b46609efde64cae3f764f5663849801077b"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "7798e80150c2d67130d1f2a7af1909b9e61905f8c4d8cf94e6fc294856c62c52",
+          "block_height": 108
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 6.161e-05,
+            "effective-includes": [
+              "ef7c3bfbf955b2fa12a417e20606b662ddd7fbe59a9b82b697405fcb6514254f"
+            ]
+          },
+          "txid": "1d28d629f8544962cfb31b5e13a05a7c6079f8a30a1c9bd76dc825debdbfb57f",
+          "vsize": 1623,
+          "wtxid": "ef7c3bfbf955b2fa12a417e20606b662ddd7fbe59a9b82b697405fcb6514254f"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "998 entry data items and two transient items during the start pin.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1000,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 1000,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 1000,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 998,
+        "data_witness_bytes": 1033,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 5043,
+        "static_non_push_opcodes": 4989,
+        "taproot_witness_bytes": 6113,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-997-zeroes",
+      "script_pubkey_hex": "5120e4ba0f5be1d64a164787b960ed27eef5623f49f9c4d577ad89930fa8f23ffcd1",
+      "script_sha256": "00d5492ac8a1439d2eac6d0c22a9f0c0d8b5fa7f8a3e30df233cbcb25efaaed7",
+      "tapleaf_hash": "d0a344fd78b1f130296019a65b82b0824f2daf35b0e0c84009112ed8f1702cd8",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 6209,
+        "txid": "1d28d629f8544962cfb31b5e13a05a7c6079f8a30a1c9bd76dc825debdbfb57f",
+        "vsize": 1623,
+        "weight": 6491,
+        "witness_bytes": 6113,
+        "wtxid": "ef7c3bfbf955b2fa12a417e20606b662ddd7fbe59a9b82b697405fcb6514254f"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": false,
+          "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Stack size limit exceeded), input 0 of 40115ba0e0435ac47a29a76058d4803fb1c0135d39e3618de72afc7e739efb06 (wtxid 5e61614e143276c4c3cc6f227f4b81278e0e251931391f56b293f766351632c2), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:10",
+          "rpc_code": -25
+        },
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Stack size limit exceeded), input 0 of 40115ba0e0435ac47a29a76058d4803fb1c0135d39e3618de72afc7e739efb06 (wtxid 5e61614e143276c4c3cc6f227f4b81278e0e251931391f56b293f766351632c2), spending a6d85c4fa7fe7c5b144e3604ecffbbf52635c15bc261edcde5d95e01221a535e:10",
+          "reject-reason": "mempool-script-verify-flag-failed (Stack size limit exceeded)",
+          "txid": "40115ba0e0435ac47a29a76058d4803fb1c0135d39e3618de72afc7e739efb06",
+          "wtxid": "5e61614e143276c4c3cc6f227f4b81278e0e251931391f56b293f766351632c2"
+        }
+      },
+      "deployment": "consensus-incompatible",
+      "description": "The extra item causes a transient combined-stack overflow.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": false,
+        "consensus_rejection": "stack-size",
+        "policy": false,
+        "policy_rejection": "stack-size"
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": "StackSize",
+        "final_main_stack_items": 1001,
+        "max_stack_items": 1001,
+        "outcome": "reject",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": false,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": false,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": false,
+          "policy": false
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "StackSize",
+            "final_main_stack_items": 1001,
+            "max_stack_items": 1001,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": false,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": "StackSize",
+            "final_main_stack_items": 1001,
+            "max_stack_items": 1001,
+            "stack_limit_enforced": true,
+            "success": false
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 999,
+        "data_witness_bytes": 1035,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 5043,
+        "static_non_push_opcodes": 4989,
+        "taproot_witness_bytes": 6115,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-997-one-extra-live-item",
+      "script_pubkey_hex": "5120e4ba0f5be1d64a164787b960ed27eef5623f49f9c4d577ad89930fa8f23ffcd1",
+      "script_sha256": "00d5492ac8a1439d2eac6d0c22a9f0c0d8b5fa7f8a3e30df233cbcb25efaaed7",
+      "tapleaf_hash": "d0a344fd78b1f130296019a65b82b0824f2daf35b0e0c84009112ed8f1702cd8",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 6211,
+        "txid": "40115ba0e0435ac47a29a76058d4803fb1c0135d39e3618de72afc7e739efb06",
+        "vsize": 1624,
+        "weight": 6493,
+        "witness_bytes": 6115,
+        "wtxid": "5e61614e143276c4c3cc6f227f4b81278e0e251931391f56b293f766351632c2"
+      }
+    },
+    {
+      "compilation": "repository-policy",
+      "core": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "7320fd2e8e133713261b62a27570f68b0d55fd01bad060898e3cfa6ea0d1b06f",
+          "block_height": 109
+        },
+        "policy": {
+          "allowed": true,
+          "fees": {
+            "base": 0.0001,
+            "effective-feerate": 5.341e-05,
+            "effective-includes": [
+              "5797e6a39c582c41826ee708c79707eca4f0a7129a7ef5b2aa56e06902902853"
+            ]
+          },
+          "txid": "dc3800b034bfde89a01778bf24b497d5f4d7362a4fcfd2c9690c33c6f2f892c6",
+          "vsize": 1872,
+          "wtxid": "5797e6a39c582c41826ee708c79707eca4f0a7129a7ef5b2aa56e06902902853"
+        }
+      },
+      "deployment": "policy-validated",
+      "description": "998 entry data items and two transient items during the start pin.",
+      "evidence": "differentially-validated",
+      "expected": {
+        "consensus": true,
+        "consensus_rejection": null,
+        "policy": true,
+        "policy_rejection": null
+      },
+      "local": {
+        "context": "tapscript",
+        "deployment": "unclassified",
+        "error": null,
+        "final_main_stack_items": 1,
+        "max_stack_items": 1000,
+        "outcome": "success",
+        "stack_limit_enforced": true
+      },
+      "local_commitment": {
+        "accepted": true,
+        "deployment": "unclassified",
+        "error": null,
+        "leaf_version": 192,
+        "outcome": "valid"
+      },
+      "local_profile_checks": {
+        "matches_expected": true,
+        "profiles": {
+          "consensus": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          },
+          "policy": {
+            "accepted": true,
+            "commitment_accepted": true,
+            "has_verdict": true,
+            "leaf_accepted": true,
+            "matches_core": true,
+            "matches_expected": true,
+            "status": "matched"
+          }
+        }
+      },
+      "local_profile_comparison": {
+        "compare_to_core": true,
+        "expected": {
+          "consensus": true,
+          "policy": true
+        },
+        "scope": "Taproot script-path commitment plus script execution and data-witness policy; full transaction consensus and relay policy remain independently validated by Core"
+      },
+      "local_profiles": {
+        "consensus": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 1000,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "consensus"
+        },
+        "policy": {
+          "accepted": true,
+          "deployment": "unclassified",
+          "error": null,
+          "execution": {
+            "error": null,
+            "final_main_stack_items": 1,
+            "max_stack_items": 1000,
+            "stack_limit_enforced": true,
+            "success": true
+          },
+          "opcode": null,
+          "outcome": "executed",
+          "profile": "policy"
+        }
+      },
+      "matches_expected": true,
+      "metrics": {
+        "data_items": 998,
+        "data_witness_bytes": 2030,
+        "executed_non_push_opcodes": null,
+        "hint_bytes": 0,
+        "hint_items": 0,
+        "includes": "complete-leaf bytecode and witness data; complete Taproot witness includes item count, data items, script and control block; transaction overhead excluded. OP_SUCCESS fixtures intentionally bypass script execution and clean-stack checks; malformed-script static opcode counts are unavailable.",
+        "locking_script_bytes": 5043,
+        "static_non_push_opcodes": 4989,
+        "taproot_witness_bytes": 7110,
+        "validation_weight_consumed": null,
+        "witness_items_coexist_at_entry": true
+      },
+      "name": "pinned-chain-997-ones",
+      "script_pubkey_hex": "5120dd13b0a0062a99e5aaeb28a7594b46ec2051071f9b5186b3630a37055c2ebc9f",
+      "script_sha256": "26e2dbd3cd38056bae3edb2c1155d83414f7a2f8fa45e845e79b04d3f31eed22",
+      "tapleaf_hash": "f417c2f42d458b8a65e8fbe6ecb8a6fee1fa033ae8b6aa3dd8e9e5a6a6fe2469",
+      "transaction": {
+        "base_bytes": 94,
+        "total_bytes": 7206,
+        "txid": "dc3800b034bfde89a01778bf24b497d5f4d7362a4fcfd2c9690c33c6f2f892c6",
+        "vsize": 1872,
+        "weight": 7488,
+        "witness_bytes": 7110,
+        "wtxid": "5797e6a39c582c41826ee708c79707eca4f0a7129a7ef5b2aa56e06902902853"
+      }
+    }
+  ],
+  "schema_version": 2,
+  "scope": "These exact complete Taproot spends on regtest with active SegWit/Taproot rules. Supported local commitment-plus-profile verdicts must match Core. No mainnet broadcast, adversarial completeness, or general primitive deployment claim.",
+  "winternitz": {
+    "chains": 49,
+    "hint_items_per_invocation": 0,
+    "message_hex": "00254a6f94b9de03284d7297bce1062b50759abf",
+    "openings": 35,
+    "profile": "ConstantCompositionWinternitz20<Hash160,Preimage16>",
+    "seed_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+    "signature_data_items": 70,
+    "stack_composition": "All 70 signature data items coexist at entry; the isolated verifier stages them on altstack and loads 49 trusted public keys, reaching 119 combined items. Extra main-stack items are rejected. No repeated configuration is measured; all surrounding main and altstack state shares the 1,000-item limit."
+  }
+}

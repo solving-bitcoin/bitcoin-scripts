@@ -30,3 +30,63 @@ selections, and invalid input indices. The host helper alone remains
 fails default relay policy. The PUSHDATA boundary tests use arbitrary byte
 vectors to exercise the public host helper; they do not claim that vectors
 larger than Bitcoin's DER-signature bound are valid signatures.
+
+The [2-of-3 subset fixture](../../research/binohash-subset/README.md) separately
+uses `OP_ROLL` to choose two embedded signatures and consumes their canonical
+indices in a later Script predicate. Its public preimages and small size
+filter demonstrate execution only; the full protocol remains open.
+
+The checked Core report fixes its complete-transaction measurement boundary:
+
+| Pair | P2SH scriptPubKey | RedeemScript in scriptSig | Complete spend | First scriptSig | Selected scriptSig | Hint items |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `[0,1]` | <!-- metric:binohash_subset_lock -->23<!-- /metric:binohash_subset_lock --> bytes | <!-- metric:binohash_subset_redeem -->493<!-- /metric:binohash_subset_redeem --> bytes | <!-- metric:binohash_subset_first_weight -->2908<!-- /metric:binohash_subset_first_weight --> WU | <!-- metric:binohash_subset_first_easy_sig -->2<!-- /metric:binohash_subset_first_easy_sig --> bytes | <!-- metric:binohash_subset_first_main_sig -->588<!-- /metric:binohash_subset_first_main_sig --> bytes | 0 |
+| `[0,2]` | 23 bytes | 493 bytes | <!-- metric:binohash_subset_second_weight -->2908<!-- /metric:binohash_subset_second_weight --> WU | <!-- metric:binohash_subset_second_easy_sig -->2<!-- /metric:binohash_subset_second_easy_sig --> bytes | <!-- metric:binohash_subset_second_main_sig -->588<!-- /metric:binohash_subset_second_main_sig --> bytes | 0 |
+
+There are six scriptSig data pushes and zero witness items. The report does
+not measure a combined stack peak or executed opcode count.
+
+The [six-mode mutation matrix](../../research/binohash-sighash-matrix/README.md)
+checks which transaction-field changes affect the selected digest in a fixed
+host-side template. It also isolates the non-committing out-of-range
+`SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.
+
+The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
+independently signs all 256 flag values in P2SH spends. Its canonical `01`
+sample has this complete-transaction boundary:
+
+| P2SH scriptPubKey | RedeemScript in scriptSig | Complete spend | scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_flag_lock -->23<!-- /metric:binohash_flag_lock --> bytes | <!-- metric:binohash_flag_redeem -->35<!-- /metric:binohash_flag_redeem --> bytes | <!-- metric:binohash_flag_weight -->808<!-- /metric:binohash_flag_weight --> WU | <!-- metric:binohash_flag_scriptsig -->108<!-- /metric:binohash_flag_scriptsig --> bytes | 0 | 0 |
+
+The sample uses a plain `OP_CHECKSIG`, without Binohash subset selection or
+grinding. Stack peak and executed opcode count remain unmeasured.
+
+The [10-choose-5 host probe](../../research/binohash-ten-choose-five/README.md)
+enumerates all 252 ascending subsets for one fixed transaction and scriptCode.
+It finds distinct local digests for this fixture, while permutations and
+duplicate index vectors alias unless a Script consumer validates them. It does
+not execute ECDSA or Core consensus.
+
+The [nine-byte SINGLE anchor](../../research/binohash-single-anchor/README.md)
+is another raw legacy P2SH fixture. A recovered public key verifies an
+embedded minimum-size ECDSA signature only when input index 1 exceeds the
+one-output count. Pinned Core accepts that spend and rejects adding an output
+or moving the anchor to input index 0. Its checked complete-transaction
+boundary is:
+
+| P2SH scriptPubKey | RedeemScript in scriptSig | Complete spend | Easy scriptSig | Anchor scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_anchor_lock -->23<!-- /metric:binohash_anchor_lock --> bytes | <!-- metric:binohash_anchor_redeem -->45<!-- /metric:binohash_anchor_redeem --> bytes | <!-- metric:binohash_anchor_weight -->732<!-- /metric:binohash_anchor_weight --> WU | <!-- metric:binohash_anchor_easy_sig -->2<!-- /metric:binohash_anchor_easy_sig --> bytes | <!-- metric:binohash_anchor_main_sig -->46<!-- /metric:binohash_anchor_main_sig --> bytes | 0 | 0 |
+
+Combined stack peak and executed opcode count were not measured. The valid
+spend is consensus-valid but fails default relay policy under
+`CONST_SCRIPTCODE`.
+
+The separate [CODESEPARATOR fixture](../../research/binohash-codesep/README.md)
+requires its caller to identify the suffix after the last executed separator
+and to omit all parsed separator opcodes before calling rust-bitcoin's legacy
+sighash API. Two funded Core spends validate selected embedded signatures on
+both sides of that boundary, plus an unexecuted separator. This does not turn
+the host helper into a Script evaluator: arbitrary control flow still requires
+an independently established execution path.

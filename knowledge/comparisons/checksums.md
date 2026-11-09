@@ -1,5 +1,7 @@
 # Non-cryptographic arithmetic checksums
 
+## Adler-32
+
 The comparison asks whether deferring both Adler-32 reductions improves
 script size under a canonical-byte/two-residue-output contract. RFC 1950
 already describes delayed reduction; the local contribution is bounded
@@ -46,3 +48,15 @@ These checksums cannot replace hash commitments or authentication. The
 documented three-byte collision survives both schedules by design. The
 two residues also do not supply the packed network-order checksum or a
 general incremental-state API. All those costs and semantics are separate.
+
+## Overlapping nibble sums modulo three
+
+The [rolling-window primitive](../primitives/u4-sliding-mod3.md) returns
+every window sum modulo three. At width seven over 128 nibbles, updating
+the previous residue costs 3,548 leaf bytes and 2,528 executed non-push
+instructions. Recomputing each window costs 5,599 and 3,859. Both use
+one shared table, the same 249-byte data witness, 128 ordinary items,
+zero hints, and a 147-item combined peak. The leaves include canonical
+input checks, cleanup, and identical output checks. This comparison
+produces a vector of residues and has a separate boundary from Adler-32.
+See [width and binding limits](../negative-results/u4-sliding-mod3.md).

@@ -5,7 +5,8 @@ constructions from being hidden behind local module names.
 
 ## Primitive classes
 
-- `support/stack`: routing and stable selection of opaque stack items.
+- `support/stack`: routing, stable selection, and byte accounting for opaque
+  stack items.
 - `arithmetic/scriptnum`: arithmetic on minimally encoded Bitcoin Script
   integers.
 - `arithmetic/word`: fixed-width bit or digit representations such as u4/u32.
@@ -13,6 +14,8 @@ constructions from being hidden behind local module names.
 - `arithmetic/bigint`: multi-limb integers.
 - `arithmetic/rns`: residue-number representations.
 - `commitment/integer`: openings that authenticate and return small integers.
+- `commitment/hash-state`: ordered, unary hash-state openings and checkpoint checks.
+- `commitment/preimage`: checks on openings of public hash digests.
 - `hash/fixed`: fixed-output hashes.
 - `hash/xof`: extendable-output functions.
 - `signature/schnorr`: secp256k1 Schnorr verification constructions.

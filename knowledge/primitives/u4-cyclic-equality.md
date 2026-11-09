@@ -6,6 +6,9 @@ returns one equality bit per input. Output `i` is true exactly when
 `nibble[i] == nibble[(i + offset) mod n]` numerically, including for
 non-minimal ScriptNum encodings of the same value.
 
+The [opaque lag-match count](opaque-lag-count.md) uses raw byte equality
+at unwrapped indices and returns an aggregate count.
+
 - **Input:** `preserved | nibble[0] | ... | nibble[n-1]`, with the last nibble
   on top.
 - **Output:** `preserved | equal[0] | ... | equal[n-1]`, with the last result

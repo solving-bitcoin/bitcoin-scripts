@@ -3,11 +3,25 @@
   "as_of": "2026-10-29",
   "sources": [
     {
+      "id": "cpp-n4950-min-element",
+      "title": "C++23 Working Draft: minimum and maximum algorithms",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, section [alg.min.max]"
+    },
+    {
       "id": "bip-16",
       "title": "BIP 16: Pay to Script Hash",
       "kind": "specification",
       "url": "https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki",
       "revision": "accepted specification"
+    },
+    {
+      "id": "bitcoin-core-scriptnum-v30.3",
+      "title": "Bitcoin Core v30.3: CScriptNum operand width and arithmetic result encoding",
+      "kind": "reference-implementation",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/script.h#L211",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); src/script/script.h, CScriptNum"
     },
     {
       "id": "bip-66",
@@ -24,6 +38,13 @@
       "revision": "final specification"
     },
     {
+      "id": "karp-rabin-1987",
+      "title": "Karp and Rabin: Efficient randomized pattern-matching algorithms",
+      "kind": "paper",
+      "url": "https://doi.org/10.1147/rd.312.0249",
+      "revision": "IBM Journal of Research and Development 31(2), March 1987"
+    },
+    {
       "id": "bip-141",
       "title": "BIP 141: Segregated Witness",
       "kind": "specification",
@@ -31,11 +52,25 @@
       "revision": "final specification"
     },
     {
+      "id": "regin-alldifferent-1994",
+      "title": "Régin: A Filtering Algorithm for Constraints of Difference in CSPs",
+      "kind": "paper",
+      "url": "https://cse.unl.edu/~choueiry/Documents/ReginAAAI-1994.pdf",
+      "revision": "AAAI-94 proceedings, pages 362–367"
+    },
+    {
       "id": "bip-112",
       "title": "BIP 112: CHECKSEQUENCEVERIFY",
       "kind": "specification",
       "url": "https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0112.mediawiki",
       "revision": "24e96e870fffaa257b465ce1f0370c14aac588e8; accepted specification"
+    },
+    {
+      "id": "bip-144",
+      "title": "BIP 144: Segregated Witness (Peer Services)",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/24e96e870fffaa257b465ce1f0370c14aac588e8/bip-0144.mediawiki",
+      "revision": "24e96e870fffaa257b465ce1f0370c14aac588e8, Serialization"
     },
     {
       "id": "bip-341",
@@ -52,11 +87,25 @@
       "revision": "final specification"
     },
     {
+      "id": "reed-solomon-1960",
+      "title": "Reed and Solomon: Polynomial Codes Over Certain Finite Fields",
+      "kind": "paper",
+      "url": "https://doi.org/10.1137/0108018",
+      "revision": "Journal of the Society for Industrial and Applied Mathematics 8(2), June 1960, pages 300–304. Finite-field coding context."
+    },
+    {
       "id": "bip-340",
       "title": "BIP 340: Schnorr Signatures for secp256k1",
       "kind": "specification",
       "url": "https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki",
       "revision": "final specification"
+    },
+    {
+      "id": "bip-387",
+      "title": "BIP 387: Tapscript Multisig Output Script Descriptors",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0387.mediawiki",
+      "revision": "BIP 387, multi_a and sortedmulti_a exact-threshold templates"
     },
     {
       "id": "rust-secp256k1-0.29.1",
@@ -164,6 +213,13 @@
       "revision": "published PDF"
     },
     {
+      "id": "pohl-minmax-1972",
+      "title": "A sorting problem and its complexity",
+      "kind": "paper",
+      "url": "https://doi.org/10.1145/361405.361423",
+      "revision": "Communications of the ACM 15(6), June 1972, pp. 462–464"
+    },
+    {
       "id": "bitvm2-bridge-paper",
       "title": "BitVM Bridge",
       "kind": "paper",
@@ -213,6 +269,13 @@
       "revision": "crate series 0.5 used locally"
     },
     {
+      "id": "hamming-1950",
+      "title": "Richard W. Hamming, Error Detecting and Error Correcting Codes",
+      "kind": "paper",
+      "url": "https://doi.org/10.1002/j.1538-7305.1950.tb00463.x",
+      "revision": "Bell System Technical Journal 29(2), 147–160, April 1950"
+    },
+    {
       "id": "fips-180-4",
       "title": "FIPS 180-4 Secure Hash Standard",
       "kind": "standard",
@@ -246,6 +309,20 @@
       "kind": "standard",
       "url": "https://doi.org/10.6028/NIST.FIPS.197-upd1",
       "revision": "updated edition 2023"
+    },
+    {
+      "id": "lee-metric-1958",
+      "title": "Lee: Some properties of nonbinary error-correcting codes",
+      "kind": "paper",
+      "url": "https://doi.org/10.1109/TIT.1958.1057446",
+      "revision": "IRE Transactions on Information Theory 4(2), pages 77–82, 1958"
+    },
+    {
+      "id": "alderson-huntemann-lee-2013",
+      "title": "Alderson and Huntemann: On Maximum Lee Distance Codes",
+      "kind": "paper",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1155/2013/625912",
+      "revision": "2013, article 625912, section 2.1"
     },
     {
       "id": "blake3-spec",
@@ -318,6 +395,13 @@
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); official archive SHA256 pins in tools/bitcoin_core_release.json; 24 deterministic complete Taproot regtest comparisons recorded 2026-09-10"
     },
     {
+      "id": "bitcoin-core-v30.3-legacy-sighash",
+      "title": "Bitcoin Core v30.3 legacy CODESEPARATOR and FindAndDelete implementation",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); interpreter.cpp lines 320-332, 1047-1055, 1137-1146, and 1266-1287 inspected 2026-10-29"
+    },
+    {
       "id": "bitcoin-scripts-quarter-square-20261002",
       "title": "Existing Bitcoin Scripts quarter-square identity and field table construction",
       "kind": "reference-implementation",
@@ -325,11 +409,25 @@
       "revision": "bf9ee0bb34987a9130ad9dc13a06e18fef137296; identity and source inspected; field arithmetic tests excluded"
     },
     {
+      "id": "cpp-n4950-mismatch",
+      "title": "C++ working draft N4950, mismatch algorithm",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, 2023-05-10, [alg.mismatch]"
+    },
+    {
       "id": "cpp-draft-stable-copy-if-20261002",
       "title": "C++ draft [alg.copy]: stable copy_if semantics",
       "kind": "specification",
       "url": "https://github.com/Eelis/draft/blob/c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1/source/algorithms.tex",
       "revision": "c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1; source/algorithms.tex, [alg.copy]; inspected 2026-10-02; semantic context only, no Bitcoin Script cost or security claim"
+    },
+    {
+      "id": "cpp-n4950-rotate",
+      "title": "C++23 Working Draft: rotate algorithms",
+      "kind": "specification",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf",
+      "revision": "N4950, [alg.rotate]"
     },
     {
       "id": "damm-checkdigits-net-20261002",
@@ -367,11 +465,25 @@
       "revision": "Linux v6.18 commit 7d0a66e4bb9081d75c82ec4957c50034cb0ea449; inspected context only, not copied/executed"
     },
     {
+      "id": "cpp-draft-stable-partition-20261002",
+      "title": "C++ draft [alg.partitions]: stable partition semantics",
+      "kind": "specification",
+      "url": "https://github.com/Eelis/draft/blob/c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1/source/algorithms.tex#L9799",
+      "revision": "c7015b485cc3db8efaa9dfb9ff0809c5394a4ed1; source/algorithms.tex, [alg.partitions]; relative order within each group; semantic context only"
+    },
+    {
       "id": "tarau-factoradic-2008",
       "title": "Ranking and Unranking of Hereditarily Finite Functions and Permutations",
       "kind": "paper",
       "url": "https://arxiv.org/html/0808.0554v1",
       "revision": "arXiv:0808.0554v1, 2008-08-05; sections 7.1 and 7.2"
+    },
+    {
+      "id": "bringmann-strongly-unimodal-2018",
+      "title": "Bringmann et al.: Peak positions of strongly unimodal sequences",
+      "kind": "paper",
+      "url": "https://arxiv.org/abs/1806.03217v2",
+      "revision": "arXiv:1806.03217v2, November 22, 2018. The introductory definition supplies the strict peak order pattern."
     },
     {
       "id": "gao-palindromic-2021",
@@ -381,11 +493,60 @@
       "revision": "arXiv:2109.09006v1, 2021-09-18; palindromic coefficient-vector definition only"
     },
     {
+      "id": "dlmf-binomial-recurrence",
+      "title": "NIST Digital Library of Mathematical Functions: Binomial coefficients",
+      "kind": "standard",
+      "url": "https://dlmf.nist.gov/26.3#iii",
+      "revision": "DLMF 1.2.8, equations 26.3.5 and 26.3.7"
+    },
+    {
       "id": "rfc-1950-adler32",
       "title": "RFC 1950: ZLIB Compressed Data Format Specification version 3.3",
       "kind": "specification",
       "url": "https://www.rfc-editor.org/rfc/rfc1950.txt",
       "revision": "May 1996, version 3.3; sections 2.2, 8.2 and 9; immutable RFC text; Adler recurrence, serialization and delayed reduction inspected 2026-10-02"
+    },
+    {
+      "id": "luhn-us2950048a",
+      "title": "Computer for verifying numbers",
+      "kind": "specification",
+      "url": "https://patents.google.com/patent/US2950048A/en",
+      "revision": "US patent 2,950,048, granted 1960-08-23"
+    },
+    {
+      "id": "u4-sort-baseline-55a61e5",
+      "title": "u4 exact sorting reference and measured zero-hint baseline",
+      "kind": "upstream-source",
+      "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md",
+      "revision": "55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6"
+    },
+    {
+      "id": "bitcoin-script-permutation-quotient-core",
+      "title": "Existing bounded binary quotient core in the local permutation decoder",
+      "kind": "reference-implementation",
+      "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/f6624f6edcf52257811eec1fd3e1d05967385fca/src/arithmetic/permutation/mod.rs",
+      "revision": "f6624f6edcf52257811eec1fd3e1d05967385fca; inline bounded quotient core inspected and extracted into a checked public API on 2026-10-27; not a new division algorithm"
+    },
+    {
+      "id": "bitcoin-core-compactsize-v30.3",
+      "title": "Bitcoin Core v30.3 CompactSize serialization",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/serialize.h",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227; GetSizeOfCompactSize and ReadCompactSize"
+    },
+    {
+      "id": "rfc-20-ascii",
+      "title": "RFC 20 §2: ASCII format for Network Interchange",
+      "kind": "specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc20.html#section-2",
+      "revision": "RFC 20, October 16, 1969; §2 code table defines the uppercase and lowercase letter byte values"
+    },
+    {
+      "id": "negative-bases-frougny-lai-2011",
+      "title": "Frougny and Lai: Negative bases and automata",
+      "kind": "paper",
+      "url": "https://doi.org/10.46298/dmtcs.538",
+      "revision": "DMTCS 13(1), 2011, pages 75–94. Introduction describes integer negative-radix digit alphabets."
     }
   ]
 }

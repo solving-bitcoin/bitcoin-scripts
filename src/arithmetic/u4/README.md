@@ -22,6 +22,31 @@ these operations, but this module contains no hash-specific round logic.
 - `count::u4_nibbles_count(value, nibble_count)` takes a checked batch size in
   `1..=997` without preserved stack items; composition must satisfy
   `nibble_count + 3 + preserved_items <= 1000`.
+- `multiset_equal::u4_nibbles_multiset_equal(len)` takes two equal-length checked
+  vectors with `len` in `1..=489`; composition must satisfy
+  `2*len + 21 + preserved_items <= 1000`. These are numeric range checks:
+  nonminimal aliases and negative zero are accepted without MINIMALDATA.
+  Byte-sensitive callers must validate canonical nibbles first. A mismatch
+  returns zero; verify the equality bit and consume preserved state before
+  ending a complete leaf with exactly one truthy stack item.
+- `inversions::u4_nibbles_inversions(len)` takes a checked vector of `1..=128`
+  nibbles; the bound is script size (`len*(len-1)/2` comparisons), not stack
+  depth (the peak is `len + 3 + preserved`).
+- `ascii_hex::ascii_hex_to_nibbles_fold(len, case)` takes `1..=997` items;
+  `ascii_hex_to_nibbles_table(len, case)` takes `1..=942` because of its resident
+  55-item table. Both abort on any code that is not a hex digit of the chosen case.
+- `balanced::u4_nibbles_balanced(len)` takes `1..=963` nibbles (four brackets
+  each, most significant bit first); peak is `len + 37`. The comparator
+  `bracket_items_balanced(len)` takes one `{0, 1}` item per bracket.
+- `distance::u4_nibbles_l1_distance(len)` and `u4_nibbles_lee_distance(len)` take
+  two vectors of `1..=498` nibbles (peak `2*len + 3`);
+  `u4_nibbles_hamming_distance(len)` takes `1..=371` (peak `2*len + 258`) and
+  `u4_nibbles_hamming_distance_composed(len)` takes `1..=363` (peak `2*len + 274`).
+- `scriptnum_nibbles::u4_scriptnum_to_nibbles(width)` and
+  `u4_scriptnum_to_nibbles_hinted(width)` take `1..=8` nibbles; the number must
+  lie in `0..16^width` (`0..2^31` at width 8).
+- `majority::u4_nibbles_majority(len)` and `u4_nibbles_majority_hinted(len)` take
+  `1..=996` nibbles (peak `len + 4`).
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -53,6 +78,8 @@ these operations, but this module contains no hash-specific round logic.
   `1..=982` and projects each nibble to reflected Gray code.
 - `one_hot::u4_nibbles_to_one_hot(nibble_count)` takes a checked batch size in
   `1..=982` and returns one 16-bit selector mask per input nibble.
+- [`distinct_mask::u4_distinct_to_set_mask(n)`](distinct_mask/) consumes
+  `0..=16` canonical nibbles, rejects duplicates, and emits one set mask.
 - `trailing_zeros::u4_nibbles_to_trailing_zeros(nibble_count)` maps checked
   nibbles to their trailing-zero count in `0..=4`.
 - `lowbit::u4_nibbles_to_lowbit(nibble_count)` maps checked nibbles to their
@@ -85,12 +112,21 @@ these operations, but this module contains no hash-specific round logic.
   `nibble_count + 2 + preserved_items <= 1000`.
 - `sum::u4_nibbles_to_sum_mod16(nibble_count)` takes a checked batch size in
   `1..=965` and returns the batch sum modulo 16.
+- [`xor_signed_lanes::u4_xor_packed_lanes(n)`](xor_signed_lanes/) consumes `1..=254`
+  canonical nibbles and returns their XOR using four packed count lanes.
 - `zero_bitmask::u4_nibbles_to_zero_bitmasks(nibble_count)` takes a checked
   multiple of eight in `8..=992` and returns one byte mask per eight nibbles.
+- [`lee_step::u4_uniform_lee_step(n)`](lee_step/) consumes `2..=997`
+  canonical nibbles and verifies and returns their common circular step length.
 - `nondecreasing::u4_nibbles_nondecreasing(nibble_count)` takes a checked
   batch size in `1..=997` and returns one monotonicity bit.
+- [`argmin::u4_earliest_argmin(n)`](argmin/) consumes `1..=980` canonical
+  nibbles and returns the minimum and its earliest zero-based index.
 - `sum::u4_nibbles_sum_exact(nibble_count)` takes a checked batch size in
   `1..=997` and returns the exact sum in `0..=15*nibble_count`.
+- [`binomial_moments::u4_centered_binomial_moments(n)`](binomial_moments/)
+  consumes `0..=997` canonical nibbles and returns three exact centered
+  positional sums with weights `1`, `i`, and `binomial(i,2)`.
 - `mirror::u4_nibbles_to_mirror(nibble_count)` canonicalizes each nibble under
   complement reflection to the range `0..=7`.
 - `leading_zeros::u4_nibbles_to_leading_zeros(nibble_count)` maps checked
@@ -101,6 +137,9 @@ these operations, but this module contains no hash-specific round logic.
   digit vectors (a `u4` digit with a per-position bound) into one factorial
   value; it is a separate module because its value domain is a factorial, not
   a per-nibble residue.
+- [`sliding_mod3::u4_sliding_mod3(n, window)`](sliding_mod3/) consumes
+  `1..=981` canonical nibbles and emits sums modulo three for every
+  overlapping window of width `1..=min(7, n)`.
 - `trichotomy::u4_nibbles_to_trichotomy(threshold, nibble_count)` takes a
   public u4 threshold and a checked batch size in `1..=998`, returning `0`,
   `1`, or `2` for less-than, equal, or greater-than. Callers preserving live
@@ -250,6 +289,20 @@ words as data, with no hint items.
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
+| Multiset equality, 16 + 16 nibbles | <!-- metric:u4_multiset_equal_16 -->1158<!-- /metric:u4_multiset_equal_16 --> bytes | <!-- metric:u4_multiset_equal_16_stack -->53<!-- /metric:u4_multiset_equal_16_stack --> items | <!-- metric:u4_multiset_equal_16_opcodes -->723<!-- /metric:u4_multiset_equal_16_opcodes --> |
+| Inversion count, 16 nibbles | <!-- metric:u4_inversions_16 -->822<!-- /metric:u4_inversions_16 --> bytes | <!-- metric:u4_inversions_16_stack -->19<!-- /metric:u4_inversions_16_stack --> items | <!-- metric:u4_inversions_16_opcodes -->537<!-- /metric:u4_inversions_16_opcodes --> |
+| ASCII hex decode, 64 chars, fold | <!-- metric:u4_ascii_hex_fold_64 -->1470<!-- /metric:u4_ascii_hex_fold_64 --> bytes | <!-- metric:u4_ascii_hex_fold_64_stack -->67<!-- /metric:u4_ascii_hex_fold_64_stack --> items | <!-- metric:u4_ascii_hex_fold_64_opcodes -->830<!-- /metric:u4_ascii_hex_fold_64_opcodes --> |
+| ASCII hex decode, 64 chars, table | <!-- metric:u4_ascii_hex_table_64 -->1299<!-- /metric:u4_ascii_hex_table_64 --> bytes | <!-- metric:u4_ascii_hex_table_64_stack -->122<!-- /metric:u4_ascii_hex_table_64_stack --> items | <!-- metric:u4_ascii_hex_table_64_opcodes -->732<!-- /metric:u4_ascii_hex_table_64_opcodes --> |
+| Bracket balance, 128 brackets, packed nibbles | <!-- metric:u4_balanced_packed_128 -->895<!-- /metric:u4_balanced_packed_128 --> bytes | <!-- metric:u4_balanced_packed_128_stack -->69<!-- /metric:u4_balanced_packed_128_stack --> items | <!-- metric:u4_balanced_packed_128_opcodes -->598<!-- /metric:u4_balanced_packed_128_opcodes --> |
+| Bracket balance, 128 brackets, one item each | <!-- metric:u4_balanced_items_128 -->2059<!-- /metric:u4_balanced_items_128 --> bytes | <!-- metric:u4_balanced_items_128_stack -->133<!-- /metric:u4_balanced_items_128_stack --> items | <!-- metric:u4_balanced_items_128_opcodes -->1669<!-- /metric:u4_balanced_items_128_opcodes --> |
+| L1 distance, 16 + 16 nibbles | <!-- metric:u4_distance_l1_16 -->334<!-- /metric:u4_distance_l1_16 --> bytes | <!-- metric:u4_distance_l1_16_stack -->35<!-- /metric:u4_distance_l1_16_stack --> items | <!-- metric:u4_distance_l1_16_opcodes -->253<!-- /metric:u4_distance_l1_16_opcodes --> |
+| Lee distance, 16 + 16 nibbles | <!-- metric:u4_distance_lee_16 -->414<!-- /metric:u4_distance_lee_16 --> bytes | <!-- metric:u4_distance_lee_16_stack -->35<!-- /metric:u4_distance_lee_16_stack --> items | <!-- metric:u4_distance_lee_16_opcodes -->317<!-- /metric:u4_distance_lee_16_opcodes --> |
+| Hamming distance, fused table, 16 + 16 nibbles | <!-- metric:u4_distance_hamming_16 -->874<!-- /metric:u4_distance_hamming_16 --> bytes | <!-- metric:u4_distance_hamming_16_stack -->290<!-- /metric:u4_distance_hamming_16_stack --> items | <!-- metric:u4_distance_hamming_16_opcodes -->514<!-- /metric:u4_distance_hamming_16_opcodes --> |
+| Hamming distance, XOR then popcount, 16 + 16 nibbles | <!-- metric:u4_distance_composed_16 -->962<!-- /metric:u4_distance_composed_16 --> bytes | <!-- metric:u4_distance_composed_16_stack -->306<!-- /metric:u4_distance_composed_16_stack --> items | <!-- metric:u4_distance_composed_16_opcodes -->554<!-- /metric:u4_distance_composed_16_opcodes --> |
+| ScriptNum to 4 nibbles, hint-free ladder | <!-- metric:u4_scriptnum_nibbles_zero_4 -->230<!-- /metric:u4_scriptnum_nibbles_zero_4 --> bytes | <!-- metric:u4_scriptnum_nibbles_zero_4_stack -->7<!-- /metric:u4_scriptnum_nibbles_zero_4_stack --> items | <!-- metric:u4_scriptnum_nibbles_zero_4_opcodes -->136<!-- /metric:u4_scriptnum_nibbles_zero_4_opcodes --> |
+| ScriptNum to 4 nibbles, hint-checked | <!-- metric:u4_scriptnum_nibbles_hinted_4 -->59<!-- /metric:u4_scriptnum_nibbles_hinted_4 --> bytes | <!-- metric:u4_scriptnum_nibbles_hinted_4_stack -->8<!-- /metric:u4_scriptnum_nibbles_hinted_4_stack --> items | <!-- metric:u4_scriptnum_nibbles_hinted_4_opcodes -->46<!-- /metric:u4_scriptnum_nibbles_hinted_4_opcodes --> |
+| Strict majority, 16 nibbles, Boyer-Moore | <!-- metric:u4_majority_zero_16 -->486<!-- /metric:u4_majority_zero_16 --> bytes | <!-- metric:u4_majority_zero_16_stack -->20<!-- /metric:u4_majority_zero_16_stack --> items | <!-- metric:u4_majority_zero_16_opcodes -->353<!-- /metric:u4_majority_zero_16_opcodes --> |
+| Strict-majority claim check, 16 nibbles | <!-- metric:u4_majority_hinted_16 -->213<!-- /metric:u4_majority_hinted_16 --> bytes | <!-- metric:u4_majority_hinted_16_stack -->20<!-- /metric:u4_majority_hinted_16_stack --> items | <!-- metric:u4_majority_hinted_16_opcodes -->129<!-- /metric:u4_majority_hinted_16_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -295,6 +348,49 @@ generated table setup is <!-- metric:u4_odd_inverse_mod16_table -->16<!-- /metri
 The fixed-symbol count fixture uses <!-- metric:u4_symbol_count_16_witness -->33<!-- /metric:u4_symbol_count_16_witness --> serialized witness bytes for <!-- metric:u4_symbol_count_16_witness_items -->16<!-- /metric:u4_symbol_count_16_witness_items --> canonical data items and returns one numeric count. Nonminimal numeric encodings may be accepted under a permissive execution profile and can serialize larger.
 
 The 16-nibble presence-bit batch uses <!-- metric:u4_presence_bits_16_witness -->33<!-- /metric:u4_presence_bits_16_witness --> serialized witness bytes for <!-- metric:u4_presence_bits_16_witness_items -->16<!-- /metric:u4_presence_bits_16_witness_items --> data items, zero hint items, and returns 16 Boolean outputs; all data items coexist at script entry. This is the canonical 16-item profile. Membership uses `OP_NUMEQUAL`, so non-minimal numeric aliases such as `[0x01, 0x00]`, negative zero `[0x80]` and `[0x02, 0x00]` produce the numeric presence bits under the local `TapscriptProfile::Consensus` profile and can serialize larger; the local `Policy` profile rejects them with `MinimalData`. Compose `verify_canonical_nibble()` when byte-unique witness encoding is required.
+
+The multiset-equality fixture (`A = 0..=15`, `B` = reverse) uses <!-- metric:u4_multiset_equal_16_witness -->63<!-- /metric:u4_multiset_equal_16_witness --> serialized witness bytes for <!-- metric:u4_multiset_equal_16_witness_items -->32<!-- /metric:u4_multiset_equal_16_witness_items --> data items and zero hints. The fragment is straight-line (no conditionals), so its executed non-push opcodes equal the static count in the opcode column. A naive repeated-helper estimate for the per-symbol alternative (32 fixed-symbol counts, excluding vector copies and the comparisons) is <!-- metric:u4_multiset_equal_16_count_baseline -->8512<!-- /metric:u4_multiset_equal_16_count_baseline --> bytes.
+The length-489 maximum is <!-- metric:u4_multiset_equal_489 -->63591<!-- /metric:u4_multiset_equal_489 --> bytes, **unoptimized**
+(`CompileOptions::NONE` above the 32 KiB raw-policy cutoff); it exceeds
+legacy/P2WSH script-size and P2SH element-size limits. The maximum size is
+pinned separately from the optimized length-16 row.
+
+
+The inversion-count fixture (strictly descending, 120 inversions) uses <!-- metric:u4_inversions_16_witness -->32<!-- /metric:u4_inversions_16_witness --> serialized witness bytes for <!-- metric:u4_inversions_16_witness_items -->16<!-- /metric:u4_inversions_16_witness_items --> data items and zero hints. The fragment is straight-line, so its executed non-push opcodes equal the static count above. The specialized nondecreasing check on the same 16 nibbles is <!-- metric:u4_inversions_16_nondecreasing -->263<!-- /metric:u4_inversions_16_nondecreasing --> bytes.
+
+For the 64-character ASCII-hex decoders, the 1,470/1,299-byte fragments
+exceed P2SH's 520-byte redeemScript element limit, and their 830/732 static
+non-push opcodes exceed the legacy/P2SH/P2WSH 201-opcode limit. Tapscript
+removes those legacy limits, but the local results remain `unclassified` and
+full transaction/relay policy is untested. Callers must consume or verify all
+returned nibbles and preserved state, enforce the intended predicate and leave
+one truthy item at a complete leaf. Measurements execute the exact compiled
+fragment with the explicit local consensus numeric profile.
+
+The ASCII hex fixture (`0123456789abcdef` four times, lowercase) uses <!-- metric:u4_ascii_hex_64_witness -->129<!-- /metric:u4_ascii_hex_64_witness --> serialized witness bytes for <!-- metric:u4_ascii_hex_64_witness_items -->64<!-- /metric:u4_ascii_hex_64_witness_items --> data items and zero hints; both decoders leave 64 nibbles. Both fragments are straight-line apart from the fold's per-character branch, so the opcode column is a static non-push count, not a dynamic measurement.
+
+The bracket-balance fixture is `(())` repeated 32 times, 128 brackets. The packed form uses <!-- metric:u4_balanced_packed_128_witness -->65<!-- /metric:u4_balanced_packed_128_witness --> serialized witness bytes for <!-- metric:u4_balanced_packed_128_witness_items -->32<!-- /metric:u4_balanced_packed_128_witness_items --> data items; the one-item-per-bracket comparator uses <!-- metric:u4_balanced_items_128_witness -->193<!-- /metric:u4_balanced_items_128_witness --> bytes for <!-- metric:u4_balanced_items_128_witness_items -->128<!-- /metric:u4_balanced_items_128_witness_items --> items. Both use zero hints and return one Boolean.
+
+The `distance` fragment APIs check numeric nibble ranges, accepting nonminimal
+aliases and negative zero under local consensus numeric semantics. A caller
+that binds raw bytes must validate canonical nibbles. Compare the returned
+distance against the intended value or threshold, consume preserved state,
+and leave one truthy stack item at a complete leaf. All four 16-nibble rows
+exceed the 201-opcode legacy/P2SH/P2WSH limit, and the table rows additionally
+exceed P2SH's 520-byte element limit. Tapscript execution remains unclassified.
+
+The distance fixtures use `a[i] = i` and `b[i] = (7i + 3) mod 16`: <!-- metric:u4_distance_16_witness -->63<!-- /metric:u4_distance_16_witness --> serialized witness bytes for <!-- metric:u4_distance_16_witness_items -->32<!-- /metric:u4_distance_16_witness_items --> data items and zero hints. All four fragments are straight-line, so executed non-push opcodes equal the static counts.
+
+`scriptnum_nibbles` accepts numeric aliases when MINIMALDATA is disabled; the
+hinted form returns the original hint bytes. Byte-sensitive callers must verify
+canonical encoding. All `width` hint items and the amount coexist at entry;
+`width + 4 + preserved_main + preserved_alt <= 1000` bounds the standalone
+hinted fragment. Callers must consume its outputs and preserved state, enforce
+an intended predicate and leave one truthy item for a complete leaf.
+
+The ScriptNum expansion fixture is `0xBEEF`: the hint-free form uses <!-- metric:u4_scriptnum_nibbles_zero_4_witness -->5<!-- /metric:u4_scriptnum_nibbles_zero_4_witness --> serialized witness bytes for <!-- metric:u4_scriptnum_nibbles_zero_4_witness_items -->1<!-- /metric:u4_scriptnum_nibbles_zero_4_witness_items --> data item and zero hints; the hint-checked form uses <!-- metric:u4_scriptnum_nibbles_hinted_4_witness -->13<!-- /metric:u4_scriptnum_nibbles_hinted_4_witness --> bytes for <!-- metric:u4_scriptnum_nibbles_hinted_4_witness_items -->5<!-- /metric:u4_scriptnum_nibbles_hinted_4_witness_items --> items (four nibble hints and the number). The hint-free fragment is branchy, so the opcode column is a static non-push count, not a dynamic measurement.
+
+Both majority paths can return their original nonminimal candidate or claim bytes when minimality is disabled; byte-sensitive callers must canonicalize. The majority fixture has seven in ten of sixteen positions. The hint-free decision uses <!-- metric:u4_majority_zero_16_witness -->32<!-- /metric:u4_majority_zero_16_witness --> serialized witness bytes for <!-- metric:u4_majority_zero_16_witness_items -->16<!-- /metric:u4_majority_zero_16_witness_items --> data items; the claim check uses <!-- metric:u4_majority_hinted_16_witness -->34<!-- /metric:u4_majority_hinted_16_witness --> bytes for <!-- metric:u4_majority_hinted_16_witness_items -->17<!-- /metric:u4_majority_hinted_16_witness_items --> items (the vector and one claim hint). A naive sum of sixteen destructive fixed-symbol helpers (excluding copies and comparisons, and not a lower bound on shared counting) is <!-- metric:u4_majority_16_count_baseline -->4256<!-- /metric:u4_majority_16_count_baseline --> bytes. The Boyer-Moore fragment is branchy, so its opcode entry is a static non-push count, not a dynamic measurement; the claim check is straight-line.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 
@@ -1284,3 +1380,324 @@ See the [knowledge entry](../../../knowledge/primitives/u4-sort.md),
 [arithmetic comparison](../../../knowledge/comparisons/arithmetic.md),
 [NR-087](../../../knowledge/negative-results/index.md#nr-087-hinted-u4-sorting-loses-at-small-widths),
 and [OP-043](../../../knowledge/open-problems.md#op-043-exact-sorting-certificate-frontier).
+
+For `inversions::u4_nibbles_inversions`, `len` is explicit (no default).
+The input contract is numeric: range checks accept nonminimal ScriptNums and
+negative zero under the explicit local `TapscriptProfile::Consensus` profile
+(`require_minimal=false`, combined stack limit enabled). Byte-sensitive callers
+must validate canonical nibbles before invoking the fragment. The returned
+count is not a complete locking predicate: compare it with the intended count
+or threshold, consume preserved state, and finish with exactly one truthy item.
+A zero count alone is false and a nonzero count alone is true.
+
+The length-16 metrics execute the exact fragment under that explicit profile;
+serialized witness bytes include the item count, lengths, and payloads.
+
+The one-bit-per-item `balanced::bracket_items_balanced(len)` comparator is
+bounded separately from the packed variant: `1 <= len <= 995` (no default),
+with `len + 5 + preserved_main + preserved_alt <= 1000`. The packed variant
+retains its independent `n + 37` bound. Exact tests cover both frontiers.
+
+## Casting out fifteens and delayed modulo-17 reduction
+
+`mod15::u4_nibbles_to_mod15(n)` and `mod15::u4_nibbles_to_mod15_ladder(n)` return
+the represented base-16 integer modulo 15 in `0..=14` (`n` in `1..=997`); since
+16 = 1 modulo 15 this is the digit sum, so unlike modulo 17 it is blind to digit
+transpositions. `mod17::u4_nibbles_to_mod17_delayed(n)` returns the same residue
+as `u4_nibbles_to_mod17` while keeping the alternating sum exact and reducing it
+once at the end with a conditional-subtraction ladder. Inputs are checked for
+range and minimal encoding; no hints or tables are used.
+
+Fragment-only boundary: all canonical checks, the fold and the final reduction;
+operand pushes and terminal predicate excluded. The data-only witness is the
+modulo-17 fixture `x[i]=(7*i+floor(i/3)) mod16` over 32 nibbles (<!-- metric:u4_casting_out_32_witness -->62<!-- /metric:u4_casting_out_32_witness --> serialized bytes, 32 items, 0 hints). Peaks use a terminal
+expected-residue `OP_EQUAL` under strict local execution.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo 15, running reduction, 32 nibbles | <!-- metric:u4_mod15_run_32 -->606<!-- /metric:u4_mod15_run_32 --> | <!-- metric:u4_mod15_run_32_stack -->35<!-- /metric:u4_mod15_run_32_stack --> | <!-- metric:u4_mod15_run_32_opcodes -->446<!-- /metric:u4_mod15_run_32_opcodes --> |
+| Modulo 15, ladder (delayed) reduction, 32 nibbles | <!-- metric:u4_mod15_ladder_32 -->438<!-- /metric:u4_mod15_ladder_32 --> | <!-- metric:u4_mod15_ladder_32_stack -->35<!-- /metric:u4_mod15_ladder_32_stack --> | <!-- metric:u4_mod15_ladder_32_opcodes -->316<!-- /metric:u4_mod15_ladder_32_opcodes --> |
+| Modulo 17, delayed reduction, 32 nibbles | <!-- metric:u4_mod17_delayed_32 -->467<!-- /metric:u4_mod17_delayed_32 --> | <!-- metric:u4_mod17_delayed_32_stack -->35<!-- /metric:u4_mod17_delayed_32_stack --> | <!-- metric:u4_mod17_delayed_32_opcodes -->344<!-- /metric:u4_mod17_delayed_32_opcodes --> |
+
+The running modulo-17 form above measures 670 bytes on the same boundary. See
+the [knowledge page](../../../knowledge/primitives/u4-mod15.md).
+
+The modulo-15/17 residue operations are fragments: compare the numeric result
+with the intended residue, consume preserved state and enforce a clean truthy
+terminal stack. Their 997-nibble mod-17 fragment sizes are pinned by an
+executable policy-compilation test; the representative 32-nibble metrics execute
+the same policy-produced fragments used for their bytes and static opcodes.
+
+## Table-free Luhn checksum
+
+`luhn::u4_decimal_digits_to_luhn(n)` folds `1..=997` numeric **decimal** digits,
+leftmost first, and returns the Luhn sum modulo ten in `0..=9` (zero for a valid
+code). The rightmost digit is position zero, every odd position is doubled
+(`9` subtracted above 9), and the exact sum is reduced once by a ladder of
+conditional subtractions. Digits are range-checked as numeric ScriptNums in
+`0..=9`; there are no hints, tables or altstack use. Error detection only: the
+caller binds length, meaning, result and a terminal predicate.
+
+Fragment-only boundary: digit guards, conditional doubling, accumulation and
+the reduction ladder; input pushes and terminal predicate excluded. The Damm
+fixture `d[i]=(7*i+3) mod 10` over 32 digits, <!-- metric:u4_luhn32_witness -->61<!-- /metric:u4_luhn32_witness --> serialized witness bytes, 32 items, 0
+hints. Peak uses a terminal expected-residue `OP_EQUAL` under strict local execution.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Luhn, 32 digits | <!-- metric:u4_luhn32 -->411<!-- /metric:u4_luhn32 --> | <!-- metric:u4_luhn32_stack -->35<!-- /metric:u4_luhn32_stack --> | <!-- metric:u4_luhn32_opcodes -->295<!-- /metric:u4_luhn32_opcodes --> |
+
+The Damm fragment on the same digits is 766 bytes with a 136-item peak. Luhn
+misses the `09`/`90` adjacent transposition that Damm detects; see the
+[knowledge page](../../../knowledge/primitives/u4-luhn.md).
+
+The measured 32-digit Luhn fragment has 295 static non-push opcodes and exceeds the 201-opcode limit for legacy, P2SH and P2WSH; its 411 bytes fit the P2SH element limit. Tapscript removes that opcode limit, but local execution is not consensus or policy validation.
+
+## Delayed-reduction modulo-16 sum
+
+`sum_ladder::u4_nibbles_to_sum_mod16_ladder(n)` (`n` in `1..=997`, standalone combined peak
+`n + 3`) has the contract of `sum::u4_nibbles_to_sum_mod16` but keeps the sum
+exact and reduces it once with a short ladder of conditional subtractions of
+`16 * 2^k`, so it needs no 31-entry table and no altstack. Inputs are checked for
+range and minimal encoding; no hints.
+
+Fragment-only boundary and fixture as for the table schedule (thirty-two sevens,
+<!-- metric:u4_sum_ladder_batch32_witness -->65<!-- /metric:u4_sum_ladder_batch32_witness --> serialized witness bytes, 32 items, 0 hints); peak uses the same compiled fragment, checking its residue directly.
+Preserved main and alt stack state must satisfy `n + 3 + preserved_main +
+preserved_alt <= 1000`; at `n=997` no caller items fit. A complete leaf must
+compare the residue with its expected value and ensure clean-stack success.
+The 32-nibble fragment has 311 static non-push opcodes, exceeding the 201-opcode
+limit for legacy, P2SH and P2WSH; tapscript removes that particular limit. This
+does not establish consensus or policy validity.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo-16 sum, ladder, 32 nibbles | <!-- metric:u4_sum_ladder_batch32 -->429<!-- /metric:u4_sum_ladder_batch32 --> | <!-- metric:u4_sum_ladder_batch32_stack -->35<!-- /metric:u4_sum_ladder_batch32_stack --> | <!-- metric:u4_sum_ladder_batch32_opcodes -->311<!-- /metric:u4_sum_ladder_batch32_opcodes --> |
+
+The table schedule on the same input is 592 bytes with a 66-item peak. See the
+[knowledge page](../../../knowledge/primitives/u4-sum-ladder.md).
+
+## ScriptNum decimal expansion
+
+`scriptnum_decimal::u4_scriptnum_to_decimal(width)` and
+`u4_scriptnum_to_decimal_hinted(width)` expand one non-negative ScriptNum in
+`0..10^width` (`0..2^31` at width 10, `width` in `1..=10`) into most-significant-
+first numeric decimal digits `0..=9`, the decimal counterpart of the radix-16
+expansion. The hint-free form uses a compare-and-subtract ladder; the hint-checked
+form takes digit hints under the number, range-checks each and equates the Horner
+sum to the number. Outputs feed `damm::u4_decimal_digits_to_damm`.
+
+Fragment-only boundary: domain or hint checks, the ladder or Horner sum; input
+pushes and terminal predicate excluded. Nine digits of `123456789`.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Hint-free, 9 digits | <!-- metric:u4_decimal_zero_9 -->582<!-- /metric:u4_decimal_zero_9 --> | <!-- metric:u4_decimal_zero_9_stack -->12<!-- /metric:u4_decimal_zero_9_stack --> | <!-- metric:u4_decimal_zero_9_opcodes -->301<!-- /metric:u4_decimal_zero_9_opcodes --> |
+| Hint-checked, 9 digits | <!-- metric:u4_decimal_hinted_9 -->153<!-- /metric:u4_decimal_hinted_9 --> | <!-- metric:u4_decimal_hinted_9_stack -->13<!-- /metric:u4_decimal_hinted_9_stack --> | <!-- metric:u4_decimal_hinted_9_opcodes -->114<!-- /metric:u4_decimal_hinted_9_opcodes --> |
+
+Complete leaves ending in the nine-digit Damm fold and a check of state 4:
+
+| Witness form | Leaf bytes | Witness bytes | Witness items | Combined peak |
+| --- | ---: | ---: | ---: | ---: |
+| Nine digit items only (amount not bound) | <!-- metric:u4_decimal_leaf_digits -->326<!-- /metric:u4_decimal_leaf_digits --> | <!-- metric:u4_decimal_leaf_digits_witness -->19<!-- /metric:u4_decimal_leaf_digits_witness --> | <!-- metric:u4_decimal_leaf_digits_witness_items -->9<!-- /metric:u4_decimal_leaf_digits_witness_items --> | <!-- metric:u4_decimal_leaf_digits_stack -->113<!-- /metric:u4_decimal_leaf_digits_stack --> |
+| One amount, hint-free expansion | <!-- metric:u4_decimal_leaf_zero -->908<!-- /metric:u4_decimal_leaf_zero --> | <!-- metric:u4_decimal_leaf_zero_witness -->6<!-- /metric:u4_decimal_leaf_zero_witness --> | <!-- metric:u4_decimal_leaf_zero_witness_items -->1<!-- /metric:u4_decimal_leaf_zero_witness_items --> | <!-- metric:u4_decimal_leaf_zero_stack -->113<!-- /metric:u4_decimal_leaf_zero_stack --> |
+| Amount plus nine digit hints | <!-- metric:u4_decimal_leaf_hinted -->479<!-- /metric:u4_decimal_leaf_hinted --> | <!-- metric:u4_decimal_leaf_hinted_witness -->24<!-- /metric:u4_decimal_leaf_hinted_witness --> | <!-- metric:u4_decimal_leaf_hinted_witness_items -->10<!-- /metric:u4_decimal_leaf_hinted_witness_items --> | <!-- metric:u4_decimal_leaf_hinted_stack -->113<!-- /metric:u4_decimal_leaf_hinted_stack --> |
+
+There is no default width: callers select `1 <= w <= 10` and supply a
+non-negative four-byte ScriptNum below `10^w` (below `2^31` at width 10).
+Hint-free takes `preserved | x` and returns the numeric digits; hint-checked
+takes `preserved | d[0] ... d[w-1] | x` and returns the same digit bytes.
+Both the amount and hints are hostile. The checks bind numeric digits to the
+amount but do not authenticate its meaning. Values above `2^31-1` require a
+separate representation.
+
+Each width-`w` hinted invocation takes `w` hint items and one amount item; all coexist at entry. The measured isolated combined-stack peak is `w+4`, so preserved caller state must satisfy `w+4+p <= 1000`. Numeric aliases are accepted in the measured profile and hint bytes are returned unchanged; canonicalize before byte-sensitive use. These fragments require a terminal predicate and clean stack. See the [knowledge page](../../../knowledge/primitives/u4-scriptnum-decimal.md) for witness accounting, execution assumptions and script-type limits.
+
+For the measured nine-digit fragments, 582-byte hint-free exceeds P2SH's
+520-byte redeemScript element limit and its 301 non-push opcodes exceed the
+201-opcode legacy/P2SH/P2WSH limit. The 153-byte hinted fragment has 114
+non-push opcodes; surrounding scripts impose additional limits. Tapscript has
+different limits, but no consensus or policy validation is claimed. Reproduce:
+
+```sh
+cargo test --locked --lib arithmetic::u4::scriptnum_decimal::tests
+cargo test --locked --test primitive_metrics u4_scriptnum_decimal_metrics_are_current -- --exact
+python3 tools/kb.py validate
+```
+
+## Fixed-composition check
+
+`composition::u4_nibbles_have_composition(&counts)` decides whether a vector of
+`n = sum(counts)` checked nibbles (`1..=979`, peak `n + 21`) contains each nibble
+value `s` exactly `counts[s]` times, returning one Boolean; an out-of-range nibble
+aborts. Each nibble adds `B^lane` (`B = n + 1`) to one of a few accumulator words
+that are compared with the public target words; no lane can carry because a
+count never exceeds `n`. No hints. `[1; 16]` decides "is a permutation of
+`0..=15`". `u4_nibbles_pairwise_distinct(n)` is the pairwise comparator for that
+case.
+
+Fragment-only boundary: nibble range checks, table pushes, accumulation, target
+comparisons and cleanup; input pushes and terminal predicate excluded. Fixture:
+the 16 nibbles `15..0` (<!-- metric:u4_composition_16_witness -->32<!-- /metric:u4_composition_16_witness --> witness bytes, 16 items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Packed-lane composition, permutation of 16 | <!-- metric:u4_composition_lanes_16 -->649<!-- /metric:u4_composition_lanes_16 --> | <!-- metric:u4_composition_lanes_16_stack -->37<!-- /metric:u4_composition_lanes_16_stack --> | <!-- metric:u4_composition_lanes_16_opcodes -->379<!-- /metric:u4_composition_lanes_16_opcodes --> |
+| Pairwise distinctness, 16 nibbles | <!-- metric:u4_composition_pairwise_16 -->823<!-- /metric:u4_composition_pairwise_16 --> | <!-- metric:u4_composition_pairwise_16_stack -->19<!-- /metric:u4_composition_pairwise_16_stack --> | <!-- metric:u4_composition_pairwise_16_opcodes -->538<!-- /metric:u4_composition_pairwise_16_opcodes --> |
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_composition_16_count_baseline -->4256<!-- /metric:u4_composition_16_count_baseline -->-byte naive repeated-helper estimate
+(an estimate: it excludes vector copies and the comparisons). See the
+[knowledge page](../../../knowledge/primitives/u4-composition.md).
+
+Fixed-composition checks accept nonminimal numeric aliases when MINIMALDATA is
+disabled; the pairwise comparator checks numeric equality so alias duplicates
+are rejected. Byte-sensitive callers must canonicalize first. Public count
+totals are summed without `u32` overflow and checked before narrowing. Verify
+the result and enforce a clean terminal leaf.
+
+## k-th smallest nibble
+
+`order_statistic::u4_nibbles_kth_smallest_hinted(n, k)` verifies that a witness-
+claimed nibble is the `k`-th smallest (1-based) of `n` checked nibbles with two
+linear counting passes (`L = #{a < claim}`, `U = #{a <= claim}`, accept iff
+`L < k <= U`); `n` is `1..=996` (peak `n + 4`) and `k = (n + 1) / 2` is the lower
+median. `u4_nibbles_kth_smallest(n, k)` selects it with no hint by ranking every
+element against every other element and is quadratic (`n <= 32`). Every nibble
+and the claim are range-checked.
+
+Fragment-only boundary: range checks, counting passes (or pairwise ranks) and
+cleanup; input pushes and terminal predicate excluded. Fixture
+`a[i] = (7i + 3) mod 15 + 1` over 16 nibbles with `k = 8`.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Claim check (hinted) | <!-- metric:u4_kth_hinted_16 -->312<!-- /metric:u4_kth_hinted_16 --> | <!-- metric:u4_kth_hinted_16_witness -->35<!-- /metric:u4_kth_hinted_16_witness --> | <!-- metric:u4_kth_hinted_16_witness_items -->17<!-- /metric:u4_kth_hinted_16_witness_items --> | 1 | <!-- metric:u4_kth_hinted_16_stack -->20<!-- /metric:u4_kth_hinted_16_stack --> | <!-- metric:u4_kth_hinted_16_opcodes -->193<!-- /metric:u4_kth_hinted_16_opcodes --> |
+| Pairwise selector (hint-free) | <!-- metric:u4_kth_select_16 -->3512<!-- /metric:u4_kth_select_16 --> | <!-- metric:u4_kth_select_16_witness -->33<!-- /metric:u4_kth_select_16_witness --> | <!-- metric:u4_kth_select_16_witness_items -->16<!-- /metric:u4_kth_select_16_witness_items --> | 0 | <!-- metric:u4_kth_select_16_stack -->22<!-- /metric:u4_kth_select_16_stack --> | <!-- metric:u4_kth_select_16_opcodes -->2282<!-- /metric:u4_kth_select_16_opcodes --> |
+
+The hinted claim is bound numerically and returned unchanged; numeric aliases can pass when minimality is disabled, so canonicalize before byte-sensitive use. See the [knowledge page](../../../knowledge/primitives/u4-order-statistic.md).
+
+## Nibbles to ASCII hexadecimal text
+
+`ascii_hex_encode::u4_nibbles_to_ascii_hex_arith(n, case)` (`n` in `1..=997`, peak
+`n + 3`) and `u4_nibbles_to_ascii_hex_table(n, case)` (`n` in `1..=981`, peak
+`n + 19`) replace each checked nibble with the ASCII code of its lower- or
+upper-case hexadecimal digit, in order; a nibble outside `0..=15` aborts. The
+arithmetic form branches (`+48`, or `+87`/`+55` above 9); the table form keeps
+16 code entries live. No hints.
+
+Fragment-only boundary: range checks, encoding and order restoration; input pushes
+and terminal predicate excluded. Fixture: the nibbles `0..=15` repeated four times
+(64 nibbles, <!-- metric:u4_ascii_hex_encode_64_witness -->125<!-- /metric:u4_ascii_hex_encode_64_witness --> witness bytes, <!-- metric:u4_ascii_hex_encode_64_witness_items -->64<!-- /metric:u4_ascii_hex_encode_64_witness_items --> items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Arithmetic, 64 nibbles | <!-- metric:u4_ascii_hex_encode_arith_64 -->1150<!-- /metric:u4_ascii_hex_encode_arith_64 --> | <!-- metric:u4_ascii_hex_encode_arith_64_stack -->67<!-- /metric:u4_ascii_hex_encode_arith_64_stack --> | <!-- metric:u4_ascii_hex_encode_arith_64_opcodes -->702<!-- /metric:u4_ascii_hex_encode_arith_64_opcodes --> |
+| Table, 64 nibbles | <!-- metric:u4_ascii_hex_encode_table_64 -->680<!-- /metric:u4_ascii_hex_encode_table_64 --> | <!-- metric:u4_ascii_hex_encode_table_64_stack -->83<!-- /metric:u4_ascii_hex_encode_table_64_stack --> | <!-- metric:u4_ascii_hex_encode_table_64_opcodes -->456<!-- /metric:u4_ascii_hex_encode_table_64_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-ascii-hex-encode.md).
+
+The 64-item ASCII-hex encoder table costs 32 bytes of setup, 10 per nibble,
+and 8 cleanup bytes; `32 + 64*10 + 8 = 680`, with zero cross-component optimizer
+delta. The 64-item rows exceed the legacy/P2SH/P2WSH 201-opcode limit; both
+fragments also exceed P2SH's 520-byte element limit. This is not a
+consensus or policy validation.
+
+## Packed lexicographic comparison
+
+`compare_packed::lexicographic_le_packed(n)` (`n` in `1..=496`, peak `2n + 7`) has
+the contract of `compare::lexicographic_le`, but packs each vector into words of
+seven nibbles with a Horner sum and compares the words with native ScriptNum
+arithmetic, folding from the last word to the first so that the first differing
+word decides. `lexicographic_le_packed_constant` embeds the right vector. All `2n`
+nibbles are range-checked; no hints.
+
+Fragment-only boundary: range checks, packing, word comparisons and cleanup; input
+pushes and terminal predicate excluded. Fixture: two 32-byte sibling nodes as 64
+nibbles each sharing a 40-nibble prefix (<!-- metric:u4_compare_node_witness -->228<!-- /metric:u4_compare_node_witness --> witness bytes, <!-- metric:u4_compare_node_witness_items -->128<!-- /metric:u4_compare_node_witness_items --> items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Per-nibble state machine, 64 + 64 nibbles | <!-- metric:u4_compare_state_64 -->3532<!-- /metric:u4_compare_state_64 --> | <!-- metric:u4_compare_state_64_stack -->131<!-- /metric:u4_compare_state_64_stack --> | <!-- metric:u4_compare_state_64_opcodes -->2178<!-- /metric:u4_compare_state_64_opcodes --> |
+| Packed seven-nibble words, 64 + 64 nibbles | <!-- metric:u4_compare_packed_64 -->2171<!-- /metric:u4_compare_packed_64 --> | <!-- metric:u4_compare_packed_64_stack -->135<!-- /metric:u4_compare_packed_64_stack --> | <!-- metric:u4_compare_packed_64_opcodes -->1650<!-- /metric:u4_compare_packed_64_opcodes --> |
+
+Numeric range checks accept nonminimal aliases under the measured profile; byte-sensitive callers must enforce canonical encoding. The packed form saves script bytes in the measured cases, but its peak is four items higher and its maximum width is 496 instead of 498. See the [knowledge page](../../../knowledge/primitives/u4-compare-packed.md).
+
+## Hint-checked presence bits
+
+`presence_hinted::u4_nibbles_to_presence_bits_hinted(n)` (`n` in `1..=964`, peak
+`n + 36`) returns the same 16 presence bits as `presence::u4_nibbles_to_presence_bits`
+but verifies a witness instead of scanning the vector once per symbol. The witness is
+the `n` nibbles, then 16 indices (`idx[s]`, only used for a set flag), then the 16
+flags `p[15] ... p[0]` with `p[0]` on top; the output keeps that order (the
+zero-hint form returns `present[0]` deepest). Every nibble's flag must be set, and
+every set flag must be witnessed by an in-range index whose element equals the
+symbol. In tapscript MINIMALIF rejects any flag other than the empty item or `[1]`.
+Hint items per invocation: **32** (16 indices and 16 flags).
+
+Fragment-only boundary: nibble range checks, flag lookups, witnessed-index checks
+and cleanup; input pushes and terminal predicate excluded. Fixture
+`x[i] = (7i + 3) mod 16` over 64 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Zero-hint projection, 64 nibbles | <!-- metric:u4_presence_zero_64 -->6733<!-- /metric:u4_presence_zero_64 --> | <!-- metric:u4_presence_zero_64_witness -->125<!-- /metric:u4_presence_zero_64_witness --> | <!-- metric:u4_presence_zero_64_witness_items -->64<!-- /metric:u4_presence_zero_64_witness_items --> | 0 | <!-- metric:u4_presence_zero_64_stack -->82<!-- /metric:u4_presence_zero_64_stack --> | <!-- metric:u4_presence_zero_64_opcodes -->3648<!-- /metric:u4_presence_zero_64_opcodes --> |
+| Hint-checked projection, 64 nibbles | <!-- metric:u4_presence_hinted_64 -->1029<!-- /metric:u4_presence_hinted_64 --> | <!-- metric:u4_presence_hinted_64_witness -->188<!-- /metric:u4_presence_hinted_64_witness --> | <!-- metric:u4_presence_hinted_64_witness_items -->96<!-- /metric:u4_presence_hinted_64_witness_items --> | 32 | <!-- metric:u4_presence_hinted_64_stack -->100<!-- /metric:u4_presence_hinted_64_stack --> | <!-- metric:u4_presence_hinted_64_opcodes -->632<!-- /metric:u4_presence_hinted_64_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-presence-hinted.md).
+
+`presence_hinted` compares witnessed nibbles numerically, including aliases
+under the explicit local consensus numeric profile; byte-sensitive callers must
+validate canonical input bytes. Flag canonicality relies on tapscript MINIMALIF.
+Callers must consume or verify the 16 output flags and preserved state, enforce
+their predicate and leave exactly one truthy item at a complete leaf.
+
+## Parity-hinted XOR reduction
+
+`xor_hinted::u4_nibbles_xor_hinted(n)` (`n` in `1..=212`) verifies a claimed XOR of
+`n` checked nibbles without the 256-entry XOR table. Witness, bottom to top:
+`x[0..n-1] y h0 h1 h2 h3`; output `y`. Each nibble adds the packed bit-count weight
+`T[x] = sum_b bit_b(x) * (n + 2)^b` to one accumulator, so lane `b` of the sum counts
+the nibbles with bit `b` set. The claim is accepted when the sum equals `T[y] + 2 *
+sum_b h_b (n + 2)^b` with every `h_b` in `0..=n/2`; then each lane of the right side is
+at most `n + 1 < n + 2`, nothing carries, and `count_b = y_b + 2 h_b` means `y_b` is
+the parity of `count_b`. Hint items per invocation: **5**. The limit 212 keeps the
+accumulator below `2^31`.
+
+Fragment-only boundary: range checks, packing, accumulation, the lane equality and
+cleanup; input pushes and terminal predicate excluded. Fixture `x[i] = (7i + 3) mod 16`
+over 32 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 256-entry table reduction, 32 nibbles | <!-- metric:u4_xor_table_32 -->1122<!-- /metric:u4_xor_table_32 --> | <!-- metric:u4_xor_table_32_witness -->63<!-- /metric:u4_xor_table_32_witness --> | <!-- metric:u4_xor_table_32_witness_items -->32<!-- /metric:u4_xor_table_32_witness_items --> | 0 | <!-- metric:u4_xor_table_32_stack -->289<!-- /metric:u4_xor_table_32_stack --> | <!-- metric:u4_xor_table_32_opcodes -->758<!-- /metric:u4_xor_table_32_opcodes --> |
+| Parity-hinted reduction, 32 nibbles | <!-- metric:u4_xor_hinted_32 -->617<!-- /metric:u4_xor_hinted_32 --> | <!-- metric:u4_xor_hinted_32_witness -->72<!-- /metric:u4_xor_hinted_32_witness --> | <!-- metric:u4_xor_hinted_32_witness_items -->37<!-- /metric:u4_xor_hinted_32_witness_items --> | 5 | <!-- metric:u4_xor_hinted_32_stack -->59<!-- /metric:u4_xor_hinted_32_stack --> | <!-- metric:u4_xor_hinted_32_opcodes -->383<!-- /metric:u4_xor_hinted_32_opcodes --> |
+
+For the 32-item fixture the five hints add <!-- metric:u4_xor_hinted_32_hint_bytes -->9<!-- /metric:u4_xor_hinted_32_hint_bytes --> serialized bytes to the existing witness; a separately serialized hint vector occupies <!-- metric:u4_xor_hinted_32_hint_vector -->10<!-- /metric:u4_xor_hinted_32_hint_vector --> bytes, including its item count.
+
+The implementation cap 212 is conservative: the single-word arithmetic bound fits at 213 and first exceeds `2^31` at 214. With minimality disabled, the result preserves the original y bytes and permits numeric aliases; canonicalize for byte-sensitive use. Preloading k equal-width calls entails k(n+5) entry items, including 5k hints, before preserved state and scheduling overhead; the isolated peak is n+27. The 32-item fragment exceeds P2SH's 520-byte element limit and the legacy/P2SH/P2WSH 201-opcode limit; no consensus or policy validation is claimed. See the [knowledge page](../../../knowledge/primitives/u4-xor-hinted.md).
+
+For the measured 32-item configurations, both the 617-byte hinted fragment and the 1,122-byte table fragment exceed P2SH’s 520-byte redeem-script element limit; their 383 and 758 non-push opcodes exceed the 201-opcode legacy, P2SH and P2WSH limit. Tapscript removes that opcode limit but retains stack and element constraints. Complete-script and relay-policy validity have not been established.
+
+## Hint-checked symbol histogram
+
+`histogram::u4_nibbles_histogram_hinted(n)` (`n` in `1..=962`, peak `n + 38`) returns
+the 16 symbol counts of `n` checked nibbles from a witness `x[0..n-1] c[0..15]`
+(`c[15]` on top) and consumes the vector. Every `c[s]` is range-checked to `0..=n`;
+the claimed counts and the vector's own symbols are packed into the same base-`(n+1)`
+lane words and must be equal, so every `c[s]` is exact. **Hint items per
+invocation: 16.** The fixed-symbol `count::u4_nibbles_count` returns one count per
+pass.
+
+Fragment-only boundary: nibble and count range checks, claimed target words, lane
+accumulation and cleanup; input pushes and terminal predicate excluded. Fixture
+`x[i] = (7i + 3) mod 16` over 64 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hint-checked histogram, 64 nibbles | <!-- metric:u4_histogram_64 -->3158<!-- /metric:u4_histogram_64 --> | <!-- metric:u4_histogram_64_witness -->157<!-- /metric:u4_histogram_64_witness --> | <!-- metric:u4_histogram_64_witness_items -->80<!-- /metric:u4_histogram_64_witness_items --> | 16 | <!-- metric:u4_histogram_64_stack -->102<!-- /metric:u4_histogram_64_stack --> | <!-- metric:u4_histogram_64_opcodes -->2080<!-- /metric:u4_histogram_64_opcodes --> |
+
+For the all-four fixture the sixteen hints add <!-- metric:u4_histogram_64_hint_bytes -->32<!-- /metric:u4_histogram_64_hint_bytes --> serialized bytes; separately serialized they occupy <!-- metric:u4_histogram_64_hint_vector -->33<!-- /metric:u4_histogram_64_hint_vector --> bytes. The numeric checks return original hint bytes, so permissive execution accepts padded count values and negative zero; enforce canonical encodings if output bytes matter.
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_histogram_64_count_baseline -->18448<!-- /metric:u4_histogram_64_count_baseline -->-byte lower bound for the same
+output (an estimate: it excludes vector copies). See the
+[knowledge page](../../../knowledge/primitives/u4-histogram.md).

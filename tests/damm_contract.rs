@@ -1,4 +1,8 @@
 //! Shared numeric-checksum contracts, preserving each sibling's own domain.
+#[path = "common/research_artifacts.rs"]
+mod research_artifacts;
+use research_artifacts::reproduced_measurements;
+
 use bitcoin::{
     hashes::{sha256, Hash},
     ScriptBuf,
@@ -605,7 +609,10 @@ fn report_catalog_and_immutable_sources_bind_all_artifacts() {
     assert_eq!(rev.len(), 40);
     assert!(rev.bytes().all(|b| b.is_ascii_hexdigit()));
     assert_ne!(rev, "0000000000000000000000000000000000000000");
-    assert_eq!(measure::report(rev), report);
+    assert_eq!(
+        reproduced_measurements(&measure::report(rev)),
+        reproduced_measurements(&report)
+    );
     let root = env!("CARGO_MANIFEST_DIR");
     let commit = std::process::Command::new("git")
         .args(["cat-file", "-e", rev])

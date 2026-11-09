@@ -1,5 +1,7 @@
 //! Arithmetic over Bitcoin's four-byte Script integer domain.
 
+pub mod bounded;
+
 use crate::support::script::{script, Script};
 
 /// Largest positive integer accepted by four-byte Script-number arithmetic.

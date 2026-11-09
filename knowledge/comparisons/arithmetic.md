@@ -12,6 +12,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
 | Canonical ScriptNum boundary | `scriptint::verify_canonical()` | 5 | 4-item peak; rejects raw aliases and oversized items |
+| Exact signed min and max, 128 values | [Paired checked reduction](signed-min-max.md) | 1,927 | 131-item peak; 641-byte data witness; zero hints; complete output checks included |
 | Conditional u32 sign routing | `u32_conditional_negate()` | 83 | 9-item peak; condition normalized before branch |
 | Small-field add | M31 u31 add | 18 | Canonical field input |
 | Small-field variable multiply | M31 u31 multiply | 1,370 | Witness quotient relation |
@@ -189,6 +190,32 @@ condition differ from sorting arbitrary hostile nibbles; the shared mechanism
 is bounded destructive selection. A packed-rank sorting consumer remains an
 explicit witness/stack comparison question, rather than an assumed win.
 
+### Bounded constant division
+
+The [checked bounded divider](../primitives/scriptnum-bounded-div.md) reuses
+the permutation decoder's quotient arithmetic. At the same canonical bounded
+dividend and quotient/remainder output contract, it trades script bytes for
+one fewer entry item and no quotient hint:
+
+| Divisor / maximum / x | Direct / hinted leaf bytes | Direct / hinted serialized data witness | Direct / hinted hint items | Direct / hinted total entry items | Direct / hinted peak | Direct / hinted executed non-push ops |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 31 / 991 / 991 | 92 / 49 | 4 / 6 | 0 / 1 | 1 / 2 | 4 / 8 | 53 / 35 |
+| 17 / 271 / 271 | 75 / 41 | 4 / 6 | 0 / 1 | 1 / 2 | 4 / 5 | 45 / 29 |
+| 31 / 2^31-1 / 2^31-1 | 532 / 53 | 6 / 11 | 0 / 1 | 1 / 2 | 4 / 8 | 145 / 35 |
+
+Boundary: `complete-leaf:` canonical dividend/range checks, quotient/remainder
+arithmetic and identical output comparisons through clean truthy success.
+The hinted baseline includes quotient normalization and the existing binary
+constant-multiplication verifier; it is not an optimal addition-chain claim.
+All data and hints coexist at entry. Witness serialization includes every
+count/length prefix, excluding script/control-block and transaction context.
+The direct form loses combined bytes in each fixture (NR-088), but lowers
+entry and stack costs. The 31-bit direct leaf has 229 static non-push opcodes,
+so its 145 actually executed operations do not establish legacy/P2WSH fit.
+These results are `locally-reproduced` / `unclassified`, with local tapscript
+stack enforcement and global minimal-data off. OP-044 tracks an integrated
+packed-choice consumer; no sorting composition gain is assumed.
+
 Selection order: choose semantics and range, then representation compatibility,
 then consensus feasibility, and only then minimize bytes. The prime-log profile
 keeps canonical operands and covers one unsigned 256-by-256-bit product exactly,
@@ -214,6 +241,11 @@ saves nine representative witness bytes and six entry items, but expands to
 the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
 adder. It is retained for witness-constrained composition, not as a general
 locking-byte winner.
+
+The [compressed u32 carry comparison](compressed-u32-carry.md) checks
+only the final unsigned carry on the same canonical wire format.
+The sign-class leaf uses 69 bytes, versus 153 for the existing
+comparator through complementation and 912 for expanded ripple.
 
 The embedded-constant u32 subtraction row makes the same tradeoff for a public
 subtrahend: the checked four-limb adapter uses 149 locking bytes, a
@@ -355,6 +387,17 @@ Prevalidating the bytes also raises the strict stack frontier from 995
 to 997 inputs compared with interleaved validation. No authentication
 or global novelty is implied; RFC 1950 already describes delayed reduction.
 
+## Numeric to raw byte materialization
+
+The [sign-magnitude adapter](../primitives/raw-scriptnum-byte.md) and a
+high-half lookup both convert the same canonical byte before checking
+its native SHA-256 digest. The resulting leaves measure 72 versus 391
+script bytes. For `0xc8`, combined peak is four versus 129 and executed
+non-push operations are 22 versus 86. Both use one ordinary input,
+four serialized witness bytes and zero hints. At zero both peak at
+four, and the table executes one fewer non-push operation. This is
+one raw byte as a stack item, with local unclassified execution.
+
 ## Positional residue of a base-16 vector
 
 For **identical integer-modulo-17 semantics**, canonical runtime witness,
@@ -375,6 +418,23 @@ scheduler and [OP-031](../open-problems.md#op-031--positional-nibble-checksum-co
 for the complete-leaf validation criterion. All new configurations remain
 `locally-reproduced` / `unclassified`; dynamic opcodes are unavailable.
 
+## Checked nibble XOR reduction
+
+The [signed packed lanes](../primitives/u4-xor-lanes.md) derive one
+canonical XOR nibble with no hints. At width 16, packed, triangular,
+and full-table leaves use 534, 622, and 775 bytes and peak at 36, 170,
+and 273 combined items. At width 254 they use 4,536, 7,058, and 7,086
+bytes, execute 2,958, 4,895, and 5,453 non-push operations, and peak
+at 274, 408, and 511. The width-254 rows all use 490 witness bytes,
+254 ordinary items and zero hints. All leaves include canonical checks,
+table setup and cleanup, and byte equality against the expected output.
+
+[PR #285](https://github.com/solving-bitcoin/bitcoin-scripts/pull/285)
+reports a 367-byte width-16 parity certificate with five mandatory hint
+items at its own fragment boundary. Its packed counts are closely
+related, and its reported bytes do not share the zero-hint complete-leaf
+boundary. See [exact-count and collision limits](../negative-results/u4-xor-lanes.md).
+
 ## U32 word to modulo-65,537 residue
 
 For the same four canonical byte inputs and one canonical numeric residue,
@@ -389,6 +449,27 @@ comparison-only code. Compressed u32 adapters and F257 multiplication have
 different input/output semantics, so their byte sizes do not establish a
 like-for-like dominance relation here.
 
+
+## Joint u32 residues
+
+The [paired modulo-7 and modulo-9 projection](../primitives/u32-dual-residue.md)
+uses a common modulo-63 reduction. Two complete checked leaves each cost 210
+script bytes and peak at seven items, versus 248 and ten for matched centered
+reductions. Executed non-push counts are 115/113 versus 136/136 for the two
+words. Each witness has four ordinary items and zero hints. The fixture
+witnesses are 9 and 13 serialized bytes, with equal bytes within each
+comparison. The evidence is locally reproduced with unclassified execution.
+
+## Uniform circular step
+
+The [uniform Lee-step scan](../primitives/u4-lee-step.md) compares
+centered absolute distances and decodes the common result once. At 128
+nibbles, the centered and direct complete leaves use 2,681 and 2,932
+bytes and execute 2,167 and 2,419 non-push operations. Each has a
+248-byte data witness with 128 ordinary items, zero hints, and a
+131-item combined peak. Both check the same output and every canonical
+input. The direct schedule is one byte smaller for a single edge.
+See [negative results](../negative-results/u4-lee-step.md).
 
 ## Canonical modulo-16 prefix vectors
 
@@ -423,6 +504,18 @@ ScriptNums 0..225, not modulo nibbles or raw bytes. Costs are policy-optimized,
 locally-reproduced/unclassified. The [modulo comparison](../negative-results/u4-quarter-square-modulo.md)
 is a different operation and loses the size advantage at larger batches.
 
+## Earliest minimum over nibbles
+
+The [earliest-minimum fold](../primitives/u4-argmin.md) returns both the value
+and its first zero-based index. At width 128, a resident table of scaled
+nibbles costs 2,540 leaf bytes and 1,565 executed non-push operations at peak
+148. With two registers those costs are 2,937, 1,924 and 133. Computing the
+same packed score with shifts costs 3,764, 3,091 and 132. All rows include
+input checks, cleanup and identical output checks. The same 255-byte data
+witness carries 128 ordinary items and zero hints. The two-register version
+wins on script and execution at width four. See the
+[schedule limits](../negative-results/u4-argmin-schedules.md).
+
 ## Decimal finite-state error detection
 
 The [numeric decimal Damm fold](../primitives/u4-damm.md) is an order-sensitive
@@ -435,6 +528,27 @@ fragment measures 766 bytes, 61 witness bytes, 32 data items, zero hints and a
 136-item combined peak. The [lookup comparison](lookup-strategies.md#damm-finite-state-folds)
 prices matched alternatives; the shared contract tests preserve the existing
 sum-family semantics and deployment classes.
+
+## Single-bit error correction
+
+The [extended Hamming decoder](../primitives/hamming84-decoder.md) compares
+syndrome evaluation against a complete distance-one lookup. A single
+checked byte uses 185 versus 408 script bytes and peaks at 13 versus 259.
+For eight checked bytes the shared table uses 585 bytes versus 1,473 and
+248 executed non-push operations versus 975. It peaks at 267 versus 20.
+The batch witness is 20 serialized bytes with eight ordinary items and
+zero hints. These are local complete leaves with equal decoded outputs.
+
+## Centered positional binomial moments
+
+The [centered binomial recurrence](../primitives/u4-binomial-moments.md)
+returns exact order-zero, order-one and order-two weighted sums. With
+128 nibbles it uses 2,814 leaf bytes and 2,292 executed non-push
+operations at combined peak 131. Eager initialization uses 2,832,
+2,307 and 134. Computing each weight separately uses 8,424, 7,896
+and 139. Every row checks the same three outputs from 249 serialized
+data bytes, 128 ordinary items and zero hints. See the
+[arithmetic and collision limits](../negative-results/u4-binomial-moments.md).
 
 ## Integer floor roots
 
@@ -478,6 +592,17 @@ independent repeated messages have separate measured artifacts. These are
 locally-reproduced/unclassified outcomes, not cryptographic or deployment
 claims; see [NR-081](../negative-results/crc8-nibble-feedback.md).
 
+## Compact distinct-nibble sets
+
+The [carry-checked set mask](../primitives/u4-distinct-mask.md) returns one
+canonical ScriptNum and rejects repeated values. At width 16 it costs 316
+leaf bytes and 189 executed non-push operations versus 1,121 and 787 for
+pairwise checks followed by the same encoder. Both leaves consume the
+same 32-byte data witness with 16 ordinary items, zero hints, and a
+36-item combined peak. The two schedules reverse order on both byte and
+operation cost at width four. [The negative result](../negative-results/u4-distinct-mask.md)
+records why the sum requires a weight check and why the mask cannot bind order.
+
 ## Small permutation witnesses
 
 The [factoradic decoder](../primitives/factoradic-permutation.md) compares equal
@@ -490,6 +615,18 @@ runs enforce the stack limit. Packed wins witness and live items but loses total
 bytes (NR-084); these rows are not directly comparable with fragment-only u4
 projections or offchain signature multiset ranking.
 
+## Signed saturating ScriptNum addition
+
+The [two-operand saturation experiment](../primitives/scriptnum-saturation.md)
+compares pre-addition headroom with post-addition raw width detection.
+Matched output-checking leaves both use 32 script bytes, 8 data witness bytes,
+2 ordinary data items, zero hints and a combined peak of 4. Headroom
+executes 11 non-push operations on each fixture. Width detection executes
+12 in range and 13 at either saturation endpoint. Both are locally reproduced
+under stack-limited tapscript with optimizer `ALL`; execution is unclassified.
+The [negative result](../negative-results/scriptnum-saturation.md) records the
+invalid numeric post-clamp and mixed-sign regrouping counterexamples.
+
 ## Reflection-constrained vectors
 
 Equal-reflection width 32 complete leaves measure 309 + 32 script/data bytes for
@@ -501,3 +638,191 @@ comparison and clean success under strict local `unclassified` tapscript rules.
 These are constrained-state encodings, not a general vector compression claim;
 [the primitive](../primitives/u4-reflection.md) is semantically different from
 the per-symbol complement quotient and cyclic vector rotation.
+
+## Multiset equality of u4 vectors
+
+Packed signed-histogram lanes decide multiset equality of two 16-nibble
+vectors in 1,158 script bytes, 63 witness bytes, zero hints and a 53-item peak
+(strict local `unclassified` tapscript, `locally-reproduced`). The per-symbol
+alternative's 32 separately compiled fixed-symbol helpers total 8,512 script
+bytes before vector copies and comparisons. This is a naive repeated-helper
+estimate, not a built comparator or a lower bound on shared counting designs;
+see [the primitive](../primitives/u4-multiset-equal.md) and NR-088.
+
+## Inversion count of u4 vectors
+
+Exact inversion counting uses 822 script bytes, 32 witness bytes, zero hints,
+a 19-item peak and 537 executed non-push opcodes at 16 nibbles (strict local
+`unclassified` tapscript, `locally-reproduced`); cost is quadratic, 3,709 bytes
+at 32 and 15,629 at 64. The linear nondecreasing predicate needs 263, 588 and
+1,244 bytes at those lengths, so a zero-inversion test should not use the
+count (NR-089). See [the primitive](../primitives/u4-inversions.md).
+
+## ASCII hexadecimal text decoders
+
+At 64 lowercase characters the table-free fold costs 1,470 script bytes and a
+67-item peak, and the resident-table decoder 1,299 bytes and a 122-item peak
+(129 witness bytes, zero hints, strict local `unclassified` tapscript,
+`locally-reproduced`). Either-case text widens the gap to 2,174 versus 1,299.
+The table first wins at 22 lowercase characters, 43 uppercase and 6
+either-case characters. See [the primitive](../primitives/u4-ascii-hex.md) and NR-090.
+
+## Bracket-balance checks
+
+For 128 brackets the nibble-packed check costs 895 script bytes, 65 witness
+bytes over 32 items and a 69-item peak, against 2,059 bytes, 193 bytes over 128
+items and a 133-item peak when each bracket is its own item (zero hints,
+strict local `unclassified` tapscript, `locally-reproduced`). The comparator
+wins only at four brackets. See [the primitive](../primitives/u4-balanced.md)
+and NR-091.
+
+## Distances between u4 vectors
+
+At 16 nibbles the table-free L1 and Lee distances cost 334 and 414 script bytes
+with a 35-item peak, and Hamming through a fused 256-entry table 874 bytes with
+a 290-item peak, against 962 bytes and 306 items for XOR-then-popcount
+composition (63 witness bytes over 32 items, zero hints, strict local
+`unclassified` tapscript, `locally-reproduced`). The fused table is 6.3% to
+10.7% smaller across 1 to 64 nibbles. See [the primitive](../primitives/u4-distance.md)
+and NR-092.
+
+## ScriptNum to nibbles
+
+Expanding `0xBEEF` into four nibbles costs 230 script bytes and 5 witness bytes
+over one item with no hints, against 59 script bytes and 13 witness bytes over
+five items (four nibble hints) for Horner verification: 235 versus 72 bytes
+in total (strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-scriptnum-nibbles.md) and NR-093.
+
+## Strict majority of u4 vectors
+
+At 16 nibbles the Boyer-Moore decision costs 486 script bytes (peak 20, zero
+hints) against a 4,256-byte naive sum of sixteen destructive fixed-symbol helpers (not a lower bound for shared counting), and a
+witness-claimed majority check costs 213 bytes with one hint (strict local
+`unclassified` tapscript, `locally-reproduced`). The claim check cannot report
+absence. See [the primitive](../primitives/u4-majority.md) and NR-094.
+
+## Delayed versus running modular reduction
+
+Keeping the nibble sum exact and reducing once shrinks the modulo-15 fold from
+1,214 to 833 script bytes at 64 nibbles and the modulo-17 fold from 1,342 to
+894 (20,926 to 13,066 at 997), at the same `n + 3` peak, zero hints and no
+table (strict local `unclassified` tapscript, `locally-reproduced`). Running
+reduction wins only below four nibbles. The u32 byte-sum residues cost 87
+(mod 255) and 115 (mod 65,535) bytes against 100 for mod 65,537. See
+[the primitive](../primitives/u4-mod15.md) and NR-095.
+
+## Decimal check-digit schemes
+
+At 32 digits the table-free Luhn fold costs 411 script bytes with a 35-item
+peak, against 766 bytes and a 136-item peak for the resident-table Damm fold
+(zero hints, strict local `unclassified` tapscript, `locally-reproduced`). Luhn
+misses the `09`/`90` adjacent transposition; Damm detects it. See
+[the primitive](../primitives/u4-luhn.md) and NR-096.
+
+## Modulo-16 nibble sums
+
+At 32 nibbles the delayed-reduction ladder costs 429 script bytes with a 35-item
+peak, against 592 bytes and a 66-item peak for the resident-table schedule, and is
+smaller at every length from one nibble (10 versus 65 bytes) to the table form's
+965-nibble limit (strict local `unclassified` tapscript, zero hints,
+`locally-reproduced`). See [the primitive](../primitives/u4-sum-ladder.md) and NR-097.
+
+## ScriptNum to decimal digits
+
+Expanding a nine-digit ScriptNum costs 582 script bytes hint-free and 153 bytes
+with nine digit hints. Feeding the digits into the existing Damm fold, the
+complete leaf is 908 bytes with a 6-byte one-item witness hint-free (914 total)
+and 479 bytes with a 24-byte ten-item witness hint-checked (503 total), against
+326 bytes and a 19-byte nine-item witness for digits alone, which binds no amount
+(peak 113 throughout; strict local `unclassified` tapscript, `locally-reproduced`).
+See [the primitive](../primitives/u4-scriptnum-decimal.md) and NR-098.
+
+## Fixed compositions and permutations of u4 vectors
+
+Deciding that a 16-nibble vector is a permutation of `0..=15` costs 649 script
+bytes with a 37-item peak using packed base-17 count lanes, against 823 bytes and
+a 19-item peak for 120 pairwise equality tests (zero hints, strict local
+`unclassified` tapscript, `locally-reproduced`). Sixteen per-symbol counts are at
+least 4,256 bytes (an estimate). See [the primitive](../primitives/u4-composition.md)
+and NR-099.
+
+## Order statistics of u4 vectors
+
+At 16 nibbles a witness-claimed lower median is verified in 312 script bytes (one
+hint, 17 witness items, peak 20), against 3,512 bytes for hint-free pairwise
+selection (peak 22); at 32 nibbles 656 versus 14,223 bytes (strict local
+`unclassified` tapscript, `locally-reproduced`). The pinned sorting reference reports a
+3,044-byte zero-hint sorting network at 32 inputs; it returns all sorted items
+and needs an unmeasured selection/cleanup consumer, so the output boundaries
+are not yet matched. See [the primitive](../primitives/u4-order-statistic.md) and NR-101.
+
+## Nibble to ASCII hexadecimal encoders
+
+Encoding 64 nibbles as lowercase hexadecimal text costs 1,150 script bytes with the
+branching arithmetic form (peak 67) and 680 bytes with a resident 16-entry table
+(peak 83), 125 witness bytes over 64 items, zero hints (strict local
+`unclassified` tapscript, `locally-reproduced`). The table form wins from about five
+nibbles. See [the primitive](../primitives/u4-ascii-hex-encode.md) and NR-102.
+
+## Subset-sum witness verification
+
+Verifying a 32-weight subset-sum selection costs 224 script bytes (7 per weight,
+peak 33, 54 witness bytes over 32 selectors, zero hints beyond the selection) when
+tapscript MINIMALIF supplies the canonical-selector check, against 544 bytes with
+explicit range and reserialization checks (strict local tapscript executor,
+`unclassified`, `locally-reproduced`). See
+[the primitive](../primitives/subset-sum.md) and NR-103.
+
+## Lexicographic comparison of u4 vectors
+
+Comparing two 64-nibble Taproot sibling nodes costs 2,171 script bytes with packed
+seven-nibble words (peak 135) against 3,532 bytes (peak 131) for the per-nibble
+first-difference state machine, and 4,486 versus 7,500 at 128 nibbles (zero hints,
+strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-compare-packed.md) and NR-104.
+
+## Presence bits of u4 vectors
+
+At 64 nibbles the zero-hint presence projection costs 6,733 script bytes and the
+hint-checked form 1,029 bytes (32 hint items, 188 witness bytes over 96 items, peak
+100 against 82): 85% smaller on script and 82% in total including witness (strict
+local `unclassified` tapscript, `locally-reproduced`). The hinted form wins from
+about five nibbles. See [the primitive](../primitives/u4-presence-hinted.md) and NR-105.
+
+## Expanding compressed u32 words
+
+Recovering the four bytes of the compressed word `0x89abcdef` costs 431 script bytes
+with the bit-ladder decoder (1 witness item, peak 7) and 135 bytes with four hinted
+bytes checked by recompression (5 witness items, 4 hints, peak 12): 69% smaller on
+script and 65% in script plus witness (strict local `unclassified` tapscript,
+`locally-reproduced`). See [the primitive](../primitives/u32-uncompress-hinted.md) and NR-106.
+
+## XOR reduction of u4 vectors
+
+At 32 nibbles the 256-entry table reduction costs 1,122 script bytes with a 289-item
+peak, and the parity-hinted reduction 617 bytes with a 59-item peak and five hint
+items (1,185 versus 689 including witness; strict local `unclassified` tapscript,
+`locally-reproduced`). The hinted form is 50% smaller at 16 nibbles and 42% at 64, but
+is limited to 212 nibbles. See [the primitive](../primitives/u4-xor-hinted.md) and NR-107.
+
+## Symbol histograms of u4 vectors
+
+Verifying all 16 symbol counts of a 64-nibble vector costs 3,158 script bytes with the
+hint-checked histogram (16 hints, 157 witness bytes over 80 items, peak 102), against
+at least 18,448 bytes for sixteen fixed-symbol counting passes (a lower-bound
+estimate), 83% less (strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-histogram.md) and NR-108.
+
+## Equality across the four-byte ScriptNum result boundary
+
+The [exact two-sum verifier](../primitives/scriptnum-equal-sums.md) accepts four
+signed ScriptNum operands and checks their two pair sums as raw bytes.
+For both extreme-sign fixtures, the complete byte-equality leaf is six bytes,
+with a 21-byte data witness, four data items, zero hints, a peak of four and
+five executed non-push opcodes. A matched signed radix-2³⁰ comparator costs 240
+bytes, peaks at seven and executes 95 or 91 non-push operations. Both preserve
+exact equality. The limb representation also supports further numeric work.
+The local metrics use optimizer `ALL` and the stack-limited tapscript
+`Consensus` profile. Funded Core cases classify the exact accepted spends
+separately and expose a [negative-overflow interpreter mismatch](../negative-results/scriptnum-wide-sum.md).

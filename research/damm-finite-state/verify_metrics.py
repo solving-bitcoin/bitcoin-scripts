@@ -24,11 +24,12 @@ assert all(sorted(q[a][b] for a in range(10))==list(range(10)) for b in range(10
 assert all(q[a][a]==0 for a in range(10))
 assert all((q[q[c][x]][y]==q[q[c][y]][x])==(x==y) for c in range(10) for x in range(10) for y in range(10))
 for p,h in r['source_sha256'].items():
- assert hashlib.sha256((root/p).read_bytes()).hexdigest()==h,p
  if r['source_revision']!='0'*40:
   assert re.fullmatch('[a-f0-9]{40}',r['source_revision'])
   b=subprocess.check_output(['git','show',f"{r['source_revision']}:{p}"],cwd=root)
   assert hashlib.sha256(b).hexdigest()==h,p
+ else:
+  assert hashlib.sha256((root/p).read_bytes()).hexdigest()==h,p
 for row in r['rows']:
  n=row['n'];pattern=row['digit_pattern'];digits=[0 if pattern=='zeros' else 9 if pattern=='nines' else (7*i+3)%10 for i in range(n)]
  state=0

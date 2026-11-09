@@ -197,8 +197,11 @@ CARGO_PROFILE_TEST_OPT_LEVEL=1 cargo test --locked -- --skip fields::
 The artifact test regenerates the full report with those same generators,
 checks every catalog configuration, and compares immutable source bytes. A
 shallow CI checkout must prove that it is shallow if the source commit is
-unavailable; current source hashes and complete artifact recomputation still
-apply. Debug assertions and overflow checks stay enabled. The primitive is
+unavailable; complete artifact recomputation, source-file inventory and
+dependency pins still apply. Source digest values bind the historical tree,
+so unrelated additions to shared files do not require changing frozen reports.
+Unavailable historical blobs are not claimed as verified. Debug assertions
+and overflow checks stay enabled. The primitive is
 error detection, not cryptographic authentication or a deployment claim.
 [NR-081](../../knowledge/negative-results/crc8-nibble-feedback.md) and
 [OP-039](../../knowledge/open-problems.md#op-039--streamed-crc-8-frontier) record

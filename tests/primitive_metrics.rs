@@ -69,6 +69,39 @@ fn ripemd160_midstate_42x64() -> [u32; 5] {
     })
 }
 
+#[test]
+fn binohash_raw_flag_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-sighash-flags-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let sample = &report["sample_transaction"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_flag_lock",
+            value: hex_bytes(&fixture["p2sh_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_redeem",
+            value: hex_bytes(&fixture["redeem_script_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_weight",
+            value: sample["weight"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_scriptsig",
+            value: sample["script_sig_bytes"].as_u64().unwrap() as usize,
+        },
+    ]);
+}
+
 fn ripemd160_midstate_witness() -> Vec<Vec<u8>> {
     (0u8..16).map(|byte| vec![byte]).collect()
 }
@@ -115,6 +148,79 @@ fn sha256_tagged_hash_witness() -> Vec<Vec<u8>> {
     vec![vec![0x42]; 32]
 }
 
+#[test]
+fn scriptnum_saturating_add_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::saturating::saturating_add,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/scriptnum-saturation/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_inrange_executed"),
+                concat!($prefix, "_positive_executed"),
+                concat!($prefix, "_negative_executed"),
+            ]
+        };
+    }
+
+    let max = i64::from(scriptint::MAX_SCRIPTNUM);
+    let mut metrics = Vec::new();
+    for (fragment, keys) in [
+        (saturating_add(), keys!("saturating_headroom")),
+        (
+            baseline::saturating_add_by_width(),
+            keys!("saturating_width"),
+        ),
+    ] {
+        let samples = [(max, -1), (max, 1), (-max, -1)].map(|(lhs, rhs)| {
+            let expected = scriptnum((lhs + rhs).clamp(-max, max));
+            let leaf = script! {{fragment.clone()} {expected} OP_EQUALVERIFY OP_TRUE};
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let witness = vec![scriptnum(lhs), scriptnum(rhs)];
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            ((compiled.len(), witness_size(&witness), peak), executed)
+        });
+        let [((script, witness, peak), in_range), (positive, overflow), (negative, underflow)] =
+            samples;
+        assert_eq!(positive, (script, witness, peak));
+        assert_eq!(negative, (script, witness, peak));
+        for (key, value) in keys
+            .into_iter()
+            .zip([script, witness, peak, in_range, overflow, underflow])
+        {
+            metrics.push(Metric {
+                readme: "src/arithmetic/saturating/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 struct Metric {
     readme: &'static str,
     key: &'static str,
@@ -123,6 +229,71 @@ struct Metric {
 
 fn script_len(script: bitcoin_script::Script) -> usize {
     script.compile_with_policy().len()
+}
+
+#[test]
+fn single_run_mask_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::interval_mask::decode_single_run,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/single-run-mask/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let witness: Vec<_> = (0..32)
+        .rev()
+        .map(|position| scriptnum(i64::from((5..13).contains(&position))))
+        .collect();
+    let mut metrics = Vec::new();
+    for (fragment, keys) in [
+        (decode_single_run(32), keys!("single_run_signed32")),
+        (
+            baseline::decode_with_closed_flag(32),
+            keys!("single_run_flag32"),
+        ),
+    ] {
+        let leaf = script! {{fragment} 8 OP_EQUALVERIFY 5 OP_EQUALVERIFY OP_TRUE};
+        assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+        let compiled = leaf.compile_with_policy();
+        let checked = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let checked = checked.execution().unwrap();
+        assert!(checked.success && checked.stack_limit_enforced);
+        assert_eq!(
+            checked.stats.start_validation_weight,
+            checked.stats.validation_weight
+        );
+        let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+        assert_eq!(peak, checked.stats.max_nb_stack_items);
+        for (key, value) in
+            keys.into_iter()
+                .zip([compiled.len(), witness_size(&witness), peak, executed])
+        {
+            metrics.push(Metric {
+                readme: "src/arithmetic/interval_mask/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
 }
 
 fn static_non_push_opcodes(script: bitcoin_script::Script) -> usize {
@@ -194,6 +365,96 @@ fn crc8_smbus_metrics_are_current() {
 
 fn witness_size(items: &[Vec<u8>]) -> usize {
     serialize(&Witness::from_slice(items)).len()
+}
+
+mod witness_data_size_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/witness-data-byte-cap/baseline.rs");
+}
+
+/// Compare equal preserved-suffix byte-cap checks followed by identical cleanup.
+#[test]
+fn witness_data_cap_metrics_are_current() {
+    use bitcoin_lab::support::{
+        tapscript::{execute_tapscript, TapscriptProfile},
+        witness_data_size::verify_data_witness_size_at_most,
+    };
+
+    macro_rules! keys {
+        ($case:literal, $schedule:literal) => {
+            [
+                concat!("witness_cap_", $case, "_", $schedule, "_script"),
+                concat!("witness_cap_", $case, "_", $schedule, "_witness"),
+                concat!("witness_cap_", $case, "_", $schedule, "_stack"),
+                concat!("witness_cap_", $case, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut mixed = vec![0; 32];
+    mixed[..3].copy_from_slice(&[252, 253, 520]);
+    let mut report = Vec::new();
+    for (lengths, cap, checked, baseline) in [
+        (
+            vec![4; 32],
+            161u32,
+            keys!("tight32", "checked"),
+            keys!("tight32", "branch"),
+        ),
+        (
+            vec![4; 32],
+            286,
+            keys!("wide_short32", "checked"),
+            keys!("wide_short32", "branch"),
+        ),
+        (
+            mixed,
+            1062,
+            keys!("wide_mixed32", "checked"),
+            keys!("wide_mixed32", "branch"),
+        ),
+        (
+            vec![0; 253],
+            256,
+            keys!("tight253", "checked"),
+            keys!("tight253", "branch"),
+        ),
+    ] {
+        let n = lengths.len() as u32;
+        let witness: Vec<_> = lengths
+            .into_iter()
+            .enumerate()
+            .map(|(i, len)| vec![(i as u8) ^ 0xa5; len])
+            .collect();
+        for (keys, fragment) in [
+            (checked, verify_data_witness_size_at_most(n, cap)),
+            (baseline, witness_data_size_baseline::conditional(n, cap)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for _ in 0..n {OP_DROP}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/witness_data_size/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 fn scriptnum(value: i64) -> Vec<u8> {
@@ -4800,6 +5061,7 @@ fn metrics() -> Vec<Metric> {
     .chain(u32_conditional_negate_metrics())
     .chain(u4_sum_metrics())
     .chain(u4_mod17_metrics())
+    .chain(casting_out_residue_metrics())
     .chain(u4_prefix_sum_metrics())
     .chain(u4_exact_product_metrics())
     .chain(u32_consuming_bitwise_metrics())
@@ -4979,6 +5241,88 @@ fn winternitz20_composition_metrics_are_current() {
 #[test]
 fn winternitz20_mixed_sum_metrics_are_current() {
     check_readme_metrics(winternitz20_mixed_sum_metrics());
+}
+
+#[test]
+fn sparse_threshold_metrics_are_current() {
+    mod fixture {
+        include!("support/sparse_threshold.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_data"),
+                concat!($prefix, "_full"),
+                concat!($prefix, "_hintbytes"),
+                concat!($prefix, "_peak"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_budget"),
+                concat!($prefix, "_charged"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (width, depths, sparse_keys, dense_keys) in [
+        (
+            16,
+            &[0, 4, 8, 15][..],
+            keys!("sparse_threshold_16"),
+            keys!("dense_threshold_16"),
+        ),
+        (
+            64,
+            &[0, 63][..],
+            keys!("sparse_threshold_64"),
+            keys!("dense_threshold_64"),
+        ),
+    ] {
+        for (sparse, keys) in [(true, sparse_keys), (false, dense_keys)] {
+            let case = fixture::fixture(width, depths, sparse);
+            let trace = case.trace(&case.tx);
+            let full_bytes = case.tx.input[0].witness.size();
+            assert!(trace.success);
+            assert_eq!(trace.error, None);
+            assert_eq!(trace.charged, 50 * depths.len() as i64);
+            assert_eq!(trace.initial_budget, 50 + full_bytes as i64);
+            assert!(
+                case.raw_script_bytes <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES
+            );
+            assert_eq!(
+                case.data.len(),
+                if sparse { 2 * depths.len() } else { width }
+            );
+            let hint_bytes = if sparse {
+                case.data
+                    .iter()
+                    .skip(1)
+                    .step_by(2)
+                    .map(|item| 1 + item.len())
+                    .sum()
+            } else {
+                0
+            };
+            for (key, value) in keys.into_iter().zip([
+                case.script.len(),
+                witness_size(&case.data),
+                full_bytes,
+                hint_bytes,
+                trace.peak,
+                trace.executed,
+                trace.initial_budget as usize,
+                trace.charged as usize,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/signatures/sparse_threshold/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
 }
 
 #[test]
@@ -6030,6 +6374,84 @@ fn output_prefix_metrics_are_current() {
     ]);
 }
 
+mod compactsize_baseline {
+    use bitcoin_lab::{
+        arithmetic::{scriptint::mul_by_constant, u32::stack::verify_canonical_byte},
+        support::script::*,
+    };
+    include!("../research/compactsize-raw-decoder/baseline.rs");
+}
+
+mod compactsize_fixture {
+    include!("../research/compactsize-raw-decoder/fixture.rs");
+}
+
+/// Compare CompactSize decoding with raw and numeric per-byte witnesses.
+#[test]
+fn compactsize_decoder_metrics_are_current() {
+    use bitcoin::VarInt;
+    use bitcoin_lab::support::{
+        compact_size::decode_compact_size_u16_from_raw_items,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($value:literal, $encoding:literal) => {
+            [
+                concat!("compactsize_", $value, "_", $encoding, "_script"),
+                concat!("compactsize_", $value, "_", $encoding, "_witness"),
+                concat!("compactsize_", $value, "_", $encoding, "_stack"),
+                concat!("compactsize_", $value, "_", $encoding, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (value, raw, numeric) in [
+        (0u32, keys!(0, "raw"), keys!(0, "numeric")),
+        (128, keys!(128, "raw"), keys!(128, "numeric")),
+        (253, keys!(253, "raw"), keys!(253, "numeric")),
+        (32768, keys!(32768, "raw"), keys!(32768, "numeric")),
+        (65535, keys!(65535, "raw"), keys!(65535, "numeric")),
+    ] {
+        let wire = serialize(&VarInt(u64::from(value)));
+        for (keys, fragment, witness) in [
+            (
+                raw,
+                decode_compact_size_u16_from_raw_items(),
+                compactsize_fixture::items(&wire, true),
+            ),
+            (
+                numeric,
+                compactsize_baseline::numeric(),
+                compactsize_fixture::items(&wire, false),
+            ),
+        ] {
+            assert_eq!(witness.len(), wire.len());
+            let leaf = script! {{fragment} {value} OP_EQUALVERIFY OP_TRUE}.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/compact_size/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_unpack_metrics_are_current() {
     let scalar = |byte_count: u32| {
@@ -6205,6 +6627,69 @@ fn u4_unpack_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+mod opaque_mismatch_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/opaque-single-mismatch/baseline.rs");
+}
+
+mod opaque_mismatch_fixture {
+    include!("../research/opaque-single-mismatch/fixture.rs");
+}
+
+#[test]
+fn opaque_mismatch_metrics_are_current() {
+    use bitcoin_lab::support::{
+        mismatch::unique_mismatch_index,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("unique_mismatch_", $width, "_", $schedule, "_script"),
+                concat!("unique_mismatch_", $width, "_", $schedule, "_witness"),
+                concat!("unique_mismatch_", $width, "_", $schedule, "_stack"),
+                concat!("unique_mismatch_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, index, fused, dense) in [
+        (1, 0, keys!(1, "fused"), keys!(1, "dense")),
+        (32, 0, keys!(32, "fused"), keys!(32, "dense")),
+        (128, 43, keys!(128, "fused"), keys!(128, "dense")),
+        (500, 499, keys!(500, "fused"), keys!(500, "dense")),
+    ] {
+        let witness = opaque_mismatch_fixture::single_difference(width, index);
+        for (keys, check) in [
+            (fused, unique_mismatch_index(width)),
+            (dense, opaque_mismatch_baseline::dense_mask(width)),
+        ] {
+            let leaf = script! { { check } { index } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/mismatch/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn tapbranch_metrics_are_current() {
     let fragment = tapbranch_hash_u4();
@@ -6285,6 +6770,44 @@ fn check_readme_metrics(metrics: Vec<Metric>) {
             );
         }
     }
+}
+
+#[test]
+fn binohash_single_anchor_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-single-anchor-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let tx = &report["valid"]["transaction"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_anchor_lock",
+            value: hex_bytes(&fixture["anchor_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_redeem",
+            value: hex_bytes(&fixture["anchor_redeem_script_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_weight",
+            value: tx["weight"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_easy_sig",
+            value: tx["input_script_sig_bytes"][0].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_main_sig",
+            value: tx["input_script_sig_bytes"][1].as_u64().unwrap() as usize,
+        },
+    ]);
 }
 
 fn u254_add_nocarry_metrics() -> Vec<Metric> {
@@ -7391,6 +7914,81 @@ fn u4_parity_metrics_are_current() {
 }
 
 /// This isolated fixture measures checked u4 presence-bit projection.
+mod u4_erasure_research {
+    use bitcoin_lab::{
+        arithmetic::{scriptint::mul_by_constant, u4::stack::verify_canonical_nibble},
+        support::script::*,
+    };
+
+    mod schedule {
+        include!("../src/arithmetic/u4/erasure/schedule.rs");
+    }
+
+    include!("../research/checked-u4-erasure/baseline.rs");
+    include!("../research/checked-u4-erasure/fixture.rs");
+}
+
+#[test]
+fn u4_erasure_recovery_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::u4::erasure::recover_u4_erasure,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("u4_erasure_", $fixture, "_", $schedule, "_script"),
+                concat!("u4_erasure_", $fixture, "_", $schedule, "_witness"),
+                concat!("u4_erasure_", $fixture, "_", $schedule, "_stack"),
+                concat!("u4_erasure_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, erased, centered, direct) in [
+        (4, 1, keys!("4_1", "centered"), keys!("4_1", "direct")),
+        (17, 0, keys!("17_0", "centered"), keys!("17_0", "direct")),
+        (17, 8, keys!("17_8", "centered"), keys!("17_8", "direct")),
+        (17, 16, keys!("17_16", "centered"), keys!("17_16", "direct")),
+    ] {
+        let values = u4_erasure_research::values(width);
+        let (sum, weighted) = u4_erasure_research::checks(&values);
+        let missing = values[erased];
+        let witness = u4_erasure_research::witness(&values, erased);
+        for (keys, check) in [
+            (centered, recover_u4_erasure(width, erased, sum, weighted)),
+            (
+                direct,
+                u4_erasure_research::direct(width, erased, sum, weighted),
+            ),
+        ] {
+            let leaf =
+                script! { { check } { missing } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/erasure/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_presence_bits_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 16;
@@ -7706,6 +8304,96 @@ fn u4_parity_canonical_metrics_are_current() {
 }
 
 /// Representative maximum-width factoradic configuration.
+mod length_keyed_sha256_fixture {
+    use bitcoin_lab::commitments::preimage_length_commitment;
+
+    include!("../research/length-keyed-sha256/fixture.rs");
+}
+
+#[test]
+fn length_keyed_sha256_metrics_are_current() {
+    use bitcoin_lab::{
+        commitments::length_keyed::verify_length_keyed_sha256,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("length_sha256_", $fixture, "_", $schedule, "_script"),
+                concat!("length_sha256_", $fixture, "_", $schedule, "_witness"),
+                concat!("length_sha256_", $fixture, "_", $schedule, "_stack"),
+                concat!("length_sha256_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (first, count, length, tree, blocked, full) in [
+        (
+            16,
+            32,
+            31,
+            keys!("32", "tree"),
+            keys!("32", "blocked"),
+            keys!("32", "full"),
+        ),
+        (
+            0,
+            128,
+            79,
+            keys!("128", "tree"),
+            keys!("128", "blocked"),
+            keys!("128", "full"),
+        ),
+        (
+            0,
+            521,
+            519,
+            keys!("521_519", "tree"),
+            keys!("521_519", "blocked"),
+            keys!("521_519", "full"),
+        ),
+        (
+            0,
+            521,
+            520,
+            keys!("521_520", "tree"),
+            keys!("521_520", "blocked"),
+            keys!("521_520", "full"),
+        ),
+    ] {
+        let commitments = length_keyed_sha256_fixture::commitments(first, count);
+        let witness = vec![length_keyed_sha256_fixture::preimage(length)];
+        for (block, keys) in [(1, tree), (8, blocked), (count, full)] {
+            let leaf = script! {
+                { verify_length_keyed_sha256(first, &commitments, block) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(length <= 80));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/commitments/length_keyed/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn factoradic_u4_metrics_are_current() {
     const WIDTH: u32 = 12;
@@ -7800,6 +8488,100 @@ fn u4_xor_reduce_metrics_are_current() {
     ]);
 }
 
+mod xor_lanes_baseline {
+    use bitcoin_lab::{
+        arithmetic::u4::{
+            logic::{
+                u4_drop_half_lookup, u4_drop_half_table, u4_half_table_operation,
+                u4_push_full_xor_table, u4_push_half_lookup, u4_push_half_xor_table,
+            },
+            stack::{u4_drop, verify_canonical_nibble},
+            xor_reduce::U4_XOR_TABLE_ITEMS,
+        },
+        support::script::*,
+    };
+    include!("../research/signed-xor-lanes/baseline.rs");
+}
+
+/// Compare the packed XOR reduction with two table schedules at equal boundaries.
+#[test]
+fn xor_lanes_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("xor_lanes_", $n, "_", $schedule, "_script"),
+                concat!("xor_lanes_", $n, "_", $schedule, "_witness"),
+                concat!("xor_lanes_", $n, "_", $schedule, "_stack"),
+                concat!("xor_lanes_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, packed, triangular, full) in [
+        (
+            2u32,
+            keys!(2, "packed"),
+            keys!(2, "triangular"),
+            keys!(2, "full"),
+        ),
+        (
+            16,
+            keys!(16, "packed"),
+            keys!(16, "triangular"),
+            keys!(16, "full"),
+        ),
+        (
+            128,
+            keys!(128, "packed"),
+            keys!(128, "triangular"),
+            keys!(128, "full"),
+        ),
+        (
+            254,
+            keys!(254, "packed"),
+            keys!(254, "triangular"),
+            keys!(254, "full"),
+        ),
+    ] {
+        let mut values: Vec<_> = (0..n).map(|i| (7 * i + 5 * (i / 3)) % 16).collect();
+        if n == 128 {
+            values[2] &= 7;
+        }
+        let expected = values.iter().fold(0u32, |acc, &value| acc ^ value);
+        let witness: Vec<_> = values
+            .into_iter()
+            .map(|value| scriptnum(i64::from(value)))
+            .collect();
+        for (keys, fragment) in [
+            (packed, u4::xor_signed_lanes::u4_xor_packed_lanes(n)),
+            (triangular, xor_lanes_baseline::triangular_table(n)),
+            (full, xor_lanes_baseline::full_table(n)),
+        ] {
+            let leaf = script! {{fragment} {expected} OP_EQUALVERIFY OP_TRUE}.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/xor_signed_lanes/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures an embedded-threshold trichotomy.
 #[test]
 fn u4_trichotomy_metrics_are_current() {
@@ -7848,6 +8630,88 @@ fn u4_trichotomy_metrics_are_current() {
 }
 
 /// This isolated fixture measures the checked u4 transition count.
+mod opaque_lag_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/opaque-lag-match-count/baseline.rs");
+}
+
+mod opaque_lag_fixture {
+    include!("../research/opaque-lag-match-count/fixture.rs");
+}
+
+#[test]
+fn opaque_lag_count_metrics_are_current() {
+    use bitcoin_lab::support::{
+        lag_count::count_opaque_lag_matches,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("opaque_lag_", $width, "_", $schedule, "_script"),
+                concat!("opaque_lag_", $width, "_", $schedule, "_witness"),
+                concat!("opaque_lag_", $width, "_", $schedule, "_stack"),
+                concat!("opaque_lag_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, lag, deferred, eager, copying) in [
+        (
+            32,
+            1,
+            keys!(32, "deferred"),
+            Some(keys!(32, "eager")),
+            Some(keys!(32, "copying")),
+        ),
+        (
+            128,
+            28,
+            keys!(128, "deferred"),
+            Some(keys!(128, "eager")),
+            Some(keys!(128, "copying")),
+        ),
+        (
+            998,
+            27,
+            keys!(998, "deferred"),
+            Some(keys!(998, "eager")),
+            None,
+        ),
+        (999, 27, keys!(999, "deferred"), None, None),
+    ] {
+        let witness = opaque_lag_fixture::periodic(width);
+        let count = opaque_lag_fixture::host_count(&witness, lag);
+        let schedules = std::iter::once((deferred, count_opaque_lag_matches(width, lag)))
+            .chain(eager.map(|keys| (keys, opaque_lag_baseline::eager_destructive(width, lag))))
+            .chain(copying.map(|keys| (keys, opaque_lag_baseline::nondestructive(width, lag))));
+        for (keys, check) in schedules {
+            let leaf = script! { { check } { count } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/lag_count/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_transition_count_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -7888,6 +8752,91 @@ fn u4_transition_count_metrics_are_current() {
 }
 
 /// This isolated fixture measures the checked u4 adjacent-equality mask.
+#[test]
+fn opaque_common_prefix_metrics_are_current() {
+    use bitcoin_lab::support::{
+        common_prefix::opaque_common_prefix_len,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/opaque-common-prefix/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (n, first, reverse_keys, forward_keys) in [
+        (
+            32,
+            5,
+            keys!("opaque_prefix_reverse32"),
+            keys!("opaque_prefix_forward32"),
+        ),
+        (
+            128,
+            17,
+            keys!("opaque_prefix_reverse128"),
+            keys!("opaque_prefix_forward128"),
+        ),
+    ] {
+        let left: Vec<_> = (0..n).map(|i| vec![0xab, i as u8]).collect();
+        let right: Vec<_> = (0..n)
+            .map(|i| {
+                let lead = if i >= first && (i - first) % 7 == 0 {
+                    0xcd
+                } else {
+                    0xab
+                };
+                vec![lead, i as u8]
+            })
+            .collect();
+        let witness = [left, right].concat();
+        for (fragment, keys) in [
+            (opaque_common_prefix_len(n), reverse_keys),
+            (baseline::forward_prefix(n), forward_keys),
+        ] {
+            let leaf = script! {{fragment} {first} OP_EQUALVERIFY OP_TRUE};
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/support/common_prefix/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 #[test]
 fn u4_adjacent_equal_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -8019,6 +8968,1438 @@ fn u4_symbol_count_metrics_are_current() {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_symbol_count_16_opcodes",
             value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
+fn casting_out_residue_metrics() -> Vec<Metric> {
+    // Fixture x[i] = (7i + floor(i/3)) mod 16 over 32 nibbles, as for modulo 17.
+    let digits: Vec<i64> = (0..32).map(|i| (7 * i + i / 3) % 16).collect();
+    let witness: Vec<Vec<u8>> = digits.iter().map(|&d| scriptnum(d)).collect();
+    let value = |modulus: i64| digits.iter().fold(0i64, |r, &d| (16 * r + d) % modulus);
+    let mut metrics = vec![Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_casting_out_32_witness",
+        value: witness_size(&witness),
+    }];
+    for (name, fragment, modulus) in [
+        ("mod15_run", u4::mod15::u4_nibbles_to_mod15(32), 15),
+        (
+            "mod15_ladder",
+            u4::mod15::u4_nibbles_to_mod15_ladder(32),
+            15,
+        ),
+        (
+            "mod17_delayed",
+            u4::mod17::u4_nibbles_to_mod17_delayed(32),
+            17,
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed residue fragment");
+        assert!(result.error.is_none(), "{result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 1);
+        assert_eq!(result.final_stack.get(0), scriptnum(value(modulus)));
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_{name}_32{suffix}").into_boxed_str())
+        };
+        for (suffix, measured) in [
+            ("", compiled.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value: measured,
+            });
+        }
+    }
+    // u32 word 0x89abcdef, as for modulo 65,537.
+    let word_witness: Vec<Vec<u8>> = 0x89abcdefu32
+        .to_be_bytes()
+        .iter()
+        .map(|&b| scriptnum(i64::from(b)))
+        .collect();
+    metrics.push(Metric {
+        readme: "src/arithmetic/u32/README.md",
+        key: "u32_mersenne_witness",
+        value: witness_size(&word_witness),
+    });
+    for (name, fragment, modulus) in [
+        ("mod255", u32::mersenne_residue::u32_mod255(), 255u32),
+        ("mod65535", u32::mersenne_residue::u32_mod65535(), 65_535),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            word_witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution
+            .execution()
+            .expect("executed word-residue fragment");
+        assert!(result.error.is_none(), "{result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 1);
+        assert_eq!(
+            result.final_stack.get(0),
+            scriptnum(i64::from(0x89abcdefu32 % modulus))
+        );
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u32_{name}{suffix}").into_boxed_str())
+        };
+        for (suffix, measured) in [
+            ("", compiled.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: key(suffix),
+                value: measured,
+            });
+        }
+    }
+    metrics
+}
+
+#[test]
+fn casting_out_residue_metrics_are_current() {
+    check_readme_metrics(casting_out_residue_metrics());
+}
+
+/// This isolated fixture measures exact u4 multiset equality at length 16.
+#[test]
+fn u4_multiset_equal_metrics_are_current() {
+    const LEN: u32 = 16;
+    let fragment = u4::multiset_equal::u4_nibbles_multiset_equal(LEN);
+    // A is 0..=15 and B is its reverse: equal multisets, every symbol present.
+    let witness: Vec<Vec<u8>> = (0..16)
+        .chain((0..16).rev())
+        .map(|nibble| scriptnum(nibble))
+        .collect();
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let compiled = fragment.compile_with_policy();
+    let execution = execute_tapscript(
+        compiled.clone(),
+        witness.clone(),
+        TapscriptProfile::Consensus,
+    );
+    let result = execution.execution().expect("executed fragment");
+    assert!(result.success, "metric execution failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 1);
+    assert_eq!(result.final_stack.get(0), vec![1]);
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    // Naive repeated-helper estimate: 16 symbols x 2 vectors of fixed-symbol counts.
+    let baseline = 32 * script_len(u4::count::u4_nibbles_count(0, LEN));
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_489",
+            value: u4::multiset_equal::u4_nibbles_multiset_equal(489)
+                .compile_with_policy()
+                .len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_stack",
+            value: result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_opcodes",
+            value: opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_multiset_equal_16_count_baseline",
+            value: baseline,
+        },
+    ]);
+}
+
+/// This isolated fixture measures the exact u4 inversion count at length 16.
+#[test]
+fn u4_inversions_metrics_are_current() {
+    const LEN: u32 = 16;
+    let fragment = u4::inversions::u4_nibbles_inversions(LEN);
+    // Strictly descending: every pair is an inversion, 120 in total.
+    let witness: Vec<Vec<u8>> = (0..16).rev().map(|nibble| scriptnum(nibble)).collect();
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let compiled = fragment.compile_with_policy();
+    let execution = execute_tapscript(
+        compiled.clone(),
+        witness.clone(),
+        TapscriptProfile::Consensus,
+    );
+    let result = execution.execution().expect("executed fragment");
+    assert!(result.success, "metric fragment failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 1);
+    assert_eq!(result.final_stack.get(0), scriptnum(120));
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    let nondecreasing = script_len(u4::nondecreasing::u4_nibbles_nondecreasing(LEN));
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_stack",
+            value: result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_opcodes",
+            value: opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_nondecreasing",
+            value: nondecreasing,
+        },
+    ]);
+}
+
+/// This isolated fixture measures lowercase ASCII hex decoding of a 64-character digest text.
+#[test]
+fn u4_ascii_hex_metrics_are_current() {
+    use u4::ascii_hex::{ascii_hex_to_nibbles_fold, ascii_hex_to_nibbles_table, HexCase};
+    const LEN: u32 = 64;
+    let text: Vec<u8> = "0123456789abcdef".repeat(4).into_bytes();
+    let witness: Vec<Vec<u8>> = text
+        .iter()
+        .map(|&byte| scriptnum(i64::from(byte)))
+        .collect();
+    let mut metrics = Vec::new();
+    for (name, fragment) in [
+        ("fold", ascii_hex_to_nibbles_fold(LEN, HexCase::Lower)),
+        ("table", ascii_hex_to_nibbles_table(LEN, HexCase::Lower)),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), text.len());
+        for (index, character) in text.iter().enumerate() {
+            let expected =
+                u4::ascii_hex::ascii_hex_value(i64::from(*character), HexCase::Lower).unwrap();
+            assert_eq!(
+                result.final_stack.get(index),
+                scriptnum(i64::from(expected))
+            );
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_ascii_hex_{name}_64{suffix}").into_boxed_str())
+        };
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key(""),
+            value: compiled.len(),
+        });
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key("_stack"),
+            value: result.stats.max_nb_stack_items,
+        });
+        metrics.push(Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: key("_opcodes"),
+            value: opcodes,
+        });
+    }
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_ascii_hex_64_witness",
+        value: witness_size(&witness),
+    });
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_ascii_hex_64_witness_items",
+        value: witness.len(),
+    });
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures nibble-packed bracket balance against a bit-per-item comparator.
+#[test]
+fn u4_balanced_metrics_are_current() {
+    use u4::balanced::{bracket_items_balanced, u4_nibbles_balanced};
+    const NIBBLES: u32 = 32;
+    // "(())" repeated: every nibble is 0b1100 and the string is balanced.
+    let packed_witness: Vec<Vec<u8>> = (0..NIBBLES).map(|_| scriptnum(12)).collect();
+    let items_witness: Vec<Vec<u8>> = (0..NIBBLES)
+        .flat_map(|_| [1, 1, 0, 0])
+        .map(scriptnum)
+        .collect();
+    let packed = u4_nibbles_balanced(NIBBLES);
+    let items = bracket_items_balanced(4 * NIBBLES);
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("packed", packed, packed_witness),
+        ("items", items, items_witness),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.success, "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 1);
+        assert_eq!(result.final_stack.get(0), vec![1]);
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_balanced_{name}_128{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures the u4 vector distances at 16 nibbles.
+#[test]
+fn u4_distance_metrics_are_current() {
+    use u4::distance::{
+        u4_nibbles_hamming_distance, u4_nibbles_hamming_distance_composed, u4_nibbles_l1_distance,
+        u4_nibbles_lee_distance,
+    };
+    const LEN: u32 = 16;
+    // Deterministic vectors a[i] = i and b[i] = (7i + 3) mod 16.
+    let witness: Vec<Vec<u8>> = (0..LEN)
+        .map(|i| scriptnum(i64::from(i)))
+        .chain((0..LEN).map(|i| scriptnum(i64::from((7 * i + 3) % 16))))
+        .collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_distance_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_distance_16_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        ("l1", u4_nibbles_l1_distance(LEN)),
+        ("lee", u4_nibbles_lee_distance(LEN)),
+        ("hamming", u4_nibbles_hamming_distance(LEN)),
+        ("composed", u4_nibbles_hamming_distance_composed(LEN)),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 1);
+        let expected: i64 = (0..LEN)
+            .map(|a| {
+                let b = (7 * a + 3) % 16;
+                let delta = (i64::from(a) - i64::from(b)).abs();
+                match name {
+                    "l1" => delta,
+                    "lee" => delta.min(16 - delta),
+                    _ => i64::from((a ^ b).count_ones()),
+                }
+            })
+            .sum();
+        assert_eq!(result.final_stack.get(0), scriptnum(expected));
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_distance_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures ScriptNum-to-nibble expansion at four nibbles.
+#[test]
+fn u4_scriptnum_nibbles_metrics_are_current() {
+    use u4::scriptnum_nibbles::{u4_scriptnum_to_nibbles, u4_scriptnum_to_nibbles_hinted};
+    const WIDTH: u32 = 4;
+    const VALUE: i64 = 0xBEEF;
+    let digits: Vec<Vec<u8>> = (0..WIDTH)
+        .rev()
+        .map(|place| scriptnum((VALUE >> (4 * place)) & 15))
+        .collect();
+    let zero_witness = vec![scriptnum(VALUE)];
+    let mut hinted_witness = digits.clone();
+    hinted_witness.push(scriptnum(VALUE));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_scriptnum_to_nibbles(WIDTH), zero_witness),
+        (
+            "hinted",
+            u4_scriptnum_to_nibbles_hinted(WIDTH),
+            hinted_witness,
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), WIDTH as usize);
+        for (index, digit) in [11i64, 14, 14, 15].iter().enumerate() {
+            assert_eq!(result.final_stack.get(index), scriptnum(*digit));
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_scriptnum_nibbles_{name}_4{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures strict-majority detection at 16 nibbles.
+#[test]
+fn u4_majority_metrics_are_current() {
+    use u4::majority::{u4_nibbles_majority, u4_nibbles_majority_hinted};
+    const LEN: u32 = 16;
+    // Seven occurs ten times in sixteen positions, a strict majority.
+    let values: [i64; 16] = [7, 3, 7, 1, 7, 7, 2, 7, 7, 5, 7, 7, 9, 7, 0, 7];
+    let zero_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = zero_witness.clone();
+    hinted_witness.push(scriptnum(7));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_nibbles_majority(LEN), zero_witness),
+        ("hinted", u4_nibbles_majority_hinted(LEN), hinted_witness),
+    ] {
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            vec![scriptnum(7)],
+            false,
+        );
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_majority_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", bytes),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    metrics.push(Metric {
+        readme: "src/arithmetic/u4/README.md",
+        key: "u4_majority_16_count_baseline",
+        value: 16 * script_len(u4::count::u4_nibbles_count(0, LEN)),
+    });
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures the table-free Luhn checksum at 32 digits.
+#[test]
+fn u4_luhn_metrics_are_current() {
+    const DIGITS: u32 = 32;
+    // The Damm fixture: d[i] = (7i + 3) mod 10.
+    let digits: Vec<i64> = (0..DIGITS as i64).map(|i| (7 * i + 3) % 10).collect();
+    let witness: Vec<Vec<u8>> = digits.iter().map(|&d| scriptnum(d)).collect();
+    let mut total = 0i64;
+    for (position, &digit) in digits.iter().rev().enumerate() {
+        let mut value = digit;
+        if position % 2 == 1 {
+            value *= 2;
+            if value > 9 {
+                value -= 9;
+            }
+        }
+        total += value;
+    }
+    let fragment = u4::luhn::u4_decimal_digits_to_luhn(DIGITS);
+    let (bytes, peak, opcodes) = checked_fragment_metrics(
+        fragment.compile_with_policy(),
+        witness.clone(),
+        vec![scriptnum(total % 10)],
+        true,
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32",
+            value: bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_luhn32_opcodes",
+            value: opcodes,
+        },
+    ]);
+}
+
+/// This isolated fixture measures the delayed-reduction modulo-16 sum at 32 nibbles.
+#[test]
+fn u4_sum_ladder_metrics_are_current() {
+    // The existing table schedule's fixture: thirty-two sevens, sum 224 = 0 mod 16.
+    let fragment = u4::sum_ladder::u4_nibbles_to_sum_mod16_ladder(32);
+    let witness = vec![scriptnum(7); 32];
+    let (bytes, peak, opcodes) = checked_fragment_metrics(
+        fragment.compile_with_policy(),
+        witness.clone(),
+        vec![scriptnum(0)],
+        true,
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32",
+            value: bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_opcodes",
+            value: opcodes,
+        },
+    ]);
+}
+
+/// This isolated fixture measures decimal expansion of a nine-digit ScriptNum.
+#[test]
+fn u4_scriptnum_decimal_metrics_are_current() {
+    use u4::damm::u4_decimal_digits_to_damm;
+    use u4::scriptnum_decimal::{u4_scriptnum_to_decimal, u4_scriptnum_to_decimal_hinted};
+    const WIDTH: u32 = 9;
+    const VALUE: i64 = 123_456_789;
+    let digits: Vec<Vec<u8>> = (0..WIDTH)
+        .rev()
+        .map(|place| scriptnum((VALUE / 10i64.pow(place)) % 10))
+        .collect();
+    let zero_witness = vec![scriptnum(VALUE)];
+    let mut hinted_witness = digits.clone();
+    hinted_witness.push(scriptnum(VALUE));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_scriptnum_to_decimal(WIDTH), zero_witness.clone()),
+        (
+            "hinted",
+            u4_scriptnum_to_decimal_hinted(WIDTH),
+            hinted_witness.clone(),
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed decimal fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), WIDTH as usize);
+        for (index, digit) in digits.iter().enumerate() {
+            assert_eq!(result.final_stack.get(index), *digit);
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_decimal_{name}_9{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    // Complete leaves: digits -> Damm check state 4 for 123456789 -> OP_EQUAL.
+    for (name, expansion, witness) in [
+        ("digits", script! {}, digits.clone()),
+        ("zero", u4_scriptnum_to_decimal(WIDTH), zero_witness),
+        (
+            "hinted",
+            u4_scriptnum_to_decimal_hinted(WIDTH),
+            hinted_witness,
+        ),
+    ] {
+        let leaf = script! {
+            { expansion }
+            { u4_decimal_digits_to_damm(WIDTH) }
+            4 OP_EQUAL
+        };
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = leaf.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed decimal leaf");
+        assert!(result.success, "complete leaf failed: {result}");
+        assert_eq!(result.final_stack.len(), 1);
+        let peak = result.stats.max_nb_stack_items;
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_decimal_leaf_{name}{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", peak),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    for metric in &metrics {
+        println!("DECIMAL_METRIC {} {}", metric.key, metric.value);
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures the fixed-composition check on a 16-nibble permutation.
+#[test]
+fn u4_composition_metrics_are_current() {
+    let fragment = u4::composition::u4_nibbles_have_composition(&[1; 16]);
+    let comparator = u4::composition::u4_nibbles_pairwise_distinct(16);
+    let witness: Vec<Vec<u8>> = (0..16).rev().map(|nibble| scriptnum(nibble)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_composition_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_composition_16_count_baseline",
+            value: 16 * script_len(u4::count::u4_nibbles_count(0, 16)),
+        },
+    ];
+    for (name, frag) in [("lanes", fragment), ("pairwise", comparator)] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = frag.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.success, "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 1);
+        assert_eq!(result.final_stack.get(0), vec![1]);
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_composition_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures multi-digit Lamport commitments at radix four.
+#[test]
+fn lamport_digits_metrics_are_current() {
+    use bitcoin_lab::signatures::lamport_digits::{
+        lamport_digit_images, lamport_digit_secret, lamport_digits_commit,
+    };
+    const SEED: &[u8] = b"lamport-digits-metrics";
+    let measure = |bits: u32| {
+        let digits = bits.div_ceil(2);
+        let images = lamport_digit_images(SEED, digits, 4);
+        let fragment = lamport_digits_commit(&images);
+        let witness: Vec<Vec<u8>> = (0..digits)
+            .flat_map(|digit| {
+                let value = (37 * digit + 5) % 4;
+                [
+                    scriptnum(i64::from(value)),
+                    lamport_digit_secret(SEED, digit, value),
+                ]
+            })
+            .collect();
+        (fragment, witness)
+    };
+    let (fragment32, witness32) = measure(32);
+    let run = bitcoin_lab::support::tapscript::execute_tapscript(
+        fragment32.clone().compile_with_policy(),
+        witness32.clone(),
+        bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+    );
+    let result = run.execution().expect("commitment fragment executes");
+    assert!(result.error.is_none(), "{result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 16);
+    for d in 0..16 {
+        assert_eq!(
+            result.final_stack.get(d),
+            scriptnum((37 * d as i64 + 5) % 4)
+        );
+    }
+    let peak = result.stats.max_nb_stack_items;
+    let witness_one_bit: Vec<Vec<u8>> = (0..160u32)
+        .flat_map(|digit| {
+            let value = (37 * digit + 5) % 2;
+            [
+                scriptnum(i64::from(value)),
+                lamport_digit_secret(SEED, digit, value),
+            ]
+        })
+        .collect();
+    assert_eq!(witness_one_bit.len(), 320);
+    assert_eq!(witness_size(&witness_one_bit), 2963);
+    let (fragment160, witness160) = measure(160);
+    let script160 = script_len(fragment160);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2",
+            value: script_len(fragment32.clone()),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_witness",
+            value: witness_size(&witness32),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_witness_items",
+            value: witness32.len(),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_32_w2_opcodes",
+            value: static_non_push_opcodes(fragment32),
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_160_w2",
+            value: script160,
+        },
+        Metric {
+            readme: "src/signatures/lamport_digits/README.md",
+            key: "lamport_digits_160_w2_witness",
+            value: witness_size(&witness160),
+        },
+    ]);
+}
+
+/// This isolated fixture measures lower-median selection and verification at 16 nibbles.
+#[test]
+fn u4_order_statistic_metrics_are_current() {
+    use u4::order_statistic::{u4_nibbles_kth_smallest, u4_nibbles_kth_smallest_hinted};
+    const LEN: u32 = 16;
+    const K: u32 = 8;
+    // a[i] = (7i + 3) mod 15 + 1; the lower median is computed from the sorted fixture.
+    let values: Vec<i64> = (0..LEN as i64).map(|i| (7 * i + 3) % 15 + 1).collect();
+    let mut sorted = values.clone();
+    sorted.sort();
+    let median = sorted[K as usize - 1];
+    let select_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = select_witness.clone();
+    hinted_witness.push(scriptnum(median));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("select", u4_nibbles_kth_smallest(LEN, K), select_witness),
+        (
+            "hinted",
+            u4_nibbles_kth_smallest_hinted(LEN, K),
+            hinted_witness,
+        ),
+    ] {
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            vec![scriptnum(median)],
+            false,
+        );
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_kth_{name}_16{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", bytes),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures nibble-to-ASCII hexadecimal encoding at 64 nibbles.
+#[test]
+fn u4_ascii_hex_encode_metrics_are_current() {
+    use u4::ascii_hex_encode::{
+        u4_nibbles_to_ascii_hex_arith, u4_nibbles_to_ascii_hex_table, HexLetterCase,
+    };
+    const LEN: u32 = 64;
+    // The 64 nibbles 0..=15 repeated four times.
+    let witness: Vec<Vec<u8>> = (0..LEN as i64).map(|i| scriptnum(i % 16)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        (
+            "arith",
+            u4_nibbles_to_ascii_hex_arith(LEN, HexLetterCase::Lower),
+        ),
+        (
+            "table",
+            u4_nibbles_to_ascii_hex_table(LEN, HexLetterCase::Lower),
+        ),
+    ] {
+        let compiled = fragment.clone().compile_with_policy();
+        let run = bitcoin_lab::support::tapscript::execute_tapscript(
+            compiled,
+            witness.clone(),
+            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+        );
+        let result = run.execution().expect("encoder fragment executes");
+        assert!(result.error.is_none(), "{result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), LEN as usize);
+        for i in 0..LEN as usize {
+            let nibble = i % 16;
+            let ascii = if nibble < 10 {
+                48 + nibble
+            } else {
+                97 + nibble - 10
+            };
+            assert_eq!(result.final_stack.get(i), scriptnum(ascii as i64));
+        }
+        if name == "table" {
+            // Sixteen two-byte constant pushes, 64 independently sized ten-byte
+            // queries and eight cleanup bytes equal this whole compiled fragment.
+            let setup = script! { for nibble in (0..16u8).rev() { { i64::from(u4::ascii_hex_encode::ascii_hex_code(nibble, HexLetterCase::Lower)) } } };
+            let query =
+                script! { 16 OP_ROLL OP_DUP 0 16 OP_WITHIN OP_VERIFY OP_PICK OP_TOALTSTACK };
+            let restore = script! { OP_FROMALTSTACK };
+            let cleanup = u4::stack::u4_drop(16);
+            assert_eq!(script_len(setup), 32);
+            assert_eq!(script_len(query), 9);
+            assert_eq!(script_len(restore), 1);
+            assert_eq!(script_len(cleanup), 8);
+            assert_eq!(script_len(fragment.clone()), 32 + 64 * (9 + 1) + 8);
+        }
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_ascii_hex_encode_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures subset-sum verification at 32 weights.
+#[test]
+fn subset_sum_metrics_are_current() {
+    use bitcoin_lab::arithmetic::knapsack::{subset_sum_verify, subset_sum_verify_explicit};
+    const N: u32 = 32;
+    let weights: Vec<u32> = (0..N).map(|i| (37 * i + 11) % 65_535 + 1).collect();
+    let selected: Vec<bool> = (0..N).map(|i| i % 3 != 0).collect();
+    let target: u32 = weights
+        .iter()
+        .zip(&selected)
+        .filter(|(_, &s)| s)
+        .map(|(&w, _)| w)
+        .sum();
+    let witness: Vec<Vec<u8>> = selected
+        .iter()
+        .map(|&s| if s { vec![1u8] } else { Vec::new() })
+        .collect();
+    let plain = subset_sum_verify(&weights, target);
+    let explicit = subset_sum_verify_explicit(&weights, target);
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let measure =
+        |fragment: bitcoin_script::Script| {
+            let compiled = fragment.compile_with_policy();
+            let execution = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let result = execution.execution().expect("executed fragment");
+            assert!(result.success, "metric fragment failed: {result}");
+            assert!(result.stack_limit_enforced);
+            assert_eq!(result.final_stack.len(), 1);
+            assert_eq!(result.final_stack.get(0), vec![1]);
+            let opcodes = compiled.instructions().filter(|instruction| {
+            matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60)
+        }).count();
+            (compiled.len(), result.stats.max_nb_stack_items, opcodes)
+        };
+    let (plain_bytes, plain_peak, plain_opcodes) = measure(plain);
+    let (explicit_bytes, explicit_peak, explicit_opcodes) = measure(explicit);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32",
+            value: plain_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_stack",
+            value: plain_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_32_opcodes",
+            value: plain_opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32",
+            value: explicit_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32_stack",
+            value: explicit_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/knapsack/README.md",
+            key: "subset_sum_explicit_32_opcodes",
+            value: explicit_opcodes,
+        },
+    ]);
+}
+
+/// This isolated fixture measures packed lexicographic comparison of two 32-byte nodes.
+#[test]
+fn u4_compare_packed_metrics_are_current() {
+    use u4::compare::lexicographic_le;
+    use u4::compare_packed::lexicographic_le_packed;
+    const N: u32 = 64;
+    // Two sibling hashes that share a 40-nibble prefix and then differ.
+    let left: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut right = left.clone();
+    right[40] = (right[40] + 1) % 16;
+    right[41..].iter_mut().for_each(|v| *v = 0);
+    let expected = i64::from(left <= right);
+    let witness: Vec<Vec<u8>> = left.iter().chain(&right).map(|&v| scriptnum(v)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_compare_node_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_compare_node_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        ("state", lexicographic_le(N)),
+        ("packed", lexicographic_le_packed(N)),
+    ] {
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            vec![scriptnum(expected)],
+            false,
+        );
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_compare_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [("", bytes), ("_stack", peak), ("_opcodes", opcodes)] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures hint-checked presence bits at 64 nibbles.
+#[test]
+fn u4_presence_hinted_metrics_are_current() {
+    use u4::presence::u4_nibbles_to_presence_bits;
+    use u4::presence_hinted::u4_nibbles_to_presence_bits_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut flags = [false; 16];
+    let mut first = [0i64; 16];
+    for (i, &v) in values.iter().enumerate() {
+        if !flags[v as usize] {
+            flags[v as usize] = true;
+            first[v as usize] = i as i64;
+        }
+    }
+    let zero_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = zero_witness.clone();
+    hinted_witness.extend(first.iter().map(|&i| scriptnum(i)));
+    hinted_witness.extend(
+        (0..16)
+            .rev()
+            .map(|s| if flags[s] { vec![1u8] } else { Vec::new() }),
+    );
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_nibbles_to_presence_bits(N), zero_witness),
+        (
+            "hinted",
+            u4_nibbles_to_presence_bits_hinted(N),
+            hinted_witness,
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 16);
+        for index in 0..16 {
+            let symbol = if name == "zero" { index } else { 15 - index };
+            assert_eq!(
+                result.final_stack.get(index),
+                scriptnum(i64::from(flags[symbol]))
+            );
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_presence_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures hint-checked u32 expansion against the bit-ladder decoder.
+#[test]
+fn u32_uncompress_hinted_metrics_are_current() {
+    use bitcoin_lab::arithmetic::u32::uncompress_hinted::u32_uncompress_hinted_canonical;
+    const WORD: u32 = 0x89ab_cdef;
+    let compressed = scriptnum(i64::from(WORD as i32));
+    let ladder_witness = vec![compressed.clone()];
+    let mut hinted_witness: Vec<Vec<u8>> = WORD
+        .to_be_bytes()
+        .iter()
+        .map(|&b| scriptnum(i64::from(b)))
+        .collect();
+    let hint_vector_bytes = witness_size(&hinted_witness);
+    let incremental_hint_bytes = hint_vector_bytes - 1; // The four-item CompactSize count is shared.
+    hinted_witness.push(compressed);
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_hinted_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_hinted_hint_vector",
+            value: hint_vector_bytes,
+        },
+    ];
+    for (name, fragment, witness) in [
+        (
+            "ladder",
+            u32::stack::u32_uncompress_canonical(),
+            ladder_witness,
+        ),
+        ("hinted", u32_uncompress_hinted_canonical(), hinted_witness),
+    ] {
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            WORD.to_be_bytes()
+                .iter()
+                .map(|&b| scriptnum(i64::from(b)))
+                .collect(),
+            true,
+        );
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u32_uncompress_{name}_compare{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", bytes),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures parity-hinted XOR reduction at 32 nibbles.
+#[test]
+fn u4_xor_hinted_metrics_are_current() {
+    use u4::xor_hinted::u4_nibbles_xor_hinted;
+    use u4::xor_reduce::u4_nibbles_to_xor;
+    const N: u32 = 32;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let y = values.iter().fold(0, |a, &v| a ^ v);
+    let halves: Vec<i64> = (0..4)
+        .map(|b| values.iter().filter(|&&v| (v >> b) & 1 == 1).count() as i64 / 2)
+        .collect();
+    let table_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = table_witness.clone();
+    hinted_witness.push(scriptnum(y));
+    hinted_witness.extend(halves.iter().map(|&h| scriptnum(h)));
+    let hints = &hinted_witness[table_witness.len()..];
+    let separate_hint_bytes = witness_size(hints);
+    let incremental_hint_bytes = separate_hint_bytes - 1;
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_xor_hinted_32_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_xor_hinted_32_hint_vector",
+            value: separate_hint_bytes,
+        },
+    ];
+    for (name, fragment, witness) in [
+        ("table", u4_nibbles_to_xor(N), table_witness),
+        ("hinted", u4_nibbles_xor_hinted(N), hinted_witness),
+    ] {
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            vec![scriptnum(y)],
+            false,
+        );
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_xor_{name}_32{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", bytes),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+/// This isolated fixture measures the hint-checked histogram at 64 nibbles.
+#[test]
+fn u4_histogram_metrics_are_current() {
+    use u4::histogram::u4_nibbles_histogram_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut counts = [0i64; 16];
+    for &v in &values {
+        counts[v as usize] += 1;
+    }
+    let mut witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let hints: Vec<_> = counts.iter().map(|&c| scriptnum(c)).collect();
+    let hint_vector_bytes = witness_size(&hints);
+    let incremental_hint_bytes = hint_vector_bytes - 1;
+    witness.extend(hints);
+    let fragment = u4_nibbles_histogram_hinted(N);
+    let run = bitcoin_lab::support::tapscript::execute_tapscript(
+        fragment.clone().compile_with_policy(),
+        witness.clone(),
+        bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+    );
+    let result = run.execution().expect("histogram fragment executes");
+    assert!(result.error.is_none(), "{result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 16);
+    for i in 0..16 {
+        assert_eq!(result.final_stack.get(i), scriptnum(counts[i]));
+    }
+    let peak = result.stats.max_nb_stack_items;
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_hint_vector",
+            value: hint_vector_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_count_baseline",
+            value: 16 * script_len(u4::count::u4_nibbles_count(0, N)),
         },
     ]);
 }
@@ -8449,6 +10830,100 @@ fn u4_bit_reverse_canonical_metrics_are_current() {
 }
 
 #[test]
+fn dual_digest_preimage_metrics_are_current() {
+    use bitcoin::hashes::{hash160, sha256d};
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/shared-digest-preimage/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (lengths, shared_keys, separate_keys) in [
+        (
+            &[520][..],
+            keys!("dual_digest_shared_one"),
+            keys!("dual_digest_separate_one"),
+        ),
+        (
+            &[0, 55, 56, 520][..],
+            keys!("dual_digest_shared_four"),
+            keys!("dual_digest_separate_four"),
+        ),
+    ] {
+        let witness: Vec<Vec<u8>> = lengths
+            .iter()
+            .map(|length| {
+                (0..*length)
+                    .map(|index| ((17 * index + 5) % 251) as u8)
+                    .collect()
+            })
+            .collect();
+        let pairs: Vec<_> = witness
+            .iter()
+            .rev()
+            .map(|opening| {
+                (
+                    hash160::Hash::hash(opening).to_byte_array(),
+                    sha256d::Hash::hash(opening).to_byte_array(),
+                )
+            })
+            .collect();
+        for (generate, keys) in [
+            (
+                bitcoin_lab::commitments::dual_digest::verify_hash160_hash256
+                    as fn([u8; 20], [u8; 32]) -> bitcoin_script::Script,
+                shared_keys,
+            ),
+            (baseline::verify_separate_hashes, separate_keys),
+        ] {
+            let leaf = script! {
+                for (short, long) in pairs.iter().copied() {{generate(short, long)}}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/commitments/dual_digest/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn hash160_metrics_are_current() {
     check_readme_metrics(hash160_composition_metrics());
 }
@@ -8497,6 +10972,105 @@ fn hash_path_chain_metrics() -> Vec<Metric> {
             value: static_non_push_opcodes(hash_path_chain_script),
         },
     ]
+}
+
+#[path = "support/hash_keyset.rs"]
+mod hash_keyset_fixture;
+
+#[test]
+fn hash160_keyset_metrics_are_current() {
+    use bitcoin::sighash::TapSighashType;
+    use bitcoin_lab::signatures::hash_keyset::verify_hash160_keyset;
+    use hash_keyset_fixture::{
+        embedded_index, embedded_scan, identifier, keypairs, public_key, Spend,
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("hash_keyset_", $width, "_", $schedule, "_script"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_data"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_complete"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_stack"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_executed"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_budget"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_charged"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (count, hashed, scanned, indexed) in [
+        (
+            1,
+            keys!(1, "hashed"),
+            keys!(1, "scanned"),
+            keys!(1, "indexed"),
+        ),
+        (
+            4,
+            keys!(4, "hashed"),
+            keys!(4, "scanned"),
+            keys!(4, "indexed"),
+        ),
+        (
+            32,
+            keys!(32, "hashed"),
+            keys!(32, "scanned"),
+            keys!(32, "indexed"),
+        ),
+        (
+            129,
+            keys!(129, "hashed"),
+            keys!(129, "scanned"),
+            keys!(129, "indexed"),
+        ),
+    ] {
+        let keys = keypairs(count);
+        let public: Vec<_> = keys.iter().map(public_key).collect();
+        let identifiers: Vec<_> = public.iter().map(|key| identifier(key)).collect();
+        let signer = count - 1;
+        for (metrics, fragment, witness_key, index) in [
+            (hashed, verify_hash160_keyset(&identifiers), true, false),
+            (scanned, embedded_scan(&public), true, false),
+            (indexed, embedded_index(&public), false, count > 1),
+        ] {
+            let spend = Spend::new(fragment);
+            let mut data = vec![spend.sign(&keys[signer], TapSighashType::Default)];
+            if witness_key {
+                data.push(public[signer].to_vec());
+            }
+            if index {
+                data.push(scriptnum(signer as i64));
+            }
+            assert_eq!(
+                data.len(),
+                1 + usize::from(witness_key) + usize::from(index)
+            );
+            let data_bytes = witness_size(&data);
+            let witness = spend.witness(data);
+            let complete_bytes = serialize(&witness).len();
+            let trace = spend.trace(witness);
+            assert!(trace.success);
+            assert_eq!(trace.initial_budget, 50 + complete_bytes as i64);
+            assert_eq!(trace.charged, 50);
+            for (key, value) in metrics.into_iter().zip([
+                spend.leaf.len(),
+                data_bytes,
+                complete_bytes,
+                trace.peak,
+                trace.executed,
+                trace.initial_budget as usize,
+                trace.charged as usize,
+            ]) {
+                report.push(Metric {
+                    readme: "src/signatures/hash_keyset/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 #[test]
@@ -8939,6 +11513,127 @@ fn hors_index_boundary_metrics_are_current() {
     ]);
 }
 
+mod sha256_pool_baseline {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+    include!("../research/distinct-sha256-openings/baseline.rs");
+}
+
+mod sha256_pool_fixture {
+    use bitcoin::hashes::{sha256, Hash};
+    include!("../research/distinct-sha256-openings/fixture.rs");
+}
+
+/// Compare two-opening leaves over the same unique public SHA-256 digests.
+#[test]
+fn sha256_pool_metrics_are_current() {
+    use bitcoin::opcodes::all::OP_SHA256;
+    use bitcoin_lab::{
+        commitments::sha256_pool::verify_two_distinct_sha256_openings,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("sha256_pool_", $n, "_", $schedule, "_script"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_witness"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_hints"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_hint_bytes"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_stack"),
+                concat!("sha256_pool_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, ranks, fixed, scan) in [
+        (3, keys!(3, "ranks"), keys!(3, "fixed"), keys!(3, "scan")),
+        (
+            32,
+            keys!(32, "ranks"),
+            keys!(32, "fixed"),
+            keys!(32, "scan"),
+        ),
+        (
+            129,
+            keys!(129, "ranks"),
+            keys!(129, "fixed"),
+            keys!(129, "scan"),
+        ),
+        (
+            993,
+            keys!(993, "ranks"),
+            keys!(993, "fixed"),
+            keys!(993, "scan"),
+        ),
+    ] {
+        let (preimages, digests) = sha256_pool_fixture::pool(n);
+        let i = usize::from(n > 3);
+        let j = n - 1;
+        let hints = [
+            sha256_pool_fixture::scriptnum(j - 1),
+            sha256_pool_fixture::scriptnum(i),
+        ];
+        let fixed_hints = [sha256_pool_fixture::scriptnum(j), hints[1].clone()];
+        let input = |ranks: &[Vec<u8>; 2]| {
+            vec![
+                preimages[j].clone(),
+                ranks[0].clone(),
+                preimages[i].clone(),
+                ranks[1].clone(),
+            ]
+        };
+        let plain = vec![preimages[j].clone(), preimages[i].clone()];
+        for (keys, fragment, witness, hint_count) in [
+            (
+                ranks,
+                verify_two_distinct_sha256_openings(&digests),
+                input(&hints),
+                2,
+            ),
+            (
+                fixed,
+                sha256_pool_baseline::fixed_indices(&digests),
+                input(&fixed_hints),
+                2,
+            ),
+            (scan, sha256_pool_baseline::scan(&digests), plain.clone(), 0),
+        ] {
+            assert_eq!(witness.len(), 2 + hint_count);
+            let hint_bytes = witness_size(&witness) - witness_size(&plain);
+            let leaf = script! {{fragment} OP_TRUE}.compile_with_policy();
+            assert_eq!(
+                leaf.instructions()
+                    .filter(|ins| matches!(ins, Ok(Instruction::Op(op)) if *op == OP_SHA256))
+                    .count(),
+                2
+            );
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            let values = [
+                leaf.len(),
+                witness_size(&witness),
+                hint_count,
+                hint_bytes,
+                peak,
+                executed,
+            ];
+            for (key, value) in keys.into_iter().zip(values) {
+                report.push(Metric {
+                    readme: "src/commitments/sha256_pool/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn hors_witness_boundary_metrics_are_current() {
     let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
@@ -8962,6 +11657,118 @@ fn hors_witness_boundary_metrics_are_current() {
             value: max_stack_items_strict(locking, witness),
         },
     ]);
+}
+
+#[path = "support/weighted_quorum.rs"]
+mod weighted_quorum_fixture;
+
+/// Compare grouped and per-key scripts with independently signed Taproot leaves.
+#[test]
+fn weighted_quorum_metrics_are_current() {
+    use bitcoin_lab::{
+        signatures::quorum::{verify_weighted_quorum, MAX_KEYS},
+        support::script::MAX_OPTIMIZER_INPUT_BYTES,
+    };
+    use weighted_quorum_fixture::{groups, individual, keypairs, Spend};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("weighted_quorum_", $n, "_", $schedule, "_script"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_data"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_complete"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_stack"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_executed"),
+                concat!("weighted_quorum_", $n, "_", $schedule, "_charge"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (spec, selected, threshold, grouped, direct) in [
+        (
+            &[(1, 1), (2, 1), (5, 1)][..],
+            &[0, 2][..],
+            6,
+            keys!(3, "grouped"),
+            keys!(3, "direct"),
+        ),
+        (
+            &[(1, 2), (2, 2), (5, 2)][..],
+            &[0, 2, 4][..],
+            7,
+            keys!(6, "grouped"),
+            keys!(6, "direct"),
+        ),
+        (
+            &[(1, 8), (2, 12), (5, 12)][..],
+            &[0, 3, 8, 11, 17, 20, 23, 26, 29][..],
+            28,
+            keys!(32, "grouped"),
+            keys!(32, "direct"),
+        ),
+        (
+            &[(1, 16), (2, 24), (5, 24)][..],
+            &[0, 7, 16, 21, 27, 32, 40, 45, 50, 55, 60, 63][..],
+            40,
+            keys!(64, "grouped"),
+            keys!(64, "direct"),
+        ),
+        (
+            &[(15, 1), (1, MAX_KEYS - 1)][..],
+            &[0][..],
+            15,
+            keys!(995, "grouped"),
+            keys!(995, "direct"),
+        ),
+    ] {
+        let count = spec.iter().map(|&(_, n)| n).sum();
+        let pairs = keypairs(count);
+        let public: Vec<_> = pairs.iter().map(|key| key.x_only_public_key().0).collect();
+        let policy = groups(&public, spec);
+        for (keys, fragment) in [
+            (grouped, verify_weighted_quorum(&policy, threshold)),
+            (direct, individual(&policy, threshold)),
+        ] {
+            let spend = Spend::new(fragment, &pairs);
+            let data = spend.data(selected);
+            assert_eq!(data.len(), count);
+            assert_eq!(
+                data.iter().filter(|item| !item.is_empty()).count(),
+                selected.len()
+            );
+            let data_bytes = witness_size(&data);
+            let tx = spend.with_data(data);
+            let complete_bytes = tx.input[0].witness.size();
+            assert_eq!(tx.input[0].witness.len(), count + 2);
+            let trace = spend.trace(&tx);
+            assert!(trace.success, "{:?}", trace.error);
+            assert_eq!(trace.initial_budget, 50 + complete_bytes as i64);
+            assert_eq!(trace.charged, 50 * selected.len() as i64);
+            assert_eq!(
+                spend.raw_script_bytes > MAX_OPTIMIZER_INPUT_BYTES,
+                count == MAX_KEYS
+            );
+            if count == MAX_KEYS {
+                assert_eq!(spend.leaf.len(), spend.raw_script_bytes);
+            }
+            let values = [
+                spend.leaf.len(),
+                data_bytes,
+                complete_bytes,
+                trace.peak,
+                trace.executed,
+                trace.charged as usize,
+            ];
+            for (key, value) in keys.into_iter().zip(values) {
+                report.push(Metric {
+                    readme: "src/signatures/quorum/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 fn u254_sub_noborrow_metrics() -> Vec<Metric> {
@@ -10130,7 +12937,161 @@ fn u32_rrot16_checked_metrics_are_current() {
     ]);
 }
 
+mod argmin_baseline {
+    use bitcoin_lab::{
+        arithmetic::{scriptint::mul_by_constant, u4::stack::verify_canonical_nibble},
+        support::script::*,
+    };
+    include!("../research/packed-u4-argmin/baseline.rs");
+}
+
+/// Compare checked leaves that return the same earliest minimum and index.
+#[test]
+fn u4_argmin_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("u4_argmin_", $width, "_", $schedule, "_script"),
+                concat!("u4_argmin_", $width, "_", $schedule, "_witness"),
+                concat!("u4_argmin_", $width, "_", $schedule, "_stack"),
+                concat!("u4_argmin_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, table, shift, direct) in [
+        (
+            4u32,
+            keys!(4, "table"),
+            keys!(4, "shift"),
+            keys!(4, "direct"),
+        ),
+        (
+            32,
+            keys!(32, "table"),
+            keys!(32, "shift"),
+            keys!(32, "direct"),
+        ),
+        (
+            128,
+            keys!(128, "table"),
+            keys!(128, "shift"),
+            keys!(128, "direct"),
+        ),
+    ] {
+        let first = width / 3;
+        let mut witness: Vec<_> = (0..width)
+            .map(|i| scriptnum(i64::from(i * 7 % 15 + 1)))
+            .collect();
+        witness[first as usize].clear();
+        witness[width as usize - 1].clear();
+        for (keys, fragment) in [
+            (table, u4::argmin::u4_earliest_argmin(width)),
+            (shift, argmin_baseline::packed_shift(width)),
+            (direct, argmin_baseline::direct_state(width)),
+        ] {
+            let leaf = script! {
+                {fragment} {first} OP_EQUALVERIFY 0 OP_EQUALVERIFY OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/argmin/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures the checked u4 nondecreasing predicate.
+mod single_peak_research {
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/arithmetic/single_peak/schedule.rs");
+    }
+
+    include!("../research/strict-signed-single-peak/baseline.rs");
+    include!("../research/strict-signed-single-peak/fixture.rs");
+}
+
+#[test]
+fn signed_single_peak_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::single_peak::verify_single_peak,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("single_peak_", $fixture, "_", $schedule, "_script"),
+                concat!("single_peak_", $fixture, "_", $schedule, "_witness"),
+                concat!("single_peak_", $fixture, "_", $schedule, "_stack"),
+                concat!("single_peak_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, peak, arithmetic, branch) in [
+        (32, 1, keys!("32_1", "arithmetic"), keys!("32_1", "branch")),
+        (
+            32,
+            30,
+            keys!("32_30", "arithmetic"),
+            keys!("32_30", "branch"),
+        ),
+        (128, 53, keys!("128", "arithmetic"), keys!("128", "branch")),
+        (998, 497, keys!("998", "arithmetic"), keys!("998", "branch")),
+    ] {
+        let witness: Vec<_> = single_peak_research::values(width as usize, peak)
+            .into_iter()
+            .map(scriptnum)
+            .collect();
+        for (keys, check) in [
+            (arithmetic, verify_single_peak(width)),
+            (branch, single_peak_research::branch_phase(width)),
+        ] {
+            let leaf = script! { { check } { peak } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/single_peak/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_nondecreasing_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -10168,6 +13129,90 @@ fn u4_nondecreasing_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+mod signed_extrema_research {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+
+    mod schedule {
+        include!("../src/arithmetic/extrema/schedule.rs");
+    }
+
+    include!("../research/paired-signed-extrema/baseline.rs");
+    include!("../research/paired-signed-extrema/fixture.rs");
+}
+
+#[test]
+fn signed_extrema_metrics_are_current() {
+    use bitcoin::opcodes::all::{OP_GREATERTHAN, OP_MAX, OP_MIN};
+    use bitcoin_lab::{
+        arithmetic::extrema::signed_min_max,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("extrema_", $width, "_", $schedule, "_script"),
+                concat!("extrema_", $width, "_", $schedule, "_witness"),
+                concat!("extrema_", $width, "_", $schedule, "_stack"),
+                concat!("extrema_", $width, "_", $schedule, "_executed"),
+                concat!("extrema_", $width, "_", $schedule, "_comparisons"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, paired, streaming) in [
+        (2, keys!(2, "paired"), keys!(2, "streaming")),
+        (32, keys!(32, "paired"), keys!(32, "streaming")),
+        (128, keys!(128, "paired"), keys!(128, "streaming")),
+        (997, keys!(997, "paired"), keys!(997, "streaming")),
+    ] {
+        let values = signed_extrema_research::values(width);
+        let min = *values.iter().min().unwrap();
+        let max = *values.iter().max().unwrap();
+        let witness: Vec<_> = values.into_iter().map(scriptnum).collect();
+        for (keys, check, expected_comparisons) in [
+            (paired, signed_min_max(width), (3 * width).div_ceil(2) - 2),
+            (
+                streaming,
+                signed_extrema_research::streaming(width),
+                2 * width - 3,
+            ),
+        ] {
+            let leaf = script! {
+                { check } { max } OP_EQUALVERIFY { min } OP_EQUALVERIFY OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            let comparisons = leaf.instructions().filter(|instruction| {
+                matches!(instruction, Ok(Instruction::Op(op)) if [OP_GREATERTHAN,OP_MIN,OP_MAX].contains(op))
+            }).count();
+            assert_eq!(comparisons, expected_comparisons as usize);
+            for (key, value) in keys.into_iter().zip([
+                leaf.len(),
+                witness_size(&witness),
+                peak,
+                executed,
+                comparisons,
+            ]) {
+                report.push(Metric {
+                    readme: "src/arithmetic/extrema/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 /// This isolated fixture measures the checked u4 exact sum.
@@ -10210,7 +13255,173 @@ fn u4_exact_sum_metrics_are_current() {
     ]);
 }
 
+mod binomial_moment_baseline {
+    use bitcoin_lab::{
+        arithmetic::{scriptint::mul_by_constant, u4::stack::verify_canonical_nibble},
+        support::script::*,
+    };
+    include!("../research/u4-binomial-moments/baseline.rs");
+}
+
+/// Compare three complete leaves returning the same three signed moments.
+#[test]
+fn binomial_moment_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("binomial_moments_", $n, "_", $schedule, "_script"),
+                concat!("binomial_moments_", $n, "_", $schedule, "_witness"),
+                concat!("binomial_moments_", $n, "_", $schedule, "_stack"),
+                concat!("binomial_moments_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, seeded, eager, direct) in [
+        (
+            2u32,
+            keys!(2, "seeded"),
+            keys!(2, "eager"),
+            keys!(2, "direct"),
+        ),
+        (4, keys!(4, "seeded"), keys!(4, "eager"), keys!(4, "direct")),
+        (
+            32,
+            keys!(32, "seeded"),
+            keys!(32, "eager"),
+            keys!(32, "direct"),
+        ),
+        (
+            128,
+            keys!(128, "seeded"),
+            keys!(128, "eager"),
+            keys!(128, "direct"),
+        ),
+    ] {
+        let mut expected = [0i64; 3];
+        let mut witness = Vec::new();
+        for i in 0..i64::from(n) {
+            let value = (11 * i + 3 * (i / 4)) % 16;
+            let centered = value - 8;
+            witness.push(scriptnum(value));
+            expected[0] += centered;
+            expected[1] += i * centered;
+            expected[2] += (i * (i - 1) / 2) * centered;
+        }
+        for (keys, fragment) in [
+            (
+                seeded,
+                u4::binomial_moments::u4_centered_binomial_moments(n),
+            ),
+            (eager, binomial_moment_baseline::eager(n)),
+            (direct, binomial_moment_baseline::direct(n)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for value in expected.into_iter().rev() {{value} OP_EQUALVERIFY}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/binomial_moments/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures the checked u4 batch nibble pack.
+#[test]
+fn numeric_raw_byte_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::byte_encoding::numeric_to_raw_byte,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::{arithmetic::u32::stack::verify_canonical_byte, support::script::*};
+        include!("../research/raw-scriptnum-byte-adapter/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (byte, algebraic_keys, table_keys) in [
+        (
+            0u8,
+            keys!("raw_byte_sign_zero"),
+            keys!("raw_byte_table_zero"),
+        ),
+        (
+            0xc8,
+            keys!("raw_byte_sign_high"),
+            keys!("raw_byte_table_high"),
+        ),
+    ] {
+        let witness = vec![scriptnum(i64::from(byte))];
+        let digest = bitcoin_sha256::Hash::hash(&[byte]).to_byte_array().to_vec();
+        for (fragment, keys) in [
+            (numeric_to_raw_byte(), algebraic_keys),
+            (baseline::convert_with_high_table(), table_keys),
+        ] {
+            let leaf = script! {
+                {fragment} OP_SHA256 {digest.clone()} OP_EQUALVERIFY OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/arithmetic/byte_encoding/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 #[test]
 fn u4_pack_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -10302,6 +13513,66 @@ fn u4_adjacent_delta_metrics_are_current() {
     ]);
 }
 
+mod lee_step_baseline {
+    use bitcoin_lab::{arithmetic::u4::stack::verify_canonical_nibble, support::script::*};
+    include!("../research/uniform-u4-lee-step/baseline.rs");
+}
+
+/// Compare identical uniform-distance leaves with two representations of the edge.
+#[test]
+fn lee_step_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("lee_step_", $n, "_", $schedule, "_script"),
+                concat!("lee_step_", $n, "_", $schedule, "_witness"),
+                concat!("lee_step_", $n, "_", $schedule, "_stack"),
+                concat!("lee_step_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, centered, direct) in [
+        (2u32, keys!(2, "centered"), keys!(2, "direct")),
+        (4, keys!(4, "centered"), keys!(4, "direct")),
+        (32, keys!(32, "centered"), keys!(32, "direct")),
+        (128, keys!(128, "centered"), keys!(128, "direct")),
+    ] {
+        let mut value = 14u32;
+        let mut witness = vec![scriptnum(i64::from(value))];
+        for i in 1..n {
+            value = (value + if i % 3 == 0 { 13 } else { 3 }) % 16;
+            witness.push(scriptnum(i64::from(value)));
+        }
+        for (keys, fragment) in [
+            (centered, u4::lee_step::u4_uniform_lee_step(n)),
+            (direct, lee_step_baseline::direct(n)),
+        ] {
+            let leaf = script! {{fragment} 3 OP_EQUALVERIFY OP_TRUE}.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/lee_step/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures only the checked u4 cyclic vector rotation.
 #[test]
 fn u4_vector_rotate_metrics_are_current() {
@@ -10342,6 +13613,77 @@ fn u4_vector_rotate_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+mod opaque_rotation_baseline {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+    include!("../research/runtime-opaque-rotation/baseline.rs");
+}
+
+mod opaque_rotation_fixture {
+    include!("../research/runtime-opaque-rotation/fixture.rs");
+}
+
+/// Compare the same runtime left rotation with destructive and copying routes.
+#[test]
+fn opaque_rotation_metrics_are_current() {
+    use bitcoin_lab::support::{
+        rotation::rotate_opaque_left,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("opaque_rotation_", $n, "_", $schedule, "_script"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_witness"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_stack"),
+                concat!("opaque_rotation_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, destructive, copy) in [
+        (8u32, keys!(8, "roll"), keys!(8, "copy")),
+        (32, keys!(32, "roll"), keys!(32, "copy")),
+        (128, keys!(128, "roll"), keys!(128, "copy")),
+        (499, keys!(499, "roll"), keys!(499, "copy")),
+    ] {
+        let k = n - 2;
+        let mut witness = opaque_rotation_fixture::payloads(n);
+        let mut expected = witness.clone();
+        expected.rotate_left(k as usize);
+        witness.push(opaque_rotation_fixture::scriptnum(k));
+        for (keys, fragment) in [
+            (destructive, rotate_opaque_left(n)),
+            (copy, opaque_rotation_baseline::copy(n)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for value in expected.iter().rev() {{value.clone()} OP_EQUALVERIFY}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/rotation/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 /// This isolated fixture measures only the checked u4 vector interleave.
@@ -10467,6 +13809,72 @@ fn u4_one_hot_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+mod distinct_mask_baseline {
+    use bitcoin_lab::{
+        arithmetic::u4::{
+            one_hot::U4_ONE_HOT_TABLE_ITEMS,
+            stack::{u4_drop, verify_canonical_nibble},
+        },
+        support::script::*,
+    };
+    include!("../research/carry-distinct-u4/baseline.rs");
+}
+
+/// Compare two complete leaves that check a duplicate-free compact set mask.
+#[test]
+fn distinct_mask_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($n:literal, $schedule:literal) => {
+            [
+                concat!("distinct_mask_", $n, "_", $schedule, "_script"),
+                concat!("distinct_mask_", $n, "_", $schedule, "_witness"),
+                concat!("distinct_mask_", $n, "_", $schedule, "_stack"),
+                concat!("distinct_mask_", $n, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, carry, pairwise) in [
+        (4u32, keys!(4, "carry"), keys!(4, "pairwise")),
+        (8, keys!(8, "carry"), keys!(8, "pairwise")),
+        (12, keys!(12, "carry"), keys!(12, "pairwise")),
+        (16, keys!(16, "carry"), keys!(16, "pairwise")),
+    ] {
+        let values: Vec<_> = (0..n).map(|i| (7 * i + 3) % 16).collect();
+        let mask = values.iter().fold(0u32, |mask, &value| mask | (1 << value));
+        let witness: Vec<_> = values
+            .into_iter()
+            .map(|value| scriptnum(i64::from(value)))
+            .collect();
+        for (keys, fragment) in [
+            (carry, u4::distinct_mask::u4_distinct_to_set_mask(n)),
+            (pairwise, distinct_mask_baseline::pairwise_mask(n)),
+        ] {
+            let leaf = script! {{fragment} {mask} OP_EQUALVERIFY OP_TRUE}.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/distinct_mask/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 /// This isolated fixture measures only the checked centered u4 projection.
@@ -10719,6 +14127,92 @@ fn u4_lowbit_metrics_are_current() {
 }
 
 /// This isolated fixture measures only the checked inverse u4 Gray projection.
+mod negabinary_research {
+    use super::scriptnum;
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/arithmetic/negabinary/schedule.rs");
+    }
+
+    include!("../research/checked-negabinary-decoder/baseline.rs");
+    include!("../research/checked-negabinary-decoder/fixture.rs");
+}
+
+#[test]
+fn checked_negabinary_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::negabinary::decode_negabinary,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("negabinary_", $fixture, "_", $schedule, "_script"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_witness"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_stack"),
+                concat!("negabinary_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, values, subtract, multiply) in [
+        (8, vec![-37], keys!("8", "subtract"), keys!("8", "multiply")),
+        (
+            31,
+            vec![1_431_655_765],
+            keys!("31", "subtract"),
+            keys!("31", "multiply"),
+        ),
+        (
+            32,
+            vec![-2_147_483_647],
+            keys!("32", "subtract"),
+            keys!("32", "multiply"),
+        ),
+        (
+            32,
+            negabinary_research::values(16),
+            keys!("batch", "subtract"),
+            keys!("batch", "multiply"),
+        ),
+    ] {
+        let witness = negabinary_research::witness(&values, width);
+        assert_eq!(witness.len(), values.len() * width as usize);
+        for (keys, check) in [
+            (subtract, decode_negabinary(width)),
+            (multiply, negabinary_research::multiply_first(width)),
+        ] {
+            let leaf = script! {
+                { negabinary_research::verify_batch(check, &values) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/negabinary/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_gray_inverse_metrics_are_current() {
     const NIBBLE_COUNT: u32 = 32;
@@ -10809,6 +14303,100 @@ fn u4_run_pairs(runs: &[(i64, i64)]) -> Vec<Vec<u8>> {
 }
 
 #[test]
+fn opaque_multiset_metrics_are_current() {
+    use bitcoin_lab::support::{
+        raw_multiset::verify_opaque_multiset_with_hints,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/opaque-multiset/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_hintbytes"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (n, repeats, greedy_keys, hinted_keys) in [
+        (4, 1, keys!("opaque_greedy4"), keys!("opaque_hinted4")),
+        (16, 1, keys!("opaque_greedy16"), keys!("opaque_hinted16")),
+        (
+            16,
+            2,
+            keys!("opaque_greedy16_twice"),
+            keys!("opaque_hinted16_twice"),
+        ),
+    ] {
+        let (mut greedy, mut hinted) = (Vec::new(), Vec::new());
+        for batch in 0..repeats {
+            let left: Vec<_> = (0..n)
+                .map(|i| vec![0xc2 + batch as u8, (i * 7 % (n - 1)) as u8])
+                .collect();
+            let right: Vec<_> = (0..n)
+                .map(|i| left[((5 * i + 2 * batch + 1) % n) as usize].clone())
+                .collect();
+            let depths = baseline::hint_depths(&left, &right).unwrap();
+            greedy.extend(baseline::witness(&left, &right, None));
+            hinted.extend(baseline::witness(&left, &right, Some(&depths)));
+        }
+        assert_eq!(greedy.len(), (2 * n * repeats) as usize);
+        assert_eq!(hinted.len(), ((3 * n - 1) * repeats) as usize);
+        assert!(hinted.len() < 253);
+        let ordinary_bytes = witness_size(&greedy);
+
+        for (fragment, witness, keys) in [
+            (baseline::verify_greedy(n), greedy, greedy_keys),
+            (verify_opaque_multiset_with_hints(n), hinted, hinted_keys),
+        ] {
+            let leaf = script! {
+                for _ in 0..repeats {{fragment.clone()}}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            let serialized = witness_size(&witness);
+            for (key, value) in keys.into_iter().zip([
+                compiled.len(),
+                serialized,
+                serialized - ordinary_bytes,
+                peak,
+                executed,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/support/raw_multiset/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn u4_sort_metrics_are_current() {
     use bitcoin_lab::support::execution::execute_raw_script_with_inputs_strict;
     let mut metrics = Vec::new();
@@ -10894,6 +14482,101 @@ fn u4_sort_metrics_are_current() {
 }
 
 /// This isolated fixture measures checked canonical u4 run-length expansion.
+mod wide_sum_research {
+    use bitcoin_lab::support::script::*;
+
+    const BOUND: i64 = i32::MAX as i64;
+
+    include!("../research/exact-signed-sum-spill/baseline.rs");
+    include!("../research/exact-signed-sum-spill/fixture.rs");
+}
+
+#[test]
+fn wide_sum_split_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::wide_sum::split_scriptnum_sum,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("wide_sum_", $fixture, "_", $schedule, "_script"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_witness"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_stack"),
+                concat!("wide_sum_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let bound = i64::from(i32::MAX);
+    let mut report = Vec::new();
+    for (inputs, post, pre) in [
+        (
+            vec![bound, -bound],
+            keys!("central", "post"),
+            keys!("central", "pre"),
+        ),
+        (
+            vec![bound, 1],
+            keys!("positive", "post"),
+            keys!("positive", "pre"),
+        ),
+        (
+            vec![-bound, -1],
+            keys!("negative", "post"),
+            keys!("negative", "pre"),
+        ),
+        (
+            vec![bound, 1, bound, 2],
+            keys!("order", "post"),
+            keys!("order", "pre"),
+        ),
+    ] {
+        let witness: Vec<_> = inputs.iter().copied().map(scriptnum).collect();
+        for (keys, split) in [
+            (post, split_scriptnum_sum()),
+            (pre, wide_sum_research::precheck_headroom()),
+        ] {
+            let leaf = match inputs.as_slice() {
+                &[a, b] => {
+                    let (residual, class) = wide_sum_research::expected(a, b);
+                    script! {
+                        { split } { class } OP_EQUALVERIFY
+                        { residual } OP_EQUALVERIFY OP_TRUE
+                    }
+                }
+                &[a, b, c, d] => {
+                    let predicate = wide_sum_research::compare_sums(split);
+                    let expected = u32::from(a + b < c + d);
+                    script! { { predicate } { expected } OP_EQUALVERIFY OP_TRUE }
+                }
+                _ => unreachable!(),
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/wide_sum/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u4_run_length_metrics_are_current() {
     let repetitive = u4::run_length::u4_expand_canonical_runs(16, 2);
@@ -11033,6 +14716,80 @@ fn u4_mod3_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+mod sliding_mod3_baseline {
+    use bitcoin_lab::{
+        arithmetic::u4::{
+            mod3::U4_MOD3_TABLE_ITEMS,
+            stack::{u4_drop, verify_canonical_nibble},
+        },
+        support::script::*,
+    };
+    include!("../research/sliding-u4-mod3/baseline.rs");
+}
+
+/// Compare checked leaves that return equal overlapping-window residue vectors.
+#[test]
+fn sliding_mod3_metrics_are_current() {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+
+    macro_rules! keys {
+        ($n:literal, $w:literal, $schedule:literal) => {
+            [
+                concat!("sliding_mod3_", $n, "_", $w, "_", $schedule, "_script"),
+                concat!("sliding_mod3_", $n, "_", $w, "_", $schedule, "_witness"),
+                concat!("sliding_mod3_", $n, "_", $w, "_", $schedule, "_stack"),
+                concat!("sliding_mod3_", $n, "_", $w, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (n, width, rolling, rescan) in [
+        (4u32, 1u32, keys!(4, 1, "roll"), keys!(4, 1, "rescan")),
+        (32, 2, keys!(32, 2, "roll"), keys!(32, 2, "rescan")),
+        (32, 7, keys!(32, 7, "roll"), keys!(32, 7, "rescan")),
+        (128, 7, keys!(128, 7, "roll"), keys!(128, 7, "rescan")),
+    ] {
+        let values: Vec<_> = (0..n).map(|i| (11 * i + 3 * (i / 4)) % 16).collect();
+        let residues: Vec<_> = values
+            .windows(width as usize)
+            .map(|w| w.iter().sum::<u32>() % 3)
+            .collect();
+        let witness: Vec<_> = values
+            .into_iter()
+            .map(|value| scriptnum(i64::from(value)))
+            .collect();
+        for (keys, fragment) in [
+            (rolling, u4::sliding_mod3::u4_sliding_mod3(n, width)),
+            (rescan, sliding_mod3_baseline::rescan(n, width)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for residue in residues.iter().rev() {{*residue} OP_EQUALVERIFY}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u4/sliding_mod3/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 fn u32_consuming_bitwise_metrics() -> Vec<Metric> {
@@ -11250,6 +15007,109 @@ fn sha256_tagged_hash_metrics_are_current() {
 }
 
 /// This isolated fixture measures only the checked u32 zero predicate.
+mod midpoint_research {
+    use super::scriptnum;
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/arithmetic/midpoint/schedule.rs");
+    }
+
+    include!("../research/hinted-signed-midpoint/baseline.rs");
+    include!("../research/hinted-signed-midpoint/fixture.rs");
+}
+
+#[test]
+fn hinted_midpoint_metrics_are_current() {
+    use bitcoin::VarInt;
+    use bitcoin_lab::{
+        arithmetic::midpoint::verify_floor_midpoint,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("midpoint_", $fixture, "_", $schedule, "_script"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_witness"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_hints"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_stack"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let m = i64::from(i32::MAX);
+    let mut report = Vec::new();
+    for (pairs, implicit, explicit) in [
+        (
+            vec![(m, m)],
+            keys!("even", "implicit"),
+            Some(keys!("even", "explicit")),
+        ),
+        (
+            vec![(-m, -m + 1)],
+            keys!("odd", "implicit"),
+            Some(keys!("odd", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(128),
+            keys!("128", "implicit"),
+            Some(keys!("128", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(249),
+            keys!("249", "implicit"),
+            Some(keys!("249", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(332),
+            keys!("332", "implicit"),
+            None,
+        ),
+    ] {
+        let checks = std::iter::once((implicit, verify_floor_midpoint(), false))
+            .chain(explicit.map(|keys| (keys, midpoint_research::explicit_parity(), true)));
+        for (keys, check, has_parity) in checks {
+            let witness = midpoint_research::witness(&pairs, has_parity);
+            let items_per_call = if has_parity { 4 } else { 3 };
+            assert_eq!(witness.len(), pairs.len() * items_per_call);
+            let hint_bytes = witness
+                .chunks_exact(items_per_call)
+                .flat_map(|items| &items[2..])
+                .map(|item| serialize(&VarInt(item.len() as u64)).len() + item.len())
+                .sum();
+            let leaf = script! {
+                { midpoint_research::verify_batch(check, &pairs) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in keys.into_iter().zip([
+                leaf.len(),
+                witness_size(&witness),
+                hint_bytes,
+                peak,
+                executed,
+            ]) {
+                report.push(Metric {
+                    readme: "src/arithmetic/midpoint/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u32_zero_metrics_are_current() {
     let fragment = u32::zero::u32_iszero();
@@ -11286,6 +15146,105 @@ fn u32_zero_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+mod compressed_carry_baseline {
+    use bitcoin_lab::{
+        arithmetic::u32::{
+            cmp::u32_compressed_lessthan,
+            stack::{u32_fromaltstack, u32_toaltstack, u32_uncompress_canonical},
+            zip::u32_zip,
+        },
+        support::script::*,
+    };
+    include!("../research/compressed-u32-carry/baseline.rs");
+}
+
+#[test]
+fn compressed_carry_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::u32::carry::u32_compressed_carry,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_script"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_witness"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_stack"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (a, b, classes, complement, ripple) in [
+        (
+            0u32,
+            1,
+            keys!("low", "classes"),
+            keys!("low", "complement"),
+            keys!("low", "ripple"),
+        ),
+        (
+            0x7fff_ffff,
+            0x8000_0000,
+            keys!("sentinel", "classes"),
+            keys!("sentinel", "complement"),
+            keys!("sentinel", "ripple"),
+        ),
+        (
+            0x7fff_ffff,
+            0x8000_0001,
+            keys!("mixed", "classes"),
+            keys!("mixed", "complement"),
+            keys!("mixed", "ripple"),
+        ),
+        (
+            0x8000_0000,
+            u32::MAX,
+            keys!("high", "classes"),
+            keys!("high", "complement"),
+            keys!("high", "ripple"),
+        ),
+    ] {
+        let witness = vec![
+            scriptnum(i64::from(a as i32)),
+            scriptnum(i64::from(b as i32)),
+        ];
+        let expected = u32::from(a.overflowing_add(b).1);
+        for (keys, check) in [
+            (classes, u32_compressed_carry()),
+            (
+                complement,
+                compressed_carry_baseline::complement_comparison(),
+            ),
+            (ripple, compressed_carry_baseline::expanded_ripple()),
+        ] {
+            let leaf =
+                script! { { check } { expected } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u32/carry/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
 }
 
 #[test]
@@ -11559,6 +15518,75 @@ fn consuming_bitwise_and_hash_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+mod stable_bipartition_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/opaque-stable-bipartition/baseline.rs");
+}
+
+mod stable_bipartition_fixture {
+    use bitcoin_lab::support::script::*;
+    include!("../research/opaque-stable-bipartition/fixture.rs");
+}
+
+#[test]
+fn stable_bipartition_metrics_are_current() {
+    use bitcoin_lab::support::{
+        split::stable_split_items,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("stable_split_", $width, "_", $schedule, "_script"),
+                concat!("stable_split_", $width, "_", $schedule, "_witness"),
+                concat!("stable_split_", $width, "_", $schedule, "_stack"),
+                concat!("stable_split_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (pairs, cursor, recomputed) in [
+        (32, keys!(32, "cursor"), Some(keys!(32, "recomputed"))),
+        (128, keys!(128, "cursor"), Some(keys!(128, "recomputed"))),
+        (499, keys!(499, "cursor"), None),
+    ] {
+        let records = stable_bipartition_fixture::alternating(pairs);
+        let witness = stable_bipartition_fixture::witness(&records);
+        let checks = std::iter::once((cursor, stable_split_items(pairs))).chain(
+            recomputed.map(|keys| (keys, stable_bipartition_baseline::recomputed_depth(pairs))),
+        );
+        for (keys, check) in checks {
+            let leaf = script! {
+                { check }
+                { stable_bipartition_fixture::verify_outputs(&records) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/split/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn ripemd160_midstate_metrics_are_current() {
     let fragment = ripemd160::ripemd160_80bytes_from_midstate(ripemd160_midstate_42x64());
@@ -11698,6 +15726,85 @@ fn u32_or_constant_metrics() -> Vec<Metric> {
     ]
 }
 
+mod progression_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/signed-arithmetic-progression/baseline.rs");
+}
+
+#[test]
+fn signed_progression_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::progression::verify_arithmetic_progression,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("progression_", $width, "_", $schedule, "_script"),
+                concat!("progression_", $width, "_", $schedule, "_witness"),
+                concat!("progression_", $width, "_", $schedule, "_stack"),
+                concat!("progression_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (count, start, step, carried, crossed) in [
+        (
+            3,
+            i64::from(i32::MAX),
+            0,
+            keys!(3, "carried"),
+            keys!(3, "crossed"),
+        ),
+        (
+            32,
+            -i64::from(i32::MAX),
+            71_390_911,
+            keys!(32, "carried"),
+            keys!(32, "crossed"),
+        ),
+        (
+            128,
+            i64::from(i32::MAX),
+            -17_000_000,
+            keys!(128, "carried"),
+            keys!(128, "crossed"),
+        ),
+        (998, 0, 0, keys!(998, "carried"), keys!(998, "crossed")),
+    ] {
+        let witness: Vec<_> = (0..count)
+            .map(|index| scriptnum(start + i64::from(index) * step))
+            .collect();
+        for (keys, check) in [
+            (carried, verify_arithmetic_progression(count)),
+            (crossed, progression_baseline::cross_sums(count)),
+        ] {
+            let leaf = script! { { check } OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/progression/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u32_or_constant_metrics_are_current() {
     check_readme_metrics(u32_or_constant_metrics());
@@ -11734,6 +15841,87 @@ fn u4_mod17_metrics() -> Vec<Metric> {
 #[test]
 fn u4_mod17_metrics_are_current() {
     check_readme_metrics(u4_mod17_metrics());
+}
+
+#[test]
+fn u32_dual_residue_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::u32::dual_residue::u32_residues_7_9,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::{
+            arithmetic::{scriptint::mul_by_constant, u32::stack::verify_canonical_byte},
+            support::{script::*, script_ops::OP_4DUP},
+        };
+        include!("../research/dual-u32-residues/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (value, fused_keys, separate_keys) in [
+        (
+            0x0123_4567u32,
+            keys!("dual_residue_fused_low"),
+            keys!("dual_residue_separate_low"),
+        ),
+        (
+            0xfedc_ba98,
+            keys!("dual_residue_fused_high"),
+            keys!("dual_residue_separate_high"),
+        ),
+    ] {
+        let witness: Vec<_> = value
+            .to_be_bytes()
+            .into_iter()
+            .map(|byte| scriptnum(i64::from(byte)))
+            .collect();
+        for (fragment, keys) in [
+            (u32_residues_7_9(), fused_keys),
+            (baseline::separate_residues(), separate_keys),
+        ] {
+            let leaf = script! {
+                {fragment} {value % 9} OP_EQUALVERIFY {value % 7} OP_EQUALVERIFY OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/arithmetic/u32/dual_residue/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
 }
 
 fn u32_mod65537_metrics() -> Vec<Metric> {
@@ -11845,6 +16033,261 @@ fn u4_exact_product_metrics_are_current() {
     check_readme_metrics(u4_exact_product_metrics());
 }
 
+mod ascii_case_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/ascii-opposite-case/baseline.rs");
+}
+
+#[test]
+fn ascii_opposite_case_metrics_are_current() {
+    use bitcoin_lab::support::{
+        ascii_case::verify_opposite_ascii_case_pair,
+        tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("ascii_case_", $width, "_", $schedule, "_script"),
+                concat!("ascii_case_", $width, "_", $schedule, "_witness"),
+                concat!("ascii_case_", $width, "_", $schedule, "_stack"),
+                concat!("ascii_case_", $width, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (pairs, range_gap, raw_mate, independent_fold) in [
+        (1, keys!(1, "range_gap"), keys!(1, "mate"), keys!(1, "fold")),
+        (
+            128,
+            keys!(128, "range_gap"),
+            keys!(128, "mate"),
+            keys!(128, "fold"),
+        ),
+    ] {
+        let witness: Vec<_> = (0..pairs)
+            .flat_map(|index| {
+                let upper = b'A' + (index % 26) as u8;
+                let lower = upper + 32;
+                if index % 2 == 0 {
+                    [vec![upper], vec![lower]]
+                } else {
+                    [vec![lower], vec![upper]]
+                }
+            })
+            .collect();
+        for (keys, check) in [
+            (range_gap, verify_opposite_ascii_case_pair()),
+            (raw_mate, ascii_case_baseline::raw_mate()),
+            (independent_fold, ascii_case_baseline::independent_fold()),
+        ] {
+            let leaf = script! {
+                for _ in 0..pairs { { check.clone() } }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/ascii_case/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
+#[test]
+fn indexed_selection_metrics_are_current() {
+    use bitcoin_lab::support::{
+        indexed_selection::compact_indexed_items, selection::compact_selected_items,
+    };
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_items"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (k, indexed_keys, flag_keys) in [
+        (4, keys!("indexed32_k4"), keys!("flags32_k4")),
+        (16, keys!("indexed32_k16"), keys!("flags32_k16")),
+        (32, keys!("indexed32_k32"), keys!("flags32_k32")),
+    ] {
+        let n = 32;
+        let payloads: Vec<_> = (0..n).map(|i| vec![0x20 + i as u8]).collect();
+        let depths: Vec<_> = (0..k).map(|j| j * n / k).collect();
+        let keep = |i| depths.contains(&(n - 1 - i));
+        let expected: Vec<_> = (0..n)
+            .filter(|&i| keep(i))
+            .map(|i| payloads[i as usize].clone())
+            .collect();
+        let indexed: Vec<_> = payloads
+            .iter()
+            .cloned()
+            .chain(depths.iter().rev().map(|&d| scriptnum(i64::from(d))))
+            .collect();
+        let flags: Vec<_> = payloads
+            .iter()
+            .enumerate()
+            .flat_map(|(i, data)| [data.clone(), scriptnum(i64::from(keep(i as u32)))])
+            .collect();
+
+        let mut cases = vec![
+            (compact_indexed_items(n, k), indexed, indexed_keys),
+            (compact_selected_items(n), flags, flag_keys),
+        ];
+        if k == n {
+            cases.push((script! {{n}}, payloads, keys!("identity32_k32")));
+        }
+        for (fragment, witness, keys) in cases {
+            let count = scriptnum(i64::from(k));
+            let leaf = script! {
+                {fragment} {count} OP_EQUALVERIFY
+                for value in expected.iter().rev() {{value.clone()} OP_EQUALVERIFY}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let checked = bitcoin_lab::support::tapscript::execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            );
+            let checked = checked.execution().unwrap();
+            assert!(checked.success && checked.stack_limit_enforced);
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, checked.stats.max_nb_stack_items);
+            assert_eq!(
+                checked.stats.start_validation_weight,
+                checked.stats.validation_weight
+            );
+            for (key, value) in keys.into_iter().zip([
+                compiled.len(),
+                witness_size(&witness),
+                witness.len(),
+                peak,
+                executed,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/support/selection/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+mod opaque_orientation_research {
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/support/unique_pair_orientation/schedule.rs");
+    }
+
+    include!("../research/opaque-pair-orientation/baseline.rs");
+    include!("../research/opaque-pair-orientation/fixture.rs");
+}
+
+#[test]
+fn opaque_pair_orientation_metrics_are_current() {
+    use bitcoin_lab::support::{
+        tapscript::{execute_tapscript, TapscriptProfile},
+        unique_pair_orientation::opaque_pair_orientations,
+    };
+
+    macro_rules! keys {
+        ($case:literal, $schedule:literal) => {
+            [
+                concat!("opaque_orientation_", $case, "_", $schedule, "_script"),
+                concat!("opaque_orientation_", $case, "_", $schedule, "_witness"),
+                concat!("opaque_orientation_", $case, "_", $schedule, "_stack"),
+                concat!("opaque_orientation_", $case, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (bits, branch, eager) in [
+        (
+            vec![false],
+            keys!("straight", "branch"),
+            keys!("straight", "eager"),
+        ),
+        (
+            vec![true],
+            keys!("reversed", "branch"),
+            keys!("reversed", "eager"),
+        ),
+        (
+            (0..128).map(|i| i % 2 != 0).collect(),
+            keys!("128", "branch"),
+            keys!("128", "eager"),
+        ),
+        (
+            (0..249).map(|i| i % 2 != 0).collect(),
+            keys!("249", "branch"),
+            keys!("249", "eager"),
+        ),
+    ] {
+        let width = bits.len() as u32;
+        let witness = opaque_orientation_research::witness(&bits);
+        assert_eq!(witness.len(), 4 * width as usize);
+        for (keys, check) in [
+            (branch, opaque_pair_orientations(width)),
+            (eager, opaque_orientation_research::eager(width)),
+        ] {
+            let leaf = script! {
+                { check }
+                for &bit in bits.iter().rev() { { i64::from(bit) } OP_EQUALVERIFY }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/unique_pair_orientation/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn stable_selection_metrics_are_current() {
     let fragment = bitcoin_lab::support::selection::compact_selected_items(32);
@@ -11885,6 +16328,93 @@ fn stable_selection_metrics_are_current() {
 }
 
 #[test]
+fn hamming84_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::hamming::decode_hamming84,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::{arithmetic::u32::stack::verify_canonical_byte, support::script::*};
+        include!("../research/extended-hamming-decoder/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let algebraic_batch = script! {
+        for _ in 0..8 {{decode_hamming84()} OP_TOALTSTACK}
+        for _ in 0..8 {OP_FROMALTSTACK}
+    };
+    let cases = [
+        (
+            vec![(0x83, 1)],
+            decode_hamming84(),
+            baseline::decode_with_table(),
+            keys!("hamming84_syndrome_one"),
+            keys!("hamming84_table_one"),
+        ),
+        (
+            (0..8)
+                .map(|value| (baseline::encode(value) ^ (1 << value), value))
+                .collect(),
+            algebraic_batch,
+            baseline::decode_batch_with_table(8),
+            keys!("hamming84_syndrome_eight"),
+            keys!("hamming84_table_eight"),
+        ),
+    ];
+    let mut metrics = Vec::new();
+    for (pairs, algebraic, table, algebraic_keys, table_keys) in cases {
+        let witness: Vec<_> = pairs
+            .iter()
+            .map(|&(byte, _)| scriptnum(i64::from(byte)))
+            .collect();
+        for (fragment, keys) in [(algebraic, algebraic_keys), (table, table_keys)] {
+            let leaf = script! {
+                {fragment}
+                for &(_, expected) in pairs.iter().rev() {{u32::from(expected)} OP_EQUALVERIFY}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let local = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let local = local.execution().unwrap();
+            assert!(local.success && local.stack_limit_enforced);
+            assert_eq!(
+                local.stats.start_validation_weight,
+                local.stats.validation_weight
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(peak, local.stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([compiled.len(), witness_size(&witness), peak, executed])
+            {
+                metrics.push(Metric {
+                    readme: "src/arithmetic/hamming/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn u4_damm_metrics_are_current() {
     let fragment = bitcoin_lab::arithmetic::u4::damm::u4_decimal_digits_to_damm(32);
     let leaf = script! {{fragment.clone()}9 OP_EQUALVERIFY OP_TRUE};
@@ -11917,6 +16447,83 @@ fn u4_damm_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+#[test]
+fn scriptnum_equal_sums_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::sum_equality::verify_equal_sums,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/wide-scriptnum-equality/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_positive_executed"),
+                concat!($prefix, "_negative_executed"),
+            ]
+        };
+    }
+
+    let max = i64::from(scriptint::MAX_SCRIPTNUM);
+    let mut metrics = Vec::new();
+    for (fragment, keys) in [
+        (verify_equal_sums(), keys!("equal_sums_bytes")),
+        (
+            baseline::verify_equal_sums_with_limbs(),
+            keys!("equal_sums_limbs"),
+        ),
+    ] {
+        let leaf = script! {{fragment} OP_TRUE};
+        assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+        let compiled = leaf.compile_with_policy();
+        let mut executed = [0; 2];
+        let mut peak = 0;
+        let mut witness_bytes = 0;
+        for (value, executed) in [max, -max].into_iter().zip(&mut executed) {
+            let witness = vec![scriptnum(value); 4];
+            let result = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let result = result.execution().unwrap();
+            assert!(result.success && result.stack_limit_enforced);
+            assert_eq!(
+                result.stats.start_validation_weight,
+                result.stats.validation_weight
+            );
+            let (trace_peak, trace_ops) =
+                measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(trace_peak, result.stats.max_nb_stack_items);
+            peak = peak.max(trace_peak);
+            witness_bytes = witness_size(&witness);
+            assert_eq!(witness_bytes, 21);
+            *executed = trace_ops;
+        }
+        for (key, value) in keys.into_iter().zip([
+            compiled.len(),
+            witness_bytes,
+            peak,
+            executed[0],
+            executed[1],
+        ]) {
+            metrics.push(Metric {
+                readme: "src/arithmetic/scriptint/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
 }
 
 #[test]
@@ -11965,50 +16572,121 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn bounded_division_metrics_are_current() {
+    use bitcoin_lab::support::provenance;
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_fragment"),
+                concat!($prefix, "_leaf"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+    let mut metrics = Vec::new();
+    let mut report = Vec::new();
+    for (name, divisor, maximum, x) in [
+        ("pair31", 31, 991, 991),
+        ("pair17", 17, 271, 271),
+        (
+            "full31",
+            31,
+            scriptint::MAX_SCRIPTNUM,
+            scriptint::MAX_SCRIPTNUM,
+        ),
+    ] {
+        let checked_hint = script! {
+            { scriptint::verify_canonical() }
+            OP_DUP 0 OP_GREATERTHANOREQUAL OP_VERIFY
+            OP_DUP {maximum} OP_LESSTHANOREQUAL OP_VERIFY
+            OP_SWAP 0 OP_ADD OP_SWAP
+            { scriptint::hinted_div_rem(divisor) }
+        };
+        for (method, fragment, witness, hints) in [
+            (
+                "bounded",
+                scriptint::bounded::div_rem(divisor, maximum),
+                vec![scriptnum(x.into())],
+                0,
+            ),
+            (
+                "hinted",
+                checked_hint,
+                vec![scriptnum((x / divisor).into()), scriptnum(x.into())],
+                1,
+            ),
+        ] {
+            let fragment_buf = fragment.clone().compile_with_policy();
+            // Compile each cost component through the policy. The complete
+            // leaf is separately compiled, and reported independently.
+            let leaf = script! {
+                {fragment} {x%divisor} OP_EQUALVERIFY {x/divisor} OP_EQUALVERIFY OP_TRUE
+            };
+            let static_ops = static_non_push_opcodes(leaf.clone());
+            let compiled = leaf.compile_with_policy();
+            let terminal = script! {
+                {x%divisor} OP_EQUALVERIFY {x/divisor} OP_EQUALVERIFY OP_TRUE
+            }
+            .compile_with_policy();
+            let optimizer_delta =
+                compiled.len() as i64 - fragment_buf.len() as i64 - terminal.len() as i64;
+            assert_eq!(
+                optimizer_delta, 0,
+                "documented cost components must sum exactly"
+            );
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+            let keys = match (method, name) {
+                ("bounded", "pair31") => keys!("scriptint_bounded_pair31"),
+                ("hinted", "pair31") => keys!("scriptint_hinted_pair31"),
+                ("bounded", "pair17") => keys!("scriptint_bounded_pair17"),
+                ("hinted", "pair17") => keys!("scriptint_hinted_pair17"),
+                ("bounded", "full31") => keys!("scriptint_bounded_full31"),
+                ("hinted", "full31") => keys!("scriptint_hinted_full31"),
+                _ => unreachable!("fixed metric cases"),
+            };
+            for (key, value) in keys.into_iter().zip([
+                fragment_buf.len(),
+                compiled.len(),
+                witness_size(&witness),
+                peak,
+                executed,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/arithmetic/scriptint/README.md",
+                    key,
+                    value,
+                });
+            }
+            report.push(serde_json::json!({
+                "method":method,"divisor":divisor,"maximum":maximum,"x":x,
+                "fragment_bytes":fragment_buf.len(),"leaf_bytes":compiled.len(),
+                "terminal_bytes":terminal.len(),"cross_component_optimizer_delta":optimizer_delta,
+                "witness_bytes":witness_size(&witness),"data_items":witness.len(),"hint_items":hints,
+                "max_stack_items":peak,"executed_opcodes":executed,"static_non_push_opcodes":static_ops,
+                "leaf_sha256":bitcoin_sha256::Hash::hash(compiled.as_bytes()).to_string(),
+                "fragment_sha256":bitcoin_sha256::Hash::hash(fragment_buf.as_bytes()).to_string(),
+            }));
+        }
+    }
+    println!(
+        "{}",
+        serde_json::json!({
+            "compiler":provenance::compiler().unwrap().commit,"interpreter":provenance::interpreter().unwrap().commit,
+            "context":"tapscript","require_minimal":false,"stack_limit_enforced":true,
+        "experimental_op_cat":false,"verify_minimal_if":true,
+            "evidence":"locally-reproduced","execution":"unclassified","rows":report,
+        })
+    );
+    check_readme_metrics(metrics);
+}
+
 /// Compare equal complete leaves for packed-rank and separate-digit witnesses.
 #[test]
 fn permutation_rank_metrics_are_current() {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
     use bitcoin_lab::{arithmetic::permutation, support::provenance};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Options, TxTemplate};
-
-    fn measure(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-        let mut exec = Exec::new(
-            ExecCtx::Tapscript,
-            Options {
-                require_minimal: false,
-                enforce_stack_limit: true,
-                ..Default::default()
-            },
-            TxTemplate {
-                tx: Transaction {
-                    version: transaction::Version::TWO,
-                    lock_time: absolute::LockTime::ZERO,
-                    input: vec![],
-                    output: vec![],
-                },
-                prevouts: vec![],
-                input_idx: 0,
-                taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-            },
-            script,
-            witness,
-        )
-        .unwrap();
-        let mut executed = 0;
-        loop {
-            let instruction = exec.remaining_script().instructions().next();
-            let active = exec.cond_stack().all_true();
-            let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-            if exec.exec_next().is_err() {
-                break;
-            }
-            executed += usize::from(counted);
-        }
-        assert!(exec.result().unwrap().success);
-        assert_eq!(exec.stack().len(), 1);
-        (exec.stats().max_nb_stack_items, executed)
-    }
 
     let mut report = Vec::new();
     for width in [4, 8, 12] {
@@ -12036,7 +16714,7 @@ fn permutation_rank_metrics_are_current() {
                 OP_TRUE
             };
             let compiled = leaf.clone().compile_with_policy();
-            let (peak, executed) = measure(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (width, encoding) {
                 (4, "rank") => [
                     "permutation_rank_4_script",
@@ -12272,4 +16950,331 @@ fn adler32_state_metrics_are_current() {
             value: static_non_push_opcodes(fragment),
         },
     ]);
+}
+
+#[test]
+fn binohash_subset_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-subset-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    let mut metrics = vec![
+        Metric {
+            readme,
+            key: "binohash_subset_lock",
+            value: hex_bytes(&fixture["binohash_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_subset_redeem",
+            value: hex_bytes(&fixture["redeem_script_hex"]),
+        },
+    ];
+    for (index, keys) in [
+        (
+            0,
+            [
+                "binohash_subset_first_weight",
+                "binohash_subset_first_easy_sig",
+                "binohash_subset_first_main_sig",
+            ],
+        ),
+        (
+            1,
+            [
+                "binohash_subset_second_weight",
+                "binohash_subset_second_easy_sig",
+                "binohash_subset_second_main_sig",
+            ],
+        ),
+    ] {
+        let transaction = &report["spends"][index]["valid"]["transaction"];
+        for (key, value) in [
+            (keys[0], transaction["weight"].as_u64().unwrap() as usize),
+            (
+                keys[1],
+                transaction["input_script_sig_bytes"][0].as_u64().unwrap() as usize,
+            ),
+            (
+                keys[2],
+                transaction["input_script_sig_bytes"][1].as_u64().unwrap() as usize,
+            ),
+        ] {
+            metrics.push(Metric { readme, key, value });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
+fn pinned_chain_metrics_are_current() {
+    use bitcoin::secp256k1::{Keypair, Secp256k1, SecretKey};
+    use bitcoin::taproot::{LeafVersion, TaprootBuilder};
+    use bitcoin::{
+        absolute, transaction, Amount, OutPoint, ScriptBuf, Sequence, Transaction, TxIn, TxOut,
+    };
+    use bitcoin_lab::{
+        commitments::hash_path::{hash_path_commitment, pinned::verify},
+        support::provenance,
+    };
+    use bitcoin_scriptexec::{Exec, Options, TxTemplate};
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_data"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_items"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_budget"),
+                concat!($prefix, "_weight"),
+            ]
+        };
+    }
+    let oracle: serde_json::Value =
+        serde_json::from_str(include_str!("data/pinned-hash-path-v30.3.json")).unwrap();
+    assert_eq!(oracle["all_expectations_met"], true);
+    assert_eq!(
+        oracle["compiler"]["commit"],
+        provenance::compiler().unwrap().commit
+    );
+    assert_eq!(
+        oracle["local_interpreter"]["commit"],
+        provenance::interpreter().unwrap().commit
+    );
+    let x = [0x42; 32];
+    let start = bitcoin_sha256::Hash::hash(&x).to_byte_array();
+    let a = hash_path_integer_commitment(&x, 13, 4);
+    let b = hash_path_integer_commitment(&a, 3, 3);
+    let mut small = hash_path_integer_witness(&a, 3, 3);
+    small.pop();
+    small.extend(hash_path_integer_witness(&x, 13, 4));
+    let unbound = verify_hash_path_chain(4, a, 3, b);
+    let mut measured = 0;
+    for (index, row) in oracle["results"].as_array().unwrap().iter().enumerate() {
+        let (generated, data, keys) = match row["name"].as_str().unwrap() {
+            "pinned-chain-valid-4-plus-3" => (
+                verify(start, &[(4, a), (3, b)]),
+                small.clone(),
+                keys!("pinned_chain_4_3"),
+            ),
+            "pinned-chain-control-unbound-valid" => (
+                unbound.clone(),
+                small.clone(),
+                keys!("pinned_chain_unbound_4_3"),
+            ),
+            "pinned-chain-control-length-only-valid" => (
+                script! {OP_SIZE 32 OP_EQUALVERIFY {unbound.clone()}},
+                small.clone(),
+                keys!("pinned_chain_length_4_3"),
+            ),
+            "pinned-chain-997-zeroes" | "pinned-chain-997-ones" => {
+                let bit = row["name"] == "pinned-chain-997-ones";
+                let digest = hash_path_commitment(&x, &vec![bit; 997]);
+                let mut data = vec![if bit { vec![1] } else { vec![] }; 997];
+                data.push(x.to_vec());
+                (
+                    verify(start, &[(997, digest)]),
+                    data,
+                    if bit {
+                        keys!("pinned_chain_997_ones")
+                    } else {
+                        keys!("pinned_chain_997_zeroes")
+                    },
+                )
+            }
+            _ => continue,
+        };
+        assert_eq!(row["deployment"], "policy-validated");
+        let leaf = generated.compile_with_policy();
+        assert_eq!(
+            bitcoin_sha256::Hash::hash(leaf.as_bytes()).to_string(),
+            row["script_sha256"].as_str().unwrap()
+        );
+        let secp = Secp256k1::new();
+        let key = Keypair::from_secret_key(&secp, &SecretKey::from_slice(&[1; 32]).unwrap())
+            .x_only_public_key()
+            .0;
+        let tree = TaprootBuilder::new()
+            .add_leaf(0, leaf.clone())
+            .unwrap()
+            .finalize(&secp, key)
+            .unwrap();
+        let control = tree
+            .control_block(&(leaf.clone(), LeafVersion::TapScript))
+            .unwrap()
+            .serialize();
+        let prevout = TxOut {
+            value: Amount::from_sat(1_000_000),
+            script_pubkey: ScriptBuf::new_p2tr_tweaked(tree.output_key()),
+        };
+        let mut complete = data.clone();
+        complete.push(leaf.to_bytes());
+        complete.push(control);
+        let witness = Witness::from_slice(&complete);
+        let tx = Transaction {
+            version: transaction::Version::TWO,
+            lock_time: absolute::LockTime::ZERO,
+            input: vec![TxIn {
+                previous_output: OutPoint {
+                    txid: oracle["funding_txid"].as_str().unwrap().parse().unwrap(),
+                    vout: index as u32,
+                },
+                script_sig: ScriptBuf::new(),
+                sequence: Sequence::MAX,
+                witness: witness.clone(),
+            }],
+            output: vec![TxOut {
+                value: Amount::from_sat(990_000),
+                script_pubkey: ScriptBuf::new_p2wsh(
+                    &ScriptBuf::from_bytes(vec![0x51]).wscript_hash(),
+                ),
+            }],
+        };
+        assert_eq!(
+            tx.compute_txid().to_string(),
+            row["transaction"]["txid"].as_str().unwrap()
+        );
+        assert_eq!(
+            tx.compute_wtxid().to_string(),
+            row["transaction"]["wtxid"].as_str().unwrap()
+        );
+        assert_eq!(
+            tx.weight().to_wu(),
+            row["transaction"]["weight"].as_u64().unwrap()
+        );
+        let mut exec = Exec::new_tapscript(
+            Options {
+                require_minimal: false,
+                enforce_stack_limit: true,
+                ..Default::default()
+            },
+            TxTemplate {
+                tx: tx.clone(),
+                prevouts: vec![prevout],
+                input_idx: 0,
+                taproot_annex_scriptleaf: None,
+            },
+        )
+        .unwrap();
+        let mut executed = 0;
+        loop {
+            let active = exec.cond_stack().all_true();
+            let counted = matches!(exec.remaining_script().instructions().next(),Some(Ok(Instruction::Op(op))) if op.to_u8()>0x60&&(active||(0x63..=0x68).contains(&op.to_u8())));
+            if exec.exec_next().is_err() {
+                break;
+            }
+            executed += usize::from(counted);
+        }
+        assert!(exec.result().unwrap().success);
+        assert_eq!(
+            exec.stats().start_validation_weight,
+            50 + serialize(&witness).len() as i64
+        );
+        assert_eq!(
+            exec.stats().validation_weight,
+            exec.stats().start_validation_weight
+        );
+        let values = [
+            leaf.len(),
+            witness_size(&data),
+            serialize(&witness).len(),
+            data.len(),
+            exec.stats().max_nb_stack_items,
+            executed,
+            exec.stats().start_validation_weight as usize,
+            tx.weight().to_wu() as usize,
+        ];
+        check_readme_metrics(
+            keys.into_iter()
+                .zip(values)
+                .map(|(key, value)| Metric {
+                    readme: "src/commitments/hash_path/README.md",
+                    key,
+                    value,
+                })
+                .collect(),
+        );
+        measured += 1;
+    }
+    assert_eq!(measured, 5);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
+}
+
+// Measure and check the exact compiled fragment, without allowing a terminal
+// consumer to change its optimized bytecode or erase its result production.
+fn checked_fragment_metrics(
+    compiled: bitcoin::ScriptBuf,
+    witness: Vec<Vec<u8>>,
+    expected: Vec<Vec<u8>>,
+    require_minimal: bool,
+) -> (usize, usize, usize) {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let run = execute_tapscript(
+        compiled.clone(),
+        witness,
+        if require_minimal {
+            TapscriptProfile::Policy
+        } else {
+            TapscriptProfile::Consensus
+        },
+    );
+    let result = run.execution().expect("fragment executes");
+    assert!(result.error.is_none(), "fragment failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), expected.len());
+    for (index, value) in expected.into_iter().enumerate() {
+        assert_eq!(result.final_stack.get(index), value);
+    }
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    (compiled.len(), result.stats.max_nb_stack_items, opcodes)
 }

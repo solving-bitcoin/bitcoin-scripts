@@ -1,5 +1,8 @@
 # Signature verification and one-time authentication
 
+The [HASH160 signer-set comparison](hash160-schnorr-keyset.md) measures
+one native Schnorr check after hashed or embedded key selection.
+
 ## Point locks
 
 | Construction | Script family | Script bytes | Revelation data | Setup / security boundary |
@@ -12,13 +15,22 @@
 All rows are complete success predicates but exclude refund branches and
 wrapper/control-block costs. The first row is only the ordinary on-chain
 BIP340 check; adaptor creation and validation are off chain. The small-R row
-uses the 21-byte x-coordinate of `G/2`. The committed row hashes the exact
+uses the 21-byte x-coordinate of `G/2`; its separate funded P2SH fixture is
+`policy-validated` with a 784-WU one-input transaction and 102-byte scriptSig.
+The committed row hashes the exact
 `DER(r,s) || 0x03` item and relies on the pre-SegWit SIGHASH_SINGLE bug; it is
 not a P2WSH construction. The three-check row is a legacy scriptSig boundary,
 not witness serialization; its size guard eliminates the `r+n` coordinate
 case rather than enforcing a small nonce. See the
 [point-lock page](../primitives/point-locks.md) for extraction equations and
 evidence qualifications.
+
+For the committed row, an additional funded P2SH fixture is
+`differentially-validated` and `policy-validated` against Bitcoin Core v30.3:
+the 23-byte scriptPubKey and 71-byte redeemScript spend in a 1,124-WU
+two-input transaction. These complete-transaction costs include two
+scriptSigs and are not comparable to the leaf-only sizes in the table. The
+off-chain setup proof remains a separate unvalidated requirement.
 
 ## Secp256k1 Schnorr
 
@@ -55,6 +67,18 @@ Within the explicit field certificate, the retained 2M/1S schedule has a
 57,241-byte raw-certified core. It is 5,978 bytes smaller than a three-general-
 product shared batch and 8,075 bytes smaller than three isolated general
 multipliers. The specialized square also lowers peak stack use from 993 to 882.
+
+## Native exact-threshold tapscript witnesses
+
+The [indexed key-table experiment](../primitives/sparse-tapscript-threshold.md)
+and dense `CHECKSIGADD` baseline verify the same selected keys. At 2 of 64,
+the indexed complete witness uses 2,368 bytes versus 2,408, with peaks of
+72 versus 65 and 67 versus 65 executed non-push operations. It uses two
+signature items and two hints, while the dense encoding uses 64 ordinary
+items including empty placeholders. Both charge 100 budget units.
+At 4 of 16 the indexed witness costs 940 versus 856 complete bytes and
+peaks at 28 versus 17. These local transaction-aware measurements use exact
+leaf commitments and complete witness accounting, with unclassified execution.
 
 ## Custom Ed25519-style BLAKE3 slope verifier
 
@@ -99,6 +123,19 @@ components have focused local or differential validation. See the
 [construction page](../primitives/ed25519-blake3-montgomery-slope.md) for the
 exact boundary and security obligations.
 
+## Weighted native Schnorr quorum
+
+The [weighted quorum](../primitives/weighted-schnorr-quorum.md) counts
+signatures by equal-weight group before applying each public weight.
+At 64 keys the grouped and per-key leaves use 2,200 and 2,502 script
+bytes, 81 and 386 executed non-push operations, and the same 66-item
+combined peak. Each takes an 833-byte serialized data witness with
+64 ordinary slots, 12 nonempty signatures, zero hints and a
+600-unit validation charge. The complete witnesses serialize to
+3,070 and 3,372 bytes. Both signatures and commitments are bound to
+their exact synthetic leaves. The [singleton loss](../negative-results/weighted-schnorr-quorum.md)
+records the cost of grouping with no same-weight reuse.
+
 ## One-time authentication
 
 The original Winternitz rows below use HASH160 with full-width 20-byte starts
@@ -107,7 +144,7 @@ and nodes. Optional `Preimage16` comparisons follow the hash comparison.
 | Construction | Authenticated object | Script bytes | Witness bytes (zero / upper bound) | Stack peak | Verification work / missing protocol work |
 | --- | --- | ---: | ---: | ---: | --- |
 | Lamport 2-bit | One value in 0..3 | 96 | 11 | not recorded | Reject rather than clamp invalid values |
-| HORS-like n32/t8 | Explicit subset | 809 | 280 / 281 max | 50 (strict local) | 16 data items / 0 hints; message-to-index derivation |
+| HORS-like n32/t8 | Clamped explicit subset | 809 | 280 / 281 max | 50 (strict local) | 16 data items / 0 hints; out-of-range indices alias the final commitment; message-to-index derivation |
 | Legacy Wots32 list-pick | 32-byte message | 4,908 | 1,477 / 1,542 | 143 | 15 hashes for digits below 8, seven otherwise; clamps above-range digits |
 | Legacy Wots32 list-pick + clear | 32-byte message | 4,844 | 1,477 / 1,542 | 143 | Direct checksum reduction; consumes message; terminal predicate excluded |
 | FastWots32 clamped lookup | 32-byte message | 4,465 | 1,476 / 1,542 | 143 | Legacy-style upper saturation; recovers authenticated clamped digits |
@@ -422,3 +459,12 @@ The constant-composition verifier intentionally has no Script byte-recovery
 row. Its host-side rank decoder is not included in the authentication costs;
 the missing consumer boundary is tracked by [NR-058](../negative-results/index.md#nr-058-constant-composition-byte-recovery-is-not-yet-a-composable-script-primitive)
 and [OP-022](../open-problems.md#op-022--constant-composition-script-decoder).
+
+## Multi-digit Lamport versus Winternitz
+
+A 160-bit radix-four Lamport fixture costs 8,079 script bytes and 1,501 witness
+bytes, and returns 80 authenticated digits. The cited 2,334- and 2,400-byte
+Winternitz `and_clear` totals leave no authenticated message data. Those outputs
+are unmatched, so they do not establish a like-for-like ranking for a consumer
+that needs authenticated data. See [the primitive](../primitives/lamport-digits.md)
+and NR-100.
