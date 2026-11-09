@@ -88,8 +88,9 @@ are not constant-time. They must not handle production secrets.
 
 - Bare legacy Script: both opcode sequences are consensus-compatible, but bare
   outputs are generally non-standard relay templates.
-- P2SH: both redeem scripts fit the 520-byte element limit. Standard relay has
-  not been reproduced here.
+- P2SH: both redeem scripts fit the 520-byte element limit. A funded, pinned
+  Core v30.3 fixture validates consensus and default relay policy for the
+  `G/2` small-R construction. The committed construction remains unclassified.
 - P2WSH: the small-R construction remains meaningful with the BIP143 digest.
   The committed construction does not: SegWit v0 intentionally does not return
   the legacy SIGHASH_SINGLE bug digest.
@@ -133,6 +134,15 @@ wrong targets, and wrong sighash flags. Legacy execution uses the pinned
 because that pinned interpreter has an unsigned-underflow bug in legacy
 FindAndDelete when `scriptCode` is shorter than the signature; the unpadded
 script bytes are measured separately.
+
+The [funded P2SH comparison](../../../research/pointlock-small-r-core/README.md)
+uses the unpadded 40-byte script, a 60-byte honest signature, and a separate
+72-byte valid ECDSA signature that fails the size guard. Pinned Core accepts
+the honest transaction under consensus and default relay policy and rejects
+the overlength control at `OP_VERIFY` under both. The published honest
+signature is decoded by Core and the local extractor recovers the public test
+scalar from its actual SIGHASH_ALL digest. This validates the scoped spend and
+extraction relation, not the estimated generic forgery work.
 
 No zkVM verifier dependency is included. No implementation of adaptor-signature
 nonce exchange, transcript validation, or encrypted-signature verification is

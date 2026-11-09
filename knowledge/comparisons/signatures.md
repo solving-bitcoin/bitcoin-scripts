@@ -12,7 +12,9 @@
 All rows are complete success predicates but exclude refund branches and
 wrapper/control-block costs. The first row is only the ordinary on-chain
 BIP340 check; adaptor creation and validation are off chain. The small-R row
-uses the 21-byte x-coordinate of `G/2`. The committed row hashes the exact
+uses the 21-byte x-coordinate of `G/2`; its separate funded P2SH fixture is
+`policy-validated` with a 784-WU one-input transaction and 102-byte scriptSig.
+The committed row hashes the exact
 `DER(r,s) || 0x03` item and relies on the pre-SegWit SIGHASH_SINGLE bug; it is
 not a P2WSH construction. The three-check row is a legacy scriptSig boundary,
 not witness serialization; its size guard eliminates the `r+n` coordinate

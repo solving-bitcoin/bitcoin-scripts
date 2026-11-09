@@ -7301,12 +7301,15 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-03",
+      "as_of": "2026-10-29",
       "knowledge_page": "knowledge/primitives/point-locks.md",
       "implementation": "src/signatures/pointlocks/mod.rs",
       "documentation": "src/signatures/pointlocks/README.md",
       "tests": [
-        "signatures::pointlocks::tests"
+        "signatures::pointlocks::tests",
+        "examples/pointlock_small_r_core_fixtures.rs",
+        "tools/test_pointlock_small_r_regtest.py",
+        "tools/pointlock_small_r_regtest.py"
       ],
       "references": [
         "binohash-paper",
@@ -7344,13 +7347,43 @@
             "pointlock_small_r_script",
             "pointlock_small_r_witness"
           ]
+        },
+        {
+          "id": "funded-p2sh-core-v30.3",
+          "label": "Funded G/2 small-R P2SH spend under pinned Bitcoin Core",
+          "evidence": "differentially-validated",
+          "execution": "policy-validated",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "redeem_script_bytes": 40,
+            "honest_signature_bytes": 60,
+            "overlength_control_signature_bytes": 72,
+            "honest_script_sig_bytes": 102,
+            "overlength_script_sig_bytes": 114,
+            "honest_transaction_weight_wu": 784,
+            "overlength_transaction_weight_wu": 832,
+            "extracted_secret_matches_public_point": true,
+            "hint_items": 0,
+            "witness_items": 0,
+            "report": "tests/data/pointlock-small-r-core-v30.3.json"
+          },
+          "includes": "complete-transaction: one confirmed P2SH prevout, one legacy input, complete scriptSig, one output, and signed SIGHASH_ALL digest; script_bytes is the 23-byte P2SH scriptPubKey and the 40-byte redeemScript is inside scriptSig; no witness or hints; excludes funding transaction, refund branch, full Binohash protocol, and generic forgery work; local scalar extraction is checked against the exact signature decoded by Core",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
         }
       ],
       "limitations": [
         "Conservative roughly 80-bit security claim is reported rather than reproduced",
         "The size predicate accepts any valid signature of at most 60 bytes, not only the G/2 nonce",
         "Research signing helpers use non-constant-time bigint arithmetic",
-        "Bitcoin Core consensus and relay-policy validation have not been performed",
+        "Pinned Bitcoin Core validates only the funded G/2 P2SH fixture; bare and P2WSH deployment remain unvalidated",
         "Tapscript OP_CHECKSIG does not use ECDSA"
       ],
       "open_problems": [

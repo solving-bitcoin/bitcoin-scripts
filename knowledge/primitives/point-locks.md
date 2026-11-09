@@ -64,6 +64,17 @@ one-item witness is 62 bytes; local tests reproduce signing, extraction, and
 legacy ECDSA verification. The `G/2` x-coordinate and DER accounting match the
 Binohash paper.
 
+The [funded P2SH differential](../../research/pointlock-small-r-core/README.md)
+validates this exact 40-byte `G/2` predicate against pinned Bitcoin Core v30.3
+commit `49faec4f87f5cd19c88db01a82e5c68b087c8227`. A 60-byte honest
+signature spends a confirmed output under consensus and default relay policy;
+its complete one-input transaction weighs 784 WU. A 72-byte ordinary valid
+ECDSA signature on the same digest fails the size guard under both profiles.
+The honest signature decoded from the transaction yields the public test scalar
+through the local extraction equation. This configuration is
+`differentially-validated` and `policy-validated`; its generic forgery work,
+other script families, and full Binohash integration remain open.
+
 Security inference: Script constrains total encoding length, not the exact
 nonce. The Binohash paper estimates about 97 bits to find a smaller comparable
 R-value. A conservative point-lock estimate is roughly 80 bits after allowing
@@ -183,10 +194,11 @@ the required bug. All ECDSA locks are incompatible with tapscript, where
 Schnorr adaptor construction is the tapscript alternative.
 
 The local legacy tests use the pinned `bitcoin-scriptexec` interpreter rather
-than Bitcoin Core and do not establish relay policy. In the small-R success
-test, semantic NOP padding works around a pinned-interpreter FindAndDelete
-underflow for scriptCode shorter than the signature; the measured 40-byte
-predicate itself is not padded.
+than Bitcoin Core. The separate funded small-R P2SH fixture establishes Core
+consensus and policy acceptance for that configuration only. In the local
+small-R success test, semantic NOP padding works around a pinned-interpreter
+FindAndDelete underflow for scriptCode shorter than the signature; the measured
+and Core-spent 40-byte predicate itself is not padded.
 
 ## References and status
 
