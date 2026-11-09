@@ -28,6 +28,12 @@ archive and binary SHA256 hashes, block acceptance and policy results for 24
 complete Taproot spends. Its evidence is `differentially-validated` within that
 fixture scope.
 
+The `bitcoin-core-v30.3-legacy-sighash` source pins the same revision's
+`src/script/interpreter.cpp` for the legacy CODESEPARATOR boundary,
+FindAndDelete, and scriptCode serialization paths inspected by the funded
+Binohash boundary fixture. The executable result remains attributed separately
+to `bitcoin-core-v30.3-regtest`.
+
 The resource-profile experiment uses `bitcoin-scriptexec-repaired-20260910` at
 `4b7269a415f21be3fccee9730547f1426eb80326`, an immutable fork integration of
 upstream PRs #18, #19 and #20. The Cargo patch applies to both the lab and its

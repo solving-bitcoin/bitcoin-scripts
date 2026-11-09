@@ -133,6 +133,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Binohash 2-of-3 subset and Script consumer](binohash-subset-toy.md)
 - [Binohash raw sighash-byte census](binohash-sighash-flags.md)
 - [Binohash nine-byte SIGHASH_SINGLE anchor](binohash-single-anchor.md)
+- [Binohash legacy CODESEPARATOR and FindAndDelete fixture](binohash-codesep-core.md)
 
 ## Hashes and ciphers
 

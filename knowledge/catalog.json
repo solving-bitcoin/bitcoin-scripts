@@ -25256,6 +25256,84 @@
       "open_problems": [
         "OP-011"
       ]
+    },
+    {
+      "id": "introspection/binohash-codesep-core",
+      "name": "Binohash legacy CODESEPARATOR core",
+      "class": "introspection/transaction",
+      "summary": "Differentially validates legacy OP_CODESEPARATOR boundary selection and FindAndDelete for fixed signatures before and after the operative boundary.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-10-29",
+      "knowledge_page": "knowledge/primitives/binohash-codesep-core.md",
+      "implementation": "examples/binohash_codesep_fixtures.rs",
+      "documentation": "research/binohash-codesep/README.md",
+      "tests": [
+        "examples/binohash_codesep_fixtures.rs",
+        "tools/test_binohash_codesep_regtest.py",
+        "tools/binohash_codesep_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-v30.3-legacy-sighash",
+        "bitcoin-core-v30.3-regtest",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "hash-chain"
+      ],
+      "security": "The funded fixture validates one exact legacy scriptCode composition. It does not establish Binohash grinding, two-round extraction, transaction pinning, or collision resistance.",
+      "stack_contract": "Complete P2SH unlocking path: CHECKMULTISIG dummy, puzzle signature, boolean selector, and redeemScript.",
+      "configurations": [
+        {
+          "id": "funded-codesep-findanddelete-core-v30.3",
+          "label": "Selected pushes before and after an executed separator under pinned Bitcoin Core",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "selected_push_positions": [
+              "before",
+              "after"
+            ],
+            "executed_codesep": 1,
+            "unexecuted_codesep": 1,
+            "candidate_signatures": 2,
+            "selected_signatures_per_spend": 1,
+            "redeem_script_bytes": 229,
+            "complete_transaction_weights_wu": [
+              1780,
+              1780
+            ],
+            "input_script_sig_bytes": [
+              2,
+              306
+            ],
+            "controls_per_spend": 4,
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "rejected: Using OP_CODESEPARATOR in non-witness script"
+          },
+          "includes": "complete-transaction: two disjoint two-input, one-output funded legacy P2SH spends plus four wrong-scriptCode controls per selection; script_bytes is the 23-byte locking scriptPubKey, while the 229-byte redeemScript is recorded in parameters; witness_bytes is zero; excludes funding transactions, grinding, digest extraction, and a downstream Script consumer",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "The fixture covers one fixed redeemScript with one executed and one dead-branch separator",
+        "Default relay policy rejects the executed legacy OP_CODESEPARATOR, so only consensus validity is established",
+        "Combined main-plus-alt-stack peak and executed opcode count are unmeasured",
+        "Full two-round Binohash grinding and Script-readable digest extraction remain unimplemented"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
     }
   ]
 }

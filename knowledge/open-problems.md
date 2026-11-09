@@ -578,6 +578,11 @@ does not establish a flaw in the paper's complete protocol.
 A separate nine-byte anchor fixture confirms the out-of-range `SIGHASH_SINGLE`
 signature boundary against Core but does not commit to transaction fields.
 
+A separate two-spend fixture differentially checks an executed separator, a
+dead-branch separator, legacy separator stripping, and before/after-boundary
+`FindAndDelete` against pinned Core v30.3. It closes that exact scriptCode-view
+gap without establishing the full protocol.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and

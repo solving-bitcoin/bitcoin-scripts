@@ -14,6 +14,7 @@ default relay acceptance.
 | Binohash 2-of-3 toy subset | `OP_ROLL` chooses two embedded signatures; size filter and selected-index preimage check | differentially-validated | consensus-validated | Toy nonce space, public preimages, no pinning/two-round grind; default policy rejects `CONST_SCRIPTCODE` |
 | Binohash raw flag census | 256 disjoint signed P2SH spends plus fixed-template host digests | differentially-validated | consensus-validated | Only six canonical flags pass default policy; no subset grind or security bound |
 | Binohash nine-byte SINGLE anchor | Hardcoded minimal DER signature verifies only under out-of-range `SIGHASH_SINGLE` in a funded P2SH spend | differentially-validated | consensus-validated | The bug digest commits to no transaction fields; default policy rejects `CONST_SCRIPTCODE` |
+| Binohash CODESEPARATOR fixture | Executed/dead separator boundaries plus before/after-boundary `FindAndDelete` in two funded P2SH spends | differentially-validated | consensus-validated | Default policy rejects executed legacy `OP_CODESEPARATOR`; no grinding or full protocol |
 
 The host-side core has no script, witness, stack, or validation-weight metric.
 The funded fixture has a 23-byte P2SH locking scriptPubKey, a 220-byte
@@ -28,6 +29,9 @@ witness/hint items and no measured stack peak. Its six canonical flag rows
 are additionally `policy-validated` for the pinned node options.
 The nine-byte anchor has a 23-byte P2SH scriptPubKey, a 45-byte redeemScript,
 and a 732-WU complete valid spend, also with zero witness/hint items.
+The CODESEPARATOR fixture has a 23-byte P2SH scriptPubKey, a 229-byte
+redeemScript and two 1,780-WU complete transactions. It also has zero
+witness/hint items and no measured stack peak.
 Full protocol costs remain [OP-011](../open-problems.md#op-011--reproduce-binohash).
 The [8-of-n planning report](../../research/binohash-parameters/README.md)
 separately checks exact subset counts and applies the paper's approximate

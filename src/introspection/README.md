@@ -72,3 +72,11 @@ boundary is:
 Combined stack peak and executed opcode count were not measured. The valid
 spend is consensus-valid but fails default relay policy under
 `CONST_SCRIPTCODE`.
+
+The separate [CODESEPARATOR fixture](../../research/binohash-codesep/README.md)
+requires its caller to identify the suffix after the last executed separator
+and to omit all parsed separator opcodes before calling rust-bitcoin's legacy
+sighash API. Two funded Core spends validate selected embedded signatures on
+both sides of that boundary, plus an unexecuted separator. This does not turn
+the host helper into a Script evaluator: arbitrary control flow still requires
+an independently established execution path.
