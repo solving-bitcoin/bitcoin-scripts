@@ -557,6 +557,14 @@ hit per round for a fixed transaction. Its size and opcode margins remain
 paper-formula estimates, not measured Script or Core validation. Reproduce the
 full script and actual grind distribution before drawing protocol conclusions.
 
+An [Appendix B.1 static profile](../research/binohash-appendix-b-resources/README.md)
+now measures policy-produced single-round locking scripts: 3,950 bytes for
+`n=120,t=8` and a conditional 93-opcode Core charge if its multisig executes.
+The values are deterministic placeholder data. The acceptance criterion for
+the remaining resource gap is a complete two-round signed spend with exact
+locking bytes, unlocking serialization, combined stack peak, Core opcode
+charge and consensus/policy verdicts.
+
 A separate pinned-Core raw sighash-byte census confirms that all 256 byte
 values admit signed legacy P2SH spends, but only six canonical bytes pass
 default `STRICTENC` policy. A fixed host template yields 256 distinct digests;

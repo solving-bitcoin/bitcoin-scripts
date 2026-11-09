@@ -8182,6 +8182,74 @@
       ]
     },
     {
+      "id": "introspection/binohash-appendix-b-resources",
+      "name": "Binohash Appendix B single-round static resources",
+      "class": "introspection/transaction",
+      "summary": "Measures policy-produced bytes and conditional Core opcode charges for the paper's Appendix B.1 single-round locking script at several pool sizes.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-appendix-b-resources.md",
+      "implementation": "examples/binohash_appendix_b_resources.rs",
+      "documentation": "research/binohash-appendix-b-resources/README.md",
+      "tests": [
+        "examples/binohash_appendix_b_resources.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter"
+      ],
+      "techniques": [
+        "stack-routing",
+        "signature-size-constraint"
+      ],
+      "security": "Deterministic DER-shaped signatures and hash values are placeholders. No actual signing, opening, spend, pinning, two-round composition, or collision-security claim is made.",
+      "stack_contract": "Locking-script-only Appendix B.1 fragment. A caller must supply puzzle signature, selected public keys, preimages, and indices in Appendix B.2 order; the terminal CHECKMULTISIG boolean and clean-stack status are untested.",
+      "configurations": [
+        {
+          "id": "n120-t8-single-round-static",
+          "label": "Policy-compiled Appendix B.1 single-round n=120 t=8",
+          "parameters": {
+            "pool_signatures": 120,
+            "selected_signatures": 8,
+            "rounds": 1,
+            "embedded_signature_bytes_with_pushes": 1200,
+            "embedded_hash_bytes_with_pushes": 2520,
+            "static_non_push_opcodes": 84,
+            "core_opcode_charge_if_multisig_reached": 93,
+            "paper_estimated_single_round_bytes": 3964,
+            "actual_minus_estimate_bytes": -14,
+            "witness_items": null,
+            "hint_items": null
+          },
+          "includes": "fragment-only: static Appendix B.1 single-round locking script after compile_with_policy; embeds placeholder DER-shaped signatures and hash values, selection and hash-check code, puzzle size check and terminal CHECKMULTISIG; excludes unlocking data, witness serialization, pinning, second round, transaction and execution",
+          "script_bytes": 3950,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 84,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binohash_appendix_b_n120_lock",
+            "binohash_appendix_b_n120_static_ops"
+          ]
+        }
+      ],
+      "limitations": [
+        "Static locking-script measurement does not establish a valid signature, transaction, or consensus verdict",
+        "The Core CHECKMULTISIG pubkey charge is conditional on reaching that opcode and is not an observed trace",
+        "No unlocking item count, witness size, combined stack peak, or full two-round protocol cost is measured"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash",
       "name": "Binohash transaction digest",
       "class": "introspection/transaction",

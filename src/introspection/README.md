@@ -30,6 +30,16 @@ The checked Core report fixes its complete-transaction measurement boundary:
 There are six scriptSig data pushes and zero witness items. The report does
 not measure a combined stack peak or executed opcode count.
 
+The separate [Appendix B.1 resource profile](../../research/binohash-appendix-b-resources/README.md)
+compiles a single-round locking script with deterministic placeholder data.
+At `n=120,t=8`, it measures
+<!-- metric:binohash_appendix_b_n120_lock -->3950<!-- /metric:binohash_appendix_b_n120_lock -->
+policy-produced bytes and
+<!-- metric:binohash_appendix_b_n120_static_ops -->84<!-- /metric:binohash_appendix_b_n120_static_ops -->
+static non-push opcodes. The conditional Core charge is 93 if
+`OP_CHECKMULTISIG` executes. It builds no unlocking
+script or transaction and remains `unclassified` for execution.
+
 The focused tests cover opcode-boundary deletion, subset-dependent digests,
 the legacy `SIGHASH_SINGLE` bug constant, invalid selections, and invalid input
 indices. The host helper alone remains `unclassified`; the separate funded
