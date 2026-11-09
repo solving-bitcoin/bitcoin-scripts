@@ -422,3 +422,12 @@ The constant-composition verifier intentionally has no Script byte-recovery
 row. Its host-side rank decoder is not included in the authentication costs;
 the missing consumer boundary is tracked by [NR-058](../negative-results/index.md#nr-058-constant-composition-byte-recovery-is-not-yet-a-composable-script-primitive)
 and [OP-022](../open-problems.md#op-022--constant-composition-script-decoder).
+
+## Multi-digit Lamport versus Winternitz
+
+A 160-bit radix-four Lamport fixture costs 8,079 script bytes and 1,501 witness
+bytes, and returns 80 authenticated digits. The cited 2,334- and 2,400-byte
+Winternitz `and_clear` totals leave no authenticated message data. Those outputs
+are unmatched, so they do not establish a like-for-like ranking for a consumer
+that needs authenticated data. See [the primitive](../primitives/lamport-digits.md)
+and NR-100.

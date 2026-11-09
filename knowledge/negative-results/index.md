@@ -2173,3 +2173,13 @@ policy-compiled fragments under strict local `unclassified` tapscript rules,
 `locally-reproduced`; the repeated-helper figure is an estimate and not a lower bound on shared
 counting constructions. See the
 [primitive](../primitives/u4-composition.md).
+
+## NR-100: Lamport digit widths and unmatched Winternitz outputs
+
+The radix-four Lamport fixture costs 9,580 script-plus-witness bytes at 160 bits;
+one-bit digits cost 12,242 and four-bit digits 15,118. The existing 2,334- and
+2,400-byte Winternitz `and_clear` totals leave no authenticated output, while
+Lamport returns 80 digits. These boundaries do not establish a like-for-like
+ranking for consumers requiring authenticated data. Matching output and terminal
+contracts remains open. Measurements are locally reproduced and unclassified.
+See the [primitive](../primitives/lamport-digits.md).

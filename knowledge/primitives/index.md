@@ -175,3 +175,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Delayed-reduction modulo-16 nibble sum](u4-sum-ladder.md)
 - [ScriptNum decimal expansion](u4-scriptnum-decimal.md)
 - [Fixed-composition check of a u4 vector](u4-composition.md)
+- [Multi-digit Lamport commitments](lamport-digits.md)
