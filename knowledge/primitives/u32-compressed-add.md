@@ -39,6 +39,9 @@ zero in the strict tapscript fixture.
 
 ## Evidence and execution class
 
+For the separate unsigned carry predicate on the same input encoding,
+see [compressed u32 carry-out](compressed-u32-carry.md).
+
 Evidence is `locally-reproduced`; deployment is `unclassified`. Deterministic
 tests cover zero, carry, wraparound, signed-boundary, and all-ones cases plus
 64 pairs from the fixed ChaCha20 seed `0x43304144`. Adversarial tests reject non-minimal one,

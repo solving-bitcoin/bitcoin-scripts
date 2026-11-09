@@ -241,6 +241,11 @@ the byte carry chain and costs 1,016 locking bytes versus 78 for the ordinary
 adder. It is retained for witness-constrained composition, not as a general
 locking-byte winner.
 
+The [compressed u32 carry comparison](compressed-u32-carry.md) checks
+only the final unsigned carry on the same canonical wire format.
+The sign-class leaf uses 69 bytes, versus 153 for the existing
+comparator through complementation and 912 for expanded ripple.
+
 The embedded-constant u32 subtraction row makes the same tradeoff for a public
 subtrahend: the checked four-limb adapter uses 149 locking bytes, a
 representative 9-byte/4-item witness, and a 9-item strict peak, versus 77

@@ -14324,6 +14324,105 @@ fn u32_zero_metrics_are_current() {
     ]);
 }
 
+mod compressed_carry_baseline {
+    use bitcoin_lab::{
+        arithmetic::u32::{
+            cmp::u32_compressed_lessthan,
+            stack::{u32_fromaltstack, u32_toaltstack, u32_uncompress_canonical},
+            zip::u32_zip,
+        },
+        support::script::*,
+    };
+    include!("../research/compressed-u32-carry/baseline.rs");
+}
+
+#[test]
+fn compressed_carry_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::u32::carry::u32_compressed_carry,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_script"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_witness"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_stack"),
+                concat!("compressed_carry_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (a, b, classes, complement, ripple) in [
+        (
+            0u32,
+            1,
+            keys!("low", "classes"),
+            keys!("low", "complement"),
+            keys!("low", "ripple"),
+        ),
+        (
+            0x7fff_ffff,
+            0x8000_0000,
+            keys!("sentinel", "classes"),
+            keys!("sentinel", "complement"),
+            keys!("sentinel", "ripple"),
+        ),
+        (
+            0x7fff_ffff,
+            0x8000_0001,
+            keys!("mixed", "classes"),
+            keys!("mixed", "complement"),
+            keys!("mixed", "ripple"),
+        ),
+        (
+            0x8000_0000,
+            u32::MAX,
+            keys!("high", "classes"),
+            keys!("high", "complement"),
+            keys!("high", "ripple"),
+        ),
+    ] {
+        let witness = vec![
+            scriptnum(i64::from(a as i32)),
+            scriptnum(i64::from(b as i32)),
+        ];
+        let expected = u32::from(a.overflowing_add(b).1);
+        for (keys, check) in [
+            (classes, u32_compressed_carry()),
+            (
+                complement,
+                compressed_carry_baseline::complement_comparison(),
+            ),
+            (ripple, compressed_carry_baseline::expanded_ripple()),
+        ] {
+            let leaf =
+                script! { { check } { expected } OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/arithmetic/u32/carry/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u32_pick_metrics_are_current() {
     let fragment = u32::stack::u32_pick(2);
@@ -15713,6 +15812,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

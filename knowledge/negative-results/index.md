@@ -1685,6 +1685,14 @@ saves nine witness bytes and six entry items, but adds 938 locking bytes and is
 dominated whenever script size or combined local cost is primary. It remains a
 locally reproduced option for protocols whose binding constraint is witness
 width; this is not a universal lower-bound claim.
+## Consecutive compressed carry tags collide
+
+The [compressed carry counterexample](compressed-u32-carry.md) has one
+carrying and one noncarrying operand pair with the same sum of tags
+`0,1,2`. The checked schedule uses `0,2,3` and checks the signed sum
+in the ordinary mixed case. Evidence is `locally-reproduced`;
+execution is `unclassified`.
+
 ## NR-052: Compressed u32 equality trades locking bytes for witness shape
 
 `u32_compressed_equal()` compares two canonical compressed u32 ScriptNums
