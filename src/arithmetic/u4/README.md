@@ -38,6 +38,10 @@ these operations, but this module contains no hash-specific round logic.
 - `balanced::u4_nibbles_balanced(len)` takes `1..=963` nibbles (four brackets
   each, most significant bit first); peak is `len + 37`. The comparator
   `bracket_items_balanced(len)` takes one `{0, 1}` item per bracket.
+- `distance::u4_nibbles_l1_distance(len)` and `u4_nibbles_lee_distance(len)` take
+  two vectors of `1..=498` nibbles (peak `2*len + 3`);
+  `u4_nibbles_hamming_distance(len)` takes `1..=371` (peak `2*len + 258`) and
+  `u4_nibbles_hamming_distance_composed(len)` takes `1..=363` (peak `2*len + 274`).
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -272,6 +276,10 @@ words as data, with no hint items.
 | ASCII hex decode, 64 chars, table | <!-- metric:u4_ascii_hex_table_64 -->1299<!-- /metric:u4_ascii_hex_table_64 --> bytes | <!-- metric:u4_ascii_hex_table_64_stack -->122<!-- /metric:u4_ascii_hex_table_64_stack --> items | <!-- metric:u4_ascii_hex_table_64_opcodes -->732<!-- /metric:u4_ascii_hex_table_64_opcodes --> |
 | Bracket balance, 128 brackets, packed nibbles | <!-- metric:u4_balanced_packed_128 -->895<!-- /metric:u4_balanced_packed_128 --> bytes | <!-- metric:u4_balanced_packed_128_stack -->69<!-- /metric:u4_balanced_packed_128_stack --> items | <!-- metric:u4_balanced_packed_128_opcodes -->598<!-- /metric:u4_balanced_packed_128_opcodes --> |
 | Bracket balance, 128 brackets, one item each | <!-- metric:u4_balanced_items_128 -->2059<!-- /metric:u4_balanced_items_128 --> bytes | <!-- metric:u4_balanced_items_128_stack -->133<!-- /metric:u4_balanced_items_128_stack --> items | <!-- metric:u4_balanced_items_128_opcodes -->1669<!-- /metric:u4_balanced_items_128_opcodes --> |
+| L1 distance, 16 + 16 nibbles | <!-- metric:u4_distance_l1_16 -->334<!-- /metric:u4_distance_l1_16 --> bytes | <!-- metric:u4_distance_l1_16_stack -->35<!-- /metric:u4_distance_l1_16_stack --> items | <!-- metric:u4_distance_l1_16_opcodes -->253<!-- /metric:u4_distance_l1_16_opcodes --> |
+| Lee distance, 16 + 16 nibbles | <!-- metric:u4_distance_lee_16 -->414<!-- /metric:u4_distance_lee_16 --> bytes | <!-- metric:u4_distance_lee_16_stack -->35<!-- /metric:u4_distance_lee_16_stack --> items | <!-- metric:u4_distance_lee_16_opcodes -->317<!-- /metric:u4_distance_lee_16_opcodes --> |
+| Hamming distance, fused table, 16 + 16 nibbles | <!-- metric:u4_distance_hamming_16 -->874<!-- /metric:u4_distance_hamming_16 --> bytes | <!-- metric:u4_distance_hamming_16_stack -->290<!-- /metric:u4_distance_hamming_16_stack --> items | <!-- metric:u4_distance_hamming_16_opcodes -->514<!-- /metric:u4_distance_hamming_16_opcodes --> |
+| Hamming distance, XOR then popcount, 16 + 16 nibbles | <!-- metric:u4_distance_composed_16 -->962<!-- /metric:u4_distance_composed_16 --> bytes | <!-- metric:u4_distance_composed_16_stack -->306<!-- /metric:u4_distance_composed_16_stack --> items | <!-- metric:u4_distance_composed_16_opcodes -->554<!-- /metric:u4_distance_composed_16_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -339,6 +347,16 @@ fragment with the explicit local consensus numeric profile.
 The ASCII hex fixture (`0123456789abcdef` four times, lowercase) uses <!-- metric:u4_ascii_hex_64_witness -->129<!-- /metric:u4_ascii_hex_64_witness --> serialized witness bytes for <!-- metric:u4_ascii_hex_64_witness_items -->64<!-- /metric:u4_ascii_hex_64_witness_items --> data items and zero hints; both decoders leave 64 nibbles. Both fragments are straight-line apart from the fold's per-character branch, so the opcode column is a static non-push count, not a dynamic measurement.
 
 The bracket-balance fixture is `(())` repeated 32 times, 128 brackets. The packed form uses <!-- metric:u4_balanced_packed_128_witness -->65<!-- /metric:u4_balanced_packed_128_witness --> serialized witness bytes for <!-- metric:u4_balanced_packed_128_witness_items -->32<!-- /metric:u4_balanced_packed_128_witness_items --> data items; the one-item-per-bracket comparator uses <!-- metric:u4_balanced_items_128_witness -->193<!-- /metric:u4_balanced_items_128_witness --> bytes for <!-- metric:u4_balanced_items_128_witness_items -->128<!-- /metric:u4_balanced_items_128_witness_items --> items. Both use zero hints and return one Boolean.
+
+The `distance` fragment APIs check numeric nibble ranges, accepting nonminimal
+aliases and negative zero under local consensus numeric semantics. A caller
+that binds raw bytes must validate canonical nibbles. Compare the returned
+distance against the intended value or threshold, consume preserved state,
+and leave one truthy stack item at a complete leaf. All four 16-nibble rows
+exceed the 201-opcode legacy/P2SH/P2WSH limit, and the table rows additionally
+exceed P2SH's 520-byte element limit. Tapscript execution remains unclassified.
+
+The distance fixtures use `a[i] = i` and `b[i] = (7i + 3) mod 16`: <!-- metric:u4_distance_16_witness -->63<!-- /metric:u4_distance_16_witness --> serialized witness bytes for <!-- metric:u4_distance_16_witness_items -->32<!-- /metric:u4_distance_16_witness_items --> data items and zero hints. All four fragments are straight-line, so executed non-push opcodes equal the static counts.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 

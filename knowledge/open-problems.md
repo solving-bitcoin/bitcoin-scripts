@@ -1264,3 +1264,12 @@ encoding such as depth lists on equal complete-leaf boundaries, with witness
 bytes and items, exact hint counts, executed opcodes and combined peaks.
 Byte-wide (256-entry) summary tables are unmeasured. Core validation is required
 for any deployment claim.
+
+## OP-048 — Table-free Hamming distance
+
+The fused-table Hamming distance pays a fixed cost of about 410 bytes and 258
+extra stack items. **Accept when:** a Script construction computes the same
+distance for hostile 16-nibble vectors without a resident table in fewer
+policy-compiled script bytes than 874 on the same boundary, with exact peaks and
+hint counts, or a consumer (a proximity or error-bound check) shows the
+table-free metrics suffice. Core validation is required for any deployment claim.

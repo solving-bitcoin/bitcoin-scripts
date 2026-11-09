@@ -165,3 +165,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 inversion count](u4-inversions.md)
 - [Checked ASCII hexadecimal text to u4 nibbles](u4-ascii-hex.md)
 - [Nibble-packed bracket-balance check](u4-balanced.md)
+- [Checked u4 vector distances](u4-distance.md)
