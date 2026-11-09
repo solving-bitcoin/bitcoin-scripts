@@ -14238,6 +14238,325 @@
       ]
     },
     {
+      "id": "arithmetic/u4-argmin",
+      "name": "Earliest minimum over u4 inputs",
+      "class": "arithmetic/word",
+      "summary": "Checked canonical nibble reduction to the minimum and its earliest zero-based position.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-argmin.md",
+      "implementation": "src/arithmetic/u4/argmin/mod.rs",
+      "documentation": "src/arithmetic/u4/argmin/README.md",
+      "tests": [
+        "src/arithmetic/u4/argmin/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "cpp-n4950-min-element",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "All hostile input items require canonical nibble encoding; the lowest packed priority binds both value and earliest position relative to those inputs. An enclosing construction must bind externally committed data separately.",
+      "stack_contract": "Consumes n canonical nibble items and returns the minimum and first zero-based index as two canonical ScriptNums. Restores both caller stacks for an exact input suffix. No witness hints.",
+      "configurations": [
+        {
+          "id": "table-4",
+          "label": "Packed table, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 162,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 24,
+          "executed_opcodes": 77,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_4_table_script",
+            "u4_argmin_4_table_witness",
+            "u4_argmin_4_table_stack",
+            "u4_argmin_4_table_executed"
+          ]
+        },
+        {
+          "id": "shift-4",
+          "label": "Packed shift, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 125,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 8,
+          "executed_opcodes": 75,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_4_shift_script",
+            "u4_argmin_4_shift_witness",
+            "u4_argmin_4_shift_stack",
+            "u4_argmin_4_shift_executed"
+          ]
+        },
+        {
+          "id": "direct-4",
+          "label": "Two registers, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 95,
+          "witness_bytes": 7,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 9,
+          "executed_opcodes": 64,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_4_direct_script",
+            "u4_argmin_4_direct_witness",
+            "u4_argmin_4_direct_stack",
+            "u4_argmin_4_direct_executed"
+          ]
+        },
+        {
+          "id": "table-32",
+          "label": "Packed table, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 708,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 52,
+          "executed_opcodes": 413,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_32_table_script",
+            "u4_argmin_32_table_witness",
+            "u4_argmin_32_table_stack",
+            "u4_argmin_32_table_executed"
+          ]
+        },
+        {
+          "id": "shift-32",
+          "label": "Packed shift, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 847,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 659,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_32_shift_script",
+            "u4_argmin_32_shift_witness",
+            "u4_argmin_32_shift_stack",
+            "u4_argmin_32_shift_executed"
+          ]
+        },
+        {
+          "id": "direct-32",
+          "label": "Two registers, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 727,
+          "witness_bytes": 63,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 37,
+          "executed_opcodes": 484,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_32_direct_script",
+            "u4_argmin_32_direct_witness",
+            "u4_argmin_32_direct_stack",
+            "u4_argmin_32_direct_executed"
+          ]
+        },
+        {
+          "id": "table-128",
+          "label": "Packed table, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 2540,
+          "witness_bytes": 255,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 148,
+          "executed_opcodes": 1565,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_128_table_script",
+            "u4_argmin_128_table_witness",
+            "u4_argmin_128_table_stack",
+            "u4_argmin_128_table_executed"
+          ]
+        },
+        {
+          "id": "shift-128",
+          "label": "Packed shift, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 3764,
+          "witness_bytes": 255,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 132,
+          "executed_opcodes": 3091,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_128_shift_script",
+            "u4_argmin_128_shift_witness",
+            "u4_argmin_128_shift_stack",
+            "u4_argmin_128_shift_executed"
+          ]
+        },
+        {
+          "id": "direct-128",
+          "label": "Two registers, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 0,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(7*i mod 15)+1 except zeros at floor(n/3) and n-1"
+          },
+          "includes": "complete-leaf: canonical input checks, setup, cleanup and identical byte-equality checks on both outputs. Witness is serialized data only. Excludes control block, annex and transaction. Non-push trace counts visited branch delimiters.",
+          "script_bytes": 2937,
+          "witness_bytes": 255,
+          "witness_bytes_max": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "max_stack_items": 133,
+          "executed_opcodes": 1924,
+          "validation_weight": null,
+          "metric_keys": [
+            "u4_argmin_128_direct_script",
+            "u4_argmin_128_direct_witness",
+            "u4_argmin_128_direct_stack",
+            "u4_argmin_128_direct_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The table loses at width four, and at width 128 its script and opcode savings require 15 more peak items than two registers.",
+        "Resident table peak is at most n+20 plus preserved caller state, subject to the 1,000-item combined limit.",
+        "Opcode measurements describe the specified witness, not wall-clock time.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-exact-sum",
       "name": "Checked u4 exact sum",
       "class": "arithmetic/word",

@@ -63,6 +63,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked public-constant u4 multiplication modulo 16](u4-mul-constant-mod16.md)
 - [Checked u4 squaring modulo 16](u4-square-mod16.md)
 - [Checked u4 nondecreasing predicate](u4-nondecreasing.md)
+- [Earliest minimum over u4 inputs](u4-argmin.md)
 - [Checked u4 exact sum](u4-exact-sum.md)
 - [Exact u4 quarter-square products](u4-exact-product.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)

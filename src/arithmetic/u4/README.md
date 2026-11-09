@@ -114,6 +114,8 @@ these operations, but this module contains no hash-specific round logic.
   multiple of eight in `8..=992` and returns one byte mask per eight nibbles.
 - `nondecreasing::u4_nibbles_nondecreasing(nibble_count)` takes a checked
   batch size in `1..=997` and returns one monotonicity bit.
+- [`argmin::u4_earliest_argmin(n)`](argmin/) consumes `1..=980` canonical
+  nibbles and returns the minimum and its earliest zero-based index.
 - `sum::u4_nibbles_sum_exact(nibble_count)` takes a checked batch size in
   `1..=997` and returns the exact sum in `0..=15*nibble_count`.
 - `mirror::u4_nibbles_to_mirror(nibble_count)` canonicalizes each nibble under

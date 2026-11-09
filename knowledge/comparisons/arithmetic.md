@@ -470,6 +470,18 @@ ScriptNums 0..225, not modulo nibbles or raw bytes. Costs are policy-optimized,
 locally-reproduced/unclassified. The [modulo comparison](../negative-results/u4-quarter-square-modulo.md)
 is a different operation and loses the size advantage at larger batches.
 
+## Earliest minimum over nibbles
+
+The [earliest-minimum fold](../primitives/u4-argmin.md) returns both the value
+and its first zero-based index. At width 128, a resident table of scaled
+nibbles costs 2,540 leaf bytes and 1,565 executed non-push operations at peak
+148. With two registers those costs are 2,937, 1,924 and 133. Computing the
+same packed score with shifts costs 3,764, 3,091 and 132. All rows include
+input checks, cleanup and identical output checks. The same 255-byte data
+witness carries 128 ordinary items and zero hints. The two-register version
+wins on script and execution at width four. See the
+[schedule limits](../negative-results/u4-argmin-schedules.md).
+
 ## Decimal finite-state error detection
 
 The [numeric decimal Damm fold](../primitives/u4-damm.md) is an order-sensitive
