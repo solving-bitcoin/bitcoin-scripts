@@ -1303,3 +1303,13 @@ hint counts, executed opcodes and combined peaks, recording either a winning
 regime or dominance. A delayed-reduction variant of the modulo-65,537 and
 Damm schedules is unmeasured. Core validation is required for any deployment
 claim.
+
+## OP-052 — Luhn-with-repair consumer frontier
+
+Luhn is measured standalone. **Accept when:** a protocol consumer that must
+authenticate decimal codes (see OP-037) uses Luhn, Damm, or a cheaper
+quasigroup together with its live protocol state, and compares them on equal
+complete-leaf boundaries with witness bytes and items, hint counts, executed
+opcodes, combined peaks and the measured undetected-error classes, or a
+construction closes the `0`/`9` blind spot at less than Damm's 766 bytes for 32
+digits. Core validation is required for any deployment claim.

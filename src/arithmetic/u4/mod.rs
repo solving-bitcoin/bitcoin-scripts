@@ -24,6 +24,7 @@ pub mod logic;
 pub mod lowbit;
 pub mod lsb;
 pub mod majority;
+pub mod luhn;
 pub mod mirror;
 pub mod mod15;
 pub mod mod17;

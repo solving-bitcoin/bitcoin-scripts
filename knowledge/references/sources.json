@@ -284,10 +284,10 @@
     },
     {
       "id": "bitvm3s-2025",
-      "title": "BitVM 3s – Garbled Circuits for Efficient Computation on Bitcoin",
+      "title": "BitVM 3s \u2013 Garbled Circuits for Efficient Computation on Bitcoin",
       "kind": "paper",
       "url": "https://bitvm.org/bitvm3.pdf",
-      "revision": "Robin Linus, July 22, 2025; architectural context only, not validation of this repository’s constant-sum verifier"
+      "revision": "Robin Linus, July 22, 2025; architectural context only, not validation of this repository\u2019s constant-sum verifier"
     },
     {
       "id": "nist-dlmf-multiset-permutations",
@@ -379,6 +379,13 @@
       "kind": "specification",
       "url": "https://www.rfc-editor.org/rfc/rfc1950.txt",
       "revision": "May 1996, version 3.3; sections 2.2, 8.2 and 9; immutable RFC text; Adler recurrence, serialization and delayed reduction inspected 2026-10-02"
+    },
+    {
+      "id": "luhn-us2950048a",
+      "title": "Computer for verifying numbers",
+      "kind": "specification",
+      "url": "https://patents.google.com/patent/US2950048A/en",
+      "revision": "US patent 2,950,048, granted 1960-08-23"
     }
   ]
 }

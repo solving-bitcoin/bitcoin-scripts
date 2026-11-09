@@ -2124,3 +2124,15 @@ about 13 and 14 when the sum stays exact and one ladder reduces it at the end:
 (mod 17 at one nibble: 10 versus 31 bytes). Figures are policy-compiled
 fragments under strict local `unclassified` tapscript rules,
 `locally-reproduced`. See the [primitive](../primitives/u4-mod15.md).
+
+## NR-096: A cheaper Luhn fold does not replace Damm
+
+The table-free Luhn check is 46% smaller than the Damm fold at 32 digits (411
+versus 766 script bytes) and needs a quarter of its stack (35 versus 136), but a
+Rust-model comparison over all 1,000 three-digit messages finds that it misses
+60 of 2,700 changed adjacent transpositions, every one a `0`/`9` swap, which Damm always
+detects. Both detect all 36,000 single-digit substitutions. Luhn is therefore a
+cost-saving option only where that blind spot is acceptable. Byte counts are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`; the detection counts come from models, not Script. See the
+[primitive](../primitives/u4-luhn.md).

@@ -574,3 +574,11 @@ table (strict local `unclassified` tapscript, `locally-reproduced`). Running
 reduction wins only below four nibbles. The u32 byte-sum residues cost 87
 (mod 255) and 115 (mod 65,535) bytes against 100 for mod 65,537. See
 [the primitive](../primitives/u4-mod15.md) and NR-095.
+
+## Decimal check-digit schemes
+
+At 32 digits the table-free Luhn fold costs 411 script bytes with a 35-item
+peak, against 766 bytes and a 136-item peak for the resident-table Damm fold
+(zero hints, strict local `unclassified` tapscript, `locally-reproduced`). Luhn
+misses the `09`/`90` adjacent transposition; Damm detects it. See
+[the primitive](../primitives/u4-luhn.md) and NR-096.

@@ -13,6 +13,8 @@ the source. Read a page together with its comparison page and evidence record.
 - [Canonical Adler-32 state](adler32-state.md) — non-cryptographic checksum with deferred reduction
 - [ScriptNum radix-16 expansion](u4-scriptnum-nibbles.md)
 
+
+- [Table-free Luhn checksum](u4-luhn.md)
 - [CRC-8/SMBus with nibble feedback](crc8-smbus.md)
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
