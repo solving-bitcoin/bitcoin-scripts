@@ -590,3 +590,13 @@ peak, against 592 bytes and a 66-item peak for the resident-table schedule, and 
 smaller at every length from one nibble (10 versus 65 bytes) to the table form's
 965-nibble limit (strict local `unclassified` tapscript, zero hints,
 `locally-reproduced`). See [the primitive](../primitives/u4-sum-ladder.md) and NR-097.
+
+## ScriptNum to decimal digits
+
+Expanding a nine-digit ScriptNum costs 582 script bytes hint-free and 153 bytes
+with nine digit hints. Feeding the digits into the existing Damm fold, the
+complete leaf is 908 bytes with a 6-byte one-item witness hint-free (914 total)
+and 479 bytes with a 24-byte ten-item witness hint-checked (503 total), against
+326 bytes and a 19-byte nine-item witness for digits alone, which binds no amount
+(peak 113 throughout; strict local `unclassified` tapscript, `locally-reproduced`).
+See [the primitive](../primitives/u4-scriptnum-decimal.md) and NR-098.

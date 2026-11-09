@@ -1322,3 +1322,13 @@ normalized fold in the repository (for example the exact-sum and mod-3 batch
 projections) on equal fragment boundaries with script bytes, hints, peaks and
 executed opcodes, recording a win or the regime where the table remains better.
 Core validation is required for any deployment claim.
+
+## OP-054 — Authenticated amount-to-checksum composition
+
+The expansion is measured against Damm but not inside an authenticated protocol.
+**Accept when:** a consumer binds the amount, its decimal meaning and the check
+digit to an authenticated source (see OP-037), compares hint-free, hint-checked
+and digits-only witnesses on equal complete-leaf boundaries with witness bytes
+and items, hint counts, executed opcodes and combined peaks, and handles amounts
+above 2^31 - 1 or records the limit as a constraint. Core validation is required
+for any deployment claim.

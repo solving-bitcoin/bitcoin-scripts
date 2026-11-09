@@ -2147,3 +2147,15 @@ at 128, and 11,680 versus 16,453 at 965, with a combined peak 31 items lower
 schedule has no measured advantage in script bytes or stack. Figures are
 policy-compiled fragments under strict local `unclassified` tapscript rules,
 `locally-reproduced`. See the [primitive](../primitives/u4-sum-ladder.md).
+
+## NR-098: Hint-free decimal expansion costs more script-plus-witness bytes
+
+Binding a ScriptNum amount to its nine decimal digits costs 582 script bytes with
+a compare-and-subtract ladder and 153 with Horner-checked digit hints (about 65
+versus 17 bytes per digit). In a complete leaf with the Damm fold the hint-free
+form totals 914 script-plus-witness bytes against 503 hint-checked, 1.82 times
+more. The hint-free form saves nine hint items and witness bytes, and the isolated
+fragment peaks one item lower, so this comparison does not establish dominance
+on those resources. Byte counts are policy-compiled leaves
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-scriptnum-decimal.md).

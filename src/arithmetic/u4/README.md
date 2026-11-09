@@ -1462,3 +1462,51 @@ does not establish consensus or policy validity.
 
 The table schedule on the same input is 592 bytes with a 66-item peak. See the
 [knowledge page](../../../knowledge/primitives/u4-sum-ladder.md).
+
+## ScriptNum decimal expansion
+
+`scriptnum_decimal::u4_scriptnum_to_decimal(width)` and
+`u4_scriptnum_to_decimal_hinted(width)` expand one non-negative ScriptNum in
+`0..10^width` (`0..2^31` at width 10, `width` in `1..=10`) into most-significant-
+first numeric decimal digits `0..=9`, the decimal counterpart of the radix-16
+expansion. The hint-free form uses a compare-and-subtract ladder; the hint-checked
+form takes digit hints under the number, range-checks each and equates the Horner
+sum to the number. Outputs feed `damm::u4_decimal_digits_to_damm`.
+
+Fragment-only boundary: domain or hint checks, the ladder or Horner sum; input
+pushes and terminal predicate excluded. Nine digits of `123456789`.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Hint-free, 9 digits | <!-- metric:u4_decimal_zero_9 -->582<!-- /metric:u4_decimal_zero_9 --> | <!-- metric:u4_decimal_zero_9_stack -->12<!-- /metric:u4_decimal_zero_9_stack --> | <!-- metric:u4_decimal_zero_9_opcodes -->301<!-- /metric:u4_decimal_zero_9_opcodes --> |
+| Hint-checked, 9 digits | <!-- metric:u4_decimal_hinted_9 -->153<!-- /metric:u4_decimal_hinted_9 --> | <!-- metric:u4_decimal_hinted_9_stack -->13<!-- /metric:u4_decimal_hinted_9_stack --> | <!-- metric:u4_decimal_hinted_9_opcodes -->114<!-- /metric:u4_decimal_hinted_9_opcodes --> |
+
+Complete leaves ending in the nine-digit Damm fold and a check of state 4:
+
+| Witness form | Leaf bytes | Witness bytes | Witness items | Combined peak |
+| --- | ---: | ---: | ---: | ---: |
+| Nine digit items only (amount not bound) | <!-- metric:u4_decimal_leaf_digits -->326<!-- /metric:u4_decimal_leaf_digits --> | <!-- metric:u4_decimal_leaf_digits_witness -->19<!-- /metric:u4_decimal_leaf_digits_witness --> | <!-- metric:u4_decimal_leaf_digits_witness_items -->9<!-- /metric:u4_decimal_leaf_digits_witness_items --> | <!-- metric:u4_decimal_leaf_digits_stack -->113<!-- /metric:u4_decimal_leaf_digits_stack --> |
+| One amount, hint-free expansion | <!-- metric:u4_decimal_leaf_zero -->908<!-- /metric:u4_decimal_leaf_zero --> | <!-- metric:u4_decimal_leaf_zero_witness -->6<!-- /metric:u4_decimal_leaf_zero_witness --> | <!-- metric:u4_decimal_leaf_zero_witness_items -->1<!-- /metric:u4_decimal_leaf_zero_witness_items --> | <!-- metric:u4_decimal_leaf_zero_stack -->113<!-- /metric:u4_decimal_leaf_zero_stack --> |
+| Amount plus nine digit hints | <!-- metric:u4_decimal_leaf_hinted -->479<!-- /metric:u4_decimal_leaf_hinted --> | <!-- metric:u4_decimal_leaf_hinted_witness -->24<!-- /metric:u4_decimal_leaf_hinted_witness --> | <!-- metric:u4_decimal_leaf_hinted_witness_items -->10<!-- /metric:u4_decimal_leaf_hinted_witness_items --> | <!-- metric:u4_decimal_leaf_hinted_stack -->113<!-- /metric:u4_decimal_leaf_hinted_stack --> |
+
+There is no default width: callers select `1 <= w <= 10` and supply a
+non-negative four-byte ScriptNum below `10^w` (below `2^31` at width 10).
+Hint-free takes `preserved | x` and returns the numeric digits; hint-checked
+takes `preserved | d[0] ... d[w-1] | x` and returns the same digit bytes.
+Both the amount and hints are hostile. The checks bind numeric digits to the
+amount but do not authenticate its meaning. Values above `2^31-1` require a
+separate representation.
+
+Each width-`w` hinted invocation takes `w` hint items and one amount item; all coexist at entry. The measured isolated combined-stack peak is `w+4`, so preserved caller state must satisfy `w+4+p <= 1000`. Numeric aliases are accepted in the measured profile and hint bytes are returned unchanged; canonicalize before byte-sensitive use. These fragments require a terminal predicate and clean stack. See the [knowledge page](../../../knowledge/primitives/u4-scriptnum-decimal.md) for witness accounting, execution assumptions and script-type limits.
+
+For the measured nine-digit fragments, 582-byte hint-free exceeds P2SH's
+520-byte redeemScript element limit and its 301 non-push opcodes exceed the
+201-opcode legacy/P2SH/P2WSH limit. The 153-byte hinted fragment has 114
+non-push opcodes; surrounding scripts impose additional limits. Tapscript has
+different limits, but no consensus or policy validation is claimed. Reproduce:
+
+```sh
+cargo test --locked --lib arithmetic::u4::scriptnum_decimal::tests
+cargo test --locked --test primitive_metrics u4_scriptnum_decimal_metrics_are_current -- --exact
+python3 tools/kb.py validate
+```

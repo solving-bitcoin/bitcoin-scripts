@@ -173,3 +173,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 strict majority](u4-majority.md)
 - [Casting-out residues and delayed reduction](u4-mod15.md)
 - [Delayed-reduction modulo-16 nibble sum](u4-sum-ladder.md)
+- [ScriptNum decimal expansion](u4-scriptnum-decimal.md)
