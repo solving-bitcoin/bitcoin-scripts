@@ -195,6 +195,7 @@ the source. Read a page together with its comparison page and evidence record.
 ## Signatures and one-time authentication
 
 - [Point locks](point-locks.md)
+- [HASH160-committed x-only Schnorr signer set](hash160-schnorr-keyset.md)
 - [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
 - [Sparse exact-threshold tapscript signatures](sparse-tapscript-threshold.md)
 - [BLAKE3 Ed25519-style Montgomery slope verifier candidate](ed25519-blake3-montgomery-slope.md) — historical G29 hinted/q-free leaves and the G32 hybrid-u5 zero-hint successor

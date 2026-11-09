@@ -10925,6 +10925,105 @@ fn hash_path_chain_metrics() -> Vec<Metric> {
     ]
 }
 
+#[path = "support/hash_keyset.rs"]
+mod hash_keyset_fixture;
+
+#[test]
+fn hash160_keyset_metrics_are_current() {
+    use bitcoin::sighash::TapSighashType;
+    use bitcoin_lab::signatures::hash_keyset::verify_hash160_keyset;
+    use hash_keyset_fixture::{
+        embedded_index, embedded_scan, identifier, keypairs, public_key, Spend,
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("hash_keyset_", $width, "_", $schedule, "_script"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_data"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_complete"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_stack"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_executed"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_budget"),
+                concat!("hash_keyset_", $width, "_", $schedule, "_charged"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (count, hashed, scanned, indexed) in [
+        (
+            1,
+            keys!(1, "hashed"),
+            keys!(1, "scanned"),
+            keys!(1, "indexed"),
+        ),
+        (
+            4,
+            keys!(4, "hashed"),
+            keys!(4, "scanned"),
+            keys!(4, "indexed"),
+        ),
+        (
+            32,
+            keys!(32, "hashed"),
+            keys!(32, "scanned"),
+            keys!(32, "indexed"),
+        ),
+        (
+            129,
+            keys!(129, "hashed"),
+            keys!(129, "scanned"),
+            keys!(129, "indexed"),
+        ),
+    ] {
+        let keys = keypairs(count);
+        let public: Vec<_> = keys.iter().map(public_key).collect();
+        let identifiers: Vec<_> = public.iter().map(|key| identifier(key)).collect();
+        let signer = count - 1;
+        for (metrics, fragment, witness_key, index) in [
+            (hashed, verify_hash160_keyset(&identifiers), true, false),
+            (scanned, embedded_scan(&public), true, false),
+            (indexed, embedded_index(&public), false, count > 1),
+        ] {
+            let spend = Spend::new(fragment);
+            let mut data = vec![spend.sign(&keys[signer], TapSighashType::Default)];
+            if witness_key {
+                data.push(public[signer].to_vec());
+            }
+            if index {
+                data.push(scriptnum(signer as i64));
+            }
+            assert_eq!(
+                data.len(),
+                1 + usize::from(witness_key) + usize::from(index)
+            );
+            let data_bytes = witness_size(&data);
+            let witness = spend.witness(data);
+            let complete_bytes = serialize(&witness).len();
+            let trace = spend.trace(witness);
+            assert!(trace.success);
+            assert_eq!(trace.initial_budget, 50 + complete_bytes as i64);
+            assert_eq!(trace.charged, 50);
+            for (key, value) in metrics.into_iter().zip([
+                spend.leaf.len(),
+                data_bytes,
+                complete_bytes,
+                trace.peak,
+                trace.executed,
+                trace.initial_budget as usize,
+                trace.charged as usize,
+            ]) {
+                report.push(Metric {
+                    readme: "src/signatures/hash_keyset/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn hash_path_chain_metrics_are_current() {
     check_readme_metrics(hash_path_chain_metrics());

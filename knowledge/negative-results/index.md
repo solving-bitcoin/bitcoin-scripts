@@ -1931,6 +1931,15 @@ for an identified byte-oriented caller, compare direct byte shifting with
 compression, PR #8's shift, and conversion back, including validation,
 table setup/cleanup, routing, and the same output checks on both sides.
 
+## A committed short key can bypass native Schnorr verification
+
+The [HASH160 signer-set counterexample](hash160-schnorr-keyset.md)
+commits to a one-byte value. Without a key-width guard, the
+native signature opcode accepts a nonempty dummy signature in the
+local unknown-key path. The guarded leaf rejects before charging
+the check. Evidence is `locally-reproduced`. Execution is
+`unclassified`.
+
 ## NR-064: Data-only signature budgets falsely reject complete spends
 
 The [complete-witness budget experiment](../tapscript-budget-validation.md)

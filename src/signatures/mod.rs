@@ -1,3 +1,4 @@
+pub mod hash_keyset;
 pub mod hors;
 pub mod lamport;
 pub mod lamport_digits;
