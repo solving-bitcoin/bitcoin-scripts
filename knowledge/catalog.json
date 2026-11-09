@@ -8101,7 +8101,7 @@
       "id": "introspection/binohash-subset-toy",
       "name": "Binohash 2-of-3 subset and Script-consumer fixture",
       "class": "introspection/transaction",
-      "summary": "Checks a toy 2-of-3 OP_ROLL signature subset, size predicate, and downstream index-selected preimage commitment against Bitcoin Core.",
+      "summary": "Checks a toy 2-of-3 OP_ROLL signature subset, size predicate, downstream preimage commitment, and scriptSig encoding malleability against Bitcoin Core.",
       "status": "experimental",
       "evidence": "differentially-validated",
       "execution": "consensus-validated",
@@ -8155,7 +8155,11 @@
             "script_sig_data_items": 6,
             "hint_items": 0,
             "witness_items": 0,
-            "policy_result": "rejected: Signature is found in scriptCode"
+            "policy_result": "rejected: Signature is found in scriptCode",
+            "nonminimal_puzzle_push_weight_wu": 2912,
+            "nonminimal_puzzle_push_script_sig_bytes": [2, 589],
+            "alternate_same_prevout_consensus_valid": true,
+            "nonminimal_push_policy_result": "rejected: Data push larger than necessary"
           },
           "includes": "complete-transaction: each of two disjoint funded two-input one-output legacy P2SH spends with both complete scriptSigs and prevout context; both weigh 2908 WU; script_bytes is the 23-byte P2SH locking scriptPubKey and the 493-byte redeemScript is included in scriptSig; witness_bytes is zero; excludes the separate funding transaction and full Binohash pinning/grinding costs",
           "script_bytes": 23,
@@ -8175,7 +8179,8 @@
         "Toy 3-choose-2 nonce space has no meaningful collision-security bound",
         "Funding fee search establishes a deterministic size-control fixture but does not validate transaction pinning",
         "Valid Core consensus spend fails default relay policy under CONST_SCRIPTCODE",
-        "Combined stack peak and executed opcode count are not measured"
+        "Combined stack peak and executed opcode count are not measured",
+        "A nonminimal push of the same puzzle signature passes consensus with a different txid; both encodings fail default relay policy"
       ],
       "open_problems": [
         "OP-011"

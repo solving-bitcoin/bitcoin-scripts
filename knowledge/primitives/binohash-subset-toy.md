@@ -26,6 +26,17 @@ preimage, and a valid oversized signature
 all fail Core consensus. The correctly signed spends still fail default
 relay policy under `CONST_SCRIPTCODE`.
 
+Core also accepts a one-byte-longer scriptSig that uses `OP_PUSHDATA1` for the
+unchanged puzzle signature. The runner mines it, invalidates that block, and
+mines the canonical encoding against the same funding prevout at the same
+height. Both pass consensus and have different txids. The alternate weighs
+2,912 WU versus 2,908 WU for the canonical spend, with a 589-byte versus
+588-byte Binohash scriptSig; neither has witness or hint items. This is a
+specific legacy scriptSig malleability boundary, not a second digest or
+grinding result. Default policy rejects the nonminimal encoding under
+`MINIMALDATA` before reaching the canonical encoding's `CONST_SCRIPTCODE`
+rejection.
+
 This fixture has no Stage 1 transaction pinning, no meaningful grinding work,
 no two-round digest, and no downstream authentication. Its three public
 preimages only demonstrate that Script can consume the selected pair. It does

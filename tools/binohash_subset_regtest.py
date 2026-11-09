@@ -22,6 +22,7 @@ CONTROLS = ("wrong_preimage", "wrong_indices", "reversed_indices",
             "duplicate_indices", "out_of_range_index", "noncanonical_index",
             "wrong_size")
 CONSENSUS_PREFIX = "TestBlockValidity failed: block-script-verify-flag-failed ("
+NONMINIMAL_POLICY_REJECTION = "mempool-script-verify-flag-failed (Data push larger than necessary)"
 REJECTIONS = {
     "wrong_preimage": "Script evaluated without error but finished with a false/empty top stack element",
     "wrong_indices": "Script failed an OP_CHECKMULTISIGVERIFY operation",
@@ -142,6 +143,23 @@ def run(node, report):
                 raise RuntimeError(f"Unexpected consensus rejection for {label} {name}")
             spend["controls"][name] = {"transaction": tx, "decoded": decoded,
                                        "consensus": consensus}
+        nonminimal = selected["nonminimal_puzzle_push"]
+        nonminimal_decoded = decoded_matches(node, nonminimal)
+        nonminimal_policy = node.rpc("testmempoolaccept", [nonminimal["hex"]])[0]
+        if (nonminimal_policy.get("allowed") is not False or
+                nonminimal_policy.get("reject-reason") != NONMINIMAL_POLICY_REJECTION):
+            raise RuntimeError(f"Unexpected nonminimal-push policy result for {label}")
+        nonminimal_consensus = consensus_probe(node, address, nonminimal, True)
+        # Return to the same funded prevout, then mine the canonical encoding.
+        # Both valid blocks sit at the same height on alternate regtest branches.
+        node.rpc("invalidateblock", nonminimal_consensus["block_hash"])
+        if node.rpc("getblockcount") != nonminimal_consensus["block_height"] - 1:
+            raise RuntimeError("Invalidating the nonminimal spend did not restore the prevout")
+        spend["nonminimal_puzzle_push"] = {
+            "transaction": nonminimal, "decoded": nonminimal_decoded,
+            "policy": nonminimal_policy, "consensus": nonminimal_consensus,
+            "invalidated_before_canonical": True,
+        }
         tx = selected["transaction"]
         decoded = decoded_matches(node, tx)
         policy = node.rpc("testmempoolaccept", [tx["hex"]])[0]
@@ -185,11 +203,25 @@ def report_passed(report):
                     if row["pair"] == spend["selected_pair"])):
             return False
         valid = spend["valid"]
+        alternate = spend["nonminimal_puzzle_push"]
         if (valid["consensus"].get("accepted") is not True or
                 valid["policy"].get("allowed") is not False or
                 valid["policy"].get("reject-reason") != POLICY_REJECTION or
                 valid["transaction"]["txid"] != valid["decoded"]["txid"] or
                 valid["transaction"]["txid"] != valid["policy"].get("txid")):
+            return False
+        if (alternate["consensus"].get("accepted") is not True or
+                alternate["invalidated_before_canonical"] is not True or
+                alternate["policy"].get("allowed") is not False or
+                alternate["policy"].get("reject-reason") != NONMINIMAL_POLICY_REJECTION or
+                alternate["transaction"]["txid"] != alternate["decoded"]["txid"] or
+                alternate["transaction"]["txid"] != alternate["policy"].get("txid") or
+                alternate["transaction"]["txid"] == valid["transaction"]["txid"] or
+                alternate["transaction"]["weight"] != valid["transaction"]["weight"] + 4 or
+                alternate["transaction"]["input_script_sig_bytes"][1] !=
+                valid["transaction"]["input_script_sig_bytes"][1] + 1 or
+                alternate["consensus"]["block_height"] != valid["consensus"]["block_height"] or
+                alternate["consensus"]["block_hash"] == valid["consensus"]["block_hash"]):
             return False
         for name, control in spend["controls"].items():
             if (not rejection_matches(control["consensus"], name,
@@ -210,7 +242,7 @@ def main():
     args = parser.parse_args()
     report = {"schema_version": 1, "experiment": "funded-binohash-2-of-3-toy",
               "initial_mocktime": START_TIME,
-              "scope": "Two disjoint low-work 2-of-3 legacy subset spends with OP_ROLL, size filter, and Script-consuming preimage checks. No transaction pinning, two-round grind, or collision-security claim."}
+              "scope": "Two disjoint low-work 2-of-3 legacy subset spends with OP_ROLL, size filter, and Script-consuming preimage checks; alternate scriptSig push encodings on the same prevouts. No transaction pinning, two-round grind, or collision-security claim."}
     try:
         binary, provenance = core_binary(args.cache_dir.resolve(), args.download_core)
         report["bitcoin_core"] = provenance
