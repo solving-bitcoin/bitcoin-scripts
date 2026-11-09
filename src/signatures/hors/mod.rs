@@ -59,10 +59,44 @@ pub fn hors_public_keys(preimages: &[Vec<u8>]) -> Vec<[u8; 20]> {
 /// iterations picks the correct hash by index, verifies the preimage against it,
 /// and cleans up. At the end all hashes are dropped and OP_TRUE is left.
 pub fn hors_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
+    hors_locking_script_with_index_rule(public_keys, t, false)
+}
+
+/// Build a HORS-like verifier that binds the exact canonical index sequence.
+///
+/// Indices must be minimally encoded Script numbers in `0..public_keys.len()`
+/// and strictly increasing. This excludes duplicate and reordered openings.
+/// The script checks canonical bytes even when `MINIMALDATA` is disabled.
+/// The caller still derives the indices from the message and enforces one-time
+/// use; this fragment only authenticates the supplied opening.
+pub fn hors_exact_index_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
+    assert!(t > 0, "exact-index verifier needs at least one opening");
+    hors_locking_script_with_index_rule(public_keys, t, true)
+}
+
+fn hors_locking_script_with_index_rule(public_keys: &[[u8; 20]], t: usize, exact: bool) -> Script {
     let n = public_keys.len();
     assert!(t <= n, "t must not exceed n");
+    if exact {
+        assert!(
+            n + 2 * t <= i32::MAX as usize - 2,
+            "exact-index stack depths must fit a Script number"
+        );
+    }
 
     script! {
+        if exact {
+            // The witness lays index_i at depth 2*i+1. Compare copies of
+            // adjacent indices before pushing commitments. Strict ordering
+            // rejects duplicates and permutations without changing the
+            // witness stack used by the opening verifier below.
+            for i in 0..t - 1 {
+                { (2*i + 1) as u32 } OP_PICK
+                { (2*i + 4) as u32 } OP_PICK
+                OP_LESSTHAN OP_VERIFY
+            }
+        }
+
         // Push hashes so that hash[0] is on top (pushed last).
         // hash[n-1] is pushed first and lands deepest among hashes.
         //
@@ -98,7 +132,8 @@ pub fn hors_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
         //
         // Steps each iteration:
         //   1. Roll index_i from depth n+1 → top
-        //   2. Sanitize: upper-clamp to n-1 with OP_MIN
+        //   2. Exact API: check canonical bytes and range; legacy API: clamp
+        //      the index to n-1 with OP_MIN.
         //   3. OP_DUP to keep a copy (we need to OP_DROP it after EQUALVERIFY)
         //   4. Compute pick depth: after OP_DUP, stack is idx_copy(0)|idx_orig(1)|hash[0](2)|…
         //      `{1} OP_ADD` CONSUMES idx_copy and produces (idx+1) on top.
@@ -122,8 +157,16 @@ pub fn hors_locking_script(public_keys: &[[u8; 20]], t: usize) -> Script {
             { (n + 1) as u32 } OP_ROLL
             // Stack: idx_i(0) | hash[0](1) | … | hash[n-1](n) | preimage_i(n+1)
 
-            // Step 2: sanitize index (upper-clamp to n-1; OP_MIN does not reject negatives)
-            { (n - 1) as u32 } OP_MIN
+            if exact {
+                // Arithmetic re-serializes a Script number minimally. Compare
+                // that result with the original bytes before range checking;
+                // this catches aliases even with MINIMALDATA disabled.
+                OP_DUP OP_DUP OP_0 OP_ADD OP_EQUALVERIFY
+                OP_DUP OP_0 { n as u32 } OP_WITHIN OP_VERIFY
+            } else {
+                // Legacy API: upper-clamp; OP_MIN does not reject negatives.
+                { (n - 1) as u32 } OP_MIN
+            }
 
             // Step 3: duplicate index
             OP_DUP
@@ -211,6 +254,7 @@ mod tests {
         execute_script_with_inputs_strict,
     };
     use crate::support::script::{script, ScriptCompilation};
+    use bitcoin::script::Instruction;
     use bitcoin_scriptexec::{ExecError, Options};
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
@@ -622,6 +666,112 @@ mod tests {
             "raw index bytes are not bound by the script"
         );
         assert!(relaxed.stack_limit_enforced);
+    }
+
+    #[test]
+    fn exact_indices_bind_range_order_and_preimages() {
+        let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_exact_index_locking_script(&public_keys, 8);
+        let static_non_push = locking
+            .clone()
+            .compile_with_policy()
+            .instructions()
+            .map(|instruction| instruction.expect("generated HORS script must parse"))
+            .filter(|instruction| {
+                matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60)
+            })
+            .count();
+        assert_eq!(static_non_push, 164);
+        let indices = [0, 4, 9, 13, 17, 21, 25, 31];
+        let witness = hors_unlocking_witness(&preimages, &indices);
+        let valid = execute_script_with_inputs_strict(locking.clone(), witness.clone());
+        assert!(valid.success, "canonical opening failed: {valid}");
+        assert!(valid.stack_limit_enforced);
+        assert_eq!(valid.final_stack.len(), 1);
+        assert_eq!(valid.final_stack.get(0), vec![1]);
+
+        let mut out_of_range = witness.clone();
+        out_of_range[0] = encode_script_int(32);
+        assert!(!execute_script_with_inputs_strict(locking.clone(), out_of_range).success);
+
+        let mut negative = witness.clone();
+        negative[0] = encode_script_int(-1);
+        assert!(!execute_script_with_inputs_strict(locking.clone(), negative).success);
+
+        let duplicate = [0, 4, 9, 13, 17, 21, 25, 25];
+        assert!(
+            !execute_script_with_inputs_strict(
+                locking.clone(),
+                hors_unlocking_witness(&preimages, &duplicate)
+            )
+            .success
+        );
+
+        let reordered = [0, 9, 4, 13, 17, 21, 25, 31];
+        assert!(
+            !execute_script_with_inputs_strict(
+                locking.clone(),
+                hors_unlocking_witness(&preimages, &reordered)
+            )
+            .success
+        );
+
+        let mut wrong_preimage = witness;
+        wrong_preimage[1] = preimages[30].clone();
+        assert!(!execute_script_with_inputs_strict(locking.clone(), wrong_preimage).success);
+
+        let mut missing = hors_unlocking_witness(&preimages, &indices);
+        missing.remove(0);
+        assert!(!execute_script_with_inputs_strict(locking.clone(), missing).success);
+
+        let mut excess = vec![vec![0x55]];
+        excess.extend(hors_unlocking_witness(&preimages, &indices));
+        assert!(!execute_script_with_inputs_strict(locking, excess).success);
+    }
+
+    #[test]
+    fn exact_indices_reject_raw_aliases_without_minimaldata_policy() {
+        let preimages = (0..129).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_exact_index_locking_script(&public_keys, 1);
+        for index in [0usize, 127, 128] {
+            let witness = hors_unlocking_witness(&preimages, &[index]);
+            let result = execute_script_with_inputs_strict(locking.clone(), witness);
+            assert!(result.success, "canonical index {index} failed: {result}");
+        }
+
+        for (name, raw_index, preimage_index) in [
+            ("nonminimal one", vec![1, 0], 1),
+            ("nonminimal zero", vec![0], 0),
+            ("negative zero", vec![0x80], 0),
+            ("nonminimal 128", vec![0x80, 0x00, 0x00], 128),
+        ] {
+            let witness = vec![raw_index, preimages[preimage_index].clone()];
+            let strict = execute_script_with_inputs_strict(locking.clone(), witness.clone());
+            assert!(!strict.success, "{name} passed strict execution: {strict}");
+            let relaxed = execute_script_buf_with_options(
+                locking.clone().compile_with_policy(),
+                witness,
+                Options {
+                    require_minimal: false,
+                    enforce_stack_limit: true,
+                    ..Options::default()
+                },
+            )
+            .unwrap();
+            assert!(
+                !relaxed.success,
+                "{name} passed without MINIMALDATA: {relaxed}"
+            );
+            assert!(relaxed.stack_limit_enforced);
+        }
+
+        let out_of_range = execute_script_with_inputs_strict(
+            locking,
+            vec![encode_script_int(129), preimages[128].clone()],
+        );
+        assert!(!out_of_range.success);
     }
 
     #[test]

@@ -11659,6 +11659,137 @@ fn hors_witness_boundary_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn hors_exact_index_metrics_are_current() {
+    let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+    let public_keys = hors::hors_public_keys(&preimages);
+    let witness = hors::hors_unlocking_witness(&preimages, &[0, 4, 9, 13, 17, 21, 25, 31]);
+    let max_witness = hors::hors_unlocking_witness(&preimages, &(1..=8).collect::<Vec<_>>());
+    let clamped = hors::hors_locking_script(&public_keys, 8);
+    let exact = hors::hors_exact_index_locking_script(&public_keys, 8);
+    let clamped_non_push = static_non_push_opcodes(clamped.clone());
+    let exact_non_push = static_non_push_opcodes(exact.clone());
+    let clamped_execution = execute_script_with_inputs_strict(clamped, witness.clone());
+    let exact_execution = execute_script_with_inputs_strict(exact.clone(), witness.clone());
+    assert!(clamped_execution.success, "clamped metric execution failed");
+    assert!(exact_execution.success, "exact metric execution failed");
+    // Tapscript ExecStats::opcode_count includes pushes; both verifiers are
+    // straight-line, so static non-push counts equal executed non-push counts.
+    assert_eq!(clamped_execution.stats.opcode_count, 145);
+    assert_eq!(exact_execution.stats.opcode_count, 250);
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_clamped_ops_n32_t8",
+            value: clamped_non_push,
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_exact_lock_n32_t8",
+            value: script_len(exact),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_exact_witness_n32_t8",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_exact_witness_max_n32_t8",
+            value: witness_size(&max_witness),
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_exact_stack_n32_t8",
+            value: exact_execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/signatures/hors/README.md",
+            key: "hors_exact_ops_n32_t8",
+            value: exact_non_push,
+        },
+    ]);
+}
+
+#[test]
+fn binohash_hors_subset_metrics_are_current() {
+    use bitcoin_lab::introspection::binohash_hors_subset::authenticated_two_of_three_subset_script;
+
+    let preimages = [vec![0x11; 16], vec![0x22; 16], vec![0x33; 16]];
+    let public_keys: [[u8; 20]; 3] = hors::hors_public_keys(&preimages).try_into().unwrap();
+    let script = authenticated_two_of_three_subset_script(&public_keys);
+    let witness = hors::hors_unlocking_witness(&preimages, &[0, 2]);
+    let clamped = hors::hors_locking_script(&public_keys, 2);
+    let exact = hors::hors_exact_index_locking_script(&public_keys, 2);
+    let clamped_execution = execute_script_with_inputs_strict(clamped.clone(), witness.clone());
+    let exact_execution = execute_script_with_inputs_strict(exact.clone(), witness.clone());
+    let execution = execute_script_with_inputs_strict(script.clone(), witness.clone());
+    assert!(
+        clamped_execution.success,
+        "clamped HORS metric execution failed"
+    );
+    assert!(
+        exact_execution.success,
+        "exact HORS metric execution failed"
+    );
+    assert!(
+        execution.success,
+        "subset metric execution failed: {execution}"
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_script",
+            value: script_len(clamped.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_stack",
+            value: clamped_execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_static_ops",
+            value: static_non_push_opcodes(clamped),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_script",
+            value: script_len(exact.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_stack",
+            value: exact_execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_static_ops",
+            value: static_non_push_opcodes(exact),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_script",
+            value: script_len(script.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_stack",
+            value: execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_static_ops",
+            value: static_non_push_opcodes(script),
+        },
+    ]);
+}
+
 #[path = "support/weighted_quorum.rs"]
 mod weighted_quorum_fixture;
 

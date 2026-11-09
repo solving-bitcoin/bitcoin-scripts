@@ -1,7 +1,8 @@
 # Legacy transaction introspection
 
 This module contains host-side research helpers for transaction-dependent
-legacy Script behavior. They are not tapscript fragments and must not be
+legacy Script behavior and a separate local tapscript composition fixture.
+The legacy sighash helpers are not tapscript fragments and must not be
 executed with the repository's default tapscript-only assumptions.
 
 ## Binohash core
@@ -19,6 +20,21 @@ The [2-of-3 subset fixture](../../research/binohash-subset/README.md) separately
 uses `OP_ROLL` to choose two embedded signatures and consumes their canonical
 indices in a later Script predicate. Its public preimages and small size
 filter demonstrate execution only; the full protocol remains open.
+
+The [exact-HORS 2-of-3 consumer](../../research/binohash-hors-subset/README.md)
+uses one opening's checked index pair for both HORS authentication and
+`OP_ROLL` selection of three toy numeric tags. All three canonical pairs pass
+strict local tapscript execution; malformed openings fail. It has no second
+witness selector, ECDSA check, legacy sighash, or Core verdict. The full
+policy-produced script is 153 bytes, the four-item serialized witness is 38
+bytes, the combined stack peak is 12, and the static non-push opcode count is
+68; there are zero hint items.
+
+| Same `[0,2]` opening | Final script | Serialized data witness | Combined stack peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: |
+| Clamped HORS alone | <!-- metric:binohash_hors_clamped_script -->89<!-- /metric:binohash_hors_clamped_script --> bytes | 38 bytes | <!-- metric:binohash_hors_clamped_stack -->9<!-- /metric:binohash_hors_clamped_stack --> items | <!-- metric:binohash_hors_clamped_static_ops -->19<!-- /metric:binohash_hors_clamped_static_ops --> |
+| Exact HORS alone | <!-- metric:binohash_hors_exact_script -->110<!-- /metric:binohash_hors_exact_script --> bytes | 38 bytes | <!-- metric:binohash_hors_exact_stack -->10<!-- /metric:binohash_hors_exact_stack --> items | <!-- metric:binohash_hors_exact_static_ops -->35<!-- /metric:binohash_hors_exact_static_ops --> |
+| Exact HORS plus selection consumer | <!-- metric:binohash_hors_subset_script -->153<!-- /metric:binohash_hors_subset_script --> bytes | <!-- metric:binohash_hors_subset_witness -->38<!-- /metric:binohash_hors_subset_witness --> bytes | <!-- metric:binohash_hors_subset_stack -->12<!-- /metric:binohash_hors_subset_stack --> items | <!-- metric:binohash_hors_subset_static_ops -->68<!-- /metric:binohash_hors_subset_static_ops --> |
 
 The checked Core report fixes its complete-transaction measurement boundary:
 
