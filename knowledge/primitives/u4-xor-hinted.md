@@ -78,7 +78,7 @@ caller main/alt state and routing overhead under the 1,000-item limit. No batch
 schedule or peak is measured. The 32-item 617-byte fragment exceeds P2SH's
 520-byte element limit, and its 383 non-push opcodes exceed the legacy, P2SH and
 P2WSH 201-opcode limit; tapscript removes that opcode limit. No consensus or
-policy validation is claimed. The peak metric runs a checking leaf with the
-explicit local consensus numeric profile, while bytes/opcodes cover the fragment.
+policy validation is claimed. The size, opcode and peak metrics use the same compiled fragment with the
+explicit local consensus numeric profile, checking its result directly.
 
 For the measured 32-item configurations, both the 617-byte hinted fragment and the 1,122-byte table fragment exceed P2SH’s 520-byte redeem-script element limit; their 383 and 758 non-push opcodes exceed the 201-opcode legacy, P2SH and P2WSH limit. Tapscript removes that opcode limit but retains stack and element constraints. Complete-script and relay-policy validity have not been established.

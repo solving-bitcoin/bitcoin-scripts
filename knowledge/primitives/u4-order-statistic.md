@@ -66,4 +66,4 @@ cargo test --locked --test primitive_metrics u4_order_statistic_metrics_are_curr
 python3 tools/kb.py validate
 ```
 
-The hinted claim is checked numerically and returned unchanged. With numeric minimality disabled, padded aliases can pass; byte-sensitive consumers must canonicalize. The peak metric executes a checking leaf under the explicit local consensus numeric profile; fragment byte and opcode metrics are compiled separately. No Bitcoin Core validation is claimed.
+The hinted claim is checked numerically and returned unchanged. With numeric minimality disabled, padded aliases can pass; byte-sensitive consumers must canonicalize. The size, opcode and peak metrics use the same compiled fragment under the explicit local consensus numeric profile, with its output checked directly. No Bitcoin Core validation is claimed.

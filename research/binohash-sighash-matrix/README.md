@@ -5,7 +5,7 @@
 - **Comparison objective:** Apply the same eight deterministic mutations to a
   two-input, two-output template under each of the six canonical ECDSA sighash
   flags, without changing the selected script or input index.
-- **Execution class:** `locally-reproduced`, `unclassified`. The test invokes
+- **Evidence:** `locally-reproduced`. **Execution class:** `unclassified`. The test invokes
   `binohash_digest` and rust-bitcoin's legacy serializer; it does not execute a
   locking script or ask Bitcoin Core for a consensus/policy verdict.
 

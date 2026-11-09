@@ -9499,28 +9499,21 @@ fn u4_majority_metrics_are_current() {
         ("zero", u4_nibbles_majority(LEN), zero_witness),
         ("hinted", u4_nibbles_majority_hinted(LEN), hinted_witness),
     ] {
-        let leaf = script! {
-            { fragment.clone() }
-            7 OP_EQUALVERIFY
-            OP_TRUE
-        };
-        let run = bitcoin_lab::support::tapscript::execute_tapscript(
-            leaf.compile_with_policy(),
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
             witness.clone(),
-            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            vec![scriptnum(7)],
+            false,
         );
-        let result = run.execution().expect("checking leaf executes");
-        assert!(result.success, "metric execution failed: {result}");
-        assert!(result.stack_limit_enforced);
         let key = |suffix: &str| -> &'static str {
             Box::leak(format!("u4_majority_{name}_16{suffix}").into_boxed_str())
         };
         for (suffix, value) in [
-            ("", script_len(fragment.clone())),
+            ("", bytes),
             ("_witness", witness_size(&witness)),
             ("_witness_items", witness.len()),
-            ("_stack", result.stats.max_nb_stack_items),
-            ("_opcodes", static_non_push_opcodes(fragment)),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
         ] {
             metrics.push(Metric {
                 readme: "src/arithmetic/u4/README.md",
@@ -9556,12 +9549,17 @@ fn u4_luhn_metrics_are_current() {
         total += value;
     }
     let fragment = u4::luhn::u4_decimal_digits_to_luhn(DIGITS);
-    let leaf = script! { { fragment.clone() } { total % 10 } OP_EQUAL };
+    let (bytes, peak, opcodes) = checked_fragment_metrics(
+        fragment.compile_with_policy(),
+        witness.clone(),
+        vec![scriptnum(total % 10)],
+        true,
+    );
     check_readme_metrics(vec![
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_luhn32",
-            value: script_len(fragment.clone()),
+            value: bytes,
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
@@ -9571,12 +9569,12 @@ fn u4_luhn_metrics_are_current() {
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_luhn32_stack",
-            value: max_stack_items_strict(leaf, witness),
+            value: peak,
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_luhn32_opcodes",
-            value: static_non_push_opcodes(fragment),
+            value: opcodes,
         },
     ]);
 }
@@ -9587,6 +9585,12 @@ fn u4_sum_ladder_metrics_are_current() {
     // The existing table schedule's fixture: thirty-two sevens, sum 224 = 0 mod 16.
     let fragment = u4::sum_ladder::u4_nibbles_to_sum_mod16_ladder(32);
     let witness = vec![scriptnum(7); 32];
+    let (bytes, peak, opcodes) = checked_fragment_metrics(
+        fragment.compile_with_policy(),
+        witness.clone(),
+        vec![scriptnum(0)],
+        true,
+    );
     check_readme_metrics(vec![
         Metric {
             readme: "src/arithmetic/u4/README.md",
@@ -9596,24 +9600,17 @@ fn u4_sum_ladder_metrics_are_current() {
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_sum_ladder_batch32",
-            value: script_len(fragment.clone()),
+            value: bytes,
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_sum_ladder_batch32_stack",
-            value: max_stack_items_strict(
-                script! {
-                    { fragment.clone() }
-                    OP_DROP
-                    OP_TRUE
-                },
-                witness.clone(),
-            ),
+            value: peak,
         },
         Metric {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_sum_ladder_batch32_opcodes",
-            value: static_non_push_opcodes(fragment),
+            value: opcodes,
         },
     ]);
 }
@@ -9893,28 +9890,21 @@ fn u4_order_statistic_metrics_are_current() {
             hinted_witness,
         ),
     ] {
-        let leaf = script! {
-            { fragment.clone() }
-            { median } OP_EQUALVERIFY
-            OP_TRUE
-        };
-        let run = bitcoin_lab::support::tapscript::execute_tapscript(
-            leaf.compile_with_policy(),
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
             witness.clone(),
-            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            vec![scriptnum(median)],
+            false,
         );
-        let result = run.execution().expect("checking leaf executes");
-        assert!(result.success, "metric execution failed: {result}");
-        assert!(result.stack_limit_enforced);
         let key = |suffix: &str| -> &'static str {
             Box::leak(format!("u4_kth_{name}_16{suffix}").into_boxed_str())
         };
         for (suffix, value) in [
-            ("", script_len(fragment.clone())),
+            ("", bytes),
             ("_witness", witness_size(&witness)),
             ("_witness_items", witness.len()),
-            ("_stack", result.stats.max_nb_stack_items),
-            ("_opcodes", static_non_push_opcodes(fragment)),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
         ] {
             metrics.push(Metric {
                 readme: "src/arithmetic/u4/README.md",
@@ -10121,29 +10111,16 @@ fn u4_compare_packed_metrics_are_current() {
         ("state", lexicographic_le(N)),
         ("packed", lexicographic_le_packed(N)),
     ] {
-        let leaf = script! {
-            { fragment.clone() }
-            { expected } OP_EQUALVERIFY
-            OP_TRUE
-        };
-        let compiled_leaf = leaf.compile_with_policy();
-        let run = bitcoin_lab::support::tapscript::execute_tapscript(
-            compiled_leaf,
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
             witness.clone(),
-            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            vec![scriptnum(expected)],
+            false,
         );
-        let result = run.execution().expect("comparison leaf executes");
-        assert!(result.success, "{result}");
-        assert!(result.stack_limit_enforced);
-        let peak = result.stats.max_nb_stack_items;
         let key = |suffix: &str| -> &'static str {
             Box::leak(format!("u4_compare_{name}_64{suffix}").into_boxed_str())
         };
-        for (suffix, value) in [
-            ("", script_len(fragment.clone())),
-            ("_stack", peak),
-            ("_opcodes", static_non_push_opcodes(fragment)),
-        ] {
+        for (suffix, value) in [("", bytes), ("_stack", peak), ("_opcodes", opcodes)] {
             metrics.push(Metric {
                 readme: "src/arithmetic/u4/README.md",
                 key: key(suffix),
@@ -10265,20 +10242,24 @@ fn u32_uncompress_hinted_metrics_are_current() {
         ),
         ("hinted", u32_uncompress_hinted_canonical(), hinted_witness),
     ] {
-        let leaf = script! {
-            { fragment.clone() }
-            { u32::stack::u32_drop() }
-            OP_TRUE
-        };
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
+            witness.clone(),
+            WORD.to_be_bytes()
+                .iter()
+                .map(|&b| scriptnum(i64::from(b)))
+                .collect(),
+            true,
+        );
         let key = |suffix: &str| -> &'static str {
             Box::leak(format!("u32_uncompress_{name}_compare{suffix}").into_boxed_str())
         };
         for (suffix, value) in [
-            ("", script_len(fragment.clone())),
+            ("", bytes),
             ("_witness", witness_size(&witness)),
             ("_witness_items", witness.len()),
-            ("_stack", max_stack_items_strict(leaf, witness.clone())),
-            ("_opcodes", static_non_push_opcodes(fragment)),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
         ] {
             metrics.push(Metric {
                 readme: "src/arithmetic/u32/README.md",
@@ -10324,28 +10305,21 @@ fn u4_xor_hinted_metrics_are_current() {
         ("table", u4_nibbles_to_xor(N), table_witness),
         ("hinted", u4_nibbles_xor_hinted(N), hinted_witness),
     ] {
-        let leaf = script! {
-            { fragment.clone() }
-            { y } OP_EQUALVERIFY
-            OP_TRUE
-        };
-        let run = bitcoin_lab::support::tapscript::execute_tapscript(
-            leaf.compile_with_policy(),
+        let (bytes, peak, opcodes) = checked_fragment_metrics(
+            fragment.compile_with_policy(),
             witness.clone(),
-            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            vec![scriptnum(y)],
+            false,
         );
-        let result = run.execution().expect("comparison leaf executes");
-        assert!(result.success, "metric execution failed: {result}");
-        assert!(result.stack_limit_enforced);
         let key = |suffix: &str| -> &'static str {
             Box::leak(format!("u4_xor_{name}_32{suffix}").into_boxed_str())
         };
         for (suffix, value) in [
-            ("", script_len(fragment.clone())),
+            ("", bytes),
             ("_witness", witness_size(&witness)),
             ("_witness_items", witness.len()),
-            ("_stack", result.stats.max_nb_stack_items),
-            ("_opcodes", static_non_push_opcodes(fragment)),
+            ("_stack", peak),
+            ("_opcodes", opcodes),
         ] {
             metrics.push(Metric {
                 readme: "src/arithmetic/u4/README.md",
@@ -16598,49 +16572,6 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
 #[test]
 fn bounded_division_metrics_are_current() {
     use bitcoin_lab::support::provenance;
@@ -16750,1382 +16681,6 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
-}
-
-/// Count dispatched non-push instructions, including inactive branch delimiters.
-fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
-    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
-
-    let mut exec = Exec::new(
-        ExecCtx::Tapscript,
-        Options {
-            require_minimal: false,
-            enforce_stack_limit: true,
-            experimental: Experimental { op_cat: false },
-            ..Default::default()
-        },
-        TxTemplate {
-            tx: Transaction {
-                version: transaction::Version::TWO,
-                lock_time: absolute::LockTime::ZERO,
-                input: vec![],
-                output: vec![],
-            },
-            prevouts: vec![],
-            input_idx: 0,
-            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
-        },
-        script,
-        witness,
-    )
-    .unwrap();
-    let mut executed = 0;
-    loop {
-        let instruction = exec.remaining_script().instructions().next();
-        let active = exec.cond_stack().all_true();
-        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
-        if exec.exec_next().is_err() {
-            break;
-        }
-        executed += usize::from(counted);
-    }
-    assert!(exec.result().unwrap().success);
-    assert_eq!(exec.stack().len(), 1);
-    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Compare equal complete leaves for packed-rank and separate-digit witnesses.
@@ -18647,4 +17202,79 @@ fn pinned_chain_metrics_are_current() {
         measured += 1;
     }
     assert_eq!(measured, 5);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
+}
+
+// Measure and check the exact compiled fragment, without allowing a terminal
+// consumer to change its optimized bytecode or erase its result production.
+fn checked_fragment_metrics(
+    compiled: bitcoin::ScriptBuf,
+    witness: Vec<Vec<u8>>,
+    expected: Vec<Vec<u8>>,
+    require_minimal: bool,
+) -> (usize, usize, usize) {
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let run = execute_tapscript(
+        compiled.clone(),
+        witness,
+        if require_minimal {
+            TapscriptProfile::Policy
+        } else {
+            TapscriptProfile::Consensus
+        },
+    );
+    let result = run.execution().expect("fragment executes");
+    assert!(result.error.is_none(), "fragment failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), expected.len());
+    for (index, value) in expected.into_iter().enumerate() {
+        assert_eq!(result.final_stack.get(index), value);
+    }
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    (compiled.len(), result.stats.max_nb_stack_items, opcodes)
 }

@@ -1,4 +1,4 @@
-//! Nine-byte embedded ECDSA signature anchored to legacy SIGHASH_SINGLE's z=1 bug.
+//! Nine-byte embedded ECDSA signature anchored to legacy SIGHASH_SINGLE's constant-digest bug.
 //! Raw bytecode is intentional: FindAndDelete of the embedded signature is under test.
 
 use bitcoin::{

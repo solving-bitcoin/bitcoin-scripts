@@ -1462,7 +1462,7 @@ exact and reduces it once with a short ladder of conditional subtractions of
 range and minimal encoding; no hints.
 
 Fragment-only boundary and fixture as for the table schedule (thirty-two sevens,
-<!-- metric:u4_sum_ladder_batch32_witness -->65<!-- /metric:u4_sum_ladder_batch32_witness --> serialized witness bytes, 32 items, 0 hints); peak uses a terminal `OP_DROP`.
+<!-- metric:u4_sum_ladder_batch32_witness -->65<!-- /metric:u4_sum_ladder_batch32_witness --> serialized witness bytes, 32 items, 0 hints); peak uses the same compiled fragment, checking its residue directly.
 Preserved main and alt stack state must satisfy `n + 3 + preserved_main +
 preserved_alt <= 1000`; at `n=997` no caller items fit. A complete leaf must
 compare the residue with its expected value and ensure clean-stack success.

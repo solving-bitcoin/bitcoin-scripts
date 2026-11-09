@@ -116,7 +116,7 @@ fn legacy_mode_commitment_matrix_for_selected_input_one() {
 #[test]
 fn single_bug_is_a_separate_non_committing_boundary() {
     let (mut base, script, signatures) = fixture();
-    base.output.pop(); // selected input index 1 now exceeds output count 1
+    base.output.pop(); // selected input index 1 now equals output count 1 (out of range)
     let mut changed = base.clone();
     changed.version = transaction::Version::ONE;
     changed.input[1].previous_output.vout += 1;

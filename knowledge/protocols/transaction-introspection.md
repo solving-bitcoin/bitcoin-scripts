@@ -53,3 +53,10 @@ confirms under pinned Core that a hardcoded legacy signature can use the
 out-of-range constant digest. Adding an output or moving it to an earlier
 input invalidates the same signature. This is an anchor primitive, not proof
 that transaction fields are pinned or that a nonce is authenticated.
+
+The [host-only 10-choose-5 probe](../../research/binohash-ten-choose-five/README.md)
+finds distinct digests for all 252 ascending subsets of one fixed template.
+Reordering a selected set or repeating an index can alias another selection,
+so this does not replace Script-side checks for count, range, uniqueness,
+order, and canonical encoding. Its DER-shaped deletion targets are not
+Core-validated signatures.

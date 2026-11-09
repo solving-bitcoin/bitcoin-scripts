@@ -44,7 +44,7 @@ execution is `unclassified`; no Bitcoin Core validation is claimed.
 ## Measured comparison
 
 Boundary: the policy-compiled fragment on the word `0x89abcdef`; input pushes and
-terminal predicate excluded; peak measured with a terminal word drop.
+terminal predicate excluded; peak measured on the same compiled fragment, checking its four output bytes directly.
 
 | Form | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |

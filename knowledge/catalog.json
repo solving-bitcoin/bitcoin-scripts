@@ -32922,7 +32922,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; includes complete serialized data witness (count, lengths, payloads); excludes input pushes, terminal predicate, transaction framing and unrelated live state Peak is measured on a checking leaf under the explicit local consensus numeric profile; byte and opcode metrics cover the separately compiled fragment.",
+          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; includes complete serialized data witness (count, lengths, payloads); excludes input pushes, terminal predicate, transaction framing and unrelated live state. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 486,
           "witness_bytes": 32,
           "witness_bytes_max": null,
@@ -32955,7 +32955,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; includes complete serialized data witness (count, lengths, payloads); excludes input pushes, terminal predicate, transaction framing and unrelated live state Peak is measured on a checking leaf under the explicit local consensus numeric profile; byte and opcode metrics cover the separately compiled fragment.",
+          "includes": "fragment-only: range checks, vote pass and verification count (hint-free) or claim range check and count (claim check), plus input cleanup; includes complete serialized data witness (count, lengths, payloads); excludes input pushes, terminal predicate, transaction framing and unrelated live state. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 213,
           "witness_bytes": 34,
           "witness_bytes_max": null,
@@ -33317,7 +33317,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: digit range guards, conditional doubling of odd positions, accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal expected-residue OP_EQUAL leaf; no table, setup or hints",
+          "includes": "fragment-only: digit range guards, conditional doubling of odd positions, accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured on the same compiled fragment with expected outputs checked directly; no table, setup or hints",
           "script_bytes": 411,
           "witness_bytes": 61,
           "witness_bytes_max": null,
@@ -33391,7 +33391,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: canonical nibble checks, exact accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured with a terminal OP_DROP leaf; no table, setup or hints",
+          "includes": "fragment-only: canonical nibble checks, exact accumulation and the reduction ladder; excludes input pushes, terminal predicate, transaction framing and unrelated live state; peak measured on the same compiled fragment with expected outputs checked directly; no table, setup or hints",
           "script_bytes": 429,
           "witness_bytes": 65,
           "witness_bytes_max": null,
@@ -33898,7 +33898,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state Peak executes a complete checking leaf under the explicit local consensus numeric profile; byte and opcode metrics cover the separately compiled fragment.",
+          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 312,
           "witness_bytes": 35,
           "witness_bytes_max": null,
@@ -33933,7 +33933,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state Peak executes a complete checking leaf under the explicit local consensus numeric profile; byte and opcode metrics cover the separately compiled fragment.",
+          "includes": "fragment-only: range checks, the two counting passes (hinted) or the pairwise ranks and selection (hint-free), and cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 3512,
           "witness_bytes": 33,
           "witness_bytes_max": null,
@@ -34233,7 +34233,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors Peak is measured on the complete checking leaf under the explicit consensus numeric profile, not on the fragment alone.",
+          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 3532,
           "witness_bytes": 228,
           "witness_bytes_max": null,
@@ -34267,7 +34267,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors Peak is measured on the complete checking leaf under the explicit consensus numeric profile, not on the fragment alone.",
+          "includes": "fragment-only: range checks, packing (packed form) or the first-difference state machine, comparison and input cleanup; excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and both vectors. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 2171,
           "witness_bytes": 228,
           "witness_bytes_max": null,
@@ -34454,7 +34454,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured with a terminal word drop",
+          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured on the same compiled fragment with expected outputs checked directly",
           "script_bytes": 431,
           "witness_bytes": 6,
           "witness_bytes_max": null,
@@ -34489,7 +34489,7 @@
             "hint_bytes_boundary": "incremental item serialization; standalone hint vector is 13 bytes including count",
             "hint_vector_bytes": 13
           },
-          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured with a terminal word drop",
+          "includes": "fragment-only: byte canonicality checks, recompression and the bytewise comparison (hinted) or the sign branch and bit ladder (ladder); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item; peak measured on the same compiled fragment with expected outputs checked directly",
           "script_bytes": 135,
           "witness_bytes": 18,
           "witness_bytes_max": null,
@@ -34565,7 +34565,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item Stack peak executes a complete checking leaf under the explicit consensus numeric profile; script size and opcode counts cover the independently compiled fragment.",
+          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 1122,
           "witness_bytes": 63,
           "witness_bytes_max": null,
@@ -34599,7 +34599,7 @@
             "compiler_commit": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
             "interpreter_commit": "a09e87af444034698697f0a2267e755cf72f9aed"
           },
-          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item Stack peak executes a complete checking leaf under the explicit consensus numeric profile; script size and opcode counts cover the independently compiled fragment.",
+          "includes": "fragment-only: range checks, lane halves, packed accumulation, the lane equality and cleanup (hinted) or the table pushes, per-nibble lookups and cleanup (table); excludes input pushes, terminal predicate, transaction framing and unrelated live state; serialized witness includes the count and every item. Size, opcode count and stack peak use the same compiled fragment; expected outputs are checked directly.",
           "script_bytes": 617,
           "witness_bytes": 72,
           "witness_bytes_max": null,

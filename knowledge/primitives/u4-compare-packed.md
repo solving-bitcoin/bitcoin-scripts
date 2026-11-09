@@ -68,4 +68,4 @@ cargo test --locked --test primitive_metrics u4_compare_packed_metrics_are_curre
 python3 tools/kb.py validate
 ```
 
-The packed form is smaller in locking-script bytes for the measured widths, but is not resource-dominant: its peak is four items higher and its maximum width is 496 versus 498 for the older comparator. The peak fixture uses the explicit local consensus numeric profile with stack enforcement; it executes a complete checking leaf while the size and opcode measurements cover the independently compiled fragment. This is not Bitcoin Core validation.
+The packed form is smaller in locking-script bytes for the measured widths, but is not resource-dominant: its peak is four items higher and its maximum width is 496 versus 498 for the older comparator. The size, opcode and peak metrics use the same compiled fragment under the explicit local consensus numeric profile with stack enforcement, checking the returned comparison bit directly. This is not Bitcoin Core validation.

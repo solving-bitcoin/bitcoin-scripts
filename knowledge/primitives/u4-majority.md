@@ -69,4 +69,4 @@ cargo test --locked --test primitive_metrics u4_majority_metrics_are_current -- 
 python3 tools/kb.py validate
 ```
 
-Both APIs can return original nonminimal candidate or claim bytes when minimality is disabled, even though the numerical value is checked. Byte-sensitive consumers must canonicalize. The peak metric runs a checking leaf under the explicit local consensus numeric profile; fragment sizes and opcode counts are compiled separately. The data-witness byte totals include item count, lengths and payloads.
+Both APIs can return original nonminimal candidate or claim bytes when minimality is disabled, even though the numerical value is checked. Byte-sensitive consumers must canonicalize. The size, opcode and peak metrics use the same compiled fragment under the explicit local consensus numeric profile, with its output checked directly. The data-witness byte totals include item count, lengths and payloads.
