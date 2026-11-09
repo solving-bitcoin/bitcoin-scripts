@@ -7,6 +7,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Exact signed sum representation schedules](wide-scriptnum-sum.md)
 - [Arithmetic checksums](checksums.md)
 - [Opposite-case ASCII pair schedules](ascii-pair-checks.md)
+- [Signed midpoint hint schedules](hinted-midpoint.md)
 - [Stable stack selection schedules](stack-selection.md)
 - [Script caps on serialized witness data](witness-data-size.md)
 - [Lookup strategies](lookup-strategies.md)

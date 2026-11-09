@@ -14616,6 +14616,109 @@ fn sha256_tagged_hash_metrics_are_current() {
 }
 
 /// This isolated fixture measures only the checked u32 zero predicate.
+mod midpoint_research {
+    use super::scriptnum;
+    use bitcoin_lab::support::script::*;
+
+    mod schedule {
+        include!("../src/arithmetic/midpoint/schedule.rs");
+    }
+
+    include!("../research/hinted-signed-midpoint/baseline.rs");
+    include!("../research/hinted-signed-midpoint/fixture.rs");
+}
+
+#[test]
+fn hinted_midpoint_metrics_are_current() {
+    use bitcoin::VarInt;
+    use bitcoin_lab::{
+        arithmetic::midpoint::verify_floor_midpoint,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($fixture:literal, $schedule:literal) => {
+            [
+                concat!("midpoint_", $fixture, "_", $schedule, "_script"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_witness"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_hints"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_stack"),
+                concat!("midpoint_", $fixture, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let m = i64::from(i32::MAX);
+    let mut report = Vec::new();
+    for (pairs, implicit, explicit) in [
+        (
+            vec![(m, m)],
+            keys!("even", "implicit"),
+            Some(keys!("even", "explicit")),
+        ),
+        (
+            vec![(-m, -m + 1)],
+            keys!("odd", "implicit"),
+            Some(keys!("odd", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(128),
+            keys!("128", "implicit"),
+            Some(keys!("128", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(249),
+            keys!("249", "implicit"),
+            Some(keys!("249", "explicit")),
+        ),
+        (
+            midpoint_research::pairs(332),
+            keys!("332", "implicit"),
+            None,
+        ),
+    ] {
+        let checks = std::iter::once((implicit, verify_floor_midpoint(), false))
+            .chain(explicit.map(|keys| (keys, midpoint_research::explicit_parity(), true)));
+        for (keys, check, has_parity) in checks {
+            let witness = midpoint_research::witness(&pairs, has_parity);
+            let items_per_call = if has_parity { 4 } else { 3 };
+            assert_eq!(witness.len(), pairs.len() * items_per_call);
+            let hint_bytes = witness
+                .chunks_exact(items_per_call)
+                .flat_map(|items| &items[2..])
+                .map(|item| serialize(&VarInt(item.len() as u64)).len() + item.len())
+                .sum();
+            let leaf = script! {
+                { midpoint_research::verify_batch(check, &pairs) }
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in keys.into_iter().zip([
+                leaf.len(),
+                witness_size(&witness),
+                hint_bytes,
+                peak,
+                executed,
+            ]) {
+                report.push(Metric {
+                    readme: "src/arithmetic/midpoint/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 #[test]
 fn u32_zero_metrics_are_current() {
     let fragment = u32::zero::u32_iszero();
@@ -16142,6 +16245,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

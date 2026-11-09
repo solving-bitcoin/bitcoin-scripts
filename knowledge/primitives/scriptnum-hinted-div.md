@@ -27,3 +27,7 @@ the matched wrapper, giving a 9-byte maximum witness at that bound. The raw
 
 See the [implementation README](../../src/arithmetic/scriptint/README.md) and
 catalog record `arithmetic/scriptnum-hinted-div`.
+
+The [hinted signed midpoint](hinted-midpoint.md) verifies floor division
+by two on the exact sum of two operands. That sum may exceed the numeric
+operand limit.

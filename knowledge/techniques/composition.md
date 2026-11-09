@@ -117,6 +117,16 @@ and `(994, 1)` exceeds the combined limit. When positions carry meaning,
 bind them separately from payload bytes because two positions may contain
 identical bytes.
 
+## Midpoint hint coexistence
+
+The [signed midpoint certificate](../primitives/hinted-midpoint.md)
+uses two ordinary inputs and one result hint per call. With every
+record preloaded and each result checked before the next call, 332
+calls have 664 ordinary items and 332 hints. The explicit parity
+baseline fits 249 calls with 498 ordinary items and 498 hints.
+Each batch reaches 1,000 with one additional caller item.
+The exact tested boundary includes both stacks and all future calls.
+
 ## Destructive sorting pools
 
 The [u4 sorting certificate](../primitives/u4-sort.md) requires a contiguous
