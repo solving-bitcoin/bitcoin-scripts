@@ -2136,3 +2136,14 @@ cost-saving option only where that blind spot is acceptable. Byte counts are
 policy-compiled fragments under strict local `unclassified` tapscript rules,
 `locally-reproduced`; the detection counts come from models, not Script. See the
 [primitive](../primitives/u4-luhn.md).
+
+## NR-097: The table-driven modulo-16 sum is dominated
+
+The existing schedule keeps 31 table entries live and looks up the reduced sum
+after every nibble. A delayed-reduction ladder beats it at every measured length:
+10 versus 65 script bytes at one nibble, 429 versus 592 at 32, 1,603 versus 2,224
+at 128, and 11,680 versus 16,453 at 965, with a combined peak 31 items lower
+(35 versus 66 at 32) and a larger batch limit (997 versus 965). The table
+schedule has no measured advantage in script bytes or stack. Figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-sum-ladder.md).

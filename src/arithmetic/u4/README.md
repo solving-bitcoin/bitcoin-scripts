@@ -1438,3 +1438,27 @@ misses the `09`/`90` adjacent transposition that Damm detects; see the
 [knowledge page](../../../knowledge/primitives/u4-luhn.md).
 
 The measured 32-digit Luhn fragment has 295 static non-push opcodes and exceeds the 201-opcode limit for legacy, P2SH and P2WSH; its 411 bytes fit the P2SH element limit. Tapscript removes that opcode limit, but local execution is not consensus or policy validation.
+
+## Delayed-reduction modulo-16 sum
+
+`sum_ladder::u4_nibbles_to_sum_mod16_ladder(n)` (`n` in `1..=997`, standalone combined peak
+`n + 3`) has the contract of `sum::u4_nibbles_to_sum_mod16` but keeps the sum
+exact and reduces it once with a short ladder of conditional subtractions of
+`16 * 2^k`, so it needs no 31-entry table and no altstack. Inputs are checked for
+range and minimal encoding; no hints.
+
+Fragment-only boundary and fixture as for the table schedule (thirty-two sevens,
+<!-- metric:u4_sum_ladder_batch32_witness -->65<!-- /metric:u4_sum_ladder_batch32_witness --> serialized witness bytes, 32 items, 0 hints); peak uses a terminal `OP_DROP`.
+Preserved main and alt stack state must satisfy `n + 3 + preserved_main +
+preserved_alt <= 1000`; at `n=997` no caller items fit. A complete leaf must
+compare the residue with its expected value and ensure clean-stack success.
+The 32-nibble fragment has 311 static non-push opcodes, exceeding the 201-opcode
+limit for legacy, P2SH and P2WSH; tapscript removes that particular limit. This
+does not establish consensus or policy validity.
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Modulo-16 sum, ladder, 32 nibbles | <!-- metric:u4_sum_ladder_batch32 -->429<!-- /metric:u4_sum_ladder_batch32 --> | <!-- metric:u4_sum_ladder_batch32_stack -->35<!-- /metric:u4_sum_ladder_batch32_stack --> | <!-- metric:u4_sum_ladder_batch32_opcodes -->311<!-- /metric:u4_sum_ladder_batch32_opcodes --> |
+
+The table schedule on the same input is 592 bytes with a 66-item peak. See the
+[knowledge page](../../../knowledge/primitives/u4-sum-ladder.md).

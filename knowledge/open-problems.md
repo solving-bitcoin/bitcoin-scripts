@@ -1313,3 +1313,12 @@ complete-leaf boundaries with witness bytes and items, hint counts, executed
 opcodes, combined peaks and the measured undetected-error classes, or a
 construction closes the `0`/`9` blind spot at less than Damm's 766 bytes for 32
 digits. Core validation is required for any deployment claim.
+
+## OP-053 — Delayed reduction in other table-backed folds
+
+The delayed-reduction ladder replaces a resident table for modulus 16. **Accept
+when:** the same replacement is measured for another table-backed or per-step
+normalized fold in the repository (for example the exact-sum and mod-3 batch
+projections) on equal fragment boundaries with script bytes, hints, peaks and
+executed opcodes, recording a win or the regime where the table remains better.
+Core validation is required for any deployment claim.

@@ -8633,6 +8633,43 @@ fn u4_luhn_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the delayed-reduction modulo-16 sum at 32 nibbles.
+#[test]
+fn u4_sum_ladder_metrics_are_current() {
+    // The existing table schedule's fixture: thirty-two sevens, sum 224 = 0 mod 16.
+    let fragment = u4::sum_ladder::u4_nibbles_to_sum_mod16_ladder(32);
+    let witness = vec![scriptnum(7); 32];
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_stack",
+            value: max_stack_items_strict(
+                script! {
+                    { fragment.clone() }
+                    OP_DROP
+                    OP_TRUE
+                },
+                witness.clone(),
+            ),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_sum_ladder_batch32_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

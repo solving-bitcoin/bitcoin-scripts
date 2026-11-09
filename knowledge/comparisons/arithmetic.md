@@ -582,3 +582,11 @@ peak, against 766 bytes and a 136-item peak for the resident-table Damm fold
 (zero hints, strict local `unclassified` tapscript, `locally-reproduced`). Luhn
 misses the `09`/`90` adjacent transposition; Damm detects it. See
 [the primitive](../primitives/u4-luhn.md) and NR-096.
+
+## Modulo-16 nibble sums
+
+At 32 nibbles the delayed-reduction ladder costs 429 script bytes with a 35-item
+peak, against 592 bytes and a 66-item peak for the resident-table schedule, and is
+smaller at every length from one nibble (10 versus 65 bytes) to the table form's
+965-nibble limit (strict local `unclassified` tapscript, zero hints,
+`locally-reproduced`). See [the primitive](../primitives/u4-sum-ladder.md) and NR-097.
