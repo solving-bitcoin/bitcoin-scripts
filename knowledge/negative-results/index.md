@@ -83,6 +83,13 @@ In the [common-prefix experiment](opaque-common-prefix.md), counting all
 equal pairs would include matches after the first mismatch. The matched
 forward prefix state is correct but uses more bytes and one more peak item.
 
+## Sliding modulo-three window limits
+
+The [rolling-window comparison](u4-sliding-mod3.md) loses at width one,
+retains the rescan stack peak, and shares a 16-entry lookup boundary
+that cannot address the maximal width-eight initial sum. Its entire
+output vector can collide for two different valid input vectors.
+
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes

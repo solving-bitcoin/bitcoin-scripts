@@ -56,6 +56,7 @@ pub mod run_length;
 pub mod scriptnum_nibbles;
 pub mod scriptnum_decimal;
 pub mod shift;
+pub mod sliding_mod3;
 pub mod sort;
 pub mod square;
 pub mod stack;

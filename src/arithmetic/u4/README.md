@@ -128,6 +128,9 @@ these operations, but this module contains no hash-specific round logic.
   digit vectors (a `u4` digit with a per-position bound) into one factorial
   value; it is a separate module because its value domain is a factorial, not
   a per-nibble residue.
+- [`sliding_mod3::u4_sliding_mod3(n, window)`](sliding_mod3/) consumes
+  `1..=981` canonical nibbles and emits sums modulo three for every
+  overlapping window of width `1..=min(7, n)`.
 - `trichotomy::u4_nibbles_to_trichotomy(threshold, nibble_count)` takes a
   public u4 threshold and a checked batch size in `1..=998`, returning `0`,
   `1`, or `2` for less-than, equal, or greater-than. Callers preserving live

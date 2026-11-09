@@ -15746,6 +15746,311 @@
       ]
     },
     {
+      "id": "arithmetic/u4-sliding-mod3",
+      "name": "Sliding modulo-three sums over u4 inputs",
+      "class": "arithmetic/word",
+      "summary": "Rolling canonical u4 window sums modulo three with one shared projection and reduction table.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-sliding-mod3.md",
+      "implementation": "src/arithmetic/u4/sliding_mod3/mod.rs",
+      "documentation": "src/arithmetic/u4/sliding_mod3/README.md",
+      "tests": [
+        "src/arithmetic/u4/sliding_mod3/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "karp-rabin-1987",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Every hostile input is byte-canonical and range-checked before lookup. The arithmetic projection has explicit collisions and supplies no binding to original data.",
+      "stack_contract": "Consumes n canonical nibble items and returns n-window+1 canonical ScriptNum residues in increasing window-start order. Temporary altstack state is removed and both caller stacks are preserved for an exact suffix.",
+      "configurations": [
+        {
+          "id": "roll-4-1",
+          "label": "Rolling, 4 inputs, width 1",
+          "parameters": {
+            "input_count": 4,
+            "window_width": 1,
+            "output_items": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 129,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 23,
+          "executed_opcodes": 87,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_4_1_roll_script",
+            "sliding_mod3_4_1_roll_witness",
+            "sliding_mod3_4_1_roll_stack",
+            "sliding_mod3_4_1_roll_executed"
+          ]
+        },
+        {
+          "id": "rescan-4-1",
+          "label": "Rescan, 4 inputs, width 1",
+          "parameters": {
+            "input_count": 4,
+            "window_width": 1,
+            "output_items": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 128,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 23,
+          "executed_opcodes": 84,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_4_1_rescan_script",
+            "sliding_mod3_4_1_rescan_witness",
+            "sliding_mod3_4_1_rescan_stack",
+            "sliding_mod3_4_1_rescan_executed"
+          ]
+        },
+        {
+          "id": "roll-32-2",
+          "label": "Rolling, 32 inputs, width 2",
+          "parameters": {
+            "input_count": 32,
+            "window_width": 2,
+            "output_items": 31,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 898,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 51,
+          "executed_opcodes": 640,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_32_2_roll_script",
+            "sliding_mod3_32_2_roll_witness",
+            "sliding_mod3_32_2_roll_stack",
+            "sliding_mod3_32_2_roll_executed"
+          ]
+        },
+        {
+          "id": "rescan-32-2",
+          "label": "Rescan, 32 inputs, width 2",
+          "parameters": {
+            "input_count": 32,
+            "window_width": 2,
+            "output_items": 31,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 956,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 51,
+          "executed_opcodes": 671,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_32_2_rescan_script",
+            "sliding_mod3_32_2_rescan_witness",
+            "sliding_mod3_32_2_rescan_stack",
+            "sliding_mod3_32_2_rescan_executed"
+          ]
+        },
+        {
+          "id": "roll-32-7",
+          "label": "Rolling, 32 inputs, width 7",
+          "parameters": {
+            "input_count": 32,
+            "window_width": 7,
+            "output_items": 26,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 856,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 51,
+          "executed_opcodes": 608,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_32_7_roll_script",
+            "sliding_mod3_32_7_roll_witness",
+            "sliding_mod3_32_7_roll_stack",
+            "sliding_mod3_32_7_roll_executed"
+          ]
+        },
+        {
+          "id": "rescan-32-7",
+          "label": "Rescan, 32 inputs, width 7",
+          "parameters": {
+            "input_count": 32,
+            "window_width": 7,
+            "output_items": 26,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 1278,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 51,
+          "executed_opcodes": 883,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_32_7_rescan_script",
+            "sliding_mod3_32_7_rescan_witness",
+            "sliding_mod3_32_7_rescan_stack",
+            "sliding_mod3_32_7_rescan_executed"
+          ]
+        },
+        {
+          "id": "roll-128-7",
+          "label": "Rolling, 128 inputs, width 7",
+          "parameters": {
+            "input_count": 128,
+            "window_width": 7,
+            "output_items": 122,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 3548,
+          "witness_bytes": 249,
+          "witness_bytes_max": null,
+          "max_stack_items": 147,
+          "executed_opcodes": 2528,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_128_7_roll_script",
+            "sliding_mod3_128_7_roll_witness",
+            "sliding_mod3_128_7_roll_stack",
+            "sliding_mod3_128_7_roll_executed"
+          ]
+        },
+        {
+          "id": "rescan-128-7",
+          "label": "Rescan, 128 inputs, width 7",
+          "parameters": {
+            "input_count": 128,
+            "window_width": 7,
+            "output_items": 122,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "resident_table_items": 16,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: shared canonical projection, table setup and cleanup, all window calculations and byte equality for every output. Witness bytes are data only. Excludes script/control witness serialization, annex and transaction.",
+          "script_bytes": 5599,
+          "witness_bytes": 249,
+          "witness_bytes_max": null,
+          "max_stack_items": 147,
+          "executed_opcodes": 3859,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sliding_mod3_128_7_rescan_script",
+            "sliding_mod3_128_7_rescan_witness",
+            "sliding_mod3_128_7_rescan_stack",
+            "sliding_mod3_128_7_rescan_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Rolling loses on the measured width-one leaf.",
+        "Width eight would need index 16 to reduce the maximal initial sum, beyond the shared table.",
+        "Both measured schedules have peak n+19; add preserved state before applying the 1,000-item limit.",
+        "Same-residue nibble substitutions preserve all outputs.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-mod3",
       "name": "Checked u4 modulo-three projection",
       "class": "arithmetic/word",

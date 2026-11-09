@@ -31,6 +31,13 @@
       "revision": "final specification"
     },
     {
+      "id": "karp-rabin-1987",
+      "title": "Karp and Rabin: Efficient randomized pattern-matching algorithms",
+      "kind": "paper",
+      "url": "https://doi.org/10.1147/rd.312.0249",
+      "revision": "IBM Journal of Research and Development 31(2), March 1987"
+    },
+    {
       "id": "bip-141",
       "title": "BIP 141: Segregated Witness",
       "kind": "specification",
