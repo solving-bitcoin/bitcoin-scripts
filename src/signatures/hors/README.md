@@ -9,6 +9,10 @@ commitments and explicit witness indices.
 - `t`: revealed indices, with `t <= n`.
 - Preimage length is caller-selected. No protocol-wide defaults exist; the
   documented benchmark uses `n=32`, `t=8`, and 32-byte preimages.
+- `hors_locking_script` retains the original upper-clamping behavior.
+  `hors_exact_index_locking_script` requires `t >= 1`, canonical ScriptNum
+  bytes, indices in `0..n`, and strictly increasing order. Thus duplicates
+  and reordered subsets fail. The two APIs use the same witness layout.
 
 ## Script metrics
 
@@ -18,6 +22,32 @@ Serialized witness size includes the witness count and item-length prefixes.
 | --- | ---: | ---: |
 | `n=32`, `t=8`, 32-byte preimages | <!-- metric:hors_lock_n32_t8 -->809<!-- /metric:hors_lock_n32_t8 --> bytes | <!-- metric:hors_witness_n32_t8 -->280<!-- /metric:hors_witness_n32_t8 --> bytes representative; <!-- metric:hors_witness_n32_t8_max -->281<!-- /metric:hors_witness_n32_t8_max --> bytes maximum for canonical indices `1..=8`; 16 data items, 0 hints; <!-- metric:hors_stack_n32_t8 -->50<!-- /metric:hors_stack_n32_t8 -->-item strict peak |
 | `n=129`, `t=1`, index 127/128 boundary | <!-- metric:hors_lock_n129_t1 -->2792<!-- /metric:hors_lock_n129_t1 --> bytes | <!-- metric:hors_witness_n129_t1_index127 -->36<!-- /metric:hors_witness_n129_t1_index127 --> / <!-- metric:hors_witness_n129_t1_index128 -->37<!-- /metric:hors_witness_n129_t1_index128 --> bytes; 2 data items, 0 hints; <!-- metric:hors_stack_n129_t1 -->133<!-- /metric:hors_stack_n129_t1 -->-item peak |
+
+The exact-index variant uses the same 16-item canonical opening for the
+`n=32,t=8` comparison below. Every index and preimage coexist at entry; the
+32 commitments are pushed afterward. Both scripts include input checks,
+commitment checks, cleanup, and the terminal true. Counts use the final
+policy-produced script; neither script crosses the 32 KiB optimizer cutoff.
+
+| `n=32,t=8` index rule | Locking bytes | Serialized data witness | Combined stack peak | Executed non-push opcodes |
+| --- | ---: | ---: | ---: | ---: |
+| Clamped | 809 | 280 (281 max) | 50 | <!-- metric:hors_clamped_ops_n32_t8 -->88<!-- /metric:hors_clamped_ops_n32_t8 --> |
+| Exact ascending | <!-- metric:hors_exact_lock_n32_t8 -->914<!-- /metric:hors_exact_lock_n32_t8 --> | <!-- metric:hors_exact_witness_n32_t8 -->280<!-- /metric:hors_exact_witness_n32_t8 --> (<!-- metric:hors_exact_witness_max_n32_t8 -->281<!-- /metric:hors_exact_witness_max_n32_t8 --> max) | <!-- metric:hors_exact_stack_n32_t8 -->51<!-- /metric:hors_exact_stack_n32_t8 --> | <!-- metric:hors_exact_ops_n32_t8 -->164<!-- /metric:hors_exact_ops_n32_t8 --> |
+
+The verifiers are straight-line, so final-bytecode non-push opcode counts
+equal executed non-push counts. The local tapscript interpreter's
+`ExecStats::opcode_count` instead counts **all parsed instructions**, including
+pushes: 145 for clamped and 250 for exact. These instruction totals must not
+be compared to the legacy 201 non-push opcode ceiling. The exact verifier's
+164 non-push opcodes fit that standalone limit, but a complete legacy spend
+and composition with Binohash are not established.
+
+The comparison runs one strict local tapscript execution per script with
+indices `0,4,9,13,17,21,25,31` and 32-byte preimages. Both have 16 data
+items and **zero hint items** per invocation. The local result is
+`locally-reproduced` and `unclassified`; it is not a Bitcoin Core spend or a
+default relay policy verdict. Larger `n,t` can cross Script size, opcode, or
+combined stack limits, so this row is not a bound for the full protocol.
 
 Maximum depth scales approximately with `n + 2t`; the executable tests include
 the documented `n=32,t=8` case and boundary/malformed cases. The 32 commitment
@@ -46,9 +76,12 @@ items—`t` indices and `t` preimages—and no hints. It contains `t`
 see `hors_unlocking_witness` for canonical construction.
 
 The host serializer crosses a byte boundary at index 128: `[7f]` becomes
-`[80,00]`. The verifier upper-clamps an oversized index with `OP_MIN` and does
-not independently enforce canonical index bytes; message binding and one-time
-key obligations remain caller responsibilities.
+`[80,00]`. The original verifier upper-clamps an oversized index with `OP_MIN`
+and does not independently enforce canonical index bytes. The exact variant
+checks raw bytes against their minimally re-serialized numeric value, then
+checks range and increasing order. Focused tests reject nonminimal one, zero,
+negative zero, and 128 even with `MINIMALDATA` disabled. Message-to-index
+binding and one-time key obligations remain caller responsibilities.
 
 The focused [alias boundary](../../../knowledge/negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)
 test uses the same `n=32,t=8`, 32-byte-preimage configuration as the first
@@ -60,3 +93,7 @@ enforce the combined 1,000-item stack limit and remain `unclassified` for
 deployment, rather than consensus or relay validation. A consumer that treats
 the *raw* indices as a Binohash digest must not use this clamped relation as
 exact-index binding.
+
+The exact variant closes this local alias boundary for canonical ordered
+subsets. A funded Bitcoin Core spend, signed message-to-subset transform, and
+complete transaction costs remain open under OP-009 and OP-011.
