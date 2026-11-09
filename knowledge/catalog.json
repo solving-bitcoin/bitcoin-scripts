@@ -29851,6 +29851,407 @@
         "OP-001",
         "OP-002"
       ]
+    },
+    {
+      "id": "arithmetic/u4-binomial-moments",
+      "name": "Centered positional binomial moments over u4",
+      "class": "arithmetic/word",
+      "summary": "Return three exact binomial-weighted sums of offset-centered canonical nibbles with staged accumulator initialization.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/u4-binomial-moments.md",
+      "implementation": "src/arithmetic/u4/binomial_moments/mod.rs",
+      "documentation": "src/arithmetic/u4/binomial_moments/README.md",
+      "tests": [
+        "src/arithmetic/u4/binomial_moments/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "dlmf-binomial-recurrence",
+        "rfc-1950-adler32",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "digit-arithmetic"
+      ],
+      "security": "Each hostile input is a canonical nibble. The signed accumulator bounds follow from binomial weights. The moment tuple has explicit collisions and does not authenticate the input vector.",
+      "stack_contract": "Consumes n canonical nibbles and returns three canonical signed ScriptNums with weights 1, i and binomial(i,2) on x[i]-8. Both caller stacks survive an exact suffix. No hints.",
+      "configurations": [
+        {
+          "id": "seeded-2",
+          "label": "Staged initialization, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 34,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 22,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_2_seeded_script",
+            "binomial_moments_2_seeded_witness",
+            "binomial_moments_2_seeded_stack",
+            "binomial_moments_2_seeded_executed"
+          ]
+        },
+        {
+          "id": "eager-2",
+          "label": "Eager initialization, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 55,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 8,
+          "executed_opcodes": 39,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_2_eager_script",
+            "binomial_moments_2_eager_witness",
+            "binomial_moments_2_eager_stack",
+            "binomial_moments_2_eager_executed"
+          ]
+        },
+        {
+          "id": "direct-2",
+          "label": "Direct weights, 2 nibbles",
+          "parameters": {
+            "nibble_count": 2,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 55,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 37,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_2_direct_script",
+            "binomial_moments_2_direct_witness",
+            "binomial_moments_2_direct_stack",
+            "binomial_moments_2_direct_executed"
+          ]
+        },
+        {
+          "id": "seeded-4",
+          "label": "Staged initialization, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 83,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 60,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_4_seeded_script",
+            "binomial_moments_4_seeded_witness",
+            "binomial_moments_4_seeded_stack",
+            "binomial_moments_4_seeded_executed"
+          ]
+        },
+        {
+          "id": "eager-4",
+          "label": "Eager initialization, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 101,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 75,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_4_eager_script",
+            "binomial_moments_4_eager_witness",
+            "binomial_moments_4_eager_stack",
+            "binomial_moments_4_eager_executed"
+          ]
+        },
+        {
+          "id": "direct-4",
+          "label": "Direct weights, 4 nibbles",
+          "parameters": {
+            "nibble_count": 4,
+            "data_items": 4,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 113,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 84,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_4_direct_script",
+            "binomial_moments_4_direct_witness",
+            "binomial_moments_4_direct_stack",
+            "binomial_moments_4_direct_executed"
+          ]
+        },
+        {
+          "id": "seeded-32",
+          "label": "Staged initialization, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 700,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 564,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_32_seeded_script",
+            "binomial_moments_32_seeded_witness",
+            "binomial_moments_32_seeded_stack",
+            "binomial_moments_32_seeded_executed"
+          ]
+        },
+        {
+          "id": "eager-32",
+          "label": "Eager initialization, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 718,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 38,
+          "executed_opcodes": 579,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_32_eager_script",
+            "binomial_moments_32_eager_witness",
+            "binomial_moments_32_eager_stack",
+            "binomial_moments_32_eager_executed"
+          ]
+        },
+        {
+          "id": "direct-32",
+          "label": "Direct weights, 32 nibbles",
+          "parameters": {
+            "nibble_count": 32,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 1546,
+          "witness_bytes": 62,
+          "witness_bytes_max": null,
+          "max_stack_items": 41,
+          "executed_opcodes": 1404,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_32_direct_script",
+            "binomial_moments_32_direct_witness",
+            "binomial_moments_32_direct_stack",
+            "binomial_moments_32_direct_executed"
+          ]
+        },
+        {
+          "id": "seeded-128",
+          "label": "Staged initialization, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2814,
+          "witness_bytes": 249,
+          "witness_bytes_max": null,
+          "max_stack_items": 131,
+          "executed_opcodes": 2292,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_128_seeded_script",
+            "binomial_moments_128_seeded_witness",
+            "binomial_moments_128_seeded_stack",
+            "binomial_moments_128_seeded_executed"
+          ]
+        },
+        {
+          "id": "eager-128",
+          "label": "Eager initialization, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 2832,
+          "witness_bytes": 249,
+          "witness_bytes_max": null,
+          "max_stack_items": 134,
+          "executed_opcodes": 2307,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_128_eager_script",
+            "binomial_moments_128_eager_witness",
+            "binomial_moments_128_eager_stack",
+            "binomial_moments_128_eager_executed"
+          ]
+        },
+        {
+          "id": "direct-128",
+          "label": "Direct weights, 128 nibbles",
+          "parameters": {
+            "nibble_count": 128,
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "(11*i+3*floor(i/4)) mod 16"
+          },
+          "includes": "complete-leaf: canonical input validation, all three exact moments, cleanup and identical output byte equality. Serialized data witness excludes leaf, control block, annex and transaction.",
+          "script_bytes": 8424,
+          "witness_bytes": 249,
+          "witness_bytes_max": null,
+          "max_stack_items": 139,
+          "executed_opcodes": 7896,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binomial_moments_128_direct_script",
+            "binomial_moments_128_direct_witness",
+            "binomial_moments_128_direct_stack",
+            "binomial_moments_128_direct_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Staged peak n+3 must include all caller state; the 997-input maximum has no preserved headroom.",
+        "Raw uncentered quadratic moments exceed positive four-byte ScriptNum range at width 952 on all-15 input.",
+        "Different inputs can have the same three exact moments.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
     }
   ]
 }

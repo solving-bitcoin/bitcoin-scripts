@@ -444,6 +444,13 @@
       "revision": "arXiv:2109.09006v1, 2021-09-18; palindromic coefficient-vector definition only"
     },
     {
+      "id": "dlmf-binomial-recurrence",
+      "title": "NIST Digital Library of Mathematical Functions: Binomial coefficients",
+      "kind": "standard",
+      "url": "https://dlmf.nist.gov/26.3#iii",
+      "revision": "DLMF 1.2.8, equations 26.3.5 and 26.3.7"
+    },
+    {
       "id": "rfc-1950-adler32",
       "title": "RFC 1950: ZLIB Compressed Data Format Specification version 3.3",
       "kind": "specification",

@@ -5,6 +5,7 @@ pub mod ascii_hex;
 pub mod balanced;
 pub mod ascii_hex_encode;
 pub mod argmin;
+pub mod binomial_moments;
 pub mod bit_planes;
 pub mod bit_reverse;
 pub mod bit_transitions;

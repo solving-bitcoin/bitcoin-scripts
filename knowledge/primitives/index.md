@@ -68,6 +68,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 nondecreasing predicate](u4-nondecreasing.md)
 - [Earliest minimum over u4 inputs](u4-argmin.md)
 - [Checked u4 exact sum](u4-exact-sum.md)
+- [Centered positional binomial moments](u4-binomial-moments.md)
 - [Exact u4 quarter-square products](u4-exact-product.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)
 - [Checked u4 adjacent forward delta](u4-adjacent-delta.md)
