@@ -678,3 +678,25 @@ predicate excluded, data-only witness <!-- metric:u32_mersenne_witness -->13<!--
 
 The modulo-65,537 fragment above is 100 bytes. See the
 [knowledge page](../../../knowledge/primitives/u4-mod15.md).
+
+## Hint-checked u32 expansion
+
+`uncompress_hinted::u32_uncompress_hinted_canonical()` expands one compressed u32
+(`value as i32`, including the five-byte `-2^31`) into its four byte items, like
+`u32_uncompress_canonical()`, but takes the four bytes as hints:
+`preserved | b0 b1 b2 b3 x -> preserved | b0 b1 b2 b3`. Each byte must be a canonical
+ScriptNum in `0..=255` and the bytewise-minimal compression of the bytes must equal
+`x`; compression is injective on four-byte words, so the bytes are determined by `x`
+and `x` is forced canonical. Hint items per invocation: **4**.
+
+Fragment-only boundary on the word `0x89abcdef`: the complete expansion or check;
+input pushes and terminal predicate excluded; peak measured with a terminal word drop.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `u32_uncompress_canonical()` bit ladder | <!-- metric:u32_uncompress_ladder_compare -->431<!-- /metric:u32_uncompress_ladder_compare --> | <!-- metric:u32_uncompress_ladder_compare_witness -->6<!-- /metric:u32_uncompress_ladder_compare_witness --> | <!-- metric:u32_uncompress_ladder_compare_witness_items -->1<!-- /metric:u32_uncompress_ladder_compare_witness_items --> | 0 | <!-- metric:u32_uncompress_ladder_compare_stack -->7<!-- /metric:u32_uncompress_ladder_compare_stack --> | <!-- metric:u32_uncompress_ladder_compare_opcodes -->323<!-- /metric:u32_uncompress_ladder_compare_opcodes --> |
+| `u32_uncompress_hinted_canonical()` | <!-- metric:u32_uncompress_hinted_compare -->135<!-- /metric:u32_uncompress_hinted_compare --> | <!-- metric:u32_uncompress_hinted_compare_witness -->18<!-- /metric:u32_uncompress_hinted_compare_witness --> | <!-- metric:u32_uncompress_hinted_compare_witness_items -->5<!-- /metric:u32_uncompress_hinted_compare_witness_items --> | 4 | <!-- metric:u32_uncompress_hinted_compare_stack -->12<!-- /metric:u32_uncompress_hinted_compare_stack --> | <!-- metric:u32_uncompress_hinted_compare_opcodes -->107<!-- /metric:u32_uncompress_hinted_compare_opcodes --> |
+
+For this fixture the four hints add <!-- metric:u32_uncompress_hinted_hint_bytes -->12<!-- /metric:u32_uncompress_hinted_hint_bytes --> serialized bytes (four length prefixes plus eight payload bytes); the separate hint vector occupies <!-- metric:u32_uncompress_hinted_hint_vector -->13<!-- /metric:u32_uncompress_hinted_hint_vector --> bytes including its item count. All five data items coexist at entry. Composition requires `12 + preserved_main + preserved_alt <= 1000` at the measured boundary; account for other consumers separately. A complete leaf must consume or verify the four outputs, apply its intended terminal predicate and leave a clean stack. The special five-byte compressed encoding occurs for `0x80000000` only. The peak metric uses the strict local helper with numeric minimality enabled.
+
+See the [knowledge page](../../../knowledge/primitives/u32-uncompress-hinted.md).

@@ -9282,6 +9282,66 @@ fn u4_presence_hinted_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures hint-checked u32 expansion against the bit-ladder decoder.
+#[test]
+fn u32_uncompress_hinted_metrics_are_current() {
+    use bitcoin_lab::arithmetic::u32::uncompress_hinted::u32_uncompress_hinted_canonical;
+    const WORD: u32 = 0x89ab_cdef;
+    let compressed = scriptnum(i64::from(WORD as i32));
+    let ladder_witness = vec![compressed.clone()];
+    let mut hinted_witness: Vec<Vec<u8>> = WORD
+        .to_be_bytes()
+        .iter()
+        .map(|&b| scriptnum(i64::from(b)))
+        .collect();
+    let hint_vector_bytes = witness_size(&hinted_witness);
+    let incremental_hint_bytes = hint_vector_bytes - 1; // The four-item CompactSize count is shared.
+    hinted_witness.push(compressed);
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_hinted_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u32/README.md",
+            key: "u32_uncompress_hinted_hint_vector",
+            value: hint_vector_bytes,
+        },
+    ];
+    for (name, fragment, witness) in [
+        (
+            "ladder",
+            u32::stack::u32_uncompress_canonical(),
+            ladder_witness,
+        ),
+        ("hinted", u32_uncompress_hinted_canonical(), hinted_witness),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            { u32::stack::u32_drop() }
+            OP_TRUE
+        };
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u32_uncompress_{name}_compare{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", max_stack_items_strict(leaf, witness.clone())),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u32/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -1402,3 +1402,12 @@ state and compares it with the zero-hint projection, the packed composition chec
 and the pairwise comparator on equal complete-leaf boundaries, with witness bytes
 and items, cumulative hints for repeated use under the 1,000-item bound, executed
 opcodes and combined peaks. Core validation is required for any deployment claim.
+
+## OP-062 — Hinted conversions inside compressed u32 operations
+
+`u32_compressed_add` uses the bit-ladder conversion; the direct compressed shift pair operates on the normalized magnitude instead. **Accept when:** a compressed operation is rebuilt with
+the hint-checked conversion, correctness is preserved on every semantic boundary
+class including `0x80000000`, and the complete operation is compared with the
+existing one on an equal boundary with script bytes, witness bytes and items, hint
+counts per invocation and in batches, executed opcodes and combined peaks. Core
+validation is required for any deployment claim.

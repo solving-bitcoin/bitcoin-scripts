@@ -2244,3 +2244,15 @@ fewer than about five nibbles, where the hinted total is higher (431 versus 421
 at four), and where 32 hint items or a peak of `n + 36` are unaffordable. Figures
 are policy-compiled fragments under strict local `unclassified` tapscript rules,
 `locally-reproduced`. See the [primitive](../primitives/u4-presence-hinted.md).
+
+## NR-106: The u32 bit-ladder decoder is dominated when byte hints are allowed
+
+Expanding a compressed u32 with the 31-step compare-and-subtract ladder costs 431
+script bytes (323 static non-push opcodes), while checking four prover-supplied
+bytes against their 76-byte recompression costs 135 bytes (107 opcodes), 69% less,
+and 153 versus 437 bytes including witness, for four hint items and five more
+combined stack items. The ladder keeps its role where the prover does not hold the
+bytes or hints are forbidden. Figures are policy-compiled fragments under strict
+local `unclassified` tapscript rules, `locally-reproduced`, and the two forms agree
+on seven words including `0x80000000`. See the
+[primitive](../primitives/u32-uncompress-hinted.md).

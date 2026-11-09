@@ -652,3 +652,11 @@ hint-checked form 1,029 bytes (32 hint items, 188 witness bytes over 96 items, p
 100 against 82): 85% smaller on script and 82% in total including witness (strict
 local `unclassified` tapscript, `locally-reproduced`). The hinted form wins from
 about five nibbles. See [the primitive](../primitives/u4-presence-hinted.md) and NR-105.
+
+## Expanding compressed u32 words
+
+Recovering the four bytes of the compressed word `0x89abcdef` costs 431 script bytes
+with the bit-ladder decoder (1 witness item, peak 7) and 135 bytes with four hinted
+bytes checked by recompression (5 witness items, 4 hints, peak 12): 69% smaller on
+script and 65% in script plus witness (strict local `unclassified` tapscript,
+`locally-reproduced`). See [the primitive](../primitives/u32-uncompress-hinted.md) and NR-106.

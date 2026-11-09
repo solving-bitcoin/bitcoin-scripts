@@ -15,6 +15,8 @@ the source. Read a page together with its comparison page and evidence record.
 
 
 - [Table-free Luhn checksum](u4-luhn.md)
+
+- [Hint-checked u32 expansion](u32-uncompress-hinted.md)
 - [CRC-8/SMBus with nibble feedback](crc8-smbus.md)
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
