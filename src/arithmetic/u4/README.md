@@ -1510,3 +1510,33 @@ cargo test --locked --lib arithmetic::u4::scriptnum_decimal::tests
 cargo test --locked --test primitive_metrics u4_scriptnum_decimal_metrics_are_current -- --exact
 python3 tools/kb.py validate
 ```
+
+## Fixed-composition check
+
+`composition::u4_nibbles_have_composition(&counts)` decides whether a vector of
+`n = sum(counts)` checked nibbles (`1..=979`, peak `n + 21`) contains each nibble
+value `s` exactly `counts[s]` times, returning one Boolean; an out-of-range nibble
+aborts. Each nibble adds `B^lane` (`B = n + 1`) to one of a few accumulator words
+that are compared with the public target words; no lane can carry because a
+count never exceeds `n`. No hints. `[1; 16]` decides "is a permutation of
+`0..=15`". `u4_nibbles_pairwise_distinct(n)` is the pairwise comparator for that
+case.
+
+Fragment-only boundary: nibble range checks, table pushes, accumulation, target
+comparisons and cleanup; input pushes and terminal predicate excluded. Fixture:
+the 16 nibbles `15..0` (<!-- metric:u4_composition_16_witness -->32<!-- /metric:u4_composition_16_witness --> witness bytes, 16 items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Packed-lane composition, permutation of 16 | <!-- metric:u4_composition_lanes_16 -->649<!-- /metric:u4_composition_lanes_16 --> | <!-- metric:u4_composition_lanes_16_stack -->37<!-- /metric:u4_composition_lanes_16_stack --> | <!-- metric:u4_composition_lanes_16_opcodes -->379<!-- /metric:u4_composition_lanes_16_opcodes --> |
+| Pairwise distinctness, 16 nibbles | <!-- metric:u4_composition_pairwise_16 -->823<!-- /metric:u4_composition_pairwise_16 --> | <!-- metric:u4_composition_pairwise_16_stack -->19<!-- /metric:u4_composition_pairwise_16_stack --> | <!-- metric:u4_composition_pairwise_16_opcodes -->538<!-- /metric:u4_composition_pairwise_16_opcodes --> |
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_composition_16_count_baseline -->4256<!-- /metric:u4_composition_16_count_baseline -->-byte naive repeated-helper estimate
+(an estimate: it excludes vector copies and the comparisons). See the
+[knowledge page](../../../knowledge/primitives/u4-composition.md).
+
+Fixed-composition checks accept nonminimal numeric aliases when MINIMALDATA is
+disabled; the pairwise comparator checks numeric equality so alias duplicates
+are rejected. Byte-sensitive callers must canonicalize first. Public count
+totals are summed without `u32` overflow and checked before narrowing. Verify
+the result and enforce a clean terminal leaf.

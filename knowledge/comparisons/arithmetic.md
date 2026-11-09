@@ -600,3 +600,12 @@ and 479 bytes with a 24-byte ten-item witness hint-checked (503 total), against
 326 bytes and a 19-byte nine-item witness for digits alone, which binds no amount
 (peak 113 throughout; strict local `unclassified` tapscript, `locally-reproduced`).
 See [the primitive](../primitives/u4-scriptnum-decimal.md) and NR-098.
+
+## Fixed compositions and permutations of u4 vectors
+
+Deciding that a 16-nibble vector is a permutation of `0..=15` costs 649 script
+bytes with a 37-item peak using packed base-17 count lanes, against 823 bytes and
+a 19-item peak for 120 pairwise equality tests (zero hints, strict local
+`unclassified` tapscript, `locally-reproduced`). Sixteen per-symbol counts are at
+least 4,256 bytes (an estimate). See [the primitive](../primitives/u4-composition.md)
+and NR-099.

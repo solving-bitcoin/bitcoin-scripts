@@ -174,3 +174,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Casting-out residues and delayed reduction](u4-mod15.md)
 - [Delayed-reduction modulo-16 nibble sum](u4-sum-ladder.md)
 - [ScriptNum decimal expansion](u4-scriptnum-decimal.md)
+- [Fixed-composition check of a u4 vector](u4-composition.md)

@@ -1332,3 +1332,14 @@ and digits-only witnesses on equal complete-leaf boundaries with witness bytes
 and items, hint counts, executed opcodes and combined peaks, and handles amounts
 above 2^31 - 1 or records the limit as a constraint. Core validation is required
 for any deployment claim.
+
+## OP-055 — Composition-check consumer frontier
+
+The composition check is measured standalone. **Accept when:** a concrete
+consumer (for example a constant-composition one-time signature verifier or a
+permutation-valued witness) uses it with its live protocol state and compares it
+with a destructive-selection or hint-based design on equal complete-leaf
+boundaries with witness bytes and items, hint counts, executed opcodes and
+combined peaks, recording either a winning regime or dominance. A cheaper
+table schedule that reuses one table across words is unmeasured. Core
+validation is required for any deployment claim.

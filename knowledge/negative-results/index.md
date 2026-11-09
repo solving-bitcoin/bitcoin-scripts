@@ -2159,3 +2159,17 @@ fragment peaks one item lower, so this comparison does not establish dominance
 on those resources. Byte counts are policy-compiled leaves
 under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
 [primitive](../primitives/u4-scriptnum-decimal.md).
+
+## NR-099: Repeated fixed-symbol helpers cost more for the sampled compositions
+
+Verifying that a vector has an exact public composition by running a fixed-symbol
+count for each of the 16 symbols costs 4,256 script bytes at 16 nibbles
+and 8,976 at 32 as a naive repeated-helper estimate (excluding the vector copies
+and sixteen comparisons), against
+649 and 1,172 bytes for packed count lanes: 6.6 and 7.7 times larger. The pairwise
+comparator is not dominated by the lane check at 16 nibbles: it is 27% larger but
+needs 18 fewer combined stack items (19 versus 37). Lane figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`; the repeated-helper figure is an estimate and not a lower bound on shared
+counting constructions. See the
+[primitive](../primitives/u4-composition.md).
