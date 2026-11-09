@@ -22,6 +22,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
 - [Exact equality of signed ScriptNum sums](scriptnum-equal-sums.md)
 - [ScriptNum integer floor root](scriptnum-isqrt.md)
+- [Signed saturating ScriptNum addition](scriptnum-saturation.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [Bounded ScriptNum division without quotient hints](scriptnum-bounded-div.md)
 - [u4 digit arithmetic](u4.md)

@@ -7,6 +7,7 @@ pub mod integer_root;
 pub mod knapsack;
 pub mod permutation;
 pub mod rns;
+pub mod saturating;
 pub mod scriptint;
 pub mod signed_window;
 pub mod sum_equality;

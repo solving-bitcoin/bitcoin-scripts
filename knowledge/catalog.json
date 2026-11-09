@@ -26012,6 +26012,135 @@
       "open_problems": [
         "OP-020"
       ]
+    },
+    {
+      "id": "arithmetic/scriptnum-saturation",
+      "name": "Signed saturating ScriptNum addition",
+      "class": "arithmetic/scriptnum",
+      "summary": "Clamp an operand by its partner's signed headroom before addition, yielding a canonical four-byte-or-smaller ScriptNum across the full operand domain.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-05",
+      "knowledge_page": "knowledge/primitives/scriptnum-saturation.md",
+      "implementation": "src/arithmetic/saturating/mod.rs",
+      "documentation": "src/arithmetic/saturating/README.md",
+      "tests": [
+        "arithmetic::saturating::tests",
+        "scriptnum_saturating_add_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920",
+        "bip-342"
+      ],
+      "techniques": [
+        "bounded-arithmetic",
+        "signed-headroom",
+        "encoded-width"
+      ],
+      "security": "Both operands are bounded numeric inputs; aliases follow the selected profile. The canonical result does not authenticate operands and saturation can merge distinct sums.",
+      "stack_contract": "caller | lhs rhs -> caller | canonical clamp(lhs+rhs); caller altstack preserved",
+      "configurations": [
+        {
+          "id": "headroom-checked-leaves",
+          "label": "headroom, in-range and both overflow fixtures, complete checked leaves",
+          "parameters": {
+            "schedule": "headroom",
+            "fixtures": [
+              [
+                2147483647,
+                -1
+              ],
+              [
+                2147483647,
+                1
+              ],
+              [
+                -2147483647,
+                -1
+              ]
+            ],
+            "data_items": 2,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "profile": "local Consensus tapscript, synthetic transaction, stack limit and MINIMALIF on, numeric minimality and OP_CAT off",
+            "compile_options": "ALL",
+            "executed_in_range": 11,
+            "executed_positive": 11,
+            "executed_negative": 11,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: validates both numeric operands, computes saturation, verifies the exact canonical output bytes and leaves true; no input pushes; data witness serializes both entry operands with prefixes and excludes script, control block, annex and transaction; executed count is the maximum across the three matched cases",
+          "script_bytes": 32,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 11,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 32,
+          "metric_keys": [
+            "saturating_headroom_script",
+            "saturating_headroom_witness",
+            "saturating_headroom_stack",
+            "saturating_headroom_positive_executed"
+          ]
+        },
+        {
+          "id": "width-checked-leaves",
+          "label": "width, in-range and both overflow fixtures, complete checked leaves",
+          "parameters": {
+            "schedule": "width",
+            "fixtures": [
+              [
+                2147483647,
+                -1
+              ],
+              [
+                2147483647,
+                1
+              ],
+              [
+                -2147483647,
+                -1
+              ]
+            ],
+            "data_items": 2,
+            "hint_items": 0,
+            "all_data_at_entry": true,
+            "profile": "local Consensus tapscript, synthetic transaction, stack limit and MINIMALIF on, numeric minimality and OP_CAT off",
+            "compile_options": "ALL",
+            "executed_in_range": 12,
+            "executed_positive": 13,
+            "executed_negative": 13,
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: validates both numeric operands, computes saturation, verifies the exact canonical output bytes and leaves true; no input pushes; data witness serializes both entry operands with prefixes and excludes script, control block, annex and transaction; executed count is the maximum across the three matched cases",
+          "script_bytes": 32,
+          "witness_bytes": 8,
+          "witness_bytes_max": null,
+          "max_stack_items": 4,
+          "executed_opcodes": 13,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 32,
+          "metric_keys": [
+            "saturating_width_script",
+            "saturating_width_witness",
+            "saturating_width_stack",
+            "saturating_width_positive_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The operation clamps to the native signed ScriptNum boundaries, with no variable cap.",
+        "Saturation is many-to-one and a mixed-sign fold is order-sensitive.",
+        "The stack peak includes four working items plus all caller state. Each invocation consumes two ordinary inputs and zero hints.",
+        "Local execution only; exact Core transactions and relay policy remain unclassified."
+      ],
+      "open_problems": []
     }
   ]
 }
