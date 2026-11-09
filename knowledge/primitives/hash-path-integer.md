@@ -140,3 +140,5 @@ complete pinning and Binohash/Lamport composition requirements.
 The two-round 4+3-bit chain measures 80 script bytes, 45 witness bytes,
 38 static non-push opcodes and eight combined stack items, with eight entry
 data items and zero hints. Initial-state binding is excluded.
+
+The [pinned-start checkpoint wrapper](pinned-hash-path-chain.md) separately checks the SHA-256 commitment to the start. It has complete-spend Core evidence for the demonstrated substitution; it does not change this integer fragment or prove general mixed-hash binding.

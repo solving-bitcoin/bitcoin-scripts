@@ -25,6 +25,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from git_provenance import resolved_provenance
+
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = json.loads((ROOT / "tools/bitcoin_core_release.json").read_text())
 START_TIME = 1_800_000_000
@@ -346,6 +348,7 @@ def run(node: Node, fixtures: dict, report: dict):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--download-core", action="store_true", help="allow first download of the hash-pinned release archive")
+    parser.add_argument("--fixture-prefix", help="only run cases with this name prefix; default runs all")
     parser.add_argument("--cache-dir", type=Path, default=ROOT / "target/core-regtest")
     parser.add_argument("--output", type=Path, default=ROOT / "target/core-validation.profiles.json")
     args = parser.parse_args()
@@ -354,6 +357,12 @@ def main() -> int:
         binary, provenance = core_binary(args.cache_dir.resolve(), args.download_core)
         fixture_bytes = subprocess.check_output(["cargo", "run", "--locked", "--quiet", "--example", "core_validation_fixtures"], cwd=ROOT)
         fixtures = json.loads(fixture_bytes)
+        generator_count = fixtures["fixture_count"]
+        if args.fixture_prefix is not None:
+            selected = [row for row in fixtures["fixtures"] if row["name"].startswith(args.fixture_prefix)]
+            if not selected:
+                raise RuntimeError(f"No Core fixtures match prefix {args.fixture_prefix!r}")
+            fixtures = {**fixtures, "fixtures": selected, "fixture_count": len(selected)}
         if fixtures.get("schema_version") != 2:
             raise RuntimeError("Explicit local-profile fixture schema version 2 is required")
         if (fixtures["expected_bitcoin_core_version"] != RELEASE["version"]
@@ -362,9 +371,12 @@ def main() -> int:
         metadata = json.loads(subprocess.check_output(
             ["cargo", "metadata", "--locked", "--format-version", "1"], cwd=ROOT))
         resolved_interpreter = interpreter_provenance(fixtures, metadata)
+        resolved = resolved_provenance(fixtures, metadata)
         report.update({"bitcoin_core": provenance, "fixture_sha256": sha256(fixture_bytes),
                        "fixture_count": fixtures["fixture_count"], "local_interpreter": fixtures["local_interpreter"],
-                       "resolved_interpreter": resolved_interpreter,
+                       "resolved_interpreter": resolved_interpreter, "compiler": fixtures["compiler"],
+                       "resolved_compiler": resolved["compiler"], "generator_fixture_count": generator_count,
+                       "fixture_prefix": args.fixture_prefix,
                        "winternitz": fixtures["winternitz"], "initial_mocktime": START_TIME,
                        "consensus_method": "generateblock with raw transactions; verifies connected block contains txid",
                        "policy_method": "testmempoolaccept; -acceptnonstdtxn=0; remaining v30.3 default policy",

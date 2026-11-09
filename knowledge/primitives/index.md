@@ -126,6 +126,8 @@ the source. Read a page together with its comparison page and evidence record.
 - [Preimage-length integer](preimage-length.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
+- [Pinned-start checkpoint chains](pinned-hash-path-chain.md)
+
 ## Introspection
 
 - [Binohash transaction digest](binohash.md)

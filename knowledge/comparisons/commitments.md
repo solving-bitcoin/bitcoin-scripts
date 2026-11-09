@@ -62,3 +62,5 @@ at 1,060,200 unoptimized script bytes and 770,481 static non-push opcodes,
 with a 129-byte one-byte fixture witness or 193-byte canonical maximum for 64
 data items and zero hints. This is a backend-specific compile-only profile,
 not a universal lower bound or a complete branch verifier; see [NR-066](../negative-results/merkle-branch-composition.md).
+
+The [pinned-start comparison](../primitives/pinned-hash-path-chain.md) uses identical honest 4+3-bit data for all three guards. Unbound, length-only and SHA-256-pinned leaves use 80/84/116 script bytes and 161/165/197 complete witness bytes, with 8 data items, 0 hints, and peaks of 8/10/10. The unbound and length-only controls accept the substitution; the pinned leaf rejects it in Core.

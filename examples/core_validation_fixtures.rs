@@ -38,6 +38,9 @@ use std::{
     sync::Mutex,
 };
 
+#[path = "support/pinned_hash_paths.rs"]
+mod pinned_hash_paths;
+
 const CORE_VERSION: &str = "30.3";
 const CORE_COMMIT: &str = "49faec4f87f5cd19c88db01a82e5c68b087c8227";
 const RAW_BOUNDARY: &str = "raw-boundary-bytecode";
@@ -426,6 +429,7 @@ fn drop_items(count: usize) -> Vec<u8> {
 
 fn fixtures() -> Value {
     let interpreter = provenance::interpreter().expect("embedded interpreter provenance");
+    let compiler = provenance::compiler().expect("embedded compiler provenance");
     let mut fixtures = Vec::new();
     for count in [1000, 1001] {
         fixtures.push(fixture(
@@ -777,6 +781,7 @@ fn fixtures() -> Value {
     }
 
     fixtures.extend(depth_one_commitment_fixtures());
+    fixtures.extend(pinned_hash_paths::fixtures());
 
     json!({
         "schema_version": 2,
@@ -784,6 +789,8 @@ fn fixtures() -> Value {
         "expected_bitcoin_core_commit": CORE_COMMIT,
         "local_interpreter": {
             "name": interpreter.name,
+            "version": interpreter.version,
+            "source": interpreter.source,
             "commit": interpreter.commit,
             "context": "tapscript",
             "helper": "execute_raw_script_with_inputs_strict",
@@ -795,6 +802,7 @@ fn fixtures() -> Value {
                 "policy": "support::tapscript::execute_tapscript with TapscriptProfile::Policy; bounded script/witness policy subset",
             },
         },
+        "compiler": {"name": compiler.name, "version": compiler.version, "source": compiler.source, "commit": compiler.commit},
         "mining_address": Address::p2wsh(&ScriptBuf::from_bytes(vec![0x51]), Network::Regtest).to_string(),
         "internal_key_derivation": "secp256k1 x-only public key of secret [0x01;32]; public test key, never use with real funds",
         "winternitz": {
@@ -832,7 +840,7 @@ mod tests {
         assert_eq!(first, fixtures());
         let rows = first["fixtures"].as_array().unwrap();
         assert_eq!(first["fixture_count"], rows.len());
-        assert_eq!(rows.len(), 53);
+        assert_eq!(rows.len(), 65);
         let interpreter = provenance::interpreter().unwrap();
         assert_eq!(first["local_interpreter"]["name"], interpreter.name);
         assert_eq!(first["local_interpreter"]["commit"], interpreter.commit);

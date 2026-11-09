@@ -1644,6 +1644,11 @@ in the local Legacy interpreter with stack checks enabled. Deployment remains
 Independently binding the starting state is necessary; its cost is outside the
 fragment metrics. Dedicated mixed-hash cryptanalysis remains open (OP-020).
 
+The [pinned Core comparison](../primitives/pinned-hash-path-chain.md) confirms
+that both the unbound leaf and a 32-byte length guard admit the same forged
+opening. An independent SHA-256 start pin rejects it. This is evidence about
+the recorded substitution, not a binding proof for the mixed-hash path.
+
 The older binary path with explicit selector checks is also opcode-dominated:
 its 9/11 counted opcodes per bit can be replaced by 5/7 with changed digests.
 Keeping its old hash function permits 7 counted opcodes for saved normalized
