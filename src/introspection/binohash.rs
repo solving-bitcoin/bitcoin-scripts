@@ -45,10 +45,16 @@ fn next_sop(script: &[u8], index: usize) -> usize {
     match opcode {
         0x01..=0x4b => next += opcode as usize,
         0x4c if next < script.len() => next += 1 + script[next] as usize,
-        0x4d if next + 1 < script.len() => {
+        0x4d => {
+            if next + 1 >= script.len() {
+                return script.len();
+            }
             next += 2 + u16::from_le_bytes([script[next], script[next + 1]]) as usize
         }
-        0x4e if next + 3 < script.len() => {
+        0x4e => {
+            if next + 3 >= script.len() {
+                return script.len();
+            }
             next += 4 + u32::from_le_bytes([
                 script[next],
                 script[next + 1],
@@ -226,6 +232,26 @@ mod tests {
 
         let deleted = find_and_delete(&script, &[signature]);
         assert_eq!(deleted.as_bytes(), malformed_tail);
+    }
+
+    #[test]
+    fn incomplete_pushdata_length_headers_stop_boundary_scanning() {
+        // A zero byte inside a truncated length header is not an opcode
+        // boundary. Core's GetOp stops at the malformed push, including when
+        // a matching push was already deleted before it. These scripts are
+        // parser-parity fixtures, not consensus-valid locking scripts.
+        for malformed in [
+            vec![0x4d, 0x00],
+            vec![0x4e, 0x00],
+            vec![0x4e, 0x00, 0x00],
+            vec![0x4e, 0x00, 0x00, 0x00],
+        ] {
+            let script = ScriptBuf::from_bytes(malformed.clone());
+            assert_eq!(find_and_delete(&script, &[vec![]]), script);
+
+            let prefixed = ScriptBuf::from_bytes([vec![0x00], malformed.clone()].concat());
+            assert_eq!(find_and_delete(&prefixed, &[vec![]]).as_bytes(), malformed);
+        }
     }
 
     #[test]

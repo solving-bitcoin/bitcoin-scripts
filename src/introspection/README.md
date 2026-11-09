@@ -10,8 +10,9 @@ executed with the repository's default tapscript-only assumptions.
 when they occur at parsed Script opcode boundaries. It removes repeated exact
 pushes, but leaves non-minimal encodings and matching bytes inside another
 push's payload untouched. This matches Bitcoin Core v30.3 commit
-`49faec4f87f5cd19c88db01a82e5c68b087c8227`; malformed trailing-push coverage
-checks parser parity only and is not consensus-valid Script evidence.
+`49faec4f87f5cd19c88db01a82e5c68b087c8227`; truncated payload and
+incomplete `PUSHDATA2`/`PUSHDATA4` length-header tests check parser parity
+only and are not consensus-valid Script evidence.
 `binohash::binohash_digest` then passes the mutated `scriptCode` to
 rust-bitcoin's legacy sighash implementation. This reproduces the deterministic
 mutation boundary used by a Binohash-style subset grind. A separate

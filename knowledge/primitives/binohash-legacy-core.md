@@ -23,8 +23,9 @@ to a Script consumer.
 Evidence is `locally-reproduced` for the deterministic core. Focused tests
 cover canonical direct and PUSHDATA deletion at opcode boundaries, repeated
 pushes, embedded bytes, non-minimal push encodings, parser termination at a
-malformed trailing push, subset-dependent digest changes, invalid
-selection/input errors, and the out-of-range-input `SIGHASH_SINGLE` digest
+malformed trailing payload or incomplete length header, subset-dependent digest
+changes, invalid selection/input errors, and the out-of-range-input
+`SIGHASH_SINGLE` digest
 constant. The malformed case is source-parity coverage for the host helper,
 not consensus-valid Script evidence. The behavior is pinned to Bitcoin Core
 v30.3 source commit `49faec4f87f5cd19c88db01a82e5c68b087c8227`.
