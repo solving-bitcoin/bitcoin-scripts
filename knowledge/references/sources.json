@@ -213,6 +213,13 @@
       "revision": "crate series 0.5 used locally"
     },
     {
+      "id": "hamming-1950",
+      "title": "Richard W. Hamming, Error Detecting and Error Correcting Codes",
+      "kind": "paper",
+      "url": "https://doi.org/10.1002/j.1538-7305.1950.tb00463.x",
+      "revision": "Bell System Technical Journal 29(2), 147–160, April 1950"
+    },
+    {
       "id": "fips-180-4",
       "title": "FIPS 180-4 Secure Hash Standard",
       "kind": "standard",

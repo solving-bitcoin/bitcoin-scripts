@@ -472,6 +472,16 @@ fragment measures 766 bytes, 61 witness bytes, 32 data items, zero hints and a
 prices matched alternatives; the shared contract tests preserve the existing
 sum-family semantics and deployment classes.
 
+## Single-bit error correction
+
+The [extended Hamming decoder](../primitives/hamming84-decoder.md) compares
+syndrome evaluation against a complete distance-one lookup. A single
+checked byte uses 185 versus 408 script bytes and peaks at 13 versus 259.
+For eight checked bytes the shared table uses 585 bytes versus 1,473 and
+248 executed non-push operations versus 975. It peaks at 267 versus 20.
+The batch witness is 20 serialized bytes with eight ordinary items and
+zero hints. These are local complete leaves with equal decoded outputs.
+
 ## Integer floor roots
 
 The [ScriptNum root](../primitives/scriptnum-isqrt.md) consumes one checked

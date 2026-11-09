@@ -29,6 +29,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [u4 digit arithmetic](u4.md)
 - [Exact u4 sorting with destructive-selection hints](u4-sort.md)
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)
+- [Extended Hamming (8,4) byte decoder](hamming84-decoder.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)

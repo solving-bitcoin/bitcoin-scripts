@@ -15335,6 +15335,172 @@
       ]
     },
     {
+      "id": "arithmetic/hamming84-decoder",
+      "name": "Extended Hamming (8,4) byte decoder",
+      "class": "arithmetic/word",
+      "summary": "Decode one canonical numeric byte to its unique data nibble at distance at most one, using a shared syndrome and overall parity.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/hamming84-decoder.md",
+      "implementation": "src/arithmetic/hamming/mod.rs",
+      "documentation": "src/arithmetic/hamming/README.md",
+      "tests": [
+        "arithmetic::hamming::tests",
+        "hamming84_metrics_are_current"
+      ],
+      "references": [
+        "hamming-1950",
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "syndrome-decoding",
+        "canonical-scriptnum",
+        "resident-lookup"
+      ],
+      "security": "Corrects one flipped bit and detects two from a valid codeword. Larger corruptions or malicious replacement can return a different message; no authentication.",
+      "stack_contract": "caller | canonical numeric byte -> caller | canonical decoded nibble; both caller stacks preserved",
+      "configurations": [
+        {
+          "id": "syndrome-1-checked-leaf",
+          "label": "syndrome, 1 received byte, complete checked leaf",
+          "parameters": {
+            "schedule": "syndrome",
+            "byte_count": 1,
+            "fixture": "0x83, expected nibble 1",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "table_items": 0,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte guards, bounded-distance decoding, table setup and cleanup where present, exact ordered output checks and terminal true; witness excludes script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 185,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 13,
+          "executed_opcodes": 121,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 185,
+          "metric_keys": [
+            "hamming84_syndrome_one_script",
+            "hamming84_syndrome_one_witness",
+            "hamming84_syndrome_one_stack",
+            "hamming84_syndrome_one_executed"
+          ]
+        },
+        {
+          "id": "table-1-checked-leaf",
+          "label": "table, 1 received byte, complete checked leaf",
+          "parameters": {
+            "schedule": "table",
+            "byte_count": 1,
+            "fixture": "0x83, expected nibble 1",
+            "data_items": 1,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "table_items": 256,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte guards, bounded-distance decoding, table setup and cleanup where present, exact ordered output checks and terminal true; witness excludes script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 408,
+          "witness_bytes": 4,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 144,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": 408,
+          "metric_keys": [
+            "hamming84_table_one_script",
+            "hamming84_table_one_witness",
+            "hamming84_table_one_stack",
+            "hamming84_table_one_executed"
+          ]
+        },
+        {
+          "id": "syndrome-8-checked-leaf",
+          "label": "syndrome, 8 received bytes, complete checked leaf",
+          "parameters": {
+            "schedule": "syndrome",
+            "byte_count": 8,
+            "fixture": "encode(i) xor (1 << i), i from 0 through 7",
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "table_items": 0,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte guards, bounded-distance decoding, table setup and cleanup where present, exact ordered output checks and terminal true; witness excludes script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 1473,
+          "witness_bytes": 20,
+          "witness_bytes_max": null,
+          "max_stack_items": 20,
+          "executed_opcodes": 975,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "hamming84_syndrome_eight_script",
+            "hamming84_syndrome_eight_witness",
+            "hamming84_syndrome_eight_stack",
+            "hamming84_syndrome_eight_executed"
+          ]
+        },
+        {
+          "id": "table-8-checked-leaf",
+          "label": "table, 8 received bytes, complete checked leaf",
+          "parameters": {
+            "schedule": "table",
+            "byte_count": 8,
+            "fixture": "encode(i) xor (1 << i), i from 0 through 7",
+            "data_items": 8,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "table_items": 256,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript, stack and element limits and MINIMALIF on, numeric minimality and OP_CAT off, synthetic transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: canonical byte guards, bounded-distance decoding, table setup and cleanup where present, exact ordered output checks and terminal true; witness excludes script, control block, annex and transaction; executed counts include encountered branch delimiters",
+          "script_bytes": 585,
+          "witness_bytes": 20,
+          "witness_bytes_max": null,
+          "max_stack_items": 267,
+          "executed_opcodes": 248,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "hamming84_table_eight_script",
+            "hamming84_table_eight_witness",
+            "hamming84_table_eight_stack",
+            "hamming84_table_eight_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Fixed extended Hamming (8,4) layout; exact one-bit correction radius.",
+        "The syndrome peak is 13 items plus all caller state for one input. The resident-table comparison trades peak for batch bytes.",
+        "No funded Core or relay validation for these leaves."
+      ],
+      "open_problems": []
+    },
+    {
       "id": "arithmetic/u4-run-length",
       "name": "Checked u4 run-length expansion",
       "class": "arithmetic/word",
