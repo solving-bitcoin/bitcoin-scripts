@@ -1392,3 +1392,13 @@ position, prefix equality and one nibble comparison) on equal complete-leaf
 boundaries with witness bytes and items, exact hint counts, executed opcodes and
 combined peaks, recording either a winning regime or dominance. Complete-spend and
 Core validation are required for any deployment claim.
+
+## OP-061 — Hinted presence composition and duplicate detection
+
+The hinted presence bits are measured standalone with 32 hints per invocation.
+**Accept when:** a consumer such as a distinctness or set-equality check (the flags
+sum to `n` exactly when the vector has no duplicates) uses it with its live protocol
+state and compares it with the zero-hint projection, the packed composition check
+and the pairwise comparator on equal complete-leaf boundaries, with witness bytes
+and items, cumulative hints for repeated use under the 1,000-item bound, executed
+opcodes and combined peaks. Core validation is required for any deployment claim.

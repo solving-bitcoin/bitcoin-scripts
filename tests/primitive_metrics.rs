@@ -9206,6 +9206,82 @@ fn u4_compare_packed_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures hint-checked presence bits at 64 nibbles.
+#[test]
+fn u4_presence_hinted_metrics_are_current() {
+    use u4::presence::u4_nibbles_to_presence_bits;
+    use u4::presence_hinted::u4_nibbles_to_presence_bits_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut flags = [false; 16];
+    let mut first = [0i64; 16];
+    for (i, &v) in values.iter().enumerate() {
+        if !flags[v as usize] {
+            flags[v as usize] = true;
+            first[v as usize] = i as i64;
+        }
+    }
+    let zero_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = zero_witness.clone();
+    hinted_witness.extend(first.iter().map(|&i| scriptnum(i)));
+    hinted_witness.extend(
+        (0..16)
+            .rev()
+            .map(|s| if flags[s] { vec![1u8] } else { Vec::new() }),
+    );
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_nibbles_to_presence_bits(N), zero_witness),
+        (
+            "hinted",
+            u4_nibbles_to_presence_bits_hinted(N),
+            hinted_witness,
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), 16);
+        for index in 0..16 {
+            let symbol = if name == "zero" { index } else { 15 - index };
+            assert_eq!(
+                result.final_stack.get(index),
+                scriptnum(i64::from(flags[symbol]))
+            );
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_presence_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -644,3 +644,11 @@ seven-nibble words (peak 135) against 3,532 bytes (peak 131) for the per-nibble
 first-difference state machine, and 4,486 versus 7,500 at 128 nibbles (zero hints,
 strict local `unclassified` tapscript, `locally-reproduced`). See
 [the primitive](../primitives/u4-compare-packed.md) and NR-104.
+
+## Presence bits of u4 vectors
+
+At 64 nibbles the zero-hint presence projection costs 6,733 script bytes and the
+hint-checked form 1,029 bytes (32 hint items, 188 witness bytes over 96 items, peak
+100 against 82): 85% smaller on script and 82% in total including witness (strict
+local `unclassified` tapscript, `locally-reproduced`). The hinted form wins from
+about five nibbles. See [the primitive](../primitives/u4-presence-hinted.md) and NR-105.

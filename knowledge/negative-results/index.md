@@ -2232,3 +2232,15 @@ one nibble (29 versus 44 bytes) and also use fewer static non-push opcodes (1,65
 versus 2,178 at 64). Figures are policy-compiled fragments with checking-leaf peaks under the explicit local consensus numeric
 profile and stack enforcement, `unclassified` tapscript, `locally-reproduced`, and the two forms agree on 120
 deterministic vector pairs. See the [primitive](../primitives/u4-compare-packed.md).
+
+## NR-105: The 16-scan presence projection is dominated when hints are allowed
+
+Scanning the vector once per symbol costs 95 script bytes per nibble at 16 nibbles
+(1,526 bytes) and grows to 6,733 at 64 and 13,709 at 128, against 509, 1,029 and 1,765
+for verifying prover-supplied flags with `n + 16` lookups. Counting 32 extra hint
+items (95 to 312 witness bytes) the hinted form totals 604 versus 1,558 bytes at 16
+nibbles and 1,217 versus 6,858 at 64. The zero-hint form keeps its niche for
+fewer than about five nibbles, where the hinted total is higher (431 versus 421
+at four), and where 32 hint items or a peak of `n + 36` are unaffordable. Figures
+are policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-presence-hinted.md).
