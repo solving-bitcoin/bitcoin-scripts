@@ -5,6 +5,7 @@ They summarize the current catalog rather than claiming global completeness.
 
 - [Arithmetic representations](arithmetic.md)
 - [Exact signed sum representation schedules](wide-scriptnum-sum.md)
+- [Signed extrema schedules](signed-min-max.md)
 - [Arithmetic checksums](checksums.md)
 - [Opposite-case ASCII pair schedules](ascii-pair-checks.md)
 - [Signed midpoint hint schedules](hinted-midpoint.md)

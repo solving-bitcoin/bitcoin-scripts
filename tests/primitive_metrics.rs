@@ -13157,6 +13157,90 @@ fn u4_nondecreasing_metrics_are_current() {
     ]);
 }
 
+mod signed_extrema_research {
+    use bitcoin_lab::{arithmetic::scriptint::verify_canonical, support::script::*};
+
+    mod schedule {
+        include!("../src/arithmetic/extrema/schedule.rs");
+    }
+
+    include!("../research/paired-signed-extrema/baseline.rs");
+    include!("../research/paired-signed-extrema/fixture.rs");
+}
+
+#[test]
+fn signed_extrema_metrics_are_current() {
+    use bitcoin::opcodes::all::{OP_GREATERTHAN, OP_MAX, OP_MIN};
+    use bitcoin_lab::{
+        arithmetic::extrema::signed_min_max,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    macro_rules! keys {
+        ($width:literal, $schedule:literal) => {
+            [
+                concat!("extrema_", $width, "_", $schedule, "_script"),
+                concat!("extrema_", $width, "_", $schedule, "_witness"),
+                concat!("extrema_", $width, "_", $schedule, "_stack"),
+                concat!("extrema_", $width, "_", $schedule, "_executed"),
+                concat!("extrema_", $width, "_", $schedule, "_comparisons"),
+            ]
+        };
+    }
+    let mut report = Vec::new();
+    for (width, paired, streaming) in [
+        (2, keys!(2, "paired"), keys!(2, "streaming")),
+        (32, keys!(32, "paired"), keys!(32, "streaming")),
+        (128, keys!(128, "paired"), keys!(128, "streaming")),
+        (997, keys!(997, "paired"), keys!(997, "streaming")),
+    ] {
+        let values = signed_extrema_research::values(width);
+        let min = *values.iter().min().unwrap();
+        let max = *values.iter().max().unwrap();
+        let witness: Vec<_> = values.into_iter().map(scriptnum).collect();
+        for (keys, check, expected_comparisons) in [
+            (paired, signed_min_max(width), (3 * width).div_ceil(2) - 2),
+            (
+                streaming,
+                signed_extrema_research::streaming(width),
+                2 * width - 3,
+            ),
+        ] {
+            let leaf = script! {
+                { check } { max } OP_EQUALVERIFY { min } OP_EQUALVERIFY OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let policy = execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Policy);
+            assert_eq!(policy.accepted(), Some(true));
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            let comparisons = leaf.instructions().filter(|instruction| {
+                matches!(instruction, Ok(Instruction::Op(op)) if [OP_GREATERTHAN,OP_MIN,OP_MAX].contains(op))
+            }).count();
+            assert_eq!(comparisons, expected_comparisons as usize);
+            for (key, value) in keys.into_iter().zip([
+                leaf.len(),
+                witness_size(&witness),
+                peak,
+                executed,
+                comparisons,
+            ]) {
+                report.push(Metric {
+                    readme: "src/arithmetic/extrema/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 /// This isolated fixture measures the checked u4 exact sum.
 #[test]
 fn u4_exact_sum_metrics_are_current() {
@@ -16578,6 +16662,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

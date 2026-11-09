@@ -3,6 +3,7 @@
 pub mod bigint;
 pub mod byte_encoding;
 pub mod checksums;
+pub mod extrema;
 pub mod factoradic;
 pub mod hamming;
 pub mod integer_root;

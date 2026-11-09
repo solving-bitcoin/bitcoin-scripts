@@ -206,6 +206,13 @@
       "revision": "published PDF"
     },
     {
+      "id": "pohl-minmax-1972",
+      "title": "A sorting problem and its complexity",
+      "kind": "paper",
+      "url": "https://doi.org/10.1145/361405.361423",
+      "revision": "Communications of the ACM 15(6), June 1972, pp. 462–464"
+    },
+    {
       "id": "bitvm2-bridge-paper",
       "title": "BitVM Bridge",
       "kind": "paper",
