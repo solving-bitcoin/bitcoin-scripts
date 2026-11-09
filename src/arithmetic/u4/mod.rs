@@ -21,6 +21,7 @@ pub mod damm;
 pub mod distance;
 pub mod distinct_mask;
 pub mod equality;
+pub mod erasure;
 pub mod gray;
 pub mod gray_inverse;
 pub mod histogram;

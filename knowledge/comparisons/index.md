@@ -16,6 +16,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Hash constructions](hashes.md)
 - [Commitments and opening relations](commitments.md)
 - [Signed arithmetic progression schedules](signed-progression.md)
+- [Checked nibble erasure recovery schedules](u4-erasure-recovery.md)
 - [Transaction introspection](introspection.md)
 - [Checked negabinary decoder schedules](negabinary-decoder.md)
 - [Signature verification and one-time authentication](signatures.md)

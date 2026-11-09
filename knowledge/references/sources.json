@@ -87,6 +87,13 @@
       "revision": "final specification"
     },
     {
+      "id": "reed-solomon-1960",
+      "title": "Reed and Solomon: Polynomial Codes Over Certain Finite Fields",
+      "kind": "paper",
+      "url": "https://doi.org/10.1137/0108018",
+      "revision": "Journal of the Society for Industrial and Applied Mathematics 8(2), June 1960, pages 300–304. Finite-field coding context."
+    },
+    {
       "id": "bip-340",
       "title": "BIP 340: Schnorr Signatures for secp256k1",
       "kind": "specification",

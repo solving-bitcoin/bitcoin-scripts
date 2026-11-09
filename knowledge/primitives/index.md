@@ -71,6 +71,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 triplet-to-u12 packing](u4-triplet.md)
 - [Checked u4 quad-to-u16 packing](u4-quad.md)
 - [Checked base-16 integer residue modulo 17](u4-mod17.md)
+- [Checked recovery of one erased nibble](u4-erasure-recovery.md)
 - [Checked u4 XOR reduction](u4-xor-reduction.md)
 - [Checked XOR reduction with signed packed lanes](u4-xor-lanes.md)
 - [Checked public-constant u4 multiplication modulo 16](u4-mul-constant-mod16.md)
