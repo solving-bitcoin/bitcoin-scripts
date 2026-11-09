@@ -2355,6 +2355,108 @@
       ]
     },
     {
+      "id": "arithmetic/single-run-mask",
+      "name": "Decode a single contiguous run from binary flags",
+      "class": "arithmetic/word",
+      "summary": "Native canonical binary flags decode to an exact nonempty interval with signed length carrying the closed state.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-05",
+      "knowledge_page": "knowledge/primitives/single-run-mask.md",
+      "implementation": "src/arithmetic/interval_mask/mod.rs",
+      "documentation": "src/arithmetic/interval_mask/README.md",
+      "tests": [
+        "arithmetic::interval_mask::tests",
+        "single_run_mask_metrics_are_current"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "finite-state",
+        "native-minimalif",
+        "signed-state"
+      ],
+      "security": "Checks one nonempty run and native flag encodings. The caller binds the exact flag suffix and authenticates the interval where required.",
+      "stack_contract": "caller | flag[n-1] ... flag[0] -> caller | canonical start | canonical length; caller altstack preserved",
+      "configurations": [
+        {
+          "id": "signed-n32-leaf",
+          "label": "Signed-length state, 32 flags, complete interval-checking leaf",
+          "parameters": {
+            "width": 32,
+            "start": 5,
+            "length": 8,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript with MINIMALIF and stack limits, numeric minimality and OP_CAT off, synthetic empty transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: includes canonical flag checks, state transitions, and verification of exact start and length with terminal true; witness includes all flags and serialized prefixes and excludes script, control block, annex and transaction; executed non-push count includes encountered branch delimiters",
+          "script_bytes": 602,
+          "witness_bytes": 41,
+          "witness_bytes_max": 41,
+          "max_stack_items": 33,
+          "executed_opcodes": 352,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 602,
+          "metric_keys": [
+            "single_run_signed32_script",
+            "single_run_signed32_witness",
+            "single_run_signed32_stack",
+            "single_run_signed32_executed"
+          ]
+        },
+        {
+          "id": "flag-n32-leaf",
+          "label": "Separate closed flag, 32 flags, complete interval-checking leaf",
+          "parameters": {
+            "width": 32,
+            "start": 5,
+            "length": 8,
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "local Consensus tapscript with MINIMALIF and stack limits, numeric minimality and OP_CAT off, synthetic empty transaction",
+            "signature_weight_charged": 0
+          },
+          "includes": "complete-leaf: includes canonical flag checks, state transitions, and verification of exact start and length with terminal true; witness includes all flags and serialized prefixes and excludes script, control block, annex and transaction; executed non-push count includes encountered branch delimiters",
+          "script_bytes": 698,
+          "witness_bytes": 41,
+          "witness_bytes_max": 41,
+          "max_stack_items": 35,
+          "executed_opcodes": 354,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 698,
+          "metric_keys": [
+            "single_run_flag32_script",
+            "single_run_flag32_witness",
+            "single_run_flag32_stack",
+            "single_run_flag32_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Generation-time width from 1 through 998. Include both caller stacks in the n + 2 combined budget.",
+        "The native exact-binary contract relies on tapscript MINIMALIF.",
+        "Inputs are ordinary flags, not hints. Shape validation alone does not authenticate the selected interval.",
+        "No funded Core or relay comparison for these leaves."
+      ],
+      "open_problems": [
+        "OP-036"
+      ]
+    },
+    {
       "id": "arithmetic/u4-transition-count",
       "name": "Checked u4 transition count",
       "class": "arithmetic/word",

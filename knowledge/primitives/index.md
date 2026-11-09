@@ -45,6 +45,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked fixed-symbol u4 occurrence count](u4-count.md)
 - [Checked u4 presence-bit projection](u4-presence.md)
 - [Checked u4 transition count](u4-transition-count.md)
+- [Decode a single contiguous run from binary flags](single-run-mask.md)
 - [Checked u4 adjacent-equality mask](u4-adjacent-equality.md)
 - [Checked odd u4 inverse modulo 16](u4-odd-inverse-mod16.md)
 - [Checked u4 embedded-cap clamp](u4-clamp.md)

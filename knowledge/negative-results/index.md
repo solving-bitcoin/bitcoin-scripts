@@ -2040,6 +2040,9 @@ used as a surrounding protocol's selector certificate remains a protocol hint
 even when arithmetic decoding requires no additional hints. Evidence is
 `locally-reproduced`; execution `unclassified`. OP-044 tracks that consumer.
 
+For interval decoding, [plain transition count](single-run-mask.md) accepts
+both a single run and a split mask with the same number of changes.
+
 ## NR-084: Packed permutation ranks lose combined bytes
 
 Canonical, hint-free factoradic decoding saves data witness items and stack peak,

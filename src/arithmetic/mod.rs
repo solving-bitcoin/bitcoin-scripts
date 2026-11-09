@@ -5,6 +5,7 @@ pub mod checksums;
 pub mod factoradic;
 pub mod integer_root;
 pub mod knapsack;
+pub mod interval_mask;
 pub mod permutation;
 pub mod rns;
 pub mod saturating;

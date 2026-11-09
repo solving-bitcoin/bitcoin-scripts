@@ -1200,6 +1200,11 @@ Report policy separately, including oversized discarded payloads and whole-leaf
 optimizer options. A locally accepted routing fragment or constant literal
 consumer alone does not close this criterion; see NR-078.
 
+If the consumer requires one contiguous interval, bind the decoded start and
+length to its actual payload positions. Price that guard and its entire entry
+flag vector on the same boundary. See the
+[single-run mask decoder](primitives/single-run-mask.md).
+
 ## OP-037 — Authenticated decimal transducer composition
 
 Determine whether the Damm table schedule is useful inside a real authenticated

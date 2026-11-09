@@ -231,6 +231,71 @@ fn script_len(script: bitcoin_script::Script) -> usize {
     script.compile_with_policy().len()
 }
 
+#[test]
+fn single_run_mask_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::interval_mask::decode_single_run,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/single-run-mask/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let witness: Vec<_> = (0..32)
+        .rev()
+        .map(|position| scriptnum(i64::from((5..13).contains(&position))))
+        .collect();
+    let mut metrics = Vec::new();
+    for (fragment, keys) in [
+        (decode_single_run(32), keys!("single_run_signed32")),
+        (
+            baseline::decode_with_closed_flag(32),
+            keys!("single_run_flag32"),
+        ),
+    ] {
+        let leaf = script! {{fragment} 8 OP_EQUALVERIFY 5 OP_EQUALVERIFY OP_TRUE};
+        assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+        let compiled = leaf.compile_with_policy();
+        let checked = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let checked = checked.execution().unwrap();
+        assert!(checked.success && checked.stack_limit_enforced);
+        assert_eq!(
+            checked.stats.start_validation_weight,
+            checked.stats.validation_weight
+        );
+        let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
+        assert_eq!(peak, checked.stats.max_nb_stack_items);
+        for (key, value) in
+            keys.into_iter()
+                .zip([compiled.len(), witness_size(&witness), peak, executed])
+        {
+            metrics.push(Metric {
+                readme: "src/arithmetic/interval_mask/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 fn static_non_push_opcodes(script: bitcoin_script::Script) -> usize {
     script
         .compile_with_policy()
@@ -13887,6 +13952,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.
