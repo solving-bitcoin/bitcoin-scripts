@@ -11711,6 +11711,85 @@ fn hors_exact_index_metrics_are_current() {
     ]);
 }
 
+#[test]
+fn binohash_hors_subset_metrics_are_current() {
+    use bitcoin_lab::introspection::binohash_hors_subset::authenticated_two_of_three_subset_script;
+
+    let preimages = [vec![0x11; 16], vec![0x22; 16], vec![0x33; 16]];
+    let public_keys: [[u8; 20]; 3] = hors::hors_public_keys(&preimages).try_into().unwrap();
+    let script = authenticated_two_of_three_subset_script(&public_keys);
+    let witness = hors::hors_unlocking_witness(&preimages, &[0, 2]);
+    let clamped = hors::hors_locking_script(&public_keys, 2);
+    let exact = hors::hors_exact_index_locking_script(&public_keys, 2);
+    let clamped_execution = execute_script_with_inputs_strict(clamped.clone(), witness.clone());
+    let exact_execution = execute_script_with_inputs_strict(exact.clone(), witness.clone());
+    let execution = execute_script_with_inputs_strict(script.clone(), witness.clone());
+    assert!(
+        clamped_execution.success,
+        "clamped HORS metric execution failed"
+    );
+    assert!(
+        exact_execution.success,
+        "exact HORS metric execution failed"
+    );
+    assert!(
+        execution.success,
+        "subset metric execution failed: {execution}"
+    );
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_script",
+            value: script_len(clamped.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_stack",
+            value: clamped_execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_clamped_static_ops",
+            value: static_non_push_opcodes(clamped),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_script",
+            value: script_len(exact.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_stack",
+            value: exact_execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_exact_static_ops",
+            value: static_non_push_opcodes(exact),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_script",
+            value: script_len(script.clone()),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_stack",
+            value: execution.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/introspection/README.md",
+            key: "binohash_hors_subset_static_ops",
+            value: static_non_push_opcodes(script),
+        },
+    ]);
+}
+
 #[path = "support/weighted_quorum.rs"]
 mod weighted_quorum_fixture;
 

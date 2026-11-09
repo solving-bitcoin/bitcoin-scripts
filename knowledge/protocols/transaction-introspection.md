@@ -34,6 +34,9 @@ its upper-clamped openings do not bind the raw index sequence; see
 The separate exact-index HORS fragment locally checks canonical, in-range,
 strictly increasing openings but has not been connected to the funded
 Binohash toy or validated in a Core spend.
+An additional [local 2-of-3 consumer](../primitives/binohash-hors-subset-local.md)
+now routes one exact-HORS-checked index pair into `OP_ROLL` selection. It uses
+numeric pool tags, so the funded legacy ECDSA connection remains open.
 See `introspection/binohash` and `OP-011`.
 
 A separate [2-of-3 toy subset](../primitives/binohash-subset-toy.md) now

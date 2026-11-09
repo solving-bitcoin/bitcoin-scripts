@@ -423,8 +423,13 @@ nonminimal ScriptNum, duplicate, reordered, and wrong-preimage controls.
 The clamped API remains available. **Remaining acceptance criterion:** validate
 the exact variant in an independently pinned Bitcoin Core spend, compare
 complete transaction costs, and connect it to authenticated Binohash index
-consumption. The local script, serialized witness, combined stack peak, and
-executed opcode comparison is recorded in the HORS implementation README.
+consumption in a funded legacy signature spend. The local script, serialized
+witness, combined stack peak, and static non-push opcode comparison is
+recorded in the HORS implementation README.
+At toy `n=3,t=2` scale, a separate local fixture now routes one exact-HORS
+opening's indices into `OP_ROLL` pool-tag selection without a second witness
+selector. Its tags are not ECDSA signatures, so funded Core and full-protocol
+integration remain open.
 
 Compatible follow-up improvements add an exact verifier that carries the
 residual digit and a staged Horner checksum. Exhaustive chain-digit tests
@@ -576,6 +581,9 @@ separate exact-index verifier now has strict local checks. See
 [NR-110](negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)
 and the remaining Core/integration acceptance criterion in OP-009. This local
 HORS observation does not establish a flaw in the paper's complete protocol.
+The [2-of-3 local consumer](primitives/binohash-hors-subset-local.md) now
+reuses the same checked pair for HORS and `OP_ROLL` tag selection, but does
+not execute the legacy signature path or bind a Binohash transaction digest.
 
 A separate nine-byte anchor fixture confirms the out-of-range `SIGHASH_SINGLE`
 signature boundary against Core but does not commit to transaction fields.

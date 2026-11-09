@@ -27,7 +27,10 @@ explicit witness indices.
   parameters, index derivation, disclosures, and HASH160.
 - **Research need:** specify and test a complete message-to-subset transform;
   the new exact-index fragment still needs a funded Core spend and integration
-  with a Binohash Script consumer before protocol-level signature claims.
+  with a legacy Binohash ECDSA consumer before protocol-level signature claims.
+  A separate [local 2-of-3 toy](binohash-hors-subset-local.md) now reuses the
+  same exact-HORS indices for pool-tag selection; funded legacy ECDSA
+  integration remains open.
 
 See the [implementation README](../../src/signatures/hors/README.md) and catalog
 record `signature/hors-hash160`. The [negative result](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)

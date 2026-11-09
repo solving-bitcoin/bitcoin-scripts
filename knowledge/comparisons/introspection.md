@@ -12,6 +12,7 @@ default relay acceptance.
 | Binohash 10-choose-5 host probe | All 252 ascending subsets over one fixed template | locally-reproduced | unclassified | Dummy deletion targets; order/duplicate aliases need Script-side canonicalization |
 | Binohash two-choice fixture | Two signed P2SH spends with selected embedded signatures and a wrong-selection control | differentially-validated | consensus-validated | Default policy rejects `CONST_SCRIPTCODE`; no grinding or Script consumer |
 | Binohash 2-of-3 toy subset | `OP_ROLL` chooses two embedded signatures; size filter and selected-index preimage check | differentially-validated | consensus-validated | Toy nonce space, public preimages, no pinning/two-round grind; default policy rejects `CONST_SCRIPTCODE` |
+| Binohash exact-HORS subset consumer | One HORS opening supplies both authenticated 2-of-3 indices and `OP_ROLL` tag selection | locally-reproduced | unclassified | Local tapscript toy with numeric tags, not legacy ECDSA or a Core spend |
 | Binohash raw flag census | 256 disjoint signed P2SH spends plus fixed-template host digests | differentially-validated | consensus-validated | Only six canonical flags pass default policy; no subset grind or security bound |
 | Binohash nine-byte SINGLE anchor | Hardcoded minimal DER signature verifies only under out-of-range `SIGHASH_SINGLE` in a funded P2SH spend | differentially-validated | consensus-validated | The bug digest commits to no transaction fields; default policy rejects `CONST_SCRIPTCODE` |
 | Binohash CODESEPARATOR fixture | Executed/dead separator boundaries plus before/after-boundary `FindAndDelete` in two funded P2SH spends | differentially-validated | consensus-validated | Default policy rejects executed legacy `OP_CODESEPARATOR`; no grinding or full protocol |
@@ -23,6 +24,11 @@ of 1,744/1,740 WU; it has zero witness/hint items and no measured stack peak.
 The 2-of-3 toy has a 23-byte P2SH locking scriptPubKey, a 493-byte redeemScript,
 and two 2,908-WU complete spends, also with zero witness/hint items and no measured
 stack peak. The 71-byte size filter is a toy condition, not a work estimate.
+The separate exact-HORS subset consumer is a 153-byte local tapscript
+predicate with a 38-byte serialized four-item data witness, zero hints, a
+12-item combined stack peak, and 68 static non-push opcodes. These fragment
+costs do not include a transaction or ECDSA signatures and are not comparable
+to the complete P2SH spend weight.
 The raw-flag census uses a 23-byte P2SH locking scriptPubKey, a 35-byte
 redeemScript, and complete spend weights of 804–812 WU. It has zero
 witness/hint items and no measured stack peak. Its six canonical flag rows

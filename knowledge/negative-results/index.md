@@ -28,6 +28,9 @@ available. A separate exact-index variant now rejects out-of-range and
 noncanonical encodings and requires strictly increasing indices, excluding
 duplicates and reorderings. That result is local tapscript evidence; it does
 not yet authenticate a complete Binohash spend or establish Core consensus.
+An `n=3,t=2` [local subset consumer](../primitives/binohash-hors-subset-local.md)
+now routes one checked pair into `OP_ROLL` pool-tag selection without a second
+selector witness; it still does not execute legacy ECDSA or Core.
 See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
 and [OP-011](../open-problems.md#op-011--reproduce-binohash).
 

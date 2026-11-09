@@ -8182,6 +8182,74 @@
       ]
     },
     {
+      "id": "introspection/binohash-hors-subset-local",
+      "name": "Binohash-style exact-HORS subset consumer",
+      "class": "introspection/transaction",
+      "summary": "Routes one exact-HORS-checked 2-of-3 index pair into toy OP_ROLL pool-tag selection without a second witness selector.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-hors-subset-local.md",
+      "implementation": "src/introspection/binohash_hors_subset.rs",
+      "documentation": "research/binohash-hors-subset/README.md",
+      "tests": [
+        "introspection::binohash_hors_subset::tests::all_three_pairs_use_the_same_authenticated_indices_for_selection",
+        "introspection::binohash_hors_subset::tests::hostile_indices_and_openings_cannot_alias_a_selected_pair",
+        "primitive_metrics::binohash_hors_subset_metrics_are_current"
+      ],
+      "references": [
+        "binohash-paper"
+      ],
+      "techniques": [
+        "selector-validation",
+        "stack-routing",
+        "hash-chain"
+      ],
+      "security": "Exact-HORS opening checks and OP_ROLL tag selection consume the same copied indices. Public deterministic test preimages and numeric tags do not establish one-time security, ECDSA validation, legacy sighash binding, or full Binohash security.",
+      "stack_contract": "Four reverse-ordered index/preimage data items enter together. The script saves copies of the two index items on altstack, checks the original exact-HORS opening, routes the saved indices into two OP_ROLL selections, checks the pair-tag relation, and leaves one true item. No hint items or independent selector witness are used.",
+      "configurations": [
+        {
+          "id": "n3-t2-local-composition",
+          "label": "Exact-HORS 2-of-3 pool-tag consumer",
+          "parameters": {
+            "n": 3,
+            "t": 2,
+            "preimage_bytes": 16,
+            "pool_tags": [1, 2, 4],
+            "representative_pair": [0, 2],
+            "witness_data_items": 4,
+            "hint_items": 0
+          },
+          "includes": "fragment-only: complete final policy-produced local tapscript predicate with exact-HORS opening, same-index OP_ROLL selection, pair relation, cleanup and terminal true; serialized four-item data witness; excludes ECDSA, legacy sighash, transaction wrapper and Core validation",
+          "script_bytes": 153,
+          "witness_bytes": 38,
+          "witness_bytes_max": 38,
+          "max_stack_items": 12,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 68,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 153,
+          "metric_keys": [
+            "binohash_hors_subset_script",
+            "binohash_hors_subset_witness",
+            "binohash_hors_subset_stack",
+            "binohash_hors_subset_static_ops"
+          ]
+        }
+      ],
+      "limitations": [
+        "Local tapscript toy rather than a funded legacy ECDSA spend",
+        "Numeric pool tags and public test preimages provide no one-time security claim",
+        "No FindAndDelete digest, transaction pinning, two-round grinding, or default policy verdict"
+      ],
+      "open_problems": [
+        "OP-009",
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash",
       "name": "Binohash transaction digest",
       "class": "introspection/transaction",
