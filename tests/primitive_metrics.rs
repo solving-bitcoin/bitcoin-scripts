@@ -367,6 +367,96 @@ fn witness_size(items: &[Vec<u8>]) -> usize {
     serialize(&Witness::from_slice(items)).len()
 }
 
+mod witness_data_size_baseline {
+    use bitcoin_lab::support::script::*;
+    include!("../research/witness-data-byte-cap/baseline.rs");
+}
+
+/// Compare equal preserved-suffix byte-cap checks followed by identical cleanup.
+#[test]
+fn witness_data_cap_metrics_are_current() {
+    use bitcoin_lab::support::{
+        tapscript::{execute_tapscript, TapscriptProfile},
+        witness_data_size::verify_data_witness_size_at_most,
+    };
+
+    macro_rules! keys {
+        ($case:literal, $schedule:literal) => {
+            [
+                concat!("witness_cap_", $case, "_", $schedule, "_script"),
+                concat!("witness_cap_", $case, "_", $schedule, "_witness"),
+                concat!("witness_cap_", $case, "_", $schedule, "_stack"),
+                concat!("witness_cap_", $case, "_", $schedule, "_executed"),
+            ]
+        };
+    }
+    let mut mixed = vec![0; 32];
+    mixed[..3].copy_from_slice(&[252, 253, 520]);
+    let mut report = Vec::new();
+    for (lengths, cap, checked, baseline) in [
+        (
+            vec![4; 32],
+            161u32,
+            keys!("tight32", "checked"),
+            keys!("tight32", "branch"),
+        ),
+        (
+            vec![4; 32],
+            286,
+            keys!("wide_short32", "checked"),
+            keys!("wide_short32", "branch"),
+        ),
+        (
+            mixed,
+            1062,
+            keys!("wide_mixed32", "checked"),
+            keys!("wide_mixed32", "branch"),
+        ),
+        (
+            vec![0; 253],
+            256,
+            keys!("tight253", "checked"),
+            keys!("tight253", "branch"),
+        ),
+    ] {
+        let n = lengths.len() as u32;
+        let witness: Vec<_> = lengths
+            .into_iter()
+            .enumerate()
+            .map(|(i, len)| vec![(i as u8) ^ 0xa5; len])
+            .collect();
+        for (keys, fragment) in [
+            (checked, verify_data_witness_size_at_most(n, cap)),
+            (baseline, witness_data_size_baseline::conditional(n, cap)),
+        ] {
+            let leaf = script! {
+                {fragment}
+                for _ in 0..n {OP_DROP}
+                OP_TRUE
+            }
+            .compile_with_policy();
+            let result =
+                execute_tapscript(leaf.clone(), witness.clone(), TapscriptProfile::Consensus);
+            assert_eq!(result.accepted(), Some(true));
+            let stats = &result.execution().unwrap().stats;
+            assert_eq!(stats.start_validation_weight, stats.validation_weight);
+            let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+            assert_eq!(peak, stats.max_nb_stack_items);
+            for (key, value) in
+                keys.into_iter()
+                    .zip([leaf.len(), witness_size(&witness), peak, executed])
+            {
+                report.push(Metric {
+                    readme: "src/support/witness_data_size/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(report);
+}
+
 fn scriptnum(value: i64) -> Vec<u8> {
     let mut bytes = [0u8; 8];
     let len = bitcoin::script::write_scriptint(&mut bytes, value);
@@ -14771,6 +14861,49 @@ fn bounded_division_metrics_are_current() {
         })
     );
     check_readme_metrics(metrics);
+}
+
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+    use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
+    let mut exec = Exec::new(
+        ExecCtx::Tapscript,
+        Options {
+            require_minimal: false,
+            enforce_stack_limit: true,
+            experimental: Experimental { op_cat: false },
+            ..Default::default()
+        },
+        TxTemplate {
+            tx: Transaction {
+                version: transaction::Version::TWO,
+                lock_time: absolute::LockTime::ZERO,
+                input: vec![],
+                output: vec![],
+            },
+            prevouts: vec![],
+            input_idx: 0,
+            taproot_annex_scriptleaf: Some((TapLeafHash::all_zeros(), None)),
+        },
+        script,
+        witness,
+    )
+    .unwrap();
+    let mut executed = 0;
+    loop {
+        let instruction = exec.remaining_script().instructions().next();
+        let active = exec.cond_stack().all_true();
+        let counted = matches!(instruction, Some(Ok(Instruction::Op(op))) if op.to_u8() > 0x60 && (active || (0x63..=0x68).contains(&op.to_u8())));
+        if exec.exec_next().is_err() {
+            break;
+        }
+        executed += usize::from(counted);
+    }
+    assert!(exec.result().unwrap().success);
+    assert_eq!(exec.stack().len(), 1);
+    (exec.stats().max_nb_stack_items, executed)
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

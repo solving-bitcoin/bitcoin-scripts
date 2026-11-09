@@ -138,6 +138,14 @@ witness bytes, transaction weights and combined stack peaks (null for panics).
 No batched configuration or signature-budget boundary is measured. Existing
 catalog configurations keep their original evidence and deployment classes.
 
+## Serialized witness-data cap shortcuts
+
+The [byte-cap experiment](witness-data-size.md) gives a concrete
+CompactSize undercount at the first unsafe cap. Exact branch-free
+accounting reduces code size while executing more operations on short
+items. A standalone data-vector cap excludes the full witness count
+and the script-path items.
+
 ## NR-048: Minimal-push policy must follow execution
 
 Can numeric and push-minimality policy be selected independently of tapscript

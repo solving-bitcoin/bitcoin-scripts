@@ -12,3 +12,4 @@ pub mod script_ops;
 pub mod selection;
 pub mod taproot;
 pub mod tapscript;
+pub mod witness_data_size;

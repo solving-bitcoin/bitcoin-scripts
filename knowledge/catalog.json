@@ -28453,6 +28453,286 @@
         "Local execution only; exact Core transactions and relay policy remain unclassified."
       ],
       "open_problems": []
+    },
+    {
+      "id": "support/witness-data-size",
+      "name": "Serialized witness-data byte cap",
+      "class": "support/stack",
+      "summary": "Check a public byte cap on the standalone serialization of a fixed opaque data suffix and preserve the original stack items.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/witness-data-size.md",
+      "implementation": "src/support/witness_data_size/mod.rs",
+      "documentation": "src/support/witness_data_size/README.md",
+      "tests": [
+        "src/support/witness_data_size/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bip-144",
+        "bitcoin-core-v30.3-regtest",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling"
+      ],
+      "security": "The cap is checked from actual opaque byte lengths. The tight route is valid only below CompactSizeWidth(n)+n+253. Equal-length payloads are not authenticated and other witness components are excluded.",
+      "stack_contract": "Preserves a fixed data suffix, deeper caller items and the altstack. Fails when the suffix's standalone serialized size exceeds the cap. Leaves no result and requires no hints.",
+      "configurations": [
+        {
+          "id": "tight32-checked",
+          "label": "32 items of length four, cap 161, selected route",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 161,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32 items of length four"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 199,
+          "witness_bytes": 161,
+          "witness_bytes_max": null,
+          "max_stack_items": 35,
+          "executed_opcodes": 146,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_tight32_checked_script",
+            "witness_cap_tight32_checked_witness",
+            "witness_cap_tight32_checked_stack",
+            "witness_cap_tight32_checked_executed"
+          ]
+        },
+        {
+          "id": "tight32-branch",
+          "label": "32 items of length four, cap 161, always conditional",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 161,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32 items of length four"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 487,
+          "witness_bytes": 161,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 274,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_tight32_branch_script",
+            "witness_cap_tight32_branch_witness",
+            "witness_cap_tight32_branch_stack",
+            "witness_cap_tight32_branch_executed"
+          ]
+        },
+        {
+          "id": "wide-short32-checked",
+          "label": "32 items of length four, cap 286, selected route",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 286,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32 items of length four"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 455,
+          "witness_bytes": 161,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 306,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_wide_short32_checked_script",
+            "witness_cap_wide_short32_checked_witness",
+            "witness_cap_wide_short32_checked_stack",
+            "witness_cap_wide_short32_checked_executed"
+          ]
+        },
+        {
+          "id": "wide-short32-branch",
+          "label": "32 items of length four, cap 286, always conditional",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 286,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32 items of length four"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 487,
+          "witness_bytes": 161,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 274,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_wide_short32_branch_script",
+            "witness_cap_wide_short32_branch_witness",
+            "witness_cap_wide_short32_branch_stack",
+            "witness_cap_wide_short32_branch_executed"
+          ]
+        },
+        {
+          "id": "wide-mixed32-checked",
+          "label": "lengths 252, 253, 520 and 29 empty items, cap 1062, selected route",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 1062,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "lengths 252, 253, 520 and 29 empty items"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 455,
+          "witness_bytes": 1062,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 306,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_wide_mixed32_checked_script",
+            "witness_cap_wide_mixed32_checked_witness",
+            "witness_cap_wide_mixed32_checked_stack",
+            "witness_cap_wide_mixed32_checked_executed"
+          ]
+        },
+        {
+          "id": "wide-mixed32-branch",
+          "label": "lengths 252, 253, 520 and 29 empty items, cap 1062, always conditional",
+          "parameters": {
+            "data_items": 32,
+            "cap_bytes": 1062,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "lengths 252, 253, 520 and 29 empty items"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 487,
+          "witness_bytes": 1062,
+          "witness_bytes_max": null,
+          "max_stack_items": 36,
+          "executed_opcodes": 276,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_wide_mixed32_branch_script",
+            "witness_cap_wide_mixed32_branch_witness",
+            "witness_cap_wide_mixed32_branch_stack",
+            "witness_cap_wide_mixed32_branch_executed"
+          ]
+        },
+        {
+          "id": "tight253-checked",
+          "label": "253 empty items, cap 256, selected route",
+          "parameters": {
+            "data_items": 253,
+            "cap_bytes": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "253 empty items"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 1763,
+          "witness_bytes": 256,
+          "witness_bytes_max": null,
+          "max_stack_items": 256,
+          "executed_opcodes": 1141,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_tight253_checked_script",
+            "witness_cap_tight253_checked_witness",
+            "witness_cap_tight253_checked_stack",
+            "witness_cap_tight253_checked_executed"
+          ]
+        },
+        {
+          "id": "tight253-branch",
+          "label": "253 empty items, cap 256, always conditional",
+          "parameters": {
+            "data_items": 253,
+            "cap_bytes": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "253 empty items"
+          },
+          "includes": "complete-leaf: preserved-suffix size check, identical data cleanup and terminal true. Data witness bytes include the standalone CompactSize count and item prefixes. Excludes the leaf, control block, annex and transaction.",
+          "script_bytes": 4040,
+          "witness_bytes": 256,
+          "witness_bytes_max": null,
+          "max_stack_items": 257,
+          "executed_opcodes": 2153,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "witness_cap_tight253_branch_script",
+            "witness_cap_tight253_branch_witness",
+            "witness_cap_tight253_branch_stack",
+            "witness_cap_tight253_branch_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Only the standalone fixed data suffix is counted; the full witness count, script, control block, annex and other items are excluded.",
+        "The exact branch-free route executes more non-push operations than the conditional baseline on the measured mixed and all-short fixtures.",
+        "Standalone maxima are 997 items for tight and 996 for exact caps. Preserved caller state lowers these limits.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
     }
   ]
 }
