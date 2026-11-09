@@ -11,7 +11,7 @@ explicit witness indices.
   witness with 32-byte preimages; canonical indices `1..=8` are the 281-byte
   maximum and have a 50-item strict local stack peak. The exact-index variant
   uses 914 script bytes and the same 280/281-byte witness range, with a
-  51-item peak; the representative executions count 145 and 250 non-push
+  51-item peak; the representative executions count 88 and 164 non-push
   opcodes respectively.
 - **Serialization boundary:** with `n=129,t=1`, canonical indices 127 and 128
   serialize to 36 and 37 witness bytes respectively; index 129 is upper-clamped to

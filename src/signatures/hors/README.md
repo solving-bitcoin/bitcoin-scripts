@@ -31,8 +31,16 @@ policy-produced script; neither script crosses the 32 KiB optimizer cutoff.
 
 | `n=32,t=8` index rule | Locking bytes | Serialized data witness | Combined stack peak | Executed non-push opcodes |
 | --- | ---: | ---: | ---: | ---: |
-| Clamped | 809 | 280 (281 max) | 50 | <!-- metric:hors_clamped_ops_n32_t8 -->145<!-- /metric:hors_clamped_ops_n32_t8 --> |
-| Exact ascending | <!-- metric:hors_exact_lock_n32_t8 -->914<!-- /metric:hors_exact_lock_n32_t8 --> | <!-- metric:hors_exact_witness_n32_t8 -->280<!-- /metric:hors_exact_witness_n32_t8 --> (<!-- metric:hors_exact_witness_max_n32_t8 -->281<!-- /metric:hors_exact_witness_max_n32_t8 --> max) | <!-- metric:hors_exact_stack_n32_t8 -->51<!-- /metric:hors_exact_stack_n32_t8 --> | <!-- metric:hors_exact_ops_n32_t8 -->250<!-- /metric:hors_exact_ops_n32_t8 --> |
+| Clamped | 809 | 280 (281 max) | 50 | <!-- metric:hors_clamped_ops_n32_t8 -->88<!-- /metric:hors_clamped_ops_n32_t8 --> |
+| Exact ascending | <!-- metric:hors_exact_lock_n32_t8 -->914<!-- /metric:hors_exact_lock_n32_t8 --> | <!-- metric:hors_exact_witness_n32_t8 -->280<!-- /metric:hors_exact_witness_n32_t8 --> (<!-- metric:hors_exact_witness_max_n32_t8 -->281<!-- /metric:hors_exact_witness_max_n32_t8 --> max) | <!-- metric:hors_exact_stack_n32_t8 -->51<!-- /metric:hors_exact_stack_n32_t8 --> | <!-- metric:hors_exact_ops_n32_t8 -->164<!-- /metric:hors_exact_ops_n32_t8 --> |
+
+The verifiers are straight-line, so final-bytecode non-push opcode counts
+equal executed non-push counts. The local tapscript interpreter's
+`ExecStats::opcode_count` instead counts **all parsed instructions**, including
+pushes: 145 for clamped and 250 for exact. These instruction totals must not
+be compared to the legacy 201 non-push opcode ceiling. The exact verifier's
+164 non-push opcodes fit that standalone limit, but a complete legacy spend
+and composition with Binohash are not established.
 
 The comparison runs one strict local tapscript execution per script with
 indices `0,4,9,13,17,21,25,31` and 32-byte preimages. Both have 16 data

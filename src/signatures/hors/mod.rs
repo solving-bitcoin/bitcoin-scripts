@@ -254,6 +254,7 @@ mod tests {
         execute_script_with_inputs_strict,
     };
     use crate::support::script::{script, ScriptCompilation};
+    use bitcoin::script::Instruction;
     use bitcoin_scriptexec::{ExecError, Options};
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
@@ -672,6 +673,16 @@ mod tests {
         let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
         let public_keys = hors_public_keys(&preimages);
         let locking = hors_exact_index_locking_script(&public_keys, 8);
+        let static_non_push = locking
+            .clone()
+            .compile_with_policy()
+            .instructions()
+            .map(|instruction| instruction.expect("generated HORS script must parse"))
+            .filter(|instruction| {
+                matches!(instruction, Instruction::Op(opcode) if opcode.to_u8() > 0x60)
+            })
+            .count();
+        assert_eq!(static_non_push, 164);
         let indices = [0, 4, 9, 13, 17, 21, 25, 31];
         let witness = hors_unlocking_witness(&preimages, &indices);
         let valid = execute_script_with_inputs_strict(locking.clone(), witness.clone());
