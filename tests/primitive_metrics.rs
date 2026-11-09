@@ -16953,6 +16953,38 @@ fn adler32_state_metrics_are_current() {
 }
 
 #[test]
+fn binohash_appendix_b_resource_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-appendix-b-resources.json")).unwrap();
+    assert_eq!(
+        report["experiment"],
+        "binohash-appendix-b-single-round-static"
+    );
+    let row = report["configurations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["n"] == 120 && row["t"] == 8)
+        .unwrap();
+    assert_eq!(row["execution"], "unclassified");
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_appendix_b_n120_lock",
+            value: row["policy_compiled_locking_script_bytes"]
+                .as_u64()
+                .unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_appendix_b_n120_static_ops",
+            value: row["non_push_opcodes"].as_u64().unwrap() as usize,
+        },
+    ]);
+}
+
+#[test]
 fn binohash_subset_core_report_metrics_are_current() {
     let report: serde_json::Value =
         serde_json::from_str(include_str!("data/binohash-subset-v30.3.json")).unwrap();
