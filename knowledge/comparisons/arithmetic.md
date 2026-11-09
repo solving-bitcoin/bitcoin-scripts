@@ -529,3 +529,12 @@ At 64 lowercase characters the table-free fold costs 1,470 script bytes and a
 `locally-reproduced`). Either-case text widens the gap to 2,174 versus 1,299.
 The table first wins at 22 lowercase characters, 43 uppercase and 6
 either-case characters. See [the primitive](../primitives/u4-ascii-hex.md) and NR-090.
+
+## Bracket-balance checks
+
+For 128 brackets the nibble-packed check costs 895 script bytes, 65 witness
+bytes over 32 items and a 69-item peak, against 2,059 bytes, 193 bytes over 128
+items and a 133-item peak when each bracket is its own item (zero hints,
+strict local `unclassified` tapscript, `locally-reproduced`). The comparator
+wins only at four brackets. See [the primitive](../primitives/u4-balanced.md)
+and NR-091.

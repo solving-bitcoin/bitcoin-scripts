@@ -1254,3 +1254,13 @@ complete-leaf boundaries, with witness bytes and items, exact hint counts,
 executed opcodes and combined peaks; record either a winning regime or
 dominance. Base32, Bech32 and Base58 alphabets are unmeasured. Core validation
 is required for any deployment claim.
+
+## OP-047 — Bracket-structure consumer frontier
+
+The balanced check is measured standalone. **Accept when:** a concrete consumer
+(for example validating a serialized tree-shape or nested-script commitment)
+uses it with its live protocol state and compares it with an alternative
+encoding such as depth lists on equal complete-leaf boundaries, with witness
+bytes and items, exact hint counts, executed opcodes and combined peaks.
+Byte-wide (256-entry) summary tables are unmeasured. Core validation is required
+for any deployment claim.

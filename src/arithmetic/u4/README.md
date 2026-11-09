@@ -35,6 +35,9 @@ these operations, but this module contains no hash-specific round logic.
 - `ascii_hex::ascii_hex_to_nibbles_fold(len, case)` takes `1..=997` items;
   `ascii_hex_to_nibbles_table(len, case)` takes `1..=942` because of its resident
   55-item table. Both abort on any code that is not a hex digit of the chosen case.
+- `balanced::u4_nibbles_balanced(len)` takes `1..=963` nibbles (four brackets
+  each, most significant bit first); peak is `len + 37`. The comparator
+  `bracket_items_balanced(len)` takes one `{0, 1}` item per bracket.
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -267,6 +270,8 @@ words as data, with no hint items.
 | Inversion count, 16 nibbles | <!-- metric:u4_inversions_16 -->822<!-- /metric:u4_inversions_16 --> bytes | <!-- metric:u4_inversions_16_stack -->19<!-- /metric:u4_inversions_16_stack --> items | <!-- metric:u4_inversions_16_opcodes -->537<!-- /metric:u4_inversions_16_opcodes --> |
 | ASCII hex decode, 64 chars, fold | <!-- metric:u4_ascii_hex_fold_64 -->1470<!-- /metric:u4_ascii_hex_fold_64 --> bytes | <!-- metric:u4_ascii_hex_fold_64_stack -->67<!-- /metric:u4_ascii_hex_fold_64_stack --> items | <!-- metric:u4_ascii_hex_fold_64_opcodes -->830<!-- /metric:u4_ascii_hex_fold_64_opcodes --> |
 | ASCII hex decode, 64 chars, table | <!-- metric:u4_ascii_hex_table_64 -->1299<!-- /metric:u4_ascii_hex_table_64 --> bytes | <!-- metric:u4_ascii_hex_table_64_stack -->122<!-- /metric:u4_ascii_hex_table_64_stack --> items | <!-- metric:u4_ascii_hex_table_64_opcodes -->732<!-- /metric:u4_ascii_hex_table_64_opcodes --> |
+| Bracket balance, 128 brackets, packed nibbles | <!-- metric:u4_balanced_packed_128 -->895<!-- /metric:u4_balanced_packed_128 --> bytes | <!-- metric:u4_balanced_packed_128_stack -->69<!-- /metric:u4_balanced_packed_128_stack --> items | <!-- metric:u4_balanced_packed_128_opcodes -->598<!-- /metric:u4_balanced_packed_128_opcodes --> |
+| Bracket balance, 128 brackets, one item each | <!-- metric:u4_balanced_items_128 -->2059<!-- /metric:u4_balanced_items_128 --> bytes | <!-- metric:u4_balanced_items_128_stack -->133<!-- /metric:u4_balanced_items_128_stack --> items | <!-- metric:u4_balanced_items_128_opcodes -->1669<!-- /metric:u4_balanced_items_128_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -332,6 +337,8 @@ one truthy item at a complete leaf. Measurements execute the exact compiled
 fragment with the explicit local consensus numeric profile.
 
 The ASCII hex fixture (`0123456789abcdef` four times, lowercase) uses <!-- metric:u4_ascii_hex_64_witness -->129<!-- /metric:u4_ascii_hex_64_witness --> serialized witness bytes for <!-- metric:u4_ascii_hex_64_witness_items -->64<!-- /metric:u4_ascii_hex_64_witness_items --> data items and zero hints; both decoders leave 64 nibbles. Both fragments are straight-line apart from the fold's per-character branch, so the opcode column is a static non-push count, not a dynamic measurement.
+
+The bracket-balance fixture is `(())` repeated 32 times, 128 brackets. The packed form uses <!-- metric:u4_balanced_packed_128_witness -->65<!-- /metric:u4_balanced_packed_128_witness --> serialized witness bytes for <!-- metric:u4_balanced_packed_128_witness_items -->32<!-- /metric:u4_balanced_packed_128_witness_items --> data items; the one-item-per-bracket comparator uses <!-- metric:u4_balanced_items_128_witness -->193<!-- /metric:u4_balanced_items_128_witness --> bytes for <!-- metric:u4_balanced_items_128_witness_items -->128<!-- /metric:u4_balanced_items_128_witness_items --> items. Both use zero hints and return one Boolean.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 
@@ -1333,3 +1340,8 @@ A zero count alone is false and a nonzero count alone is true.
 
 The length-16 metrics execute the exact fragment under that explicit profile;
 serialized witness bytes include the item count, lengths, and payloads.
+
+The one-bit-per-item `balanced::bracket_items_balanced(len)` comparator is
+bounded separately from the packed variant: `1 <= len <= 995` (no default),
+with `len + 5 + preserved_main + preserved_alt <= 1000`. The packed variant
+retains its independent `n + 37` bound. Exact tests cover both frontiers.
