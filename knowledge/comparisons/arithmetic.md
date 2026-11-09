@@ -520,3 +520,12 @@ a 19-item peak and 537 executed non-push opcodes at 16 nibbles (strict local
 at 32 and 15,629 at 64. The linear nondecreasing predicate needs 263, 588 and
 1,244 bytes at those lengths, so a zero-inversion test should not use the
 count (NR-089). See [the primitive](../primitives/u4-inversions.md).
+
+## ASCII hexadecimal text decoders
+
+At 64 lowercase characters the table-free fold costs 1,470 script bytes and a
+67-item peak, and the resident-table decoder 1,299 bytes and a 122-item peak
+(129 witness bytes, zero hints, strict local `unclassified` tapscript,
+`locally-reproduced`). Either-case text widens the gap to 2,174 versus 1,299.
+The table first wins at 22 lowercase characters, 43 uppercase and 6
+either-case characters. See [the primitive](../primitives/u4-ascii-hex.md) and NR-090.

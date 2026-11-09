@@ -163,3 +163,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [BN254 pairing verifier](bn254-pairing.md)
 - [Checked u4 multiset equality](u4-multiset-equal.md)
 - [Checked u4 inversion count](u4-inversions.md)
+- [Checked ASCII hexadecimal text to u4 nibbles](u4-ascii-hex.md)

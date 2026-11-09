@@ -32,6 +32,9 @@ these operations, but this module contains no hash-specific round logic.
 - `inversions::u4_nibbles_inversions(len)` takes a checked vector of `1..=128`
   nibbles; the bound is script size (`len*(len-1)/2` comparisons), not stack
   depth (the peak is `len + 3 + preserved`).
+- `ascii_hex::ascii_hex_to_nibbles_fold(len, case)` takes `1..=997` items;
+  `ascii_hex_to_nibbles_table(len, case)` takes `1..=942` because of its resident
+  55-item table. Both abort on any code that is not a hex digit of the chosen case.
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -262,6 +265,8 @@ words as data, with no hint items.
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
 | Multiset equality, 16 + 16 nibbles | <!-- metric:u4_multiset_equal_16 -->1158<!-- /metric:u4_multiset_equal_16 --> bytes | <!-- metric:u4_multiset_equal_16_stack -->53<!-- /metric:u4_multiset_equal_16_stack --> items | <!-- metric:u4_multiset_equal_16_opcodes -->723<!-- /metric:u4_multiset_equal_16_opcodes --> |
 | Inversion count, 16 nibbles | <!-- metric:u4_inversions_16 -->822<!-- /metric:u4_inversions_16 --> bytes | <!-- metric:u4_inversions_16_stack -->19<!-- /metric:u4_inversions_16_stack --> items | <!-- metric:u4_inversions_16_opcodes -->537<!-- /metric:u4_inversions_16_opcodes --> |
+| ASCII hex decode, 64 chars, fold | <!-- metric:u4_ascii_hex_fold_64 -->1470<!-- /metric:u4_ascii_hex_fold_64 --> bytes | <!-- metric:u4_ascii_hex_fold_64_stack -->67<!-- /metric:u4_ascii_hex_fold_64_stack --> items | <!-- metric:u4_ascii_hex_fold_64_opcodes -->830<!-- /metric:u4_ascii_hex_fold_64_opcodes --> |
+| ASCII hex decode, 64 chars, table | <!-- metric:u4_ascii_hex_table_64 -->1299<!-- /metric:u4_ascii_hex_table_64 --> bytes | <!-- metric:u4_ascii_hex_table_64_stack -->122<!-- /metric:u4_ascii_hex_table_64_stack --> items | <!-- metric:u4_ascii_hex_table_64_opcodes -->732<!-- /metric:u4_ascii_hex_table_64_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -316,6 +321,17 @@ pinned separately from the optimized length-16 row.
 
 
 The inversion-count fixture (strictly descending, 120 inversions) uses <!-- metric:u4_inversions_16_witness -->32<!-- /metric:u4_inversions_16_witness --> serialized witness bytes for <!-- metric:u4_inversions_16_witness_items -->16<!-- /metric:u4_inversions_16_witness_items --> data items and zero hints. The fragment is straight-line, so its executed non-push opcodes equal the static count above. The specialized nondecreasing check on the same 16 nibbles is <!-- metric:u4_inversions_16_nondecreasing -->263<!-- /metric:u4_inversions_16_nondecreasing --> bytes.
+
+For the 64-character ASCII-hex decoders, the 1,470/1,299-byte fragments
+exceed P2SH's 520-byte redeemScript element limit, and their 830/732 static
+non-push opcodes exceed the legacy/P2SH/P2WSH 201-opcode limit. Tapscript
+removes those legacy limits, but the local results remain `unclassified` and
+full transaction/relay policy is untested. Callers must consume or verify all
+returned nibbles and preserved state, enforce the intended predicate and leave
+one truthy item at a complete leaf. Measurements execute the exact compiled
+fragment with the explicit local consensus numeric profile.
+
+The ASCII hex fixture (`0123456789abcdef` four times, lowercase) uses <!-- metric:u4_ascii_hex_64_witness -->129<!-- /metric:u4_ascii_hex_64_witness --> serialized witness bytes for <!-- metric:u4_ascii_hex_64_witness_items -->64<!-- /metric:u4_ascii_hex_64_witness_items --> data items and zero hints; both decoders leave 64 nibbles. Both fragments are straight-line apart from the fold's per-character branch, so the opcode column is a static non-push count, not a dynamic measurement.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 

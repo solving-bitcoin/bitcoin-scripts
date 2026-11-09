@@ -2056,3 +2056,15 @@ count is justified only when its magnitude is consumed. Sums of lane-packed
 histograms were not attempted: extracting a lane would need division or
 remainder, and no such opcode is available, which is reasoning rather than
 measurement. See the [primitive](../primitives/u4-inversions.md).
+
+## NR-090: The arithmetic hex fold is dominated at digest length
+
+For hexadecimal text the table-free fold loses to a resident 55-entry table
+beyond a short crossover: 1,470 versus 1,299 bytes at 64 lowercase characters
+(12%), 2,174 versus 1,299 for either-case input (40%), with the table first strictly smaller at 22
+lowercase, 43 uppercase and 6 either-case characters. The fold keeps its niche
+only when the extra 55 live stack items are unaffordable. Branchy classification
+cost 23 to 34 bytes per character, which is why folding case ranges together
+was not enough. All figures are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-ascii-hex.md).
