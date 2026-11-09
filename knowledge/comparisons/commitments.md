@@ -54,6 +54,10 @@ crosses from a 36-byte witness at index 127 to 37 bytes at index 128 for
 `n=129,t=1`; its verifier clamps index 129 rather than enforcing the encoded
 index verbatim.
 
+The [length-keyed SHA-256 comparison](length-keyed-sha256.md) assigns a
+different digest slot to each allowed length. Its per-digest branches,
+eight-entry blocks and full table verify the same one-item witness.
+
 Taproot Merkle branches are intentionally absent from this cost table. The
 native-byte adapter search is an inspected negative result: current Script
 cannot bind two hostile 32-byte nodes into the tagged `TapBranch` SHA256
