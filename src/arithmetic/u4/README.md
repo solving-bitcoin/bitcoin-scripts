@@ -1561,3 +1561,29 @@ cleanup; input pushes and terminal predicate excluded. Fixture
 | Pairwise selector (hint-free) | <!-- metric:u4_kth_select_16 -->3512<!-- /metric:u4_kth_select_16 --> | <!-- metric:u4_kth_select_16_witness -->33<!-- /metric:u4_kth_select_16_witness --> | <!-- metric:u4_kth_select_16_witness_items -->16<!-- /metric:u4_kth_select_16_witness_items --> | 0 | <!-- metric:u4_kth_select_16_stack -->22<!-- /metric:u4_kth_select_16_stack --> | <!-- metric:u4_kth_select_16_opcodes -->2282<!-- /metric:u4_kth_select_16_opcodes --> |
 
 The hinted claim is bound numerically and returned unchanged; numeric aliases can pass when minimality is disabled, so canonicalize before byte-sensitive use. See the [knowledge page](../../../knowledge/primitives/u4-order-statistic.md).
+
+## Nibbles to ASCII hexadecimal text
+
+`ascii_hex_encode::u4_nibbles_to_ascii_hex_arith(n, case)` (`n` in `1..=997`, peak
+`n + 3`) and `u4_nibbles_to_ascii_hex_table(n, case)` (`n` in `1..=981`, peak
+`n + 19`) replace each checked nibble with the ASCII code of its lower- or
+upper-case hexadecimal digit, in order; a nibble outside `0..=15` aborts. The
+arithmetic form branches (`+48`, or `+87`/`+55` above 9); the table form keeps
+16 code entries live. No hints.
+
+Fragment-only boundary: range checks, encoding and order restoration; input pushes
+and terminal predicate excluded. Fixture: the nibbles `0..=15` repeated four times
+(64 nibbles, <!-- metric:u4_ascii_hex_encode_64_witness -->125<!-- /metric:u4_ascii_hex_encode_64_witness --> witness bytes, <!-- metric:u4_ascii_hex_encode_64_witness_items -->64<!-- /metric:u4_ascii_hex_encode_64_witness_items --> items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Arithmetic, 64 nibbles | <!-- metric:u4_ascii_hex_encode_arith_64 -->1150<!-- /metric:u4_ascii_hex_encode_arith_64 --> | <!-- metric:u4_ascii_hex_encode_arith_64_stack -->67<!-- /metric:u4_ascii_hex_encode_arith_64_stack --> | <!-- metric:u4_ascii_hex_encode_arith_64_opcodes -->702<!-- /metric:u4_ascii_hex_encode_arith_64_opcodes --> |
+| Table, 64 nibbles | <!-- metric:u4_ascii_hex_encode_table_64 -->680<!-- /metric:u4_ascii_hex_encode_table_64 --> | <!-- metric:u4_ascii_hex_encode_table_64_stack -->83<!-- /metric:u4_ascii_hex_encode_table_64_stack --> | <!-- metric:u4_ascii_hex_encode_table_64_opcodes -->456<!-- /metric:u4_ascii_hex_encode_table_64_opcodes --> |
+
+See the [knowledge page](../../../knowledge/primitives/u4-ascii-hex-encode.md).
+
+The 64-item ASCII-hex encoder table costs 32 bytes of setup, 10 per nibble,
+and 8 cleanup bytes; `32 + 64*10 + 8 = 680`, with zero cross-component optimizer
+delta. The 64-item rows exceed the legacy/P2SH/P2WSH 201-opcode limit; both
+fragments also exceed P2SH's 520-byte element limit. This is not a
+consensus or policy validation.

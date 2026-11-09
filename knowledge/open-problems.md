@@ -1363,3 +1363,12 @@ including the hint item, and a consumer (for example a median-of-reports or
 threshold-ordering protocol) uses the winner with its live state, recording witness
 bytes and items, hint counts, executed opcodes and combined peaks. Core validation
 is required for any deployment claim.
+
+## OP-058 — Hex text round trip and digest-text consumer
+
+Encoding and decoding hexadecimal text are measured separately. **Accept when:** a
+consumer (for example comparing a witness-supplied hexadecimal digest text with a
+computed digest) combines the decoder and encoder with its live protocol state and
+compares text, nibble and raw-byte witnesses on equal complete-leaf boundaries
+with witness bytes and items, hint counts, executed opcodes and combined peaks.
+Core validation is required for any deployment claim.

@@ -619,3 +619,11 @@ selection (peak 22); at 32 nibbles 656 versus 14,223 bytes (strict local
 3,044-byte zero-hint sorting network at 32 inputs; it returns all sorted items
 and needs an unmeasured selection/cleanup consumer, so the output boundaries
 are not yet matched. See [the primitive](../primitives/u4-order-statistic.md) and NR-101.
+
+## Nibble to ASCII hexadecimal encoders
+
+Encoding 64 nibbles as lowercase hexadecimal text costs 1,150 script bytes with the
+branching arithmetic form (peak 67) and 680 bytes with a resident 16-entry table
+(peak 83), 125 witness bytes over 64 items, zero hints (strict local
+`unclassified` tapscript, `locally-reproduced`). The table form wins from about five
+nibbles. See [the primitive](../primitives/u4-ascii-hex-encode.md) and NR-102.

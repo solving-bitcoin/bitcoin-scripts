@@ -8978,6 +8978,88 @@ fn u4_order_statistic_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures nibble-to-ASCII hexadecimal encoding at 64 nibbles.
+#[test]
+fn u4_ascii_hex_encode_metrics_are_current() {
+    use u4::ascii_hex_encode::{
+        u4_nibbles_to_ascii_hex_arith, u4_nibbles_to_ascii_hex_table, HexLetterCase,
+    };
+    const LEN: u32 = 64;
+    // The 64 nibbles 0..=15 repeated four times.
+    let witness: Vec<Vec<u8>> = (0..LEN as i64).map(|i| scriptnum(i % 16)).collect();
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_ascii_hex_encode_64_witness_items",
+            value: witness.len(),
+        },
+    ];
+    for (name, fragment) in [
+        (
+            "arith",
+            u4_nibbles_to_ascii_hex_arith(LEN, HexLetterCase::Lower),
+        ),
+        (
+            "table",
+            u4_nibbles_to_ascii_hex_table(LEN, HexLetterCase::Lower),
+        ),
+    ] {
+        let compiled = fragment.clone().compile_with_policy();
+        let run = bitcoin_lab::support::tapscript::execute_tapscript(
+            compiled,
+            witness.clone(),
+            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+        );
+        let result = run.execution().expect("encoder fragment executes");
+        assert!(result.error.is_none(), "{result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), LEN as usize);
+        for i in 0..LEN as usize {
+            let nibble = i % 16;
+            let ascii = if nibble < 10 {
+                48 + nibble
+            } else {
+                97 + nibble - 10
+            };
+            assert_eq!(result.final_stack.get(i), scriptnum(ascii as i64));
+        }
+        if name == "table" {
+            // Sixteen two-byte constant pushes, 64 independently sized ten-byte
+            // queries and eight cleanup bytes equal this whole compiled fragment.
+            let setup = script! { for nibble in (0..16u8).rev() { { i64::from(u4::ascii_hex_encode::ascii_hex_code(nibble, HexLetterCase::Lower)) } } };
+            let query =
+                script! { 16 OP_ROLL OP_DUP 0 16 OP_WITHIN OP_VERIFY OP_PICK OP_TOALTSTACK };
+            let restore = script! { OP_FROMALTSTACK };
+            let cleanup = u4::stack::u4_drop(16);
+            assert_eq!(script_len(setup), 32);
+            assert_eq!(script_len(query), 9);
+            assert_eq!(script_len(restore), 1);
+            assert_eq!(script_len(cleanup), 8);
+            assert_eq!(script_len(fragment.clone()), 32 + 64 * (9 + 1) + 8);
+        }
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_ascii_hex_encode_{name}_64{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {
