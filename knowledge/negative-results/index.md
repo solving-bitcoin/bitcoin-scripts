@@ -69,6 +69,14 @@ executed instructions and combined peak at width four. At width 128 it trades
 additional stack items for smaller code and fewer operations. A minimum-only
 scan cannot bind the earliest position, and resident state limits composition.
 
+## Signed progression wide cross-sums and the three-input cost
+
+The [progression counterexample](signed-progression.md) shows how numeric
+equality can reject canonical five-byte cross-sums. The checked cross-sum
+schedule uses byte equality and beats a carried difference by one script
+byte and one operation for three inputs. Evidence is `locally-reproduced`;
+execution is `unclassified`.
+
 ## NR-078: Forward stable filtering and redundant flag guards
 
 The [stable-selection experiment](stable-selection.md) reproduces 970/1,070

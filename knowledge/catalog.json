@@ -17470,6 +17470,324 @@
       ]
     },
     {
+      "id": "arithmetic/scriptnum-progression",
+      "name": "Exact signed ScriptNum arithmetic progression",
+      "class": "arithmetic/scriptnum",
+      "summary": "Checks that adjacent signed differences are identical by carrying a canonical raw difference and bounding each operand width.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/signed-progression.md",
+      "implementation": "src/arithmetic/progression/mod.rs",
+      "documentation": "src/arithmetic/progression/README.md",
+      "tests": [
+        "src/arithmetic/progression/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bitcoin-core-scriptnum-v30.3",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic"
+      ],
+      "security": "Hostile items must fit the four-byte numeric operand limit. Local Consensus accepts numeric aliases within that width; Policy enforces minimal encoding. Arithmetic results are compared by raw equality and may be five bytes. The relation authenticates neither the raw operands nor their provenance.",
+      "stack_contract": "Consumes a fixed 3..=998-item top suffix and preserves both caller stacks. Success produces no item. The carried schedule peaks at n+2 plus live caller items. All n operands and zero hints coexist at entry.",
+      "configurations": [
+        {
+          "id": "3-carried",
+          "label": "3 values, carried difference",
+          "parameters": {
+            "count": 3,
+            "start": 2147483647,
+            "forward_step": 0,
+            "schedule": "carried",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 25,
+          "witness_bytes": 16,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 20,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_3_carried_script",
+            "progression_3_carried_witness",
+            "progression_3_carried_stack",
+            "progression_3_carried_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "3-crossed",
+          "label": "3 values, local cross-sums",
+          "parameters": {
+            "count": 3,
+            "start": 2147483647,
+            "forward_step": 0,
+            "schedule": "crossed",
+            "data_items": 3,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 24,
+          "witness_bytes": 16,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 19,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_3_crossed_script",
+            "progression_3_crossed_witness",
+            "progression_3_crossed_stack",
+            "progression_3_crossed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-carried",
+          "label": "32 values, carried difference",
+          "parameters": {
+            "count": 32,
+            "start": -2147483647,
+            "forward_step": 71390911,
+            "schedule": "carried",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 344,
+          "witness_bytes": 160,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 281,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_32_carried_script",
+            "progression_32_carried_witness",
+            "progression_32_carried_stack",
+            "progression_32_carried_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-crossed",
+          "label": "32 values, local cross-sums",
+          "parameters": {
+            "count": 32,
+            "start": -2147483647,
+            "forward_step": 71390911,
+            "schedule": "crossed",
+            "data_items": 32,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 401,
+          "witness_bytes": 160,
+          "witness_bytes_max": null,
+          "max_stack_items": 34,
+          "executed_opcodes": 338,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_32_crossed_script",
+            "progression_32_crossed_witness",
+            "progression_32_crossed_stack",
+            "progression_32_crossed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-carried",
+          "label": "128 values, carried difference",
+          "parameters": {
+            "count": 128,
+            "start": 2147483647,
+            "forward_step": -17000000,
+            "schedule": "carried",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 1400,
+          "witness_bytes": 640,
+          "witness_bytes_max": null,
+          "max_stack_items": 130,
+          "executed_opcodes": 1145,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_128_carried_script",
+            "progression_128_carried_witness",
+            "progression_128_carried_stack",
+            "progression_128_carried_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-crossed",
+          "label": "128 values, local cross-sums",
+          "parameters": {
+            "count": 128,
+            "start": 2147483647,
+            "forward_step": -17000000,
+            "schedule": "crossed",
+            "data_items": 128,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 1649,
+          "witness_bytes": 640,
+          "witness_bytes_max": null,
+          "max_stack_items": 130,
+          "executed_opcodes": 1394,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_128_crossed_script",
+            "progression_128_crossed_witness",
+            "progression_128_crossed_stack",
+            "progression_128_crossed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "998-carried",
+          "label": "998 values, carried difference",
+          "parameters": {
+            "count": 998,
+            "start": 0,
+            "forward_step": 0,
+            "schedule": "carried",
+            "data_items": 998,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 10970,
+          "witness_bytes": 1001,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 8975,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_998_carried_script",
+            "progression_998_carried_witness",
+            "progression_998_carried_stack",
+            "progression_998_carried_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "998-crossed",
+          "label": "998 values, local cross-sums",
+          "parameters": {
+            "count": 998,
+            "start": 0,
+            "forward_step": 0,
+            "schedule": "crossed",
+            "data_items": 998,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: every numeric width guard, exact progression checks, cleanup and terminal true. Data witness includes item count and lengths; excludes leaf, control block, annex and transaction framing. The executed count excludes pushes.",
+          "script_bytes": 12959,
+          "witness_bytes": 1001,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 10964,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "progression_998_crossed_script",
+            "progression_998_crossed_witness",
+            "progression_998_crossed_stack",
+            "progression_998_crossed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "The three-value carried schedule loses one leaf byte and one executed operation to local cross-sums.",
+        "Width 998 leaves zero caller slots under the 1,000-item combined limit.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-power-of-two",
       "name": "Checked u4 nonzero-power-of-two predicate",
       "class": "arithmetic/word",

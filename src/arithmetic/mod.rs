@@ -9,6 +9,7 @@ pub mod integer_root;
 pub mod knapsack;
 pub mod interval_mask;
 pub mod permutation;
+pub mod progression;
 pub mod rns;
 pub mod saturating;
 pub mod scriptint;

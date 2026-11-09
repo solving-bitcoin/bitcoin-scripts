@@ -12,6 +12,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [CompactSize byte representations](compactsize-encoding.md)
 - [Hash constructions](hashes.md)
 - [Commitments and opening relations](commitments.md)
+- [Signed arithmetic progression schedules](signed-progression.md)
 - [Transaction introspection](introspection.md)
 - [Signature verification and one-time authentication](signatures.md)
 - [Block ciphers](ciphers.md)
