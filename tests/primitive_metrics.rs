@@ -13376,6 +13376,96 @@ fn u4_exact_product_metrics_are_current() {
 }
 
 #[test]
+fn indexed_selection_metrics_are_current() {
+    use bitcoin_lab::support::{
+        indexed_selection::compact_indexed_items, selection::compact_selected_items,
+    };
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_items"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_executed"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (k, indexed_keys, flag_keys) in [
+        (4, keys!("indexed32_k4"), keys!("flags32_k4")),
+        (16, keys!("indexed32_k16"), keys!("flags32_k16")),
+        (32, keys!("indexed32_k32"), keys!("flags32_k32")),
+    ] {
+        let n = 32;
+        let payloads: Vec<_> = (0..n).map(|i| vec![0x20 + i as u8]).collect();
+        let depths: Vec<_> = (0..k).map(|j| j * n / k).collect();
+        let keep = |i| depths.contains(&(n - 1 - i));
+        let expected: Vec<_> = (0..n)
+            .filter(|&i| keep(i))
+            .map(|i| payloads[i as usize].clone())
+            .collect();
+        let indexed: Vec<_> = payloads
+            .iter()
+            .cloned()
+            .chain(depths.iter().rev().map(|&d| scriptnum(i64::from(d))))
+            .collect();
+        let flags: Vec<_> = payloads
+            .iter()
+            .enumerate()
+            .flat_map(|(i, data)| [data.clone(), scriptnum(i64::from(keep(i as u32)))])
+            .collect();
+
+        let mut cases = vec![
+            (compact_indexed_items(n, k), indexed, indexed_keys),
+            (compact_selected_items(n), flags, flag_keys),
+        ];
+        if k == n {
+            cases.push((script! {{n}}, payloads, keys!("identity32_k32")));
+        }
+        for (fragment, witness, keys) in cases {
+            let count = scriptnum(i64::from(k));
+            let leaf = script! {
+                {fragment} {count} OP_EQUALVERIFY
+                for value in expected.iter().rev() {{value.clone()} OP_EQUALVERIFY}
+                OP_TRUE
+            };
+            assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+            let compiled = leaf.compile_with_policy();
+            let checked = bitcoin_lab::support::tapscript::execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+            );
+            let checked = checked.execution().unwrap();
+            assert!(checked.success && checked.stack_limit_enforced);
+            let (peak, executed) = measure_tapscript_nonpush(compiled.clone(), witness.clone());
+            assert_eq!(peak, checked.stats.max_nb_stack_items);
+            assert_eq!(
+                checked.stats.start_validation_weight,
+                checked.stats.validation_weight
+            );
+            for (key, value) in keys.into_iter().zip([
+                compiled.len(),
+                witness_size(&witness),
+                witness.len(),
+                peak,
+                executed,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/support/selection/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn stable_selection_metrics_are_current() {
     let fragment = bitcoin_lab::support::selection::compact_selected_items(32);
     let leaf = script! {
