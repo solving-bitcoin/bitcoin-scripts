@@ -11669,11 +11669,11 @@
       "id": "signature/hors-hash160",
       "name": "HORS-like HASH160 authentication",
       "class": "signature/one-time",
-      "summary": "Explicit-index subset opening over HASH160-committed preimages.",
+      "summary": "Clamped or exact ascending-index subset opening over HASH160-committed preimages.",
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-10-29",
+      "as_of": "2026-11-09",
       "knowledge_page": "knowledge/primitives/hors-hash160.md",
       "implementation": "src/signatures/hors/mod.rs",
       "documentation": "src/signatures/hors/README.md",
@@ -11681,8 +11681,11 @@
         "signatures::hors::tests",
         "signatures::hors::tests::test_hors_index_clamping_and_minimaldata_boundary",
         "signatures::hors::tests::test_hors_representative_subset_aliases_last_index",
+        "signatures::hors::tests::exact_indices_bind_range_order_and_preimages",
+        "signatures::hors::tests::exact_indices_reject_raw_aliases_without_minimaldata_policy",
         "primitive_metrics::hors_index_boundary_metrics_are_current",
-        "primitive_metrics::hors_witness_boundary_metrics_are_current"
+        "primitive_metrics::hors_witness_boundary_metrics_are_current",
+        "primitive_metrics::hors_exact_index_metrics_are_current"
       ],
       "references": [
         "binohash-paper"
@@ -11690,8 +11693,8 @@
       "techniques": [
         "hash-chain"
       ],
-      "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160. Clamped indices do not bind a raw Binohash index sequence.",
-      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true. Host indices are minimally serialized, but the verifier upper-clamps with OP_MIN and does not independently require canonical index bytes. The local default rejects nonminimal numbers under the policy MINIMALDATA check; with that check disabled, aliases authenticate. Both test profiles enforce the stack limit and remain unclassified for deployment.",
+      "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160. The original clamped verifier does not bind raw indices. A distinct local exact-index verifier rejects noncanonical, out-of-range, duplicate, and reordered indices; a funded Core spend and Binohash consumer remain open.",
+      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; both verifiers consume commitments and leave true. The clamped API upper-clamps with OP_MIN. The exact API checks canonical raw ScriptNum bytes, numeric range, and strictly increasing indices even with MINIMALDATA disabled. Local tests enforce the combined stack limit and remain unclassified for deployment.",
       "configurations": [
         {
           "id": "n32-t8",
@@ -11706,7 +11709,7 @@
           "witness_bytes": 280,
           "witness_bytes_max": 281,
           "max_stack_items": 50,
-          "executed_opcodes": null,
+          "executed_opcodes": 145,
           "validation_weight": null,
           "setup_script_bytes": 0,
           "per_use_script_bytes": 809,
@@ -11714,7 +11717,35 @@
             "hors_lock_n32_t8",
             "hors_witness_n32_t8",
             "hors_witness_n32_t8_max",
-            "hors_stack_n32_t8"
+            "hors_stack_n32_t8",
+            "hors_clamped_ops_n32_t8"
+          ]
+        },
+        {
+          "id": "n32-t8-exact-ascending",
+          "label": "n=32, t=8 exact ascending HORS opening",
+          "parameters": {
+            "n": 32,
+            "t": 8,
+            "preimage_bytes": 32,
+            "index_rule": "canonical-in-range-strictly-increasing",
+            "indices": [0, 4, 9, 13, 17, 21, 25, 31]
+          },
+          "includes": "fragment-only: final policy-produced locking verifier and serialized 16-item data witness, including input checks, commitment checks, cleanup and terminal true; zero hint items; strict local tapscript execution",
+          "script_bytes": 914,
+          "witness_bytes": 280,
+          "witness_bytes_max": 281,
+          "max_stack_items": 51,
+          "executed_opcodes": 250,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 914,
+          "metric_keys": [
+            "hors_exact_lock_n32_t8",
+            "hors_exact_witness_n32_t8",
+            "hors_exact_witness_max_n32_t8",
+            "hors_exact_stack_n32_t8",
+            "hors_exact_ops_n32_t8"
           ]
         },
         {
@@ -11748,7 +11779,8 @@
       ],
       "limitations": [
         "Message-to-index derivation not implemented",
-        "Oversized witness indices alias the final commitment; raw canonical indices are not script-validated",
+        "Original clamped API aliases oversized indices and does not script-validate canonical raw bytes",
+        "Exact API has only local tapscript execution evidence and no funded Core spend",
         "One-time key only"
       ],
       "open_problems": [

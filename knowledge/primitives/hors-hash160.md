@@ -9,19 +9,25 @@ explicit witness indices.
   witnesses.
 - **Representative result:** `n=32,t=8` uses 809 script bytes and a 280-byte
   witness with 32-byte preimages; canonical indices `1..=8` are the 281-byte
-  maximum and have a 50-item strict local stack peak.
+  maximum and have a 50-item strict local stack peak. The exact-index variant
+  uses 914 script bytes and the same 280/281-byte witness range, with a
+  51-item peak; the representative executions count 145 and 250 non-push
+  opcodes respectively.
 - **Serialization boundary:** with `n=129,t=1`, canonical indices 127 and 128
   serialize to 36 and 37 witness bytes respectively; index 129 is upper-clamped to
   the final commitment by the existing verifier.
 - **Index-binding boundary:** a strict local `n=32,t=8` test accepts raw index
   32 with the preimage for index 31. Default local minimal-data checking rejects
   noncanonical numeric encodings; disabling that check makes them alias their
-  canonical numeric values. The verifier itself does not bind raw index bytes.
+  canonical numeric values. The clamped verifier itself does not bind raw index
+  bytes. A separate exact-index API checks raw canonical encoding, range, and
+  strictly increasing order in the script; its focused local tests reject the
+  corresponding aliases with `MINIMALDATA` disabled.
 - **Security:** strictly one-time; concrete forgery probability depends on
   parameters, index derivation, disclosures, and HASH160.
 - **Research need:** specify and test a complete message-to-subset transform;
-  an exact-index Binohash consumer also needs a distinct strict range and raw
-  canonicality contract before protocol-level signature claims.
+  the new exact-index fragment still needs a funded Core spend and integration
+  with a Binohash Script consumer before protocol-level signature claims.
 
 See the [implementation README](../../src/signatures/hors/README.md) and catalog
 record `signature/hors-hash160`. The [negative result](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)

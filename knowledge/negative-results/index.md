@@ -23,11 +23,12 @@ policy, not consensus. Both local tapscript profiles enforce the combined
 a Bitcoin Core legacy spend or proof that a composed Binohash protocol is
 forgeable.
 
-The current clamping API and its measured 809-byte `n=32,t=8` script remain
-unchanged. A future exact-index variant must reject out-of-range and
-noncanonical encodings while preserving the selected preimage, and must define
-whether repeated or reordered indices are legal before claiming subset
-authentication. See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
+The clamping API and its measured 809-byte `n=32,t=8` script remain
+available. A separate exact-index variant now rejects out-of-range and
+noncanonical encodings and requires strictly increasing indices, excluding
+duplicates and reorderings. That result is local tapscript evidence; it does
+not yet authenticate a complete Binohash spend or establish Core consensus.
+See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
 and [OP-011](../open-problems.md#op-011--reproduce-binohash).
 
 ## Eager mismatch state exceeds the 500-pair frontier

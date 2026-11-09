@@ -31,6 +31,9 @@ grinding parameters, mutation constraints, Script extraction, and full costs.
 If a consumer uses the HORS-like helper to authenticate extracted indices,
 its upper-clamped openings do not bind the raw index sequence; see
 [NR-110](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices).
+The separate exact-index HORS fragment locally checks canonical, in-range,
+strictly increasing openings but has not been connected to the funded
+Binohash toy or validated in a Core spend.
 See `introspection/binohash` and `OP-011`.
 
 A separate [2-of-3 toy subset](../primitives/binohash-subset-toy.md) now
