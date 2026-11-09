@@ -9,6 +9,8 @@ use bitcoin::{hashes::Hash, sighash::SighashCache, Script, ScriptBuf, Transactio
 /// Errors returned by the deterministic Binohash digest helper.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BinohashError {
+    /// A legacy signature carries one sighash byte; high u32 bits cannot be signed on chain.
+    InvalidHashType,
     /// A selected dummy-signature index is outside the supplied candidate set.
     InvalidSelection,
     /// The requested transaction input does not exist.
@@ -98,6 +100,10 @@ pub fn find_and_delete(script_code: &Script, signatures: &[Vec<u8>]) -> ScriptBu
 }
 
 /// Calculate a Binohash-style digest for a chosen subset of dummy signatures.
+///
+/// `hash_type` must fit in the single sighash byte appended to a legacy ECDSA
+/// signature. The underlying rust-bitcoin API accepts a full `u32`, including
+/// high-byte values that produce host digests no signature can request.
 pub fn binohash_digest(
     transaction: &Transaction,
     input_index: usize,
@@ -106,6 +112,9 @@ pub fn binohash_digest(
     selected_indices: &[usize],
     hash_type: u32,
 ) -> Result<[u8; 32], BinohashError> {
+    if hash_type > u8::MAX as u32 {
+        return Err(BinohashError::InvalidHashType);
+    }
     let mut selected = Vec::with_capacity(selected_indices.len());
     for &index in selected_indices {
         selected.push(
@@ -217,5 +226,37 @@ mod tests {
             binohash_digest(&transaction, 2, &script, &[], &[], 1),
             Err(BinohashError::InvalidInputIndex)
         );
+    }
+
+    #[test]
+    fn rejects_unrepresentable_sighash_high_bytes() {
+        let transaction = transaction_with_two_outputs();
+        let script = ScriptBuf::from_bytes(vec![0x51]);
+        for flag in [0_u32, 0xff] {
+            let expected = SighashCache::new(&transaction)
+                .legacy_signature_hash(0, &script, flag)
+                .unwrap()
+                .to_byte_array();
+            assert_eq!(
+                binohash_digest(&transaction, 0, &script, &[], &[], flag),
+                Ok(expected)
+            );
+        }
+
+        // rust-bitcoin hashes all four flag bytes. A legacy ECDSA signature
+        // exposes only its trailing byte, so 0x100 is a phantom on-chain flag.
+        let raw_zero = SighashCache::new(&transaction)
+            .legacy_signature_hash(0, &script, 0)
+            .unwrap();
+        let raw_high = SighashCache::new(&transaction)
+            .legacy_signature_hash(0, &script, 0x100)
+            .unwrap();
+        assert_ne!(raw_zero, raw_high);
+        for flag in [0x100, 0x101, u32::MAX] {
+            assert_eq!(
+                binohash_digest(&transaction, 0, &script, &[], &[], flag),
+                Err(BinohashError::InvalidHashType)
+            );
+        }
     }
 }

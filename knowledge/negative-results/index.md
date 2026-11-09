@@ -3,6 +3,26 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-111: High-byte legacy sighash types are host-only digests
+
+The rust-bitcoin 0.32.102 legacy sighash API accepts a `u32` and serializes all
+four bytes into the signing preimage. Bitcoin Core's legacy ECDSA path instead
+reads the hash type from the signature's final **one byte**. For one fixed
+two-output transaction and scriptCode, a deterministic local test finds that
+raw rust-bitcoin digests for `0x00` and `0x100` differ. The latter is a host
+digest that no legacy ECDSA signature can select; varying high `u32` bits must
+not be counted as extra Binohash flag choices.
+
+The Binohash host helper keeps its `u32` API but rejects every value above
+`0xff` with `InvalidHashType`. The focused test accepts `0x00` and `0xff`,
+compares each with the raw library result, and rejects `0x100`, `0x101`, and
+`u32::MAX`. This is `locally-reproduced`, `unclassified` host evidence. It
+does not add a funded Core spend or establish default relay policy for
+`0xff`; the separate [raw-byte census](../../research/binohash-sighash-flags/README.md)
+covers those boundaries. See [OP-011](../open-problems.md#op-011--reproduce-binohash),
+the pinned [rust-bitcoin source](https://docs.rs/bitcoin/0.32.102/src/bitcoin/crypto/sighash.rs.html#1015),
+and [Bitcoin Core v30.3's interpreter](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp).
+
 ## NR-110: Clamped HORS openings do not bind raw Binohash indices
 
 The existing [HORS-like verifier](../primitives/hors-hash160.md) intentionally

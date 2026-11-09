@@ -13,8 +13,9 @@
   corresponding signed digests against complete funded Bitcoin Core spends.
 - **Execution class:** host-side digest serialization is `unclassified`; the
   funded two-choice spends are `consensus-validated` and fail default policy.
-- **Hard constraints:** deletion only at Script opcode boundaries; raw sighash
-  flags preserved; no tapscript or policy assumptions.
+- **Hard constraints:** deletion only at Script opcode boundaries; the raw
+  sighash flag fits the single trailing legacy ECDSA signature byte; no
+  tapscript or policy assumptions.
 
 ## Reproduction
 
@@ -33,8 +34,14 @@ PYTHONPATH=src uv run --with python-bitcoinlib python -m unittest discover -s te
 
 ## Result
 
-The Rust core passes four focused tests: aligned deletion, subset-dependent
-legacy digests, the `SIGHASH_SINGLE` bug constant, and hostile input handling.
+The Rust core covers aligned deletion, subset-dependent legacy digests, the
+`SIGHASH_SINGLE` bug constant, hostile input handling, and the one-byte sighash
+boundary. With one fixed transaction and scriptCode, the raw rust-bitcoin
+digests for `0x00` and `0x100` differ; the helper accepts `0x00` and `0xff`
+but rejects `0x100` and larger values. This prevents a host-only digest from
+being mistaken for one selectable by a legacy ECDSA signature. It does not
+establish default relay policy acceptance for `0xff`; see
+[NR-111](../../knowledge/negative-results/index.md#nr-111-high-byte-legacy-sighash-types-are-host-only-digests).
 The external experiment repository passes eight covered Python tests. The
 checked [Core v30.3 report](../../tests/data/binohash-core-v30.3.json) records
 two complete funded legacy P2SH spends, each with a different selected pool
@@ -66,7 +73,9 @@ two transaction inputs, one output, a 1,000,000-sat value per input, and a
 20,000-sat spend fee. The Core runner supplies a confirmed funding txid and
 destination script; the generator has no default for either. The host digest
 helper separately takes the transaction, input index, raw scriptCode, candidate
-signature vectors, selected indices, and sighash flag, with no defaults.
+signature vectors, selected indices, and sighash flag, with no defaults. Its
+public `u32` flag argument must be in `0x00..=0xff`; a larger value returns
+`InvalidHashType` before digest construction.
 
 The P2SH scriptSig pushes a CHECKMULTISIG dummy, a puzzle signature, a branch
 selector, and the redeemScript. The branch pushes one embedded pool signature;
