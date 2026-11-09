@@ -183,3 +183,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Subset-sum verification with free canonical selectors](subset-sum.md)
 - [Packed lexicographic comparison of u4 vectors](u4-compare-packed.md)
 - [Hint-checked presence bits](u4-presence-hinted.md)
+- [Parity-hinted XOR reduction](u4-xor-hinted.md)

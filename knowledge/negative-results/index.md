@@ -2256,3 +2256,15 @@ bytes or hints are forbidden. Figures are policy-compiled fragments under strict
 local `unclassified` tapscript rules, `locally-reproduced`, and the two forms agree
 on seven words including `0x80000000`. See the
 [primitive](../primitives/u32-uncompress-hinted.md).
+
+## NR-107: Table-driven XOR versus hinted packed lanes
+
+For the 32-item fixture, the table-driven XOR fragment costs 1,122 script bytes,
+63 witness bytes and a 289-item peak; hinted packed lanes cost 617 script bytes,
+72 witness bytes and a 59-item peak with five hints. The table remains relevant
+when hints are unavailable or beyond the conservative 212-item implementation
+cap. The packed arithmetic bound fits at 213 and first exceeds the four-byte
+range at 214. Non-32 script sizes are pinned separately, but their prior witness
+and peak figures are not established by the recorded fixtures. Results are
+`locally-reproduced`, `unclassified` local execution. See the
+[primitive](../primitives/u4-xor-hinted.md).

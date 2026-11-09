@@ -1636,3 +1636,30 @@ under the explicit local consensus numeric profile; byte-sensitive callers must
 validate canonical input bytes. Flag canonicality relies on tapscript MINIMALIF.
 Callers must consume or verify the 16 output flags and preserved state, enforce
 their predicate and leave exactly one truthy item at a complete leaf.
+
+## Parity-hinted XOR reduction
+
+`xor_hinted::u4_nibbles_xor_hinted(n)` (`n` in `1..=212`) verifies a claimed XOR of
+`n` checked nibbles without the 256-entry XOR table. Witness, bottom to top:
+`x[0..n-1] y h0 h1 h2 h3`; output `y`. Each nibble adds the packed bit-count weight
+`T[x] = sum_b bit_b(x) * (n + 2)^b` to one accumulator, so lane `b` of the sum counts
+the nibbles with bit `b` set. The claim is accepted when the sum equals `T[y] + 2 *
+sum_b h_b (n + 2)^b` with every `h_b` in `0..=n/2`; then each lane of the right side is
+at most `n + 1 < n + 2`, nothing carries, and `count_b = y_b + 2 h_b` means `y_b` is
+the parity of `count_b`. Hint items per invocation: **5**. The limit 212 keeps the
+accumulator below `2^31`.
+
+Fragment-only boundary: range checks, packing, accumulation, the lane equality and
+cleanup; input pushes and terminal predicate excluded. Fixture `x[i] = (7i + 3) mod 16`
+over 32 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 256-entry table reduction, 32 nibbles | <!-- metric:u4_xor_table_32 -->1122<!-- /metric:u4_xor_table_32 --> | <!-- metric:u4_xor_table_32_witness -->63<!-- /metric:u4_xor_table_32_witness --> | <!-- metric:u4_xor_table_32_witness_items -->32<!-- /metric:u4_xor_table_32_witness_items --> | 0 | <!-- metric:u4_xor_table_32_stack -->289<!-- /metric:u4_xor_table_32_stack --> | <!-- metric:u4_xor_table_32_opcodes -->758<!-- /metric:u4_xor_table_32_opcodes --> |
+| Parity-hinted reduction, 32 nibbles | <!-- metric:u4_xor_hinted_32 -->617<!-- /metric:u4_xor_hinted_32 --> | <!-- metric:u4_xor_hinted_32_witness -->72<!-- /metric:u4_xor_hinted_32_witness --> | <!-- metric:u4_xor_hinted_32_witness_items -->37<!-- /metric:u4_xor_hinted_32_witness_items --> | 5 | <!-- metric:u4_xor_hinted_32_stack -->59<!-- /metric:u4_xor_hinted_32_stack --> | <!-- metric:u4_xor_hinted_32_opcodes -->383<!-- /metric:u4_xor_hinted_32_opcodes --> |
+
+For the 32-item fixture the five hints add <!-- metric:u4_xor_hinted_32_hint_bytes -->9<!-- /metric:u4_xor_hinted_32_hint_bytes --> serialized bytes to the existing witness; a separately serialized hint vector occupies <!-- metric:u4_xor_hinted_32_hint_vector -->10<!-- /metric:u4_xor_hinted_32_hint_vector --> bytes, including its item count.
+
+The implementation cap 212 is conservative: the single-word arithmetic bound fits at 213 and first exceeds `2^31` at 214. With minimality disabled, the result preserves the original y bytes and permits numeric aliases; canonicalize for byte-sensitive use. Preloading k equal-width calls entails k(n+5) entry items, including 5k hints, before preserved state and scheduling overhead; the isolated peak is n+27. The 32-item fragment exceeds P2SH's 520-byte element limit and the legacy/P2SH/P2WSH 201-opcode limit; no consensus or policy validation is claimed. See the [knowledge page](../../../knowledge/primitives/u4-xor-hinted.md).
+
+For the measured 32-item configurations, both the 617-byte hinted fragment and the 1,122-byte table fragment exceed P2SH’s 520-byte redeem-script element limit; their 383 and 758 non-push opcodes exceed the 201-opcode legacy, P2SH and P2WSH limit. Tapscript removes that opcode limit but retains stack and element constraints. Complete-script and relay-policy validity have not been established.

@@ -9342,6 +9342,73 @@ fn u32_uncompress_hinted_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures parity-hinted XOR reduction at 32 nibbles.
+#[test]
+fn u4_xor_hinted_metrics_are_current() {
+    use u4::xor_hinted::u4_nibbles_xor_hinted;
+    use u4::xor_reduce::u4_nibbles_to_xor;
+    const N: u32 = 32;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let y = values.iter().fold(0, |a, &v| a ^ v);
+    let halves: Vec<i64> = (0..4)
+        .map(|b| values.iter().filter(|&&v| (v >> b) & 1 == 1).count() as i64 / 2)
+        .collect();
+    let table_witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let mut hinted_witness = table_witness.clone();
+    hinted_witness.push(scriptnum(y));
+    hinted_witness.extend(halves.iter().map(|&h| scriptnum(h)));
+    let hints = &hinted_witness[table_witness.len()..];
+    let separate_hint_bytes = witness_size(hints);
+    let incremental_hint_bytes = separate_hint_bytes - 1;
+    let mut metrics = vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_xor_hinted_32_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_xor_hinted_32_hint_vector",
+            value: separate_hint_bytes,
+        },
+    ];
+    for (name, fragment, witness) in [
+        ("table", u4_nibbles_to_xor(N), table_witness),
+        ("hinted", u4_nibbles_xor_hinted(N), hinted_witness),
+    ] {
+        let leaf = script! {
+            { fragment.clone() }
+            { y } OP_EQUALVERIFY
+            OP_TRUE
+        };
+        let run = bitcoin_lab::support::tapscript::execute_tapscript(
+            leaf.compile_with_policy(),
+            witness.clone(),
+            bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+        );
+        let result = run.execution().expect("comparison leaf executes");
+        assert!(result.success, "metric execution failed: {result}");
+        assert!(result.stack_limit_enforced);
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_xor_{name}_32{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", script_len(fragment.clone())),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", static_non_push_opcodes(fragment)),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

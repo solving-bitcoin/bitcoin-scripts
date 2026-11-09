@@ -1411,3 +1411,13 @@ class including `0x80000000`, and the complete operation is compared with the
 existing one on an equal boundary with script bytes, witness bytes and items, hint
 counts per invocation and in batches, executed opcodes and combined peaks. Core
 validation is required for any deployment claim.
+
+## OP-063 — Parity certificates for other GF(2)-linear maps
+
+The lane-sum parity certificate verifies a position-independent XOR. **Accept when:**
+the technique is extended to a position-dependent GF(2)-linear map such as a CRC or a
+Hamming syndrome of a fixed-length message, with exact hint counts, soundness
+established by exhaustive hint search on a small case, and script bytes, witness
+bytes and items, executed opcodes and combined peaks compared with the existing
+table-driven construction on an equal boundary. Supporting 213 nibbles and a
+two-word lane split for vectors at 214 or above are also open. Core validation is required for any deployment claim.
