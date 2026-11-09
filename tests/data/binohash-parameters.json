@@ -1,0 +1,77 @@
+{
+  "assumptions": [
+    "The exact C(n,t) count assumes distinct selectable pool entries; it does not prove all subsets yield distinct sighashes.",
+    "Each subset is evaluated once with a fixed sighash flag; alternate consensus-valid flag bytes or transaction mutations are outside this model.",
+    "Signature-puzzle hits for distinct subsets are independent and uniform at 2^-difficulty; this is a model, not measured distribution.",
+    "The paper's 100 + rounds * (244 + 31*n) byte expression is an approximation for its t=8 layout, not serialized Script or consensus evidence.",
+    "The paper's 13 + rounds * (11*t + 4) + 2 opcode expression is arithmetic from its stated components, not an independently counted script.",
+    "Round probabilities are multiplied only under an additional independence assumption; no transaction pinning or full protocol is reproduced."
+  ],
+  "limits": {
+    "legacy_nonpush_opcodes": 201,
+    "legacy_script_bytes": 10000
+  },
+  "maximum_n_under_paper_t8_byte_estimate_two_rounds": 151,
+  "minimum_n_for_at_least_one_expected_42_bit_hit_t8": 147,
+  "profiles": {
+    "120": {
+      "all_rounds_hit_probability_if_independent": 0.03024523,
+      "exact_subsets_per_round": 840261910995,
+      "expected_hits_per_round_if_uniform": 0.191053439,
+      "one_round_hit_probability_if_independent": 0.173911558,
+      "paper_formula_nonpush_opcode_margin": 2,
+      "paper_formula_nonpush_opcodes": 199,
+      "paper_formula_script_byte_margin_t8_only": 1972,
+      "paper_formula_script_bytes_t8_only": 8028,
+      "pool_signatures_per_round": 120,
+      "puzzle_difficulty_bits": 42,
+      "rounds": 2,
+      "selected_signatures_per_round": 8,
+      "subset_entropy_bits": 39.612048132
+    },
+    "147": {
+      "all_rounds_hit_probability_if_independent": 0.405587038,
+      "exact_subsets_per_round": 4455040860270,
+      "expected_hits_per_round_if_uniform": 1.012959015,
+      "one_round_hit_probability_if_independent": 0.636857157,
+      "paper_formula_nonpush_opcode_margin": 2,
+      "paper_formula_nonpush_opcodes": 199,
+      "paper_formula_script_byte_margin_t8_only": 298,
+      "paper_formula_script_bytes_t8_only": 9702,
+      "pool_signatures_per_round": 147,
+      "puzzle_difficulty_bits": 42,
+      "rounds": 2,
+      "selected_signatures_per_round": 8,
+      "subset_entropy_bits": 42.018575802
+    },
+    "151": {
+      "all_rounds_hit_probability_if_independent": 0.514054873,
+      "exact_subsets_per_round": 5551321138650,
+      "expected_hits_per_round_if_uniform": 1.262224291,
+      "one_round_hit_probability_if_independent": 0.716976201,
+      "paper_formula_nonpush_opcode_margin": 2,
+      "paper_formula_nonpush_opcodes": 199,
+      "paper_formula_script_byte_margin_t8_only": 50,
+      "paper_formula_script_bytes_t8_only": 9950,
+      "pool_signatures_per_round": 151,
+      "puzzle_difficulty_bits": 42,
+      "rounds": 2,
+      "selected_signatures_per_round": 8,
+      "subset_entropy_bits": 42.335968293
+    }
+  },
+  "question": "How much 8-of-n subset space fits the paper's two-round byte estimate, and what is the conditional chance of a 42-bit puzzle hit?",
+  "schema_version": 1,
+  "source": {
+    "id": "binohash-paper",
+    "revision": "2026 PDF reviewed 2026-10-29",
+    "sections": [
+      "4.4",
+      "5.2",
+      "6.1",
+      "6.2"
+    ],
+    "sha256": "1be2b63034a86db1f9f4a35c7963248d307583723079ff25284a9fc4affee94a",
+    "url": "https://robinlinus.com/binohash.pdf"
+  }
+}

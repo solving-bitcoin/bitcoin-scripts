@@ -3,6 +3,8 @@
 use super::{logic::u4_push_full_xor_table, stack::u4_drop};
 use crate::support::script::*;
 
+mod full;
+
 pub const U4_XOR_TABLE_ITEMS: u32 = 16 * 16;
 pub const U4_XOR_MAX_BATCH: u32 = 1_000 - U4_XOR_TABLE_ITEMS - 2;
 
@@ -19,30 +21,13 @@ pub fn u4_nibbles_to_xor(nibble_count: u32) -> Script {
         "nibble-xor batch exceeds Bitcoin Script's stack limit"
     );
 
-    script! {
-        for _ in 0..nibble_count {
+    full::reduce_with_validation(
+        nibble_count,
+        script! {
             OP_DUP OP_0 OP_GREATERTHANOREQUAL OP_VERIFY
             OP_DUP OP_16 OP_LESSTHAN OP_VERIFY
-            OP_TOALTSTACK
-        }
-        { u4_push_full_xor_table() }
-        for _ in 0..nibble_count {
-            OP_FROMALTSTACK
-        }
-        for reduction in 1..nibble_count {
-            OP_SWAP
-            for _ in 0..4 {
-                OP_DUP OP_ADD
-            }
-            OP_SWAP OP_ADD
-            { nibble_count - reduction - 1 }
-            OP_ADD
-            OP_PICK
-        }
-        OP_TOALTSTACK
-        { u4_drop(U4_XOR_TABLE_ITEMS) }
-        OP_FROMALTSTACK
-    }
+        },
+    )
 }
 
 #[cfg(test)]

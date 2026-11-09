@@ -22,6 +22,13 @@ cases after the shared helper repair documented in
 The helper's explicit stack-limit flag is local execution evidence, not a
 complete consensus-validation result.
 
+The [unique mismatch scan](../primitives/opaque-unique-mismatch.md) begins
+with a byte comparison that reduces depth before allocating private state.
+This permits 500 interleaved pairs at the exact 1,000-item frontier. The
+eager-state variant fails on that same witness. Preserved state and
+preloaded future data still count at entry, and neither schedule needs
+hints.
+
 Budget repeated signature checks against the serialized complete witness,
 including the leaf, control path, annex and CompactSize prefixes. Data-only
 fragment accounting can falsely reject a valid complete spend; byte boundaries
@@ -30,6 +37,13 @@ can also change a repeated check from exact exhaustion to failure. The
 boundaries with zero hints and all data items present at entry. Reusing a
 signature in Script does not remove the 50-unit charge for each executed
 nonempty check.
+
+The [HASH160 signer set](../primitives/hash160-schnorr-keyset.md) uses
+one native signature check after membership. Budget includes its exact
+revealed leaf and control block. The hash scan has two ordinary items
+and zero hints, while the multi-key embedded-index baseline has one
+ordinary signature and one selector hint. The hash scan peaks at six
+plus caller state, independent of its public list length.
 
 Certificate provenance is part of that edge trust status. The prime-RNS
 composable multiplier, for example, is globally sound only when each operand
@@ -67,6 +81,16 @@ budget that live prefix, consume every ciphertext output and add authorization
 where the protocol requires it. The three Core-validated complete spends do
 not transfer their deployment class to a differently composed leaf.
 
+## Exact signed sum descriptors
+
+The [wide ScriptNum split](../primitives/wide-scriptnum-sum.md) turns an
+exact sum into a residual and an ordered class. A numeric consumer can
+compare generated descriptors by class then residual without reparsing
+the raw wide sum. The two-sum fixture starts with four ordinary items
+and zero hints, and peaks at seven combined items for post-add dispatch
+or six for pre-add headroom. A consumer of witness-supplied descriptors
+needs its own validation and binding.
+
 ## Stable selection with native binary flags
 
 [Opaque-item stable selection](../primitives/stable-selection.md) uses no hints
@@ -90,6 +114,25 @@ selection fragment uses ALL; report whole-artifact options separately.
 These measurements are locally-reproduced / unclassified, with zero hints and
 explicit stack-limited local tapscript profiles. Protocol/Core composition is
 [OP-036](../open-problems.md#op-036--stable-selection-protocol-composition).
+
+[Sparse indexed selection](../primitives/indexed-selection.md) uses
+`n + k` data items, zero hints and a peak of `n + k + 4` plus both caller
+stacks. It requires the retained count `k` at generation time and an exact
+suffix at invocation time. A preloaded later invocation contributes all of
+its input items. With one caller item on each stack, `(993, 1)` fits exactly
+and `(994, 1)` exceeds the combined limit. When positions carry meaning,
+bind them separately from payload bytes because two positions may contain
+identical bytes.
+
+## Midpoint hint coexistence
+
+The [signed midpoint certificate](../primitives/hinted-midpoint.md)
+uses two ordinary inputs and one result hint per call. With every
+record preloaded and each result checked before the next call, 332
+calls have 664 ordinary items and 332 hints. The explicit parity
+baseline fits 249 calls with 498 ordinary items and 498 hints.
+Each batch reaches 1,000 with one additional caller item.
+The exact tested boundary includes both stacks and all future calls.
 
 ## Destructive sorting pools
 
@@ -258,9 +301,20 @@ vector. Exact 1,000-item tests include that preserved state; preloaded subsequen
 invocations and retained prior outputs must be added at their live boundaries.
 Both use zero hints and remain locally `unclassified`.
 
+The [stable bipartition](../primitives/stable-bipartition.md) leaves a
+caller-owned false group on main and a true group above caller alt state.
+Its generated count identifies the split, while all payloads remain live
+until the consumer removes them. A nonempty `n`-pair call needs `2*n+2`
+combined items plus both caller stacks. It reaches 1,000 items at 499 pairs
+or at 498 pairs with two caller items. It uses zero hints. A downstream
+consumer must account for the actual surviving payloads and avoid consuming
+preserved alt items. These limits are locally reproduced and unclassified.
+
 The [reflection adapter](../primitives/u4-reflection.md) also separates compressed
 entry from expanded output: width 32 enters with 16 data items but emits 32.
 Its measured complete leaf peaks at 33 versus 36 for raw verification, before
 unrelated state; all hints are zero. Exact frontier probes move a runtime witness
 item into the altstack and verify runtime caller data, because known constants
 checked against themselves can optimize away and understate live occupancy.
+
+[Pinning a streamed hash-path start](../primitives/pinned-hash-path-chain.md) adds two transient items with no hints. For `k` preloaded selectors, one preimage and `p` live caller items, the exact peak is `k+3+p`; streaming checkpoints cannot reduce the initial selector occupancy.

@@ -1,4 +1,6 @@
-# Integer commitments
+# Commitments and opening relations
+
+## Integer commitments
 
 | Construction | Value mechanism | Script bytes | Witness bytes | Peak items | Main caveat |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -29,6 +31,14 @@ Historical binary/four-way integer metrics are `locally-reproduced`,
 and retained-digit rows use strict local stack checks and remain `unclassified`.
 All exclude input pushes and terminal checks.
 
+The [joint HASH160 and HASH256 check](../primitives/dual-digest-preimage.md)
+verifies two digest constants for one opening. With a 520-byte opening,
+explicitly sharing the first SHA-256 costs 61 complete-leaf bytes and six
+executed non-push operations. Separate native hash opcodes cost 60 and five.
+Both use a 524-byte data witness, one ordinary item, zero hints and a peak of
+three. Derived SHA-256 compression work is 10 versus 19 blocks. These
+complete-leaf measurements are locally reproduced with unclassified execution.
+
 The ternary path is not a byte-efficiency improvement for this integer target:
 it uses 21 data items (zero hints) versus 17 for the four-way path and is 509
 bytes larger (NR-072). It is retained as a different representation point for
@@ -43,6 +53,10 @@ stack-element boundary, not a relay-policy claim. HORS index serialization
 crosses from a 36-byte witness at index 127 to 37 bytes at index 128 for
 `n=129,t=1`; its verifier clamps index 129 rather than enforcing the encoded
 index verbatim.
+
+The [length-keyed SHA-256 comparison](length-keyed-sha256.md) assigns a
+different digest slot to each allowed length. Its per-digest branches,
+eight-entry blocks and full table verify the same one-item witness.
 
 Taproot Merkle branches are intentionally absent from this cost table. The
 native-byte adapter search is an inspected negative result: current Script
@@ -62,3 +76,29 @@ at 1,060,200 unoptimized script bytes and 770,481 static non-push opcodes,
 with a 129-byte one-byte fixture witness or 193-byte canonical maximum for 64
 data items and zero hints. This is a backend-specific compile-only profile,
 not a universal lower bound or a complete branch verifier; see [NR-066](../negative-results/merkle-branch-composition.md).
+
+The [pinned-start comparison](../primitives/pinned-hash-path-chain.md) uses identical honest 4+3-bit data for all three guards. Unbound, length-only and SHA-256-pinned leaves use 80/84/116 script bytes and 161/165/197 complete witness bytes, with 8 data items, 0 hints, and peaks of 8/10/10. The unbound and length-only controls accept the substitution; the pinned leaf rejects it in Core.
+
+## Two distinct SHA-256 openings
+
+The [two-opening comparison](../primitives/sha256-pair-pool.md) measures
+complete leaves with the same unique digest list and the same two
+32-byte preimages. Each row executes two native SHA-256 operations.
+Both selectors coexist with the preimages at entry in the hinted rows.
+The scan takes only the two preimages.
+
+| Pool | Schedule | Leaf bytes | Data witness bytes | Ordinary items | Hint items | Hint bytes | Combined peak | Executed non-push ops |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 32 | Destructive ranks | 1112 | 71 | 2 | 2 | 4 | 39 | 39 |
+| 32 | Fixed indices | 1119 | 71 | 2 | 2 | 4 | 39 | 46 |
+| 32 | Scan | 1388 | 67 | 2 | 0 | 0 | 6 | 265 |
+| 129 | Destructive ranks | 4368 | 71 | 2 | 2 | 4 | 136 | 88 |
+| 129 | Fixed indices | 4375 | 72 | 2 | 2 | 5 | 136 | 95 |
+| 129 | Scan | 5559 | 67 | 2 | 0 | 0 | 6 | 1041 |
+
+Leaf bytes include setup, both checks, cleanup, and terminal true. Witness
+bytes include only serialized data and selectors. The scan saves live
+stack state and witness bytes. Removing the first selected slot eliminates
+an explicit inequality and maps original slot 128 to rank 127 for the
+width-129 fixture. The [checked markers](../../src/commitments/sha256_pool/README.md#script-metrics)
+include width three and the unoptimized width-993 frontier.

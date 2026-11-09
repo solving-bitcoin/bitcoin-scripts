@@ -132,8 +132,10 @@ execution options and compiler/interpreter sources are bound to immutable source
 The independent Python verifier checks actual Cargo identities and exact
 math.isqrt/witness outputs. The artifact contract regenerates the full report,
 compares catalog configurations and inspects immutable source bytes locally;
-a shallow CI checkout must identify itself as shallow and still checks current
-source hashes and recomputed artifacts.
+current comparisons retain the full source-file inventory, dependency pins and
+every artifact while allowing unrelated source digest changes. A shallow CI
+checkout must identify itself as shallow and reproduces artifacts/pins without
+claiming verification of unavailable historical blobs.
 
 Matched small-width measurements: restoring/threshold fragments 27/18 at one
 or two bits, 48/34 at four and 72/70 at six. Eight bits gives 99/147; sixteen

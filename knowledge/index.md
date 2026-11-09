@@ -43,6 +43,9 @@ python3 tools/kb.py validate
 - [Five-byte CSV differential experiment](tapscript-csv-validation.md)
 - [Absolute transaction-finality differential experiment](tapscript-finality-validation.md)
 - [Binohash legacy Core comparison](primitives/binohash-legacy-core.md)
+- [Binohash 2-of-3 subset Core comparison](primitives/binohash-subset-toy.md)
+- [Nine-byte Binohash SIGHASH_SINGLE anchor](primitives/binohash-single-anchor.md)
+- [Binohash CODESEPARATOR and FindAndDelete comparison](primitives/binohash-codesep-core.md)
 - [Checked PRINCEv2 complete-leaf experiment](prince-core-validation.md)
 - [Primitive entries](primitives/index.md)
 - [Reusable implementation techniques](techniques/index.md)
@@ -56,8 +59,9 @@ python3 tools/kb.py validate
 ## Coverage snapshot
 
 The stack-support layer includes [stable selection of opaque payloads](primitives/stable-selection.md)
-under native tapscript binary flags, with matched routing comparisons and
-explicit caller-state frontiers.
+under native tapscript binary flags and
+[sparse indexed selection](primitives/indexed-selection.md), with matched
+routing comparisons and explicit caller-state frontiers.
 
 The initial catalog covers all primitive families documented or actively
 implemented in this repository: ScriptNum, u4/u32/u31/bigint/RNS (including checked

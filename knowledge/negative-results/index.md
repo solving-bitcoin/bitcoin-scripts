@@ -3,6 +3,41 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-110: Clamped HORS openings do not bind raw Binohash indices
+
+The existing [HORS-like verifier](../primitives/hors-hash160.md) intentionally
+uses `OP_MIN` to upper-clamp each witness index. A deterministic `n=32,t=8`
+strict local tapscript test changes the final canonical index from 31 to 32
+without changing its preimage; both openings succeed. A wrong preimage for
+the clamped commitment fails. Thus the verifier authenticates the *clamped*
+subset relation, not the exact supplied index sequence. Reusing it unchanged
+to sign Script-readable Binohash indices would leave an index alias.
+
+The same test shows nonminimal `0100`, `00`, and negative-zero `80` hex
+encodings are rejected by the local executor's default `MinimalData` check.
+With `require_minimal=false`, they authenticate the corresponding numeric
+indices, because the HORS script itself does not compare raw index bytes to a
+canonical encoding. The Bitcoin Script reference classifies `MINIMALDATA` as
+policy, not consensus. Both local tapscript profiles enforce the combined
+1,000-item stack limit; both remain `unclassified` for deployment. Neither is
+a Bitcoin Core legacy spend or proof that a composed Binohash protocol is
+forgeable.
+
+The current clamping API and its measured 809-byte `n=32,t=8` script remain
+unchanged. A future exact-index variant must reject out-of-range and
+noncanonical encodings while preserving the selected preimage, and must define
+whether repeated or reordered indices are legal before claiming subset
+authentication. See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
+and [OP-011](../open-problems.md#op-011--reproduce-binohash).
+
+## Eager mismatch state exceeds the 500-pair frontier
+
+The [unique-mismatch boundary](opaque-unique-mismatch.md) shows that
+allocating a state item before consuming any pair fails at width 500.
+The fused scan consumes the first pair before allocating state and
+reaches exactly 1,000 combined items. Evidence is `locally-reproduced`;
+execution is `unclassified`.
+
 ## NR-087: Hinted u4 sorting loses at small widths
 
 The [exact sorter](../primitives/u4-sort.md) replaces repeated min/max scans
@@ -30,6 +65,25 @@ routing and cleanup, and final policy-produced bytes. Terminal comparisons and
 transaction context are excluded on both sides. No optimized Batcher/bitonic
 network has yet been measured; see OP-043.
 
+The [raw multiset comparison](opaque-multiset.md) tests the distinct
+problem of exact multiplicity across two opaque lists. It records why
+checking membership without consuming matches is insufficient.
+
+
+## Earliest u4 minimum schedules
+
+The [packed argmin table](u4-argmin-schedules.md) loses on script bytes,
+executed instructions and combined peak at width four. At width 128 it trades
+additional stack items for smaller code and fewer operations. A minimum-only
+scan cannot bind the earliest position, and resident state limits composition.
+
+## Signed progression wide cross-sums and the three-input cost
+
+The [progression counterexample](signed-progression.md) shows how numeric
+equality can reject canonical five-byte cross-sums. The checked cross-sum
+schedule uses byte equality and beats a carried difference by one script
+byte and one operation for three inputs. Evidence is `locally-reproduced`;
+execution is `unclassified`.
 
 ## NR-078: Forward stable filtering and redundant flag guards
 
@@ -40,6 +94,24 @@ MINIMALIF, 64 ordinary data items, zero hints and 129 witness bytes. Explicit
 guards raise the backward fragment to 816 bytes and peak to 68, reducing its
 frontier to 498 pairs. Discarding cannot repair entry element or policy limits.
 Evidence is `locally-reproduced`; deployment `unclassified`.
+
+In the [common-prefix experiment](opaque-common-prefix.md), counting all
+equal pairs would include matches after the first mismatch. The matched
+forward prefix state is correct but uses more bytes and one more peak item.
+
+## Sliding modulo-three window limits
+
+The [rolling-window comparison](u4-sliding-mod3.md) loses at width one,
+retains the rescan stack peak, and shares a 16-entry lookup boundary
+that cannot address the maximal width-eight initial sum. Its entire
+output vector can collide for two different valid input vectors.
+
+## Opposite-case ASCII gap admits punctuation
+
+The [gap-only counterexample](ascii-pair-checks.md) shows that two exact
+one-byte items separated by 32 can be punctuation. Checking the lower
+value's uppercase interval and both byte widths closes that gap.
+Evidence is `locally-reproduced`; execution is `unclassified`.
 
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
@@ -54,6 +126,19 @@ lookup on both counts. Its two-nibble-group variant keeps the 34-item peak at
 277 bytes. See the [primitive page](../primitives/u4-msb.md#schedule-comparison).
 This is scoped to `n=32`. Evidence is `locally-reproduced` for the retained
 and lookup rows; deployment is `unclassified`.
+
+## Carry checks for compact nibble sets
+
+The [distinct-mask comparison](u4-distinct-mask.md) records the fixed
+threshold cost at small widths and a duplicate carry that passes a
+sum-only wrapper. Valid set masks preserve membership but discard order.
+
+## Recomputed stable split depth fails at 499 pairs
+
+The [stable bipartition boundary](stable-bipartition.md) shows why carrying
+the live width allows 499 pairs while recomputing each roll depth exceeds
+1,000 combined items. Evidence is `locally-reproduced` and execution
+is `unclassified`.
 
 ## NR-049: Signature opcodes still diverge after resource repairs
 
@@ -82,6 +167,14 @@ Taproot witness adds script/control block. The report records all counts, full
 witness bytes, transaction weights and combined stack peaks (null for panics).
 No batched configuration or signature-budget boundary is measured. Existing
 catalog configurations keep their original evidence and deployment classes.
+
+## Serialized witness-data cap shortcuts
+
+The [byte-cap experiment](witness-data-size.md) gives a concrete
+CompactSize undercount at the first unsafe cap. Exact branch-free
+accounting reduces code size while executing more operations on short
+items. A standalone data-vector cap excludes the full witness count
+and the script-path items.
 
 ## NR-048: Minimal-push policy must follow execution
 
@@ -125,6 +218,13 @@ Historical metric and Core reports retain their original `ba96bc2` provenance;
 adoption alone does not relabel their evidence or execution classes. Current
 Core revalidation is recorded separately in the [differential experiment](../core-validation.md).
 
+## Exact-count boundaries for packed XOR
+
+The [packed XOR lane experiment](u4-xor-lanes.md) reproduces unsigned
+overflow at width 128. Signed centering covers width 254, but a single
+canonical four-byte ScriptNum has too few states to encode all exact
+count tuples at width 255. Equal XOR values do not bind distinct inputs.
+
 ## NR-047: Constant cleanup erases the stack peak under test
 
 The former BLAKE3 maximum-altstack test computed a known digest, dropped it
@@ -134,6 +234,12 @@ the temporary peak. The [reproduction and scope](compiler-validation-runtime.md#
 record exact inputs, output hashes, and the timeout on the larger baseline
 probe. Resource tests need an observable output boundary after compilation.
 
+## Uniform circular step limits
+
+The [Lee-step comparison](u4-lee-step.md) records a small-width loss and
+counterexamples to using directed-delta equality or equal total distance
+as substitutes for uniform circular distance.
+
 ## NR-046: Unchanged stack runs repeat redundant optimizer searches
 
 The [compiler-runtime experiment](compiler-validation-runtime.md) reproduces
@@ -142,6 +248,13 @@ A pass-local reuse of the unchanged result reduces this to 5,566 with identical
 output bytes. The correction is submitted upstream; the lab retains its
 compiler pin and primitive snapshots. Diagnostic timings do not establish a
 general compile-time speedup or a Bitcoin execution-cost improvement.
+
+## Distinct SHA-256 pool openings
+
+The [two-opening comparison](sha256-pair-pool.md) reproduces acceptance
+of a repeated index by the HORS opening helper under its own contract.
+Destructive ranks enforce distinct slots and sometimes save a selector
+byte. A zero-hint scan uses a much smaller stack peak.
 
 ## NR-045: Core differentials expose local executor boundaries
 
@@ -180,6 +293,13 @@ The lab now adopts repaired pin `4b7269a` as described in
 retains its original local panic outcomes; current profile revalidation is
 reported separately in the [Core experiment](../core-validation.md).
 
+## Centered positional moment limits
+
+The [binomial moment experiment](u4-binomial-moments.md) reproduces an
+eager initialization stack failure and a collision across three exact
+outputs. The uncentered quadratic sum exceeds four-byte numeric range
+for an all-15 vector at width 952.
+
 ## NR-044: Optimized lifecycle lengths do not isolate cleanup cost
 
 The BLAKE3 `packed_table_lifecycle_metrics` test formerly computed cleanup
@@ -197,6 +317,13 @@ evidence, with deployment `unclassified`; it does not execute a script or
 claim that component costs are additive under whole-script optimization.
 The [cost model](../cost-model.md#compilation-policy) still requires accounting
 for any optimizer delta when combining independently measured components.
+
+## Runtime rotation limits
+
+The [rotation comparison](opaque-runtime-rotation.md) shows that copying
+both vectors reaches the combined stack limit at width 499. It also
+reproduces distinct canonical offsets producing the same rotated bytes
+for periodic data.
 
 ## NR-043: Upstream stack-limit enforcement misses entry and data pushes
 
@@ -237,6 +364,26 @@ The lab now pins integration revision `4b7269a`, and the shared driver delegates
 these checks to the repaired dependency; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Earlier measurements
 keep their original tool provenance and evidence classes.
+
+A separate [wide negative ScriptNum result discrepancy](scriptnum-wide-sum.md)
+occurs when numeric equality reparses an internally computed five-byte
+negative sum. Pinned Core rejects that funded leaf while the current local
+interpreter accepts it.
+
+## Weighted quorum limits
+
+The [weighted Schnorr comparison](weighted-schnorr-quorum.md) shows that
+grouping singleton keys increases cost and leaves the signature charge
+unchanged. It also checks that malformed nonempty signatures still
+reject after enough valid weight is present.
+
+## Eager lag counting loses its final input slot
+
+The [lag-count frontier](opaque-lag-count.md) shows that pushing an
+initial count causes a stack-limit failure at width 999. Deferring
+initialization to the first comparison reaches 1,000 exactly.
+Evidence is `locally-reproduced`; execution is `unclassified`.
+
 ## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
 
 **Status (2026-10-11): reasoning retracted; derive-key is implemented.** The
@@ -276,6 +423,12 @@ This is a scope boundary, not a claim that derive-key mode cannot fit. A future
 implementation must match official context/material vectors, report both
 compression phases and their mode flags, and measure the derived-key boundary
 under the combined 1,000-item stack limit.
+
+## CompactSize item decoding limits
+
+The [decoder comparison](compactsize-u16-items.md) reproduces raw
+negative zero being interpreted as numeric zero and prices the
+additional script needed to keep exact byte semantics.
 
 ## NR-037: PRINCEv2 shared-selector corrections outweigh memory savings
 
@@ -453,6 +606,19 @@ SHA-256/RIPEMD-160 schedules unless an underlying or cross-function collision
 is found. This removes the exact alias but does not turn the non-standard
 mixed-hash construction into a cryptographically reviewed scheme.
 
+## An opaque unordered match can admit both orientations
+
+[Selecting the first matching orientation](opaque-pair-orientation.md)
+accepts an all-equal quartet and produces a deterministic bit without
+certifying uniqueness. The matched branch checks distinctness explicitly
+on the straight path and implies it from the reversed path. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
+A separate [joint-digest experiment](dual-digest-preimage.md) reuses the
+shared SHA-256 pass in HASH160 and HASH256. It reduces derived compression
+work while increasing Script bytes and leaves the common collision
+dependency intact.
+
 ## NR-013: The published combined nibble table is misaligned
 
 The combined table in `split-into-bits.md` creates four equal indices and then
@@ -485,6 +651,23 @@ at the two smallest tested widths and loses for the local 15- and 29-bit limb
 uses, so it is not retained as a general splitter. This is an `inspected`
 frontier for the tested widths, not a universal domination claim.
 
+## Exact signed extrema from a sum can require a five-byte operand
+
+[Recovering the larger input from the sum and the minimum](signed-min-max.md)
+fails for the valid four-byte pair `[2147483646, 2147483647]` because the
+next subtraction consumes the five-byte sum. Also, the paired schedule's
+fewer value comparisons leave the measured width-997 total executed count
+unchanged when every conditional swap runs. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
+## Even-only midpoint equality rejects odd sums
+
+The [midpoint counterexample](hinted-midpoint.md) shows that comparing
+only with twice the proposed value rejects the correct floor of a
+negative odd sum. Deriving parity avoids a separate hint and raises
+the tested batch frontier from 249 to 332.
+Evidence is `locally-reproduced`. Execution is `unclassified`.
+
 ## NR-015: The single-ScriptNum right shift omits one 32-bit word
 
 The pinned `op_rshift.md` construction treats ScriptNum's sign as logical bit
@@ -505,6 +688,14 @@ limit. Tapscript removes that opcode-count limit, but total-domain correctness,
 encoding, conversion, and strict Bitcoin Core validation remain open under
 OP-014. Source: `coins-bitcoin-scripts-8f442e4b` at
 [`op_rshift.md`](https://github.com/coins/bitcoin-scripts/blob/8f442e4bf8a744dd9bf69b2937bdebcaed5cae77/op_rshift.md).
+
+## Multiply-first negabinary loses a valid boundary value
+
+The [negabinary counterexample](negabinary-decoder.md) produces a
+five-byte intermediate double even though the final signed result
+fits in four bytes. The two-subtraction schedule keeps its first
+intermediate in range. Evidence is `locally-reproduced`.
+Execution is `unclassified`.
 
 ## NR-016: Half XOR tables lose BLAKE3 byte efficiency
 
@@ -814,6 +1005,14 @@ This is an `inspected` boundary argument, not a measured universal lower bound.
 Full points may still help a spend-time verifier whose surrounding protocol
 already authenticates normalized affine coordinates or projective state.
 
+## Counting ascents can accept multiple peaks
+
+The [signed peak counterexample](signed-single-peak.md) has two
+ascents and two descents. Counting its ascents returns an index
+without proving that all ascents precede all descents. The checked
+phase transition rejects it. Evidence is `locally-reproduced`.
+Execution is `unclassified`.
+
 ## NR-028: Projective and GLV machinery do not shrink the standalone CSFS trace
 
 In the spend-time verifier, affine inversion is already an off-chain hint.
@@ -1051,6 +1250,14 @@ all possible Ed25519 verification systems. A sound one-coordinate trace,
 succinct proof system, or interactive/optimistic trace protocol could change
 the boundary. Wider radix, quotient packing, ordinary Straus/JSF recoding,
 projective coordinates, and local BLAKE3 optimization do not.
+
+## Two changed nibbles can cancel the erasure check
+
+The [erasure counterexample](u4-erasure-recovery.md) reproduces
+two distinct three-nibble vectors with identical residues. The
+single-substitution proof requires distinct coordinate weights.
+Width 18 violates that requirement under modulus 17. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
 
 ## NR-033: Carry-centered H16 challenge recoding wastes the top table
 
@@ -1521,6 +1728,14 @@ pin `4b7269a` addresses the executor bounds bug; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Historical measurements
 retain their original evidence; complete-protocol validation remains under OP-009.
 
+## Raw wide sums fail numeric ordering
+
+The [wide-sum counterexample](wide-scriptnum-sum.md) shows that direct
+numeric ordering fails on the five-byte sums `M+1` and `M+2`, and that
+clipping to `M` collapses their order. The split representation
+preserves their order with two canonical numeric items. Evidence is
+`locally-reproduced`; execution is `unclassified`.
+
 ## NR-050: Signed-window lookup tables lose short batches
 
 The seed-directed signed radix-32 decoder uses ScriptNum's native sign and a
@@ -1542,6 +1757,14 @@ saves nine witness bytes and six entry items, but adds 938 locking bytes and is
 dominated whenever script size or combined local cost is primary. It remains a
 locally reproduced option for protocols whose binding constraint is witness
 width; this is not a universal lower-bound claim.
+## Consecutive compressed carry tags collide
+
+The [compressed carry counterexample](compressed-u32-carry.md) has one
+carrying and one noncarrying operand pair with the same sum of tags
+`0,1,2`. The checked schedule uses `0,2,3` and checks the signed sum
+in the ordinary mixed case. Evidence is `locally-reproduced`;
+execution is `unclassified`.
+
 ## NR-052: Compressed u32 equality trades locking bytes for witness shape
 
 `u32_compressed_equal()` compares two canonical compressed u32 ScriptNums
@@ -1578,9 +1801,30 @@ The local helper reproduces opcode-boundary `FindAndDelete`, subset-dependent
 legacy sighashes, and the historical `SIGHASH_SINGLE` constant. A separate
 two-choice fixture verifies fixed signatures in complete funded P2SH spends
 against pinned Core v30.3, but default relay policy rejects them under
-`CONST_SCRIPTCODE`. Neither result proves Binohash's two-round collision
-resistance, grinding work, mutation boundaries, Script-readable digest
-extraction, or downstream authentication. Those remain under OP-011.
+`CONST_SCRIPTCODE`. A 2-of-3 toy additionally validates `OP_ROLL` selection,
+a size filter, and index-selected preimage checking. A six-mode host matrix
+maps field commitments in one template but does not prove transaction pinning
+under Core. None of these proves Binohash's two-round collision resistance,
+meaningful grinding work, Script-readable digest extraction, or downstream
+authentication. Those remain under OP-011.
+
+A separate raw-byte census confirms that 250 noncanonical legacy sighash flag
+bytes can sign under consensus but fail default `STRICTENC` relay policy. The
+fixed-template digest distinction is not a measured independent entropy gain
+for Binohash's full grind; treating all 256 bytes as policy-deployable or as
+eight proven extra security bits would overstate this result.
+
+In a fixed 10-choose-5 host probe, permutations of the same selected set
+produce the same digest, and a repeated index aliases a shorter selection.
+Distinct digests for the 252 canonical subsets therefore do not make an
+unvalidated index vector a canonical or collision-resistant protocol digest.
+
+A separate nine-byte `SIGHASH_SINGLE` anchor validates the constant-digest
+boundary under Core, but that digest commits to no transaction field.
+
+A funded fixture also validates one exact composition of executed/dead
+`OP_CODESEPARATOR` views and before/after-boundary `FindAndDelete`. Default
+policy rejects it at the executed separator; broader protocol claims remain open.
 
 ## NR-056: Optional-SHA256 hash paths do not bind a free starting preimage
 
@@ -1596,10 +1840,22 @@ in the local Legacy interpreter with stack checks enabled. Deployment remains
 Independently binding the starting state is necessary; its cost is outside the
 fragment metrics. Dedicated mixed-hash cryptanalysis remains open (OP-020).
 
+The [pinned Core comparison](../primitives/pinned-hash-path-chain.md) confirms
+that both the unbound leaf and a 32-byte length guard admit the same forged
+opening. An independent SHA-256 start pin rejects it. This is evidence about
+the recorded substitution, not a binding proof for the mixed-hash path.
+
 The older binary path with explicit selector checks is also opcode-dominated:
 its 9/11 counted opcodes per bit can be replaced by 5/7 with changed digests.
 Keeping its old hash function permits 7 counted opcodes for saved normalized
 bits, plus the old terminal hash. These alternatives must not share digests.
+
+## Full length-keyed digest table loses its caller frontier
+
+The [length-keyed SHA-256 resource test](length-keyed-sha256.md) shows a
+521-entry table failing with 478 preserved caller items. Eight-entry
+blocks verify the same digest mapping with those caller items.
+Evidence is `locally-reproduced`; execution is `unclassified`.
 
 ## NR-057: Native Taproot Merkle-branch adapter is not available
 
@@ -1716,6 +1972,15 @@ for an identified byte-oriented caller, compare direct byte shifting with
 compression, PR #8's shift, and conversion back, including validation,
 table setup/cleanup, routing, and the same output checks on both sides.
 
+## A committed short key can bypass native Schnorr verification
+
+The [HASH160 signer-set counterexample](hash160-schnorr-keyset.md)
+commits to a one-byte value. Without a key-width guard, the
+native signature opcode accepts a nonempty dummy signature in the
+local unknown-key path. The guarded leaf rejects before charging
+the check. Evidence is `locally-reproduced`. Execution is
+`unclassified`.
+
 ## NR-064: Data-only signature budgets falsely reject complete spends
 
 The [complete-witness budget experiment](../tapscript-budget-validation.md)
@@ -1741,6 +2006,10 @@ control block and annex when pricing repeated signature checks. Reusing a
 signature does not remove its per-check charge. The additive constructor fixes
 this boundary while legacy fragment APIs intentionally retain compatibility;
 commitment and complete-transaction validation remain separate obligations.
+
+The [sparse threshold comparison](sparse-tapscript-threshold.md) uses the
+full-witness constructor and observes the same signature charge for indexed
+and dense witnesses even when their complete sizes differ.
 
 
 ## NR-065: Narrowing five-byte CSV operands before masking panics
@@ -1867,6 +2136,9 @@ seven items for two checked 16-bit lanes and a signed difference. Both have
 four data items, the same 13-byte witness and zero hints. See the
 [exact-boundary negative result](u32-mod65537-bitwise.md).
 
+The [joint small-residue result](u32-dual-residue.md) records a dominated
+separate reduction and an exact collision between distinct u32 words under
+the same pair of residue checks.
 
 ## NR-075: Prefix-scan table/branch Pareto frontier
 
@@ -1895,6 +2167,10 @@ StackSize. All invocations have zero hints. A ten-state checksum is forgeable:
 `locally-reproduced`/`unclassified`, not authentication or Core validation.
 See [the complete negative result](damm-finite-state.md).
 
+The [Hamming decoder comparison](hamming84-decoder.md) has a different
+correction contract. It records a three-bit corruption that decodes to
+another nibble and the stack cost of sharing a full byte lookup table.
+
 ## NR-080: Integer-root trials lose small widths and do not widen ScriptNum
 
 Residual root-bit trials cost 27/48/72 bytes at 1/4/6 bits versus threshold
@@ -1904,6 +2180,10 @@ from seven bits, but a repeated whole script can cross the optimizer cutoff:
 with 996 ordinary inputs and zero hints. Five-byte positive inputs remain
 outside the arithmetic domain; root calculation is not input authentication.
 See [the complete record](integer-root-bounds.md), locally-reproduced/unclassified.
+
+See also the [saturating-addition boundary](scriptnum-saturation.md), where
+numeric clamping after addition fails on a five-byte result and regrouping
+mixed-sign saturated sums changes their output.
 
 ## NR-081: CRC-8 feedback startup and memory frontier
 
@@ -1952,6 +2232,33 @@ The shape-wide stack bound `max(2*run_count+5, width+run_count+2)` is pinned
 separately from these witness-specific peaks. For eight runs of width 16 the
 bound is 26, above the length-2 fixture's 21. No variable run count and no
 byte-winning layout is claimed. See [OP-040](../open-problems.md#op-040--byte-competitive-variable-run-length-decoder).
+
+## NR-088: Hint-free bounded division loses combined bytes
+
+The [checked bounded divider](../primitives/scriptnum-bounded-div.md) replaces
+a quotient hint with binary threshold subtraction. In matched complete leaves,
+divisor 31 / maximum 991 costs 92 script + 4 data-witness bytes versus 49 + 6
+for the existing hinted verifier with the same canonical dividend/range checks
+and canonical outputs. Combined bytes rise by 41 while the peak falls from 8
+to 4 and one mandatory hint/entry item disappears. Divisor 17 / maximum 271
+loses 32 combined bytes (79 versus 47); the full 31-bit divisor-31 fixture
+loses 474 (538 versus 64). These are scoped results, not universal domination.
+
+The full-range leaf has 229 static non-push operations, though only 145 execute
+on the measured input. Legacy/P2WSH's 201-opcode cap counts the static total;
+the 532-byte complete leaf also exceeds P2SH's 520-byte element bound. Local
+tapscript stack enforcement does not establish complete-spend validity.
+
+All direct rows have one operand and zero auxiliary arithmetic hints. Each
+baseline has that operand plus one quotient hint, both at entry; baseline
+normalization allows harmless numeric aliases, making the smaller witness
+maxima 9 bytes rather than their 6-byte canonical representatives. A payload
+used as a surrounding protocol's selector certificate remains a protocol hint
+even when arithmetic decoding requires no additional hints. Evidence is
+`locally-reproduced`; execution `unclassified`. OP-044 tracks that consumer.
+
+For interval decoding, [plain transition count](single-run-mask.md) accepts
+both a single run and a split mask with the same number of changes.
 
 ## NR-084: Packed permutation ranks lose combined bytes
 
@@ -2013,6 +2320,10 @@ local tapscript execution is `locally-reproduced`; deployment remains
 are in the [u4 implementation README](../../src/arithmetic/u4/README.md) and
 `primitive_metrics::u4_unpack_metrics_are_current`.
 
+The [raw-byte adapter experiment](raw-scriptnum-byte.md) records a separate
+serialization boundary. Hashing a numeric byte directly changes the
+message at zero and at values from 128 through 255.
+
 ## NR-086: Short BLAKE3 generator variants that did not pay
 
 Porting the stack-modelled short-input generator onto upstream `374d076`
@@ -2031,3 +2342,251 @@ witness layout would save 3 bytes and was not adopted. Byte counts are
 `locally-reproduced`; the retained construction is `differentially-validated`
 and deployment is `unclassified`. See the
 [generator record](blake3-short-generator.md).
+
+## NR-088: Repeated counting helpers cost more for sampled u4 multisets
+
+Deciding whether two u4 vectors have equal multisets by counting each of the
+sixteen symbols in each vector via separately compiled `u4_nibbles_count`
+helpers gives a naive repeated-helper estimate of 8,512 script bytes at 16 + 16
+nibbles, versus 1,158 for the packed form. The helpers destroy their inputs, so
+the omitted copies and comparisons add costs. This is not a lower bound on a
+shared counting construction, which may reuse checks and avoid repeated cleanup. Packing everything into one word is not available either: a
+lane base of `2n + 1` leaves only 20/10/7/6 lanes per four-byte word at
+`n = 1/4/8/16`, so 16 symbols need 1/2/3/3 words and 6 words at `n = 489`.
+Byte figures are `locally-reproduced`; the baseline figure is an estimate, and
+deployment is `unclassified`. See the [primitive](../primitives/u4-multiset-equal.md).
+
+## NR-089: Inversion count is dominated as a sortedness test
+
+Testing `inversions == 0` instead of calling the nondecreasing predicate costs
+822 versus 263 script bytes at 16 nibbles, 3,709 versus 588 at 32, and 15,629
+versus 1,244 at 64, because it compares all `n(n-1)/2` pairs while sortedness
+needs only the `n-1` adjacent ones. Every figure is a policy-compiled fragment
+under strict local `unclassified` tapscript rules, `locally-reproduced`. The
+count is justified only when its magnitude is consumed. Sums of lane-packed
+histograms were not attempted: extracting a lane would need division or
+remainder, and no such opcode is available, which is reasoning rather than
+measurement. See the [primitive](../primitives/u4-inversions.md).
+
+## NR-090: The arithmetic hex fold is dominated at digest length
+
+For hexadecimal text the table-free fold loses to a resident 55-entry table
+beyond a short crossover: 1,470 versus 1,299 bytes at 64 lowercase characters
+(12%), 2,174 versus 1,299 for either-case input (40%), with the table first strictly smaller at 22
+lowercase, 43 uppercase and 6 either-case characters. The fold keeps its niche
+only when the extra 55 live stack items are unaffordable. Branchy classification
+cost 23 to 34 bytes per character, which is why folding case ranges together
+was not enough. All figures are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-ascii-hex.md).
+
+## NR-091: One-item-per-bracket balance scanning is dominated
+
+Scanning a bracket string with one stack item per bracket costs 2,059 script
+bytes, 193 witness bytes and a 133-item peak at 128 brackets, versus 895, 65 and
+69 for the nibble-packed summary check, and 4,107 versus 1,727 bytes at 256.
+It is smaller only at four brackets (75 versus 89 bytes), because the packed
+form pays a fixed 63-byte table cost. All figures are policy-compiled fragments
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-balanced.md).
+
+## NR-092: XOR-then-popcount Hamming composition is dominated by a fused table
+
+Composing the shared 256-entry XOR table with a 16-entry popcount table costs
+443, 962 and 2,698 script bytes at 1, 16 and 64 nibbles, against 415, 874 and
+2,410 for one fused `popcount(a ^ b)` table, and needs 16 more resident items
+(306 versus 290 peak at 16 nibbles). The composition never wins in the measured
+range because the second lookup costs about four bytes per pair that the fused
+table avoids. Byte figures are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-distance.md).
+
+## NR-093: Hint-free ScriptNum nibble expansion is dominated by hint-checked expansion
+
+Lacking division, a compare-and-subtract ladder expands a ScriptNum at about 57
+script bytes per nibble (230 bytes at four nibbles, 501 at eight), while
+verifying witness nibbles against the Horner sum costs about 17 per nibble (59 and
+127). Counting witness bytes, the ladder totals 235 versus 72 bytes at four
+nibbles, so it never wins on bytes in the measured range; its only advantage is
+zero hint items and a one-item witness. Byte counts are policy-compiled
+fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the
+[primitive](../primitives/u4-scriptnum-nibbles.md).
+
+## NR-094: Naive repeated counts cost more for strict majority
+
+A naive sum of sixteen destructive `u4_nibbles_count` helpers costs
+4,256 script bytes at 16 nibbles (before
+vector copies and comparisons), against 486 bytes for a Boyer-Moore vote plus
+verification count, a factor of 8.8 that grows with length (18,448 versus 2,046
+at 64). The counting figure repeats validation and cleanup, is not a built comparator,
+and is not a lower bound on shared counting constructions; the
+Boyer-Moore figure is a policy-compiled fragment under strict local
+`unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-majority.md).
+
+## NR-095: Per-step modular normalization is dominated beyond three nibbles
+
+Normalizing the residue after every addition costs about 19 script bytes per
+nibble for modulo 15 and about 21 for the existing modulo-17 fold, against
+about 13 and 14 when the sum stays exact and one ladder reduces it at the end:
+1,214 versus 833 and 1,342 versus 894 at 64 nibbles, and 20,926 versus
+13,066 at 997 for modulo 17. The running form wins only below four nibbles
+(mod 17 at one nibble: 10 versus 31 bytes). Figures are policy-compiled
+fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-mod15.md).
+
+## NR-096: A cheaper Luhn fold does not replace Damm
+
+The table-free Luhn check is 46% smaller than the Damm fold at 32 digits (411
+versus 766 script bytes) and needs a quarter of its stack (35 versus 136), but a
+Rust-model comparison over all 1,000 three-digit messages finds that it misses
+60 of 2,700 changed adjacent transpositions, every one a `0`/`9` swap, which Damm always
+detects. Both detect all 36,000 single-digit substitutions. Luhn is therefore a
+cost-saving option only where that blind spot is acceptable. Byte counts are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`; the detection counts come from models, not Script. See the
+[primitive](../primitives/u4-luhn.md).
+
+## NR-097: The table-driven modulo-16 sum is dominated
+
+The existing schedule keeps 31 table entries live and looks up the reduced sum
+after every nibble. A delayed-reduction ladder beats it at every measured length:
+10 versus 65 script bytes at one nibble, 429 versus 592 at 32, 1,603 versus 2,224
+at 128, and 11,680 versus 16,453 at 965, with a combined peak 31 items lower
+(35 versus 66 at 32) and a larger batch limit (997 versus 965). The table
+schedule has no measured advantage in script bytes or stack. Figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-sum-ladder.md).
+
+## NR-098: Hint-free decimal expansion costs more script-plus-witness bytes
+
+Binding a ScriptNum amount to its nine decimal digits costs 582 script bytes with
+a compare-and-subtract ladder and 153 with Horner-checked digit hints (about 65
+versus 17 bytes per digit). In a complete leaf with the Damm fold the hint-free
+form totals 914 script-plus-witness bytes against 503 hint-checked, 1.82 times
+more. The hint-free form saves nine hint items and witness bytes, and the isolated
+fragment peaks one item lower, so this comparison does not establish dominance
+on those resources. Byte counts are policy-compiled leaves
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-scriptnum-decimal.md).
+
+## NR-099: Repeated fixed-symbol helpers cost more for the sampled compositions
+
+Verifying that a vector has an exact public composition by running a fixed-symbol
+count for each of the 16 symbols costs 4,256 script bytes at 16 nibbles
+and 8,976 at 32 as a naive repeated-helper estimate (excluding the vector copies
+and sixteen comparisons), against
+649 and 1,172 bytes for packed count lanes: 6.6 and 7.7 times larger. The pairwise
+comparator is not dominated by the lane check at 16 nibbles: it is 27% larger but
+needs 18 fewer combined stack items (19 versus 37). Lane figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`; the repeated-helper figure is an estimate and not a lower bound on shared
+counting constructions. See the
+[primitive](../primitives/u4-composition.md).
+
+## NR-100: Lamport digit widths and unmatched Winternitz outputs
+
+The radix-four Lamport fixture costs 9,580 script-plus-witness bytes at 160 bits;
+one-bit digits cost 12,242 and four-bit digits 15,118. The existing 2,334- and
+2,400-byte Winternitz `and_clear` totals leave no authenticated output, while
+Lamport returns 80 digits. These boundaries do not establish a like-for-like
+ranking for consumers requiring authenticated data. Matching output and terminal
+contracts remains open. Measurements are locally reproduced and unclassified.
+See the [primitive](../primitives/lamport-digits.md).
+
+## NR-101: Pairwise rank selection grows quadratically
+
+Selecting the k-th smallest nibble without a hint by ranking every element against
+every other costs 286, 956, 3,512 and 14,223 script bytes at 4, 8, 16 and 32
+nibbles, growing quadratically, against 88, 162, 312 and 656 for verifying a
+claimed value with two linear passes. The pinned sorting reference reports a zero-hint
+min/max selection network at 3,044 script bytes plus 63 witness bytes for 32
+inputs (reported there, not reproduced here). That fragment returns all sorted
+items; the cost of selecting one and cleaning up is unmeasured, so these output
+boundaries do not establish like-for-like dominance. The claim check cannot
+select: it only accepts a correct claim. Figures are policy-compiled fragments
+under strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-order-statistic.md).
+
+## NR-102: The arithmetic hex encoder is dominated beyond a few nibbles
+
+The branching arithmetic encoder costs about 18 script bytes per nibble, against
+about 10 per nibble plus a 40-byte fixed cost for the 16-entry table form: 70
+versus 80 bytes at four nibbles but 142 versus 120 at eight, 574 versus 360 at 32
+and 1,150 versus 680 at 64 (41% smaller). The arithmetic form keeps its niche only
+for the shortest strings or where the 16 extra live stack items are unaffordable
+(peak 67 versus 83 at 64 nibbles). Byte counts are policy-compiled fragments under
+strict local `unclassified` tapscript rules, `locally-reproduced`. See the
+[primitive](../primitives/u4-ascii-hex-encode.md).
+
+## NR-103: Explicit selector checks are dominated in tapscript
+
+Adding a numeric `0..=1` range check and a reserialization check to every
+subset-sum selector raises the verifier from 7 to 17 script bytes per weight
+(224 to 544 bytes at 32 weights, 896 to 2,176 at 128) and the peak from 33 to
+36, while tapscript MINIMALIF already aborts every selector other than the empty
+item and `[1]`. The explicit form is therefore only for contexts without consensus
+MINIMALIF (legacy and segwit v0), which the local tapscript executor cannot
+exercise. Byte counts are policy-compiled fragments under strict local
+`unclassified` tapscript rules, `locally-reproduced`; the BIP 342 rule itself is
+not re-verified against Bitcoin Core here. See the
+[primitive](../primitives/subset-sum.md).
+
+## NR-104: The per-nibble comparator costs more locking-script bytes
+
+The existing `lexicographic_le` costs 3,532 script bytes at 64 nibbles and 7,500 at
+128, while packing each vector into seven-nibble words and comparing the words
+costs 2,171 and 4,486: 39% and 40% smaller at a peak four items higher
+(`2n + 7` versus `2n + 3`) and with maximum width 496 rather than 498. The older form remains useful where stack capacity is binding. Packed words are smaller at every measured width from
+one nibble (29 versus 44 bytes) and also use fewer static non-push opcodes (1,650
+versus 2,178 at 64). Figures are policy-compiled fragments with checking-leaf peaks under the explicit local consensus numeric
+profile and stack enforcement, `unclassified` tapscript, `locally-reproduced`, and the two forms agree on 120
+deterministic vector pairs. See the [primitive](../primitives/u4-compare-packed.md).
+
+## NR-105: The 16-scan presence projection is dominated when hints are allowed
+
+Scanning the vector once per symbol costs 95 script bytes per nibble at 16 nibbles
+(1,526 bytes) and grows to 6,733 at 64 and 13,709 at 128, against 509, 1,029 and 1,765
+for verifying prover-supplied flags with `n + 16` lookups. Counting 32 extra hint
+items (95 to 312 witness bytes) the hinted form totals 604 versus 1,558 bytes at 16
+nibbles and 1,217 versus 6,858 at 64. The zero-hint form keeps its niche for
+fewer than about five nibbles, where the hinted total is higher (431 versus 421
+at four), and where 32 hint items or a peak of `n + 36` are unaffordable. Figures
+are policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-presence-hinted.md).
+
+## NR-106: The u32 bit-ladder decoder is dominated when byte hints are allowed
+
+Expanding a compressed u32 with the 31-step compare-and-subtract ladder costs 431
+script bytes (323 static non-push opcodes), while checking four prover-supplied
+bytes against their 76-byte recompression costs 135 bytes (107 opcodes), 69% less,
+and 153 versus 437 bytes including witness, for four hint items and five more
+combined stack items. The ladder keeps its role where the prover does not hold the
+bytes or hints are forbidden. Figures are policy-compiled fragments under strict
+local `unclassified` tapscript rules, `locally-reproduced`, and the two forms agree
+on seven words including `0x80000000`. See the
+[primitive](../primitives/u32-uncompress-hinted.md).
+
+## NR-107: Table-driven XOR versus hinted packed lanes
+
+For the 32-item fixture, the table-driven XOR fragment costs 1,122 script bytes,
+63 witness bytes and a 289-item peak; hinted packed lanes cost 617 script bytes,
+72 witness bytes and a 59-item peak with five hints. The table remains relevant
+when hints are unavailable or beyond the conservative 212-item implementation
+cap. The packed arithmetic bound fits at 213 and first exceeds the four-byte
+range at 214. Non-32 script sizes are pinned separately, but their prior witness
+and peak figures are not established by the recorded fixtures. Results are
+`locally-reproduced`, `unclassified` local execution. See the
+[primitive](../primitives/u4-xor-hinted.md).
+
+## NR-108: Sixteen counting passes are dominated for a full histogram
+
+Obtaining all 16 symbol counts with the fixed-symbol count primitive costs at least 4,256
+script bytes at 16 nibbles, 18,448 at 64 and 37,424 at 128 (sixteen passes, excluding the
+vector copies they need), against 956, 3,158 and 5,988 bytes for verifying
+prover-supplied counts with packed lane words: 78%, 83% and 84% smaller, for 16 hint
+items. The counting route keeps its role when only one symbol is needed or hints are
+forbidden. The baseline is an estimate, not a built comparator; the hinted figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-histogram.md).

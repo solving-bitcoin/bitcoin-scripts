@@ -6,6 +6,8 @@ original order followed by their exact canonical count. It preserves both
 caller stacks, uses no resident table and requires zero hints. Native
 tapscript MINIMALIF enforces exact empty/`01` flags; this guarantee is specific
 to that context. Selection provides no authentication or payload validity.
+For a fixed retained count, see the matched
+[sparse index encoding](indexed-selection.md).
 
 ## Research framing
 

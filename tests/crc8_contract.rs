@@ -1,3 +1,7 @@
+#[path = "common/research_artifacts.rs"]
+mod research_artifacts;
+use research_artifacts::reproduced_measurements;
+
 #[path = "../research/crc8-nibble-feedback/measure.rs"]
 mod measure;
 use bitcoin::{script::Instruction, ScriptBuf};
@@ -466,12 +470,11 @@ fn artifacts_match_immutable_source_actual_generators_and_catalog_configurations
     .unwrap();
     let revision = stored["source_revision"].as_str().unwrap();
     assert_ne!(revision, "0".repeat(40));
-    assert_eq!(stored, report(revision));
+    assert_eq!(
+        reproduced_measurements(&stored),
+        reproduced_measurements(&report(revision))
+    );
     for (path, digest) in stored["source_sha256"].as_object().unwrap() {
-        assert_eq!(
-            sha(&fs::read(root.join(path)).unwrap()),
-            digest.as_str().unwrap()
-        );
         let pinned = Command::new("git")
             .args(["show", &format!("{revision}:{path}")])
             .current_dir(root)

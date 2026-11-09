@@ -28,6 +28,12 @@ archive and binary SHA256 hashes, block acceptance and policy results for 24
 complete Taproot spends. Its evidence is `differentially-validated` within that
 fixture scope.
 
+The `bitcoin-core-v30.3-legacy-sighash` source pins the same revision's
+`src/script/interpreter.cpp` for the legacy CODESEPARATOR boundary,
+FindAndDelete, and scriptCode serialization paths inspected by the funded
+Binohash boundary fixture. The executable result remains attributed separately
+to `bitcoin-core-v30.3-regtest`.
+
 The resource-profile experiment uses `bitcoin-scriptexec-repaired-20260910` at
 `4b7269a415f21be3fccee9730547f1426eb80326`, an immutable fork integration of
 upstream PRs #18, #19 and #20. The Cargo patch applies to both the lab and its
@@ -181,3 +187,9 @@ and complete-leaf comparison are local results, not claims from that paper.
 The u4 half-witness adapter's complement rule, Script implementation and measured
 costs are local contributions; no polynomial irreducibility or security claim
 is imported from the paper.
+
+The Luhn arithmetic definition is sourced to [US patent 2,950,048](https://patents.google.com/patent/US2950048A/en), granted 1960-08-23 (`luhn-us2950048a`). The repository’s example vector is local test data, not attributed to the patent.
+
+The 32-item sorting baseline is pinned to [u4-sort at commit 55a61e5](https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md), source ID `u4-sort-baseline-55a61e5`. Its output is a sorted vector, not a selected scalar.
+
+The [pinned-chain experiment](../primitives/pinned-hash-path-chain.md) uses the existing immutable compiler, interpreter and Core v30.3 source IDs. Its committed report records the verified release binary and distinguishes Core verdicts from the local transaction trace.

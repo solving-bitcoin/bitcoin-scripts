@@ -12,6 +12,8 @@ use bitcoin::hashes::{ripemd160, sha256, Hash};
 
 use crate::support::script::{script, Script};
 
+pub mod pinned;
+
 /// Largest bit width that can be reconstructed as a positive four-byte
 /// Script integer.
 pub const MAX_INTEGER_BITS: usize = 31;

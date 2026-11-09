@@ -44,3 +44,5 @@ interpreter commits are pinned in `Cargo.lock` and are available through
 The standalone batch ceiling is 664 nibbles before accounting for unrelated
 live stack state. It emits byte ScriptNums, not raw byte-vector serialization;
 callers must add terminal predicates and any encoding policy they require.
+For a native hash of one packed byte, see the
+[exact raw-byte adapter](raw-scriptnum-byte.md).

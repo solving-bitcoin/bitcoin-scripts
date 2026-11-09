@@ -29,9 +29,10 @@ def main():
     path=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/'research/crc8-nibble-feedback/metrics.json'
     r=json.loads(path.read_text());rev=r['source_revision']
     for p,digest in r['source_sha256'].items():
-        assert sha((ROOT/p).read_bytes())==digest,p
         if rev!='0'*40:
             assert sha(subprocess.check_output(['git','show',f'{rev}:{p}'],cwd=ROOT))==digest,p
+        else:
+            assert sha((ROOT/p).read_bytes())==digest,p
     meta=json.loads(subprocess.check_output(['cargo','metadata','--locked','--format-version','1'],cwd=ROOT))
     for key,name in [('compiler_source','bitcoin-script'),('interpreter_source','bitcoin-scriptexec')]:
         packages=[p for p in meta['packages'] if p['name']==name]

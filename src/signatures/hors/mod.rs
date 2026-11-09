@@ -39,6 +39,9 @@ pub fn hors_public_keys(preimages: &[Vec<u8>]) -> Vec<[u8; 20]> {
 ///
 /// `public_keys` is a slice of n 20-byte hash commitments H(preimage_i).
 /// `t` is the number of indices/preimages revealed per signature (t <= n).
+/// Witness indices at or above n are intentionally clamped to n-1. This
+/// authenticates the clamped relation, not the exact raw index bytes; callers
+/// needing an exact Binohash subset must validate indices separately.
 ///
 /// # Stack state when locking script begins (unlocking items already present)
 ///
@@ -204,9 +207,11 @@ fn encode_script_int(v: i64) -> Vec<u8> {
 mod tests {
     use super::*;
     use crate::support::execution::{
-        execute_script, execute_script_with_inputs, execute_script_with_inputs_strict,
+        execute_script, execute_script_buf_with_options, execute_script_with_inputs,
+        execute_script_with_inputs_strict,
     };
-    use crate::support::script::script;
+    use crate::support::script::{script, ScriptCompilation};
+    use bitcoin_scriptexec::{ExecError, Options};
 
     fn make_preimages(n: usize) -> Vec<Vec<u8>> {
         (0..n).map(|i| vec![i as u8; 20]).collect()
@@ -523,6 +528,100 @@ mod tests {
         ];
         let result = execute_script_with_inputs(locking, witness);
         assert!(!result.success, "mismatched index/preimage should fail");
+    }
+
+    #[test]
+    fn test_hors_index_clamping_and_minimaldata_boundary() {
+        let preimages = make_preimages(5);
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_locking_script(&public_keys, 1);
+        let accepted = [
+            ("last canonical", encode_script_int(4), 4),
+            ("first out of range", encode_script_int(5), 4),
+            ("far out of range", encode_script_int(255), 4),
+        ];
+        for (name, index, preimage_index) in accepted {
+            let witness = vec![index, preimages[preimage_index].clone()];
+            let result = execute_script_with_inputs_strict(locking.clone(), witness);
+            assert!(result.success, "{name} should authenticate: {result:?}");
+            assert!(result.stack_limit_enforced);
+        }
+        for (name, index, preimage_index) in [
+            ("nonminimal one", vec![1, 0], 1),
+            ("nonminimal positive zero", vec![0], 0),
+            ("negative zero", vec![0x80], 0),
+        ] {
+            let witness = vec![index, preimages[preimage_index].clone()];
+            let strict = execute_script_with_inputs_strict(locking.clone(), witness.clone());
+            assert!(!strict.success, "{name} should fail strict local parsing");
+            assert_eq!(strict.error, Some(ExecError::MinimalData));
+
+            let relaxed = execute_script_buf_with_options(
+                locking.clone().compile_with_policy(),
+                witness,
+                Options {
+                    require_minimal: false,
+                    enforce_stack_limit: true,
+                    ..Options::default()
+                },
+            )
+            .unwrap();
+            assert!(
+                relaxed.success,
+                "{name} aliases without minimal-data check: {relaxed:?}"
+            );
+            assert!(relaxed.stack_limit_enforced);
+        }
+        let wrong_preimage = execute_script_with_inputs_strict(
+            locking.clone(),
+            vec![encode_script_int(5), preimages[3].clone()],
+        );
+        assert!(!wrong_preimage.success);
+        let negative_index = execute_script_with_inputs_strict(
+            locking,
+            vec![encode_script_int(-1), preimages[0].clone()],
+        );
+        assert!(!negative_index.success);
+    }
+
+    #[test]
+    fn test_hors_representative_subset_aliases_last_index() {
+        let preimages = (0..32).map(|i| vec![i as u8; 32]).collect::<Vec<_>>();
+        let public_keys = hors_public_keys(&preimages);
+        let locking = hors_locking_script(&public_keys, 8);
+        let indices = [0, 4, 9, 13, 17, 21, 25, 31];
+        let canonical = hors_unlocking_witness(&preimages, &indices);
+        let result = execute_script_with_inputs_strict(locking.clone(), canonical.clone());
+        assert!(result.success, "canonical opening failed: {result:?}");
+
+        // Pair 7 is deepest. Index 32 clamps to the same final commitment as 31.
+        let mut aliased = canonical.clone();
+        aliased[0] = encode_script_int(32);
+        let result = execute_script_with_inputs_strict(locking.clone(), aliased);
+        assert!(
+            result.success,
+            "out-of-range subset index was not aliased: {result:?}"
+        );
+
+        let mut nonminimal = canonical;
+        nonminimal[0] = vec![31, 0];
+        let strict = execute_script_with_inputs_strict(locking.clone(), nonminimal.clone());
+        assert_eq!(strict.error, Some(ExecError::MinimalData));
+        let relaxed = execute_script_buf_with_options(
+            locking.compile_with_policy(),
+            nonminimal,
+            Options {
+                require_minimal: false,
+                enforce_stack_limit: true,
+                ..Options::default()
+            },
+        )
+        .unwrap();
+        assert!(
+            relaxed.success,
+            "raw index bytes are not bound by the script"
+        );
+        assert!(relaxed.stack_limit_enforced);
     }
 
     #[test]

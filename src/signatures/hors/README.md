@@ -49,3 +49,14 @@ The host serializer crosses a byte boundary at index 128: `[7f]` becomes
 `[80,00]`. The verifier upper-clamps an oversized index with `OP_MIN` and does
 not independently enforce canonical index bytes; message binding and one-time
 key obligations remain caller responsibilities.
+
+The focused [alias boundary](../../../knowledge/negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)
+test uses the same `n=32,t=8`, 32-byte-preimage configuration as the first
+metric row: replacing the deepest index 31 with 32 leaves the 16-item witness
+length and the successful clamped opening unchanged. The strict local
+tapscript executor rejects nonminimal index encodings with `MinimalData`, but
+the same bytes authenticate when that policy check is disabled. Both runs
+enforce the combined 1,000-item stack limit and remain `unclassified` for
+deployment, rather than consensus or relay validation. A consumer that treats
+the *raw* indices as a Binohash digest must not use this clamped relation as
+exact-index binding.

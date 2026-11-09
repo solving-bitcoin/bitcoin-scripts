@@ -6,23 +6,48 @@ the source. Read a page together with its comparison page and evidence record.
 
 ## Stack support
 
+- [Longest common prefix of opaque item vectors](opaque-common-prefix.md)
+- [Runtime left rotation of opaque stack items](opaque-runtime-rotation.md)
 - [Stable selection of opaque stack items](stable-selection.md)
+- [Exact equality of two opaque multisets](opaque-multiset.md)
+- [Serialized witness-data byte cap](witness-data-size.md)
+
+## Serialization
+
+- [CompactSize through 65,535 from separate raw byte items](compactsize-u16-items.md)
 
 ## Arithmetic
 
 - [Canonical Adler-32 state](adler32-state.md) — non-cryptographic checksum with deferred reduction
+- [ScriptNum radix-16 expansion](u4-scriptnum-nibbles.md)
+
+
+- [Table-free Luhn checksum](u4-luhn.md)
+
+- [Hint-checked u32 expansion](u32-uncompress-hinted.md)
 - [CRC-8/SMBus with nibble feedback](crc8-smbus.md)
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
+- [Exact equality of signed ScriptNum sums](scriptnum-equal-sums.md)
 - [ScriptNum integer floor root](scriptnum-isqrt.md)
+- [Signed saturating ScriptNum addition](scriptnum-saturation.md)
+- [Paired signed ScriptNum extrema](signed-min-max.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
+- [Bounded ScriptNum division without quotient hints](scriptnum-bounded-div.md)
+- [Materialize one raw byte from a numeric ScriptNum](raw-scriptnum-byte.md)
+- [Hinted floor midpoint of signed ScriptNums](hinted-midpoint.md)
 - [u4 digit arithmetic](u4.md)
+- [Exact signed ScriptNum arithmetic progression](signed-progression.md)
 - [Exact u4 sorting with destructive-selection hints](u4-sort.md)
 - [Numeric decimal Damm finite-state checksum](u4-damm.md)
+- [Extended Hamming (8,4) byte decoder](hamming84-decoder.md)
 - [Signed radix-32 window decoder](signed-radix32-decoder.md)
+- [Exact wide ScriptNum sum](wide-scriptnum-sum.md)
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
+- [Checked negabinary decoding](negabinary-decoder.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)
+- [Opaque lag-match count](opaque-lag-count.md)
 - [Checked u4 embedded-equality mask](u4-equality.md)
 - [Checked u4 leading-zero projection](u4-leading-zeros.md)
 - [Checked u4 intra-nibble bit-transition projection](u4-bit-transitions.md)
@@ -31,11 +56,14 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked inverse u4 Gray projection](u4-gray-inverse.md)
 - [Checked u4 nonzero-power-of-two predicate](u4-power-of-two.md)
 - [Checked u4 modulo-three projection](u4-mod3.md)
+- [Joint u32 residues modulo 7 and 9](u32-dual-residue.md)
+- [Sliding modulo-three sums over u4 inputs](u4-sliding-mod3.md)
 - [Checked u4 run-length expansion](u4-run-length.md)
 - [Checked u4 parity projection](u4-parity.md)
 - [Checked fixed-symbol u4 occurrence count](u4-count.md)
 - [Checked u4 presence-bit projection](u4-presence.md)
 - [Checked u4 transition count](u4-transition-count.md)
+- [Decode a single contiguous run from binary flags](single-run-mask.md)
 - [Checked u4 adjacent-equality mask](u4-adjacent-equality.md)
 - [Checked odd u4 inverse modulo 16](u4-odd-inverse-mod16.md)
 - [Checked u4 embedded-cap clamp](u4-clamp.md)
@@ -44,19 +72,26 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked u4 triplet-to-u12 packing](u4-triplet.md)
 - [Checked u4 quad-to-u16 packing](u4-quad.md)
 - [Checked base-16 integer residue modulo 17](u4-mod17.md)
+- [Checked recovery of one erased nibble](u4-erasure-recovery.md)
 - [Checked u4 XOR reduction](u4-xor-reduction.md)
+- [Checked XOR reduction with signed packed lanes](u4-xor-lanes.md)
 - [Checked public-constant u4 multiplication modulo 16](u4-mul-constant-mod16.md)
 - [Checked u4 squaring modulo 16](u4-square-mod16.md)
 - [Checked u4 nondecreasing predicate](u4-nondecreasing.md)
+- [Earliest minimum over u4 inputs](u4-argmin.md)
+- [Strict single peak of signed ScriptNums](signed-single-peak.md)
 - [Checked u4 exact sum](u4-exact-sum.md)
+- [Centered positional binomial moments](u4-binomial-moments.md)
 - [Exact u4 quarter-square products](u4-exact-product.md)
 - [Checked u4 batch nibble packing](u4-batch-pack.md)
 - [Checked u4 adjacent forward delta](u4-adjacent-delta.md)
+- [Uniform circular step over canonical nibbles](u4-lee-step.md)
 - [Canonical u4 modulo-16 prefix scan](u4-prefix-sum.md)
 - [Checked u4 cyclic vector rotation](u4-vector-rotation.md)
 - [Checked u4 vector interleave](u4-interleave.md)
 - [Checked u4 reflected Gray-code projection](u4-gray.md)
 - [Checked u4 one-hot mask projection](u4-one-hot.md)
+- [Carry-checked distinct nibble set mask](u4-distinct-mask.md)
 - [Checked u4 centered-signed projection](u4-centered.md)
 - [Checked u4 complement-reflection projection](u4-mirror.md)
 - [Checked u4 embedded-threshold trichotomy](u4-trichotomy.md)
@@ -75,6 +110,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Embedded-constant u32 XNOR](u32-xnor-constant.md)
 - [u32 word arithmetic](u32.md) — includes the checked seven-bit rotation boundary
 - [Compressed total-domain u32 addition](u32-compressed-add.md)
+- [Compressed u32 carry-out](compressed-u32-carry.md)
 - [Compressed total-domain u32 equality](u32-compressed-equal.md)
 - [Compressed total-domain u32 unsigned less-than](u32-compressed-lessthan.md)
 - [Checked compressed u32 less-than with an embedded threshold](u32-compressed-lessthan-constant.md)
@@ -111,18 +147,40 @@ the source. Read a page together with its comparison page and evidence record.
 
 - [Canonical reflection-constrained u4 witnesses](u4-reflection.md)
 
+## Stack grouping
+
+- [Stable bipartition of opaque stack items](stable-bipartition.md)
+
 ## Commitments
+
+- [Length-keyed SHA-256 opening](length-keyed-sha256.md)
 
 - [Mixed-hash path commitment](hash-path-integer.md)
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
+- [Joint HASH160 and HASH256 preimage verification](dual-digest-preimage.md)
+- [Two distinct SHA-256 openings from one public pool](sha256-pair-pool.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
+
+- [Pinned-start checkpoint chains](pinned-hash-path-chain.md)
+
+## Opaque vector relations
+
+- [Unique mismatch index of opaque item vectors](opaque-unique-mismatch.md)
 
 ## Introspection
 
 - [Binohash transaction digest](binohash.md)
 - [Binohash legacy core](binohash-legacy-core.md)
+- [Binohash 2-of-3 subset and Script consumer](binohash-subset-toy.md)
+- [Binohash raw sighash-byte census](binohash-sighash-flags.md)
+- [Binohash nine-byte SIGHASH_SINGLE anchor](binohash-single-anchor.md)
+- [Binohash legacy CODESEPARATOR and FindAndDelete fixture](binohash-codesep-core.md)
+
+## Opaque pair relations
+
+- [Unique opaque pair orientation](opaque-pair-orientation.md)
 
 ## Hashes and ciphers
 
@@ -145,8 +203,11 @@ the source. Read a page together with its comparison page and evidence record.
 ## Signatures and one-time authentication
 
 - [Point locks](point-locks.md)
+- [HASH160-committed x-only Schnorr signer set](hash160-schnorr-keyset.md)
 - [Explicit secp256k1 Schnorr verification](secp256k1-schnorr.md)
+- [Sparse exact-threshold tapscript signatures](sparse-tapscript-threshold.md)
 - [BLAKE3 Ed25519-style Montgomery slope verifier candidate](ed25519-blake3-montgomery-slope.md) — historical G29 hinted/q-free leaves and the G32 hybrid-u5 zero-hint successor
+- [Weighted native Schnorr quorum](weighted-schnorr-quorum.md)
 - [Lamport 2-bit commitment](lamport-2bit.md)
 - [HORS-like HASH160 authentication](hors-hash160.md)
 - [Base-16 Winternitz signatures](winternitz-base16.md)
@@ -161,3 +222,25 @@ the source. Read a page together with its comparison page and evidence record.
 - [BN254 fields](bn254-fields.md)
 - [BN254 groups and MSM](bn254-groups.md)
 - [BN254 pairing verifier](bn254-pairing.md)
+- [Checked u4 multiset equality](u4-multiset-equal.md)
+- [Checked u4 inversion count](u4-inversions.md)
+- [Checked ASCII hexadecimal text to u4 nibbles](u4-ascii-hex.md)
+- [Nibble-packed bracket-balance check](u4-balanced.md)
+- [Checked u4 vector distances](u4-distance.md)
+- [Checked u4 strict majority](u4-majority.md)
+- [Casting-out residues and delayed reduction](u4-mod15.md)
+- [Delayed-reduction modulo-16 nibble sum](u4-sum-ladder.md)
+- [ScriptNum decimal expansion](u4-scriptnum-decimal.md)
+- [Fixed-composition check of a u4 vector](u4-composition.md)
+- [Multi-digit Lamport commitments](lamport-digits.md)
+- [k-th smallest nibble claim check and selector](u4-order-statistic.md)
+- [Nibbles to ASCII hexadecimal text](u4-ascii-hex-encode.md)
+- [Subset-sum verification with free canonical selectors](subset-sum.md)
+- [Packed lexicographic comparison of u4 vectors](u4-compare-packed.md)
+- [Hint-checked presence bits](u4-presence-hinted.md)
+- [Parity-hinted XOR reduction](u4-xor-hinted.md)
+- [Hint-checked symbol histogram](u4-histogram.md)
+
+## Text encodings
+
+- [Opposite-case ASCII pair check](ascii-opposite-case.md)

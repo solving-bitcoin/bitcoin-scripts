@@ -3,23 +3,14 @@
 use super::stack::u4_drop;
 use crate::support::script::*;
 
+pub(super) mod table;
+use table::{mod3_to_altstack, push_mod3_table};
+
 /// Persistent items used by the u4 modulo-three lookup table.
 pub const U4_MOD3_TABLE_ITEMS: u32 = 16;
 
 /// Largest batch that fits the 1,000-item stack limit without unrelated state.
 pub const U4_MOD3_MAX_BATCH: u32 = 1_000 - U4_MOD3_TABLE_ITEMS - 2;
-
-fn mod3(value: u32) -> u32 {
-    value % 3
-}
-
-fn push_mod3_table() -> Script {
-    script! {
-        for value in (0..U4_MOD3_TABLE_ITEMS).rev() {
-            { mod3(value) }
-        }
-    }
-}
 
 /// Consume canonical nibbles and replace each with its residue modulo three.
 ///
@@ -34,12 +25,10 @@ pub fn u4_nibbles_to_mod3(nibble_count: u32) -> Script {
 
     script! {
         { push_mod3_table() }
-        for _ in 0..nibble_count {
-            { U4_MOD3_TABLE_ITEMS } OP_ROLL
+        { mod3_to_altstack(nibble_count, script! {
             OP_DUP OP_0 OP_GREATERTHANOREQUAL OP_VERIFY
             OP_DUP OP_16 OP_LESSTHAN OP_VERIFY
-            OP_PICK OP_TOALTSTACK
-        }
+        }) }
         { u4_drop(U4_MOD3_TABLE_ITEMS) }
         for _ in 0..nibble_count {
             OP_FROMALTSTACK
@@ -61,7 +50,7 @@ mod tests {
             { u4_hex_to_nibbles("0123456789abcdef") }
             { u4_nibbles_to_mod3(16) }
             for nibble in (0..16u32).rev() {
-                { mod3(nibble) } OP_EQUALVERIFY
+                { nibble % 3 } OP_EQUALVERIFY
             }
             OP_TRUE
         });

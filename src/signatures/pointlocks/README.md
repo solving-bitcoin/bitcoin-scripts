@@ -88,8 +88,10 @@ are not constant-time. They must not handle production secrets.
 
 - Bare legacy Script: both opcode sequences are consensus-compatible, but bare
   outputs are generally non-standard relay templates.
-- P2SH: both redeem scripts fit the 520-byte element limit. Standard relay has
-  not been reproduced here.
+- P2SH: both redeem scripts fit the 520-byte element limit. Funded fixtures
+  validate Bitcoin Core v30.3 consensus and default regtest mempool policy for
+  the `G/2` small-R construction and the committed construction's exact two-input
+  transaction. Other configurations require their own transaction-level evidence.
 - P2WSH: the small-R construction remains meaningful with the BIP143 digest.
   The committed construction does not: SegWit v0 intentionally does not return
   the legacy SIGHASH_SINGLE bug digest.
@@ -134,6 +136,28 @@ because that pinned interpreter has an unsigned-underflow bug in legacy
 FindAndDelete when `scriptCode` is shorter than the signature; the unpadded
 script bytes are measured separately.
 
+The [funded P2SH comparison](../../../research/pointlock-small-r-core/README.md)
+uses the unpadded 40-byte script, a 60-byte honest signature, and a separate
+72-byte valid ECDSA signature that fails the size guard. Pinned Core accepts
+the honest transaction under consensus and default relay policy and rejects
+the overlength control at `OP_VERIFY` under both. The published honest
+signature is decoded by Core and the local extractor recovers the public test
+scalar from its actual SIGHASH_ALL digest. This validates the scoped spend and
+extraction relation, not the estimated generic forgery work.
+
 No zkVM verifier dependency is included. No implementation of adaptor-signature
 nonce exchange, transcript validation, or encrypted-signature verification is
 included.
+
+## Funded Core comparison
+
+The [committed-point fixture](../../../research/binohash-committed-point-core/README.md)
+uses the policy-produced 71-byte redeemScript in a 23-byte P2SH output. Its
+complete valid two-input, one-output transaction weighs 1,124 WU and has
+scriptSigs of 2 and 144 bytes. There are no witness or hint items. Pinned Core
+v30.3 accepts that transaction under consensus and default regtest policy.
+Substituting a different valid ECDSA signature fails the SHA-256 equality;
+adding a second output removes the historical bug context and fails ECDSA.
+The [checked report](../../../tests/data/binohash-committed-point-v30.3.json)
+records the serialized transactions and verdicts. It does not test the
+off-chain setup proof or a complete Binohash protocol.
