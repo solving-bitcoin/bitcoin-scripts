@@ -178,6 +178,10 @@ the source. Read a page together with its comparison page and evidence record.
 - [Binohash nine-byte SIGHASH_SINGLE anchor](binohash-single-anchor.md)
 - [Binohash legacy CODESEPARATOR and FindAndDelete fixture](binohash-codesep-core.md)
 
+## Opaque pair relations
+
+- [Unique opaque pair orientation](opaque-pair-orientation.md)
+
 ## Hashes and ciphers
 
 - [SHA-1 over u32 bytes](sha1-u32.md)

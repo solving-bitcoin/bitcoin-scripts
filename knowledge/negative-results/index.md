@@ -606,6 +606,14 @@ SHA-256/RIPEMD-160 schedules unless an underlying or cross-function collision
 is found. This removes the exact alias but does not turn the non-standard
 mixed-hash construction into a cryptographically reviewed scheme.
 
+## An opaque unordered match can admit both orientations
+
+[Selecting the first matching orientation](opaque-pair-orientation.md)
+accepts an all-equal quartet and produces a deterministic bit without
+certifying uniqueness. The matched branch checks distinctness explicitly
+on the straight path and implies it from the reversed path. Evidence is
+`locally-reproduced`. Execution is `unclassified`.
+
 A separate [joint-digest experiment](dual-digest-preimage.md) reuses the
 shared SHA-256 pass in HASH160 and HASH256. It reduces derived compression
 work while increasing Script bytes and leaves the common collision

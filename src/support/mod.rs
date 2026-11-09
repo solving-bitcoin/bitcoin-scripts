@@ -19,3 +19,4 @@ pub mod split;
 pub mod taproot;
 pub mod tapscript;
 pub mod witness_data_size;
+pub mod unique_pair_orientation;

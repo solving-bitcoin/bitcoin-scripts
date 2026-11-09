@@ -36349,6 +36349,282 @@
         "OP-001",
         "OP-002"
       ]
+    },
+    {
+      "id": "support/opaque-pair-orientation",
+      "name": "Unique opaque pair orientation",
+      "class": "support/stack",
+      "summary": "Certify a unique straight or reversed raw-byte match for each independent quartet, returning one canonical orientation bit.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/opaque-pair-orientation.md",
+      "implementation": "src/support/unique_pair_orientation/mod.rs",
+      "documentation": "src/support/unique_pair_orientation/README.md",
+      "tests": [
+        "support::unique_pair_orientation::tests::every_raw_equality_partition_matches_the_host_relation",
+        "support::unique_pair_orientation::tests::batch_orders_outputs_and_checks_each_quartet_independently",
+        "support::unique_pair_orientation::tests::payload_sizes_follow_the_local_profiles",
+        "support::unique_pair_orientation::tests::two_private_slots_preserve_both_caller_stacks_at_the_frontier",
+        "support::unique_pair_orientation::tests::accepting_any_orientation_allows_a_false_orientation_claim",
+        "primitive_metrics::opaque_pair_orientation_metrics_are_current"
+      ],
+      "references": [
+        "bitcoin-core-v30.3-regtest",
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "stack-scheduling",
+        "reverse-consumption"
+      ],
+      "security": "All four operands are hostile opaque byte strings. Raw equality establishes a unique orientation per quartet. Authentication and binding to external state remain caller obligations.",
+      "stack_contract": "caller | a0 b0 c0 d0 ... a[n-1] b[n-1] c[n-1] d[n-1] -> caller | bit0 ... bit[n-1], both caller stacks preserved. Width 1..=249.",
+      "configurations": [
+        {
+          "id": "straight-branch",
+          "label": "1 straight quartets, branch schedule",
+          "parameters": {
+            "quartets": 1,
+            "orientation_pattern": "straight",
+            "schedule": "branch",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 4,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 23,
+          "witness_bytes": 17,
+          "witness_bytes_max": 2093,
+          "max_stack_items": 6,
+          "executed_opcodes": 14,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_straight_branch_script",
+            "opaque_orientation_straight_branch_witness",
+            "opaque_orientation_straight_branch_stack",
+            "opaque_orientation_straight_branch_executed"
+          ]
+        },
+        {
+          "id": "straight-eager",
+          "label": "1 straight quartets, eager schedule",
+          "parameters": {
+            "quartets": 1,
+            "orientation_pattern": "straight",
+            "schedule": "eager",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 4,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 23,
+          "witness_bytes": 17,
+          "witness_bytes_max": 2093,
+          "max_stack_items": 8,
+          "executed_opcodes": 21,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_straight_eager_script",
+            "opaque_orientation_straight_eager_witness",
+            "opaque_orientation_straight_eager_stack",
+            "opaque_orientation_straight_eager_executed"
+          ]
+        },
+        {
+          "id": "reversed-branch",
+          "label": "1 reversed quartets, branch schedule",
+          "parameters": {
+            "quartets": 1,
+            "orientation_pattern": "reversed",
+            "schedule": "branch",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 4,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 23,
+          "witness_bytes": 17,
+          "witness_bytes_max": 2093,
+          "max_stack_items": 6,
+          "executed_opcodes": 11,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_reversed_branch_script",
+            "opaque_orientation_reversed_branch_witness",
+            "opaque_orientation_reversed_branch_stack",
+            "opaque_orientation_reversed_branch_executed"
+          ]
+        },
+        {
+          "id": "reversed-eager",
+          "label": "1 reversed quartets, eager schedule",
+          "parameters": {
+            "quartets": 1,
+            "orientation_pattern": "reversed",
+            "schedule": "eager",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 4,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 23,
+          "witness_bytes": 17,
+          "witness_bytes_max": 2093,
+          "max_stack_items": 8,
+          "executed_opcodes": 21,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_reversed_eager_script",
+            "opaque_orientation_reversed_eager_witness",
+            "opaque_orientation_reversed_eager_stack",
+            "opaque_orientation_reversed_eager_executed"
+          ]
+        },
+        {
+          "id": "128-branch",
+          "label": "128 alternating quartets, branch schedule",
+          "parameters": {
+            "quartets": 128,
+            "orientation_pattern": "alternating",
+            "schedule": "branch",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 512,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 3071,
+          "witness_bytes": 2051,
+          "witness_bytes_max": 267779,
+          "max_stack_items": 514,
+          "executed_opcodes": 1854,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_128_branch_script",
+            "opaque_orientation_128_branch_witness",
+            "opaque_orientation_128_branch_stack",
+            "opaque_orientation_128_branch_executed"
+          ]
+        },
+        {
+          "id": "128-eager",
+          "label": "128 alternating quartets, eager schedule",
+          "parameters": {
+            "quartets": 128,
+            "orientation_pattern": "alternating",
+            "schedule": "eager",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 512,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 3071,
+          "witness_bytes": 2051,
+          "witness_bytes_max": 267779,
+          "max_stack_items": 516,
+          "executed_opcodes": 2942,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_128_eager_script",
+            "opaque_orientation_128_eager_witness",
+            "opaque_orientation_128_eager_stack",
+            "opaque_orientation_128_eager_executed"
+          ]
+        },
+        {
+          "id": "249-branch",
+          "label": "249 alternating quartets, branch schedule",
+          "parameters": {
+            "quartets": 249,
+            "orientation_pattern": "alternating",
+            "schedule": "branch",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 996,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 5975,
+          "witness_bytes": 3987,
+          "witness_bytes_max": 520911,
+          "max_stack_items": 998,
+          "executed_opcodes": 3610,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_249_branch_script",
+            "opaque_orientation_249_branch_witness",
+            "opaque_orientation_249_branch_stack",
+            "opaque_orientation_249_branch_executed"
+          ]
+        },
+        {
+          "id": "249-eager",
+          "label": "249 alternating quartets, eager schedule",
+          "parameters": {
+            "quartets": 249,
+            "orientation_pattern": "alternating",
+            "schedule": "eager",
+            "fixture_payload_bytes": 3,
+            "hint_items_per_invocation": 0,
+            "hint_bytes": 0,
+            "complete_input_items": 996,
+            "all_inputs_coexist_at_entry": true
+          },
+          "includes": "complete-leaf: all routing, exact orientation checks and terminal true. Data witness includes item count and length prefixes and excludes leaf, control block, annex, and transaction. Peak combines main and alt without caller data.",
+          "script_bytes": 5975,
+          "witness_bytes": 3987,
+          "witness_bytes_max": 520911,
+          "max_stack_items": 1000,
+          "executed_opcodes": 5725,
+          "validation_weight": 0,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "opaque_orientation_249_eager_script",
+            "opaque_orientation_249_eager_witness",
+            "opaque_orientation_249_eager_stack",
+            "opaque_orientation_249_eager_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "Pair positions and quartet boundaries are fixed.",
+        "Output bits are separate stack items.",
+        "Funded Bitcoin Core spends and relay acceptance have not been measured."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
     }
   ]
 }

@@ -11,6 +11,7 @@ They summarize the current catalog rather than claiming global completeness.
 - [Signed midpoint hint schedules](hinted-midpoint.md)
 - [Stable stack selection schedules](stack-selection.md)
 - [Script caps on serialized witness data](witness-data-size.md)
+- [Unique opaque pair orientation schedules](opaque-pair-orientation.md)
 - [Lookup strategies](lookup-strategies.md)
 - [CompactSize byte representations](compactsize-encoding.md)
 - [Opaque lag-match count schedules](opaque-lag-count.md)
