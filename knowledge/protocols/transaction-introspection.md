@@ -33,3 +33,9 @@ indices. Pinned Core accepts two disjoint funded P2SH spends selecting
 for each. The preimages are public, and the
 fixture has no transaction pinning, two-round grind, or meaningful security
 parameter. Default policy still rejects both consensus-valid spends.
+
+The [raw sighash-byte census](../primitives/binohash-sighash-flags.md)
+confirms that 256 byte values can be signed under legacy consensus while
+default relay policy accepts only six canonical values. This is an input to
+grinding-space analysis, not a measurement of independent nonce entropy or a
+full transaction-introspection protocol.

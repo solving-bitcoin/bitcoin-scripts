@@ -69,6 +69,39 @@ fn ripemd160_midstate_42x64() -> [u32; 5] {
     })
 }
 
+#[test]
+fn binohash_raw_flag_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-sighash-flags-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let sample = &report["sample_transaction"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_flag_lock",
+            value: hex_bytes(&fixture["p2sh_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_redeem",
+            value: hex_bytes(&fixture["redeem_script_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_weight",
+            value: sample["weight"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_flag_scriptsig",
+            value: sample["script_sig_bytes"].as_u64().unwrap() as usize,
+        },
+    ]);
+}
+
 fn ripemd160_midstate_witness() -> Vec<Vec<u8>> {
     (0u8..16).map(|byte| vec![byte]).collect()
 }

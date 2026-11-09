@@ -5516,7 +5516,14 @@
             "transaction_inputs": 2,
             "transaction_outputs": 2,
             "selected_dummy_signatures": 1,
-            "canonical_sighash_flags": [1, 2, 3, 129, 130, 131],
+            "canonical_sighash_flags": [
+              1,
+              2,
+              3,
+              129,
+              130,
+              131
+            ],
             "mutation_cases_per_mode": 8,
             "single_bug_control_output_count": 1
           },
@@ -5611,11 +5618,23 @@
             "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
             "pool_signatures": 3,
             "selected_signatures": 2,
-            "consensus_validated_pairs": [[0, 1], [0, 2]],
+            "consensus_validated_pairs": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ]
+            ],
             "puzzle_signature_max_bytes": 71,
             "redeem_script_bytes": 493,
             "complete_transaction_weight_wu": 2908,
-            "script_sig_bytes": [2, 588],
+            "script_sig_bytes": [
+              2,
+              588
+            ],
             "script_sig_data_items": 6,
             "hint_items": 0,
             "witness_items": 0,
@@ -25036,6 +25055,106 @@
       ],
       "open_problems": [
         "OP-064"
+      ]
+    },
+    {
+      "id": "introspection/binohash-sighash-flags",
+      "name": "Binohash raw legacy sighash-byte census",
+      "class": "introspection/transaction",
+      "summary": "Checks all 256 legacy ECDSA sighash flag bytes in funded P2SH spends against Bitcoin Core consensus and default relay policy.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-10-29",
+      "knowledge_page": "knowledge/primitives/binohash-sighash-flags.md",
+      "implementation": "examples/binohash_sighash_flag_fixtures.rs",
+      "documentation": "research/binohash-sighash-flags/README.md",
+      "tests": [
+        "examples/binohash_sighash_flag_fixtures.rs",
+        "tools/binohash_sighash_flags_regtest.py",
+        "tools/test_binohash_sighash_flags_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "bitcoin-core-v30.3-regtest",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "signature-commitment"
+      ],
+      "security": "A fixed template has distinct local digests for all 256 raw bytes, but this does not prove independent or usable Binohash entropy. The fixture omits FindAndDelete, subset grinding, pinning puzzles, and Script-readable extraction.",
+      "stack_contract": "P2SH scriptSig pushes a DER ECDSA signature with one raw sighash byte and the redeemScript; <compressed pubkey> OP_CHECKSIG leaves one boolean.",
+      "configurations": [
+        {
+          "id": "canonical-six-core-v30.3",
+          "label": "Six canonical flags accepted by Core consensus and documented default policy",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "sighash_flags": [
+              1,
+              2,
+              3,
+              129,
+              130,
+              131
+            ],
+            "sample_flag": 1,
+            "sample_complete_transaction_weight_wu": 808,
+            "sample_script_sig_bytes": 108,
+            "redeem_script_bytes": 35,
+            "witness_items": 0,
+            "hint_items": 0
+          },
+          "includes": "complete-transaction: signed one-input one-output P2SH spends with confirmed prevouts, scriptSig and full serialization; script_bytes is the 23-byte P2SH locking scriptPubKey and the 35-byte redeemScript is included in scriptSig; excludes the separate funding transaction and Binohash subset/pinning costs",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binohash_flag_lock"
+          ],
+          "execution": "policy-validated"
+        },
+        {
+          "id": "noncanonical-250-core-v30.3",
+          "label": "250 other flags accepted in a Core block but rejected by default STRICTENC policy",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "raw_flag_count": 250,
+            "complete_transaction_weight_range_wu": [
+              804,
+              812
+            ],
+            "redeem_script_bytes": 35,
+            "witness_items": 0,
+            "hint_items": 0,
+            "policy_result": "rejected: Signature hash type missing or not understood"
+          },
+          "includes": "complete-transaction: 250 disjoint signed one-input one-output P2SH spends with confirmed prevouts, scriptSig and full serialization; script_bytes is the 23-byte P2SH locking scriptPubKey and the 35-byte redeemScript is included in scriptSig; excludes the separate funding transaction and Binohash subset/pinning costs",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "A different confirmed outpoint funds each signed Core spend; the separate fixed-template digest vector isolates raw flag-byte effects only on the host side",
+        "Default relay policy rejects all 250 noncanonical bytes under STRICTENC",
+        "No FindAndDelete selection, puzzle grinding, transaction pinning, or authenticated Script consumer",
+        "Combined stack peak and executed opcode count are not measured"
+      ],
+      "open_problems": [
+        "OP-011"
       ]
     }
   ]

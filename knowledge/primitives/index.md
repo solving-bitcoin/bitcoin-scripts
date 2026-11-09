@@ -131,6 +131,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Binohash transaction digest](binohash.md)
 - [Binohash legacy core](binohash-legacy-core.md)
 - [Binohash 2-of-3 subset and Script consumer](binohash-subset-toy.md)
+- [Binohash raw sighash-byte census](binohash-sighash-flags.md)
 
 ## Hashes and ciphers
 

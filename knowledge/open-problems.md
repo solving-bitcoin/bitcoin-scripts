@@ -547,6 +547,12 @@ hit per round for a fixed transaction. Its size and opcode margins remain
 paper-formula estimates, not measured Script or Core validation. Reproduce the
 full script and actual grind distribution before drawing protocol conclusions.
 
+A separate pinned-Core raw sighash-byte census confirms that all 256 byte
+values admit signed legacy P2SH spends, but only six canonical bytes pass
+default `STRICTENC` policy. A fixed host template yields 256 distinct digests;
+this does not establish independent or usable entropy after the full
+Binohash script, pinning and grinding constraints are imposed.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and

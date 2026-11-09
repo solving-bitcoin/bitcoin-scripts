@@ -12,6 +12,9 @@ transaction-dependent digest that Bitcoin Script can extract and authenticate.
   validated against pinned Core v30.3 under consensus but rejected by default
   relay policy. A [2-of-3 toy subset](binohash-subset-toy.md) additionally
   validates dynamic selection, a size filter, and downstream index consumption.
+  A separate [raw sighash-byte census](binohash-sighash-flags.md) validates 256
+  signed P2SH spends under pinned Core consensus; only the six canonical byte
+  values pass default relay policy.
 - **Reported profile:** the paper proposes a two-round nonce extraction design
   with tunable work/collision parameters and a Lamport-signable output.
 - **Execution context:** relies on legacy signature semantics, not the local

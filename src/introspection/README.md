@@ -40,3 +40,14 @@ The [six-mode mutation matrix](../../research/binohash-sighash-matrix/README.md)
 checks which transaction-field changes affect the selected digest in a fixed
 host-side template. It also isolates the non-committing out-of-range
 `SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.
+
+The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
+independently signs all 256 flag values in P2SH spends. Its canonical `01`
+sample has this complete-transaction boundary:
+
+| P2SH scriptPubKey | RedeemScript in scriptSig | Complete spend | scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_flag_lock -->23<!-- /metric:binohash_flag_lock --> bytes | <!-- metric:binohash_flag_redeem -->35<!-- /metric:binohash_flag_redeem --> bytes | <!-- metric:binohash_flag_weight -->808<!-- /metric:binohash_flag_weight --> WU | <!-- metric:binohash_flag_scriptsig -->108<!-- /metric:binohash_flag_scriptsig --> bytes | 0 | 0 |
+
+The sample uses a plain `OP_CHECKSIG`, without Binohash subset selection or
+grinding. Stack peak and executed opcode count remain unmeasured.
