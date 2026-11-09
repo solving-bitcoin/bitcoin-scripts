@@ -381,6 +381,17 @@ Prevalidating the bytes also raises the strict stack frontier from 995
 to 997 inputs compared with interleaved validation. No authentication
 or global novelty is implied; RFC 1950 already describes delayed reduction.
 
+## Numeric to raw byte materialization
+
+The [sign-magnitude adapter](../primitives/raw-scriptnum-byte.md) and a
+high-half lookup both convert the same canonical byte before checking
+its native SHA-256 digest. The resulting leaves measure 72 versus 391
+script bytes. For `0xc8`, combined peak is four versus 129 and executed
+non-push operations are 22 versus 86. Both use one ordinary input,
+four serialized witness bytes and zero hints. At zero both peak at
+four, and the table executes one fewer non-push operation. This is
+one raw byte as a stack item, with local unclassified execution.
+
 ## Positional residue of a base-16 vector
 
 For **identical integer-modulo-17 semantics**, canonical runtime witness,
