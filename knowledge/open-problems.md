@@ -545,9 +545,14 @@ fixture now checks 2-of-3 `OP_ROLL` selection, a signature-size condition, and
 an index-selected preimage predicate against pinned Core, including malformed
 controls. A host-side six-mode matrix identifies which transaction-field
 mutations change each canonical legacy sighash in one fixed template, but it
-has no signed-spend or Core verdict. The full protocol remains open because
-transaction pinning, two-round grinding, authenticated Script extraction, and
-complete protocol costs are not reproduced.
+has no signed-spend or Core verdict. A separate funded bare-legacy fixture now
+combines four ordered signature-size checks (`82`, `02`, `81`, `01`) in one
+Core-validated spend. It verifies mutation dependencies with cheap 71-byte
+predicates; it does not impose the paper's security-scale pinning work. The
+full protocol remains open because two-round grinding, authenticated Script
+extraction, and complete protocol costs are not reproduced. A stronger
+pinning result must reproduce the paper's work target and show the committed
+template cannot be changed without that work under the stated threat model.
 
 The [8-of-n planning report](../research/binohash-parameters/README.md)
 establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches

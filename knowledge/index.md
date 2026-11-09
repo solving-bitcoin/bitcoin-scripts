@@ -43,6 +43,7 @@ python3 tools/kb.py validate
 - [Five-byte CSV differential experiment](tapscript-csv-validation.md)
 - [Absolute transaction-finality differential experiment](tapscript-finality-validation.md)
 - [Binohash legacy Core comparison](primitives/binohash-legacy-core.md)
+- [Reduced four-mode Binohash pinning fixture](../research/binohash-four-mode-pinning/README.md)
 - [Binohash 2-of-3 subset Core comparison](primitives/binohash-subset-toy.md)
 - [Nine-byte Binohash SIGHASH_SINGLE anchor](primitives/binohash-single-anchor.md)
 - [Binohash CODESEPARATOR and FindAndDelete comparison](primitives/binohash-codesep-core.md)

@@ -1,0 +1,601 @@
+{
+  "bitcoin_core": {
+    "archive": "bitcoin-30.3-arm64-apple-darwin.tar.gz",
+    "archive_sha256": "c42480fd26dd0b12c984e8063a1879165c94525c475162deb3ea2c3054dd5c2c",
+    "binary_sha256": "fb6bbeb837fbaba84a0883602d718d749a4d739ee82ab326c3bc58094edddadb",
+    "checksums_url": "https://bitcoincore.org/bin/bitcoin-core-30.3/SHA256SUMS",
+    "commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+    "version": "30.3",
+    "version_string": "Bitcoin Core daemon version v30.3.0 bitcoind"
+  },
+  "destination_script_pubkey_hex": "00204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+  "experiment": "funded-binohash-four-mode-pinning",
+  "fixture": {
+    "attempts": [
+      6,
+      3,
+      2,
+      1
+    ],
+    "digests_hex": [
+      "f227f30053afdfaf9dcdae514cfd2ad5cae3c8b0a9558ee2a80080fff8bf132c",
+      "60028a033902aa78e2097744ca125e52ec7149e81e520fc624ddaa6859f345eb",
+      "e896673706201246c8066e7834b44f9755af5a958cf65bc18d77eb815ff03354",
+      "81560b0ae7bd9ff23e196cf8ae3cbbe64a20f48f62a443a27a99c9979b2b8d03"
+    ],
+    "easy_script_pubkey_hex": "a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b87",
+    "experiment": "binohash-four-mode-pinning",
+    "fee_sat": 20000,
+    "flags_hex": [
+      "82",
+      "02",
+      "81",
+      "01"
+    ],
+    "funding_txid": "752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708",
+    "hint_items": 0,
+    "input_value_sat": 1000000,
+    "locking_script_bytes": 159,
+    "locking_script_hex": "8201478821031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078fadab8201478821024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766adab820147882102531fe6068134503d2723133227c867ac8fa6c83c537e9a44c3c5bdbdcb1fe337adab820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bac",
+    "mutations": [
+      {
+        "changed_modes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "digests_hex": [
+          "662cef7a692ab9bf64d0000047b8486bc4129536ebc481e9ba6939c196a69326",
+          "830a1800c7b92d1308837b89eeabb380986e15f848f9cbf6cc9185f579e77e1d",
+          "f4e692fae517c8ade283be1e91e5bb03692615f4f90c69cd39bf8df2368c2f87",
+          "770b2fc80d7cc99e42fecd5f31c83bcb38d4cabc93bcdeb3e6dac42f19bc8cc4"
+        ],
+        "name": "version",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0300000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c",
+          "vsize": 439,
+          "weight": 1756
+        }
+      },
+      {
+        "changed_modes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "digests_hex": [
+          "7d04415bcb15b88600031106b204db2cc6de892c371b870ae0208b0e540d6792",
+          "3990071ea7a7921b17282848c824ff22b0f7d73bbd4312c55ceb601b7bc00f65",
+          "515cb5929ac01c46a6cc13f3c0f8a3b8244243ede3afb26cb400f2c6927d515c",
+          "f67eb9d7259b218f6bec03be9708e06c5cfbd8f89d75e54ee5f66fbc8b28197a"
+        ],
+        "name": "selected_sequence",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f8ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6",
+          "vsize": 439,
+          "weight": 1756
+        }
+      },
+      {
+        "changed_modes": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "digests_hex": [
+          "13435c57fbbba8287c6b8bee4febb7e50c3aab0ab864491099246b37f36000b3",
+          "785fca055c81a99563d53cea5ee56232baa668d8fcd0cc17e20c64392048fa0f",
+          "2f2f428e8037f075ff3d64e5a3f709717fe07b20a807894f4a74fa8a5f70942c",
+          "e5f54b6c683898d9190d1548aa9e74a4572eabaeb97ad6aa0ede2b6ba741a434"
+        ],
+        "name": "locktime",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010101000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731",
+          "vsize": 439,
+          "weight": 1756
+        }
+      },
+      {
+        "changed_modes": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "digests_hex": [
+          "f227f30053afdfaf9dcdae514cfd2ad5cae3c8b0a9558ee2a80080fff8bf132c",
+          "429e4dfbe04897d60c4b99c130a3a6c301e8989ceca38d26dbf2cc96a16b895d",
+          "e896673706201246c8066e7834b44f9755af5a958cf65bc18d77eb815ff03354",
+          "406eaad007c91d4af93a3c76f17d6cf34ef53ec45a0cdb9ce76aef3a84f92bb8"
+        ],
+        "name": "other_prevout",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750300000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f",
+          "vsize": 439,
+          "weight": 1756
+        }
+      },
+      {
+        "changed_modes": [
+          false,
+          false,
+          true,
+          true
+        ],
+        "digests_hex": [
+          "f227f30053afdfaf9dcdae514cfd2ad5cae3c8b0a9558ee2a80080fff8bf132c",
+          "60028a033902aa78e2097744ca125e52ec7149e81e520fc624ddaa6859f345eb",
+          "29cfa8311527f8f6c0e6861840eb8e08246d113e307baa5adca97828a499193c",
+          "fa2593faaf8c2c475f98098c74dc4d0b8eeeabc2181a1b85a2b620ce6ab9c2e8"
+        ],
+        "name": "output_data",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010200000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499",
+          "vsize": 439,
+          "weight": 1756
+        }
+      },
+      {
+        "changed_modes": [
+          false,
+          false,
+          false,
+          true
+        ],
+        "digests_hex": [
+          "f227f30053afdfaf9dcdae514cfd2ad5cae3c8b0a9558ee2a80080fff8bf132c",
+          "60028a033902aa78e2097744ca125e52ec7149e81e520fc624ddaa6859f345eb",
+          "e896673706201246c8066e7834b44f9755af5a958cf65bc18d77eb815ff03354",
+          "b36362b2c31265f61323b085694e1f7b4218503234acb6ceef2b7a0fa2f47575"
+        ],
+        "name": "other_sequence",
+        "transaction": {
+          "base_bytes": 439,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015101000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            288
+          ],
+          "total_bytes": 439,
+          "txid": "4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864",
+          "vsize": 439,
+          "weight": 1756
+        }
+      }
+    ],
+    "script_codes_hex": [
+      "8201478821031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078fad8201478821024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766ad820147882102531fe6068134503d2723133227c867ac8fa6c83c537e9a44c3c5bdbdcb1fe337ad820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bac",
+      "8201478821024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766ad820147882102531fe6068134503d2723133227c867ac8fa6c83c537e9a44c3c5bdbdcb1fe337ad820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bac",
+      "820147882102531fe6068134503d2723133227c867ac8fa6c83c537e9a44c3c5bdbdcb1fe337ad820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bac",
+      "820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bac"
+    ],
+    "signatures_hex": [
+      "3044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82",
+      "304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02",
+      "3044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec4681",
+      "3044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101"
+    ],
+    "static_non_push_opcodes": 15,
+    "target_signature_bytes": 71,
+    "valid": {
+      "base_bytes": 439,
+      "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd2001473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+      "input_script_sig_bytes": [
+        2,
+        288
+      ],
+      "total_bytes": 439,
+      "txid": "79255ea448ec8e93e06b74f0d1875dda8c44daf993b5d534925f2e21df39953e",
+      "vsize": 439,
+      "weight": 1756
+    },
+    "witness_items": 0,
+    "wrong_sizes": [
+      {
+        "phase": 0,
+        "transaction": {
+          "base_bytes": 438,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd1f01473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02463044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e8742682982f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            287
+          ],
+          "total_bytes": 438,
+          "txid": "036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03",
+          "vsize": 438,
+          "weight": 1752
+        }
+      },
+      {
+        "phase": 1,
+        "transaction": {
+          "base_bytes": 438,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd1f01473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468146304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c3202473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            287
+          ],
+          "total_bytes": 438,
+          "txid": "3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5",
+          "vsize": 438,
+          "weight": 1752
+        }
+      },
+      {
+        "phase": 2,
+        "transaction": {
+          "base_bytes": 438,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd1f01473044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060fb101463044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec8147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            287
+          ],
+          "total_bytes": 438,
+          "txid": "288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e",
+          "vsize": 438,
+          "weight": 1752
+        }
+      },
+      {
+        "phase": 3,
+        "transaction": {
+          "base_bytes": 438,
+          "hex": "0200000002089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e099725750200000002015100000080089782f81bbc0af6d7c377d2db7213ab2435314cc2ea0d490722718e0997257540000000fd1f01463044022055c717d038e6d30ab7b6bb53988b042a567990fe9ed8f1027f535c3091421a2c022020f3b14e4aa569673115d5c29e233515d7ef319f67da05c743f63a3388060f01473044022011687a273bf227c59a6e4d91902b667eb37eee8fce46a4fd98aead936df244c0022077f0326d85087ce58f2da489f802f6633778b0eeee1d3a7a449f09ec644dec468147304402205638ae1aa414259f8e0c3e4bde9d533edf53d317125be62e4804b532eff5fc8402201a3970a58e98ce656583ef89197af4c1f90b81b0cd07a343847d4dffb71c32ed02473044022060854cf0884fec154f726f0ff3a743a84db6abcf6eed62a7b79884de91d47b11022060002378490bb82be418dd103d91d74597545215a7f7485d00002e87426829fd82f9ffffff0260361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc332600000000000000000036a010100000000",
+          "input_script_sig_bytes": [
+            2,
+            287
+          ],
+          "total_bytes": 438,
+          "txid": "3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383",
+          "vsize": 438,
+          "weight": 1752
+        }
+      }
+    ]
+  },
+  "funding_block_hash": "227ca0ae63cfc09be999375b76bb111ba26b8413c4780b460db948ddc32a1d88",
+  "funding_decoded": {
+    "size": 2315,
+    "txid": "752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708",
+    "vsize": 2312,
+    "weight": 9245
+  },
+  "funding_transaction": {
+    "base_bytes": 2310,
+    "hex": "020000000001012cbab8afa2d3296a3de78541ef4339b7caad324eb1b6d253f4afe137f84776180000000000ffffffff4240420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f000000000017a914da1745e9b549bd0bfa1a569971c77eba30cd5a4b8740420f00000000009f8201478821031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078fadab8201478821024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d0766adab820147882102531fe6068134503d2723133227c867ac8fa6c83c537e9a44c3c5bdbdcb1fe337adab820147882103462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0bacb0f82526010000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326001015100000000",
+    "total_bytes": 2315,
+    "txid": "752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708",
+    "vsize": 2312,
+    "weight": 9245,
+    "witness_bytes": 3,
+    "wtxid": "39299da4c1fd6c61c6438a2cf3a8861a6b51934e0ce94f0bff50707dcb48d019"
+  },
+  "initial_mocktime": 1800000000,
+  "mining_address": "bcrt1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqseac85",
+  "mutations": [
+    {
+      "changed_modes": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c (wtxid ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "version",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c",
+        "wtxid": "ce621feecd11fceb480c5f1e109fd31055d97e12232fe34415b8bd677376945c"
+      }
+    },
+    {
+      "changed_modes": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of 51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6 (wtxid 51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "selected_sequence",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6",
+        "wtxid": "51fdcb91eafa4bdb1d4eeeb3949bf481679d70b6e76fc89a32de9533f47a05b6"
+      }
+    },
+    {
+      "changed_modes": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731 (wtxid f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "locktime",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731",
+        "wtxid": "f755b4be69a7b726021a910dcaa31d6fe692f2eabc6e89f2841cd60ff4385731"
+      }
+    },
+    {
+      "changed_modes": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f (wtxid f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "other_prevout",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f",
+        "wtxid": "f30d6b3497d7593efab101678e46dd72c523a52ce54fd525adf4dcc98c1e040f"
+      }
+    },
+    {
+      "changed_modes": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_CHECKSIGVERIFY operation), input 1 of bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499 (wtxid bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "output_data",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499",
+        "wtxid": "bc243f71e5d2f1450462f6ca51faa955cdc71b2144c917dbdf11b3083c36a499"
+      }
+    },
+    {
+      "changed_modes": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element), input 1 of 4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864 (wtxid 4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 439,
+        "txid": "4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864",
+        "vsize": 439,
+        "weight": 1756
+      },
+      "name": "other_sequence",
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864",
+        "wtxid": "4e7b1099ce75792efa17dcb929f118fe9d664c713ae841b76c1597d10681b864"
+      }
+    }
+  ],
+  "node_options": [
+    "-regtest",
+    "-server",
+    "-disablewallet",
+    "-listen=0",
+    "-connect=0",
+    "-dnsseed=0",
+    "-discover=0",
+    "-networkactive=0",
+    "-acceptnonstdtxn=0",
+    "-persistmempool=0",
+    "-rpcbind=127.0.0.1",
+    "-rpcallowip=127.0.0.1",
+    "-printtoconsole=0",
+    "-dbcache=64",
+    "-mocktime=1800000000"
+  ],
+  "run_passed": true,
+  "schema_version": 1,
+  "scope": "Reduced four-mode bare-legacy signature-size pinning with deterministic public keys and cheap 71-byte predicates; no full Binohash security or grinding claim.",
+  "valid_consensus": {
+    "accepted": true,
+    "block_hash": "2d75cee5fd38d005e2545bc55df9517df9be8c3e3bfcfc8fe23c9bedebd221c4",
+    "block_height": 103
+  },
+  "valid_decoded": {
+    "size": 439,
+    "txid": "79255ea448ec8e93e06b74f0d1875dda8c44daf993b5d534925f2e21df39953e",
+    "vsize": 439,
+    "weight": 1756
+  },
+  "valid_policy": {
+    "allowed": false,
+    "reject-details": "bad-txns-nonstandard-inputs",
+    "reject-reason": "bad-txns-nonstandard-inputs",
+    "txid": "79255ea448ec8e93e06b74f0d1875dda8c44daf993b5d534925f2e21df39953e",
+    "wtxid": "79255ea448ec8e93e06b74f0d1875dda8c44daf993b5d534925f2e21df39953e"
+  },
+  "wrong_sizes": [
+    {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03 (wtxid 036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 438,
+        "txid": "036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03",
+        "vsize": 438,
+        "weight": 1752
+      },
+      "phase": 0,
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03",
+        "wtxid": "036cd018a8f6292acde9e5d497d7aae879f1966f96da39f1bc870875266a2b03"
+      }
+    },
+    {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5 (wtxid 3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 438,
+        "txid": "3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5",
+        "vsize": 438,
+        "weight": 1752
+      },
+      "phase": 1,
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5",
+        "wtxid": "3eff8fdaff47f39f754d9ecb29bff50114717633231ab540d7e061035ba348c5"
+      }
+    },
+    {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e (wtxid 288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 438,
+        "txid": "288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e",
+        "vsize": 438,
+        "weight": 1752
+      },
+      "phase": 2,
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e",
+        "wtxid": "288094938b0f70c1fba8ba7daa9956873c9915a1ff029017434e67f25ab6ec3e"
+      }
+    },
+    {
+      "consensus": {
+        "accepted": false,
+        "reason": "TestBlockValidity failed: block-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation), input 1 of 3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383 (wtxid 3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383), spending 752597098e712207490deac24c313524ab1372dbd277c3d7f60abc1bf8829708:64",
+        "rpc_code": -25
+      },
+      "decoded": {
+        "size": 438,
+        "txid": "3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383",
+        "vsize": 438,
+        "weight": 1752
+      },
+      "phase": 3,
+      "policy": {
+        "allowed": false,
+        "reject-details": "bad-txns-nonstandard-inputs",
+        "reject-reason": "bad-txns-nonstandard-inputs",
+        "txid": "3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383",
+        "wtxid": "3926189800f62b6d8064839ca1353e74f910b52826956e73a55b68e94751a383"
+      }
+    }
+  ]
+}

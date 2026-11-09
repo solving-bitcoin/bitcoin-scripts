@@ -7956,7 +7956,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-10-29",
+      "as_of": "2026-11-09",
       "knowledge_page": "knowledge/primitives/binohash-legacy-core.md",
       "implementation": "src/introspection/binohash.rs",
       "documentation": "src/introspection/README.md",
@@ -7967,6 +7967,9 @@
         "introspection::binohash::tests::rejects_invalid_selection_and_input",
         "tests/binohash_sighash_matrix.rs",
         "examples/binohash_core_fixtures.rs",
+        "examples/binohash_four_mode_pinning.rs",
+        "tools/binohash_four_mode_pinning_regtest.py",
+        "tools/test_binohash_four_mode_pinning_regtest.py",
         "tools/test_binohash_core_regtest.py",
         "tools/binohash_core_regtest.py",
         "tests/binohash_ten_choose_five.rs"
@@ -8057,6 +8060,39 @@
           "setup_script_bytes": null,
           "per_use_script_bytes": null,
           "metric_keys": [],
+          "evidence": "differentially-validated",
+          "execution": "consensus-validated"
+        },
+        {
+          "id": "funded-four-mode-bare-pinning-core-v30.3",
+          "label": "Four ordered legacy sighash size checks in one funded bare-script spend",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "flags_hex": ["82", "02", "81", "01"],
+            "target_signature_bytes": 71,
+            "deterministic_search_attempts": [6, 3, 2, 1],
+            "transaction_inputs": 2,
+            "transaction_outputs": 2,
+            "complete_transaction_weight_wu": 1756,
+            "complete_transaction_bytes": 439,
+            "script_sig_bytes": [2, 288],
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "rejected: bad-txns-nonstandard-inputs"
+          },
+          "includes": "complete-transaction: policy-compiled bare locking script, four exact-size deterministic signatures, two funded inputs and two outputs including OP_RETURN; script_bytes is the bare prevout locking script; excludes funding transaction, full two-round grind, collision-security claim, and Script-readable digest extraction",
+          "script_bytes": 159,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 15,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binohash_four_mode_lock"
+          ],
           "evidence": "differentially-validated",
           "execution": "consensus-validated"
         },

@@ -35,6 +35,17 @@ two-output host-side template. It separates the `ALL`, `NONE`, `SINGLE`, and
 out-of-range `SIGHASH_SINGLE` digest. Its evidence is `locally-reproduced` and
 its execution class is `unclassified`; it does not execute a signed spend.
 
+The [four-mode pinning fixture](../../research/binohash-four-mode-pinning/README.md)
+combines four canonical legacy sighash modes in one funded bare-script spend.
+Deterministic 71-byte signatures are found in 6, 3, 2, and 1 trials by changing
+fields in the paper's dependency order. Six single-field mutations separate
+committed from omitted fields in local digests and all fail pinned Core
+consensus at the selected input. The valid spend enters a block but is rejected
+by default relay policy as `bad-txns-nonstandard-inputs`. Four truncated-signature
+controls also fail Core at the explicit size predicate. This result is
+`differentially-validated` and `consensus-validated` for the reduced fixture;
+it does not establish the two-round grind or full Binohash security.
+
 The [10-choose-5 host probe](../../research/binohash-ten-choose-five/README.md)
 enumerates all 252 ascending subsets in one fixed template and finds distinct
 local legacy digests. Reverse order and duplicate selections demonstrate
