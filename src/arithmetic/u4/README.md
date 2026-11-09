@@ -42,6 +42,9 @@ these operations, but this module contains no hash-specific round logic.
   two vectors of `1..=498` nibbles (peak `2*len + 3`);
   `u4_nibbles_hamming_distance(len)` takes `1..=371` (peak `2*len + 258`) and
   `u4_nibbles_hamming_distance_composed(len)` takes `1..=363` (peak `2*len + 274`).
+- `scriptnum_nibbles::u4_scriptnum_to_nibbles(width)` and
+  `u4_scriptnum_to_nibbles_hinted(width)` take `1..=8` nibbles; the number must
+  lie in `0..16^width` (`0..2^31` at width 8).
 - `cyclic_equality::u4_nibbles_to_cyclic_equality(nibble_count, offset)` takes
   a checked batch size in `1..=499` and returns a wrapped equality bit per
   input nibble.
@@ -280,6 +283,8 @@ words as data, with no hint items.
 | Lee distance, 16 + 16 nibbles | <!-- metric:u4_distance_lee_16 -->414<!-- /metric:u4_distance_lee_16 --> bytes | <!-- metric:u4_distance_lee_16_stack -->35<!-- /metric:u4_distance_lee_16_stack --> items | <!-- metric:u4_distance_lee_16_opcodes -->317<!-- /metric:u4_distance_lee_16_opcodes --> |
 | Hamming distance, fused table, 16 + 16 nibbles | <!-- metric:u4_distance_hamming_16 -->874<!-- /metric:u4_distance_hamming_16 --> bytes | <!-- metric:u4_distance_hamming_16_stack -->290<!-- /metric:u4_distance_hamming_16_stack --> items | <!-- metric:u4_distance_hamming_16_opcodes -->514<!-- /metric:u4_distance_hamming_16_opcodes --> |
 | Hamming distance, XOR then popcount, 16 + 16 nibbles | <!-- metric:u4_distance_composed_16 -->962<!-- /metric:u4_distance_composed_16 --> bytes | <!-- metric:u4_distance_composed_16_stack -->306<!-- /metric:u4_distance_composed_16_stack --> items | <!-- metric:u4_distance_composed_16_opcodes -->554<!-- /metric:u4_distance_composed_16_opcodes --> |
+| ScriptNum to 4 nibbles, hint-free ladder | <!-- metric:u4_scriptnum_nibbles_zero_4 -->230<!-- /metric:u4_scriptnum_nibbles_zero_4 --> bytes | <!-- metric:u4_scriptnum_nibbles_zero_4_stack -->7<!-- /metric:u4_scriptnum_nibbles_zero_4_stack --> items | <!-- metric:u4_scriptnum_nibbles_zero_4_opcodes -->136<!-- /metric:u4_scriptnum_nibbles_zero_4_opcodes --> |
+| ScriptNum to 4 nibbles, hint-checked | <!-- metric:u4_scriptnum_nibbles_hinted_4 -->59<!-- /metric:u4_scriptnum_nibbles_hinted_4 --> bytes | <!-- metric:u4_scriptnum_nibbles_hinted_4_stack -->8<!-- /metric:u4_scriptnum_nibbles_hinted_4_stack --> items | <!-- metric:u4_scriptnum_nibbles_hinted_4_opcodes -->46<!-- /metric:u4_scriptnum_nibbles_hinted_4_opcodes --> |
 | Checked LSB batch, 32 nibbles | <!-- metric:u4_lsb_batch32 -->440<!-- /metric:u4_lsb_batch32 --> bytes | <!-- metric:u4_lsb_batch32_stack -->50<!-- /metric:u4_lsb_batch32_stack --> items | <!-- metric:u4_lsb_batch32_opcodes -->328<!-- /metric:u4_lsb_batch32_opcodes --> |
 | Checked byte-to-nibble unpack, 16 bytes | <!-- metric:u4_unpack_batch16 -->1168<!-- /metric:u4_unpack_batch16 --> bytes | <!-- metric:u4_unpack_batch16_stack -->546<!-- /metric:u4_unpack_batch16_stack --> items | <!-- metric:u4_unpack_batch16_opcodes -->544<!-- /metric:u4_unpack_batch16_opcodes --> |
 | Checked byte-to-nibble unpack, 18 bytes | <!-- metric:u4_unpack_batch18 -->1218<!-- /metric:u4_unpack_batch18 --> bytes | <!-- metric:u4_unpack_batch18_stack -->550<!-- /metric:u4_unpack_batch18_stack --> items | <!-- metric:u4_unpack_batch18_opcodes -->580<!-- /metric:u4_unpack_batch18_opcodes --> |
@@ -357,6 +362,15 @@ exceed the 201-opcode legacy/P2SH/P2WSH limit, and the table rows additionally
 exceed P2SH's 520-byte element limit. Tapscript execution remains unclassified.
 
 The distance fixtures use `a[i] = i` and `b[i] = (7i + 3) mod 16`: <!-- metric:u4_distance_16_witness -->63<!-- /metric:u4_distance_16_witness --> serialized witness bytes for <!-- metric:u4_distance_16_witness_items -->32<!-- /metric:u4_distance_16_witness_items --> data items and zero hints. All four fragments are straight-line, so executed non-push opcodes equal the static counts.
+
+`scriptnum_nibbles` accepts numeric aliases when MINIMALDATA is disabled; the
+hinted form returns the original hint bytes. Byte-sensitive callers must verify
+canonical encoding. All `width` hint items and the amount coexist at entry;
+`width + 4 + preserved_main + preserved_alt <= 1000` bounds the standalone
+hinted fragment. Callers must consume its outputs and preserved state, enforce
+an intended predicate and leave one truthy item for a complete leaf.
+
+The ScriptNum expansion fixture is `0xBEEF`: the hint-free form uses <!-- metric:u4_scriptnum_nibbles_zero_4_witness -->5<!-- /metric:u4_scriptnum_nibbles_zero_4_witness --> serialized witness bytes for <!-- metric:u4_scriptnum_nibbles_zero_4_witness_items -->1<!-- /metric:u4_scriptnum_nibbles_zero_4_witness_items --> data item and zero hints; the hint-checked form uses <!-- metric:u4_scriptnum_nibbles_hinted_4_witness -->13<!-- /metric:u4_scriptnum_nibbles_hinted_4_witness --> bytes for <!-- metric:u4_scriptnum_nibbles_hinted_4_witness_items -->5<!-- /metric:u4_scriptnum_nibbles_hinted_4_witness_items --> items (four nibble hints and the number). The hint-free fragment is branchy, so the opcode column is a static non-push count, not a dynamic measurement.
 
 <!-- metric:u4_parity_batch32_witness -->65<!-- /metric:u4_parity_batch32_witness --> serialized witness bytes for the representative range-checked parity batch.
 

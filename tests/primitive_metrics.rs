@@ -8356,6 +8356,68 @@ fn u4_distance_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures ScriptNum-to-nibble expansion at four nibbles.
+#[test]
+fn u4_scriptnum_nibbles_metrics_are_current() {
+    use u4::scriptnum_nibbles::{u4_scriptnum_to_nibbles, u4_scriptnum_to_nibbles_hinted};
+    const WIDTH: u32 = 4;
+    const VALUE: i64 = 0xBEEF;
+    let digits: Vec<Vec<u8>> = (0..WIDTH)
+        .rev()
+        .map(|place| scriptnum((VALUE >> (4 * place)) & 15))
+        .collect();
+    let zero_witness = vec![scriptnum(VALUE)];
+    let mut hinted_witness = digits.clone();
+    hinted_witness.push(scriptnum(VALUE));
+    let mut metrics = Vec::new();
+    for (name, fragment, witness) in [
+        ("zero", u4_scriptnum_to_nibbles(WIDTH), zero_witness),
+        (
+            "hinted",
+            u4_scriptnum_to_nibbles_hinted(WIDTH),
+            hinted_witness,
+        ),
+    ] {
+        use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+        let compiled = fragment.compile_with_policy();
+        let execution = execute_tapscript(
+            compiled.clone(),
+            witness.clone(),
+            TapscriptProfile::Consensus,
+        );
+        let result = execution.execution().expect("executed fragment");
+        assert!(result.error.is_none(), "metric fragment failed: {result}");
+        assert!(result.stack_limit_enforced);
+        assert_eq!(result.final_stack.len(), WIDTH as usize);
+        for (index, digit) in [11i64, 14, 14, 15].iter().enumerate() {
+            assert_eq!(result.final_stack.get(index), scriptnum(*digit));
+        }
+        let opcodes = compiled
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let key = |suffix: &str| -> &'static str {
+            Box::leak(format!("u4_scriptnum_nibbles_{name}_4{suffix}").into_boxed_str())
+        };
+        for (suffix, value) in [
+            ("", compiled.len()),
+            ("_witness", witness_size(&witness)),
+            ("_witness_items", witness.len()),
+            ("_stack", result.stats.max_nb_stack_items),
+            ("_opcodes", opcodes),
+        ] {
+            metrics.push(Metric {
+                readme: "src/arithmetic/u4/README.md",
+                key: key(suffix),
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

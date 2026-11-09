@@ -548,3 +548,11 @@ composition (63 witness bytes over 32 items, zero hints, strict local
 `unclassified` tapscript, `locally-reproduced`). The fused table is 6.3% to
 10.7% smaller across 1 to 64 nibbles. See [the primitive](../primitives/u4-distance.md)
 and NR-092.
+
+## ScriptNum to nibbles
+
+Expanding `0xBEEF` into four nibbles costs 230 script bytes and 5 witness bytes
+over one item with no hints, against 59 script bytes and 13 witness bytes over
+five items (four nibble hints) for Horner verification: 235 versus 72 bytes
+in total (strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-scriptnum-nibbles.md) and NR-093.

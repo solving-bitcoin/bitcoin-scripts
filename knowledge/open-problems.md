@@ -1273,3 +1273,12 @@ distance for hostile 16-nibble vectors without a resident table in fewer
 policy-compiled script bytes than 874 on the same boundary, with exact peaks and
 hint counts, or a consumer (a proximity or error-bound check) shows the
 table-free metrics suffice. Core validation is required for any deployment claim.
+
+## OP-049 — Cheaper hint-free ScriptNum expansion
+
+The hint-free ladder costs about 57 script bytes per nibble. **Accept when:** a
+Script construction expands a hostile 16-bit ScriptNum into four canonical
+nibbles with no hints in fewer than 235 total script-plus-witness bytes on the
+same boundary (the hint-checked form totals 72), or a protocol consumer shows the
+hint-free form is required and measures its complete-leaf cost. Core validation
+is required for any deployment claim.
