@@ -30,6 +30,12 @@ class BinohashSubsetHarnessTests(unittest.TestCase):
                     self.assertTrue(rejection_matches(
                         control["consensus"], name, control["transaction"]["txid"]))
             self.assertTrue(spend["valid"]["consensus"]["accepted"])
+            alternate = spend["nonminimal_puzzle_push"]
+            self.assertTrue(alternate["consensus"]["accepted"])
+            self.assertNotEqual(alternate["transaction"]["txid"],
+                                spend["valid"]["transaction"]["txid"])
+            self.assertEqual(alternate["consensus"]["block_height"],
+                             spend["valid"]["consensus"]["block_height"])
             self.assertFalse(spend["valid"]["policy"]["allowed"])
 
     def test_mutated_report_cannot_pass(self):
@@ -39,6 +45,9 @@ class BinohashSubsetHarnessTests(unittest.TestCase):
              self.report["spends"][0]["candidates"][0]["local_digest_hex"]),
             ("spends", 1, "selected_pair", [2, 2]),
             ("spends", 1, "valid", "consensus", "accepted", False),
+            ("spends", 1, "nonminimal_puzzle_push", "consensus", "accepted", False),
+            ("spends", 0, "nonminimal_puzzle_push", "transaction", "txid",
+             self.report["spends"][0]["valid"]["transaction"]["txid"]),
             ("spends", 0, "valid", "policy", "allowed", True),
             ("spends", 1, "controls", "wrong_indices", "consensus", "accepted", True),
             ("spends", 0, "controls", "wrong_preimage", "consensus", "reason", "other failure"),

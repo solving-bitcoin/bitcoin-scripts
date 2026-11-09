@@ -17004,6 +17004,30 @@ fn binohash_subset_core_report_metrics_are_current() {
         ] {
             metrics.push(Metric { readme, key, value });
         }
+        let nonminimal = &report["spends"][index]["nonminimal_puzzle_push"]["transaction"];
+        let (weight_key, script_sig_key) = if index == 0 {
+            (
+                "binohash_subset_first_nonminimal_weight",
+                "binohash_subset_first_nonminimal_main_sig",
+            )
+        } else {
+            (
+                "binohash_subset_second_nonminimal_weight",
+                "binohash_subset_second_nonminimal_main_sig",
+            )
+        };
+        metrics.extend([
+            Metric {
+                readme,
+                key: weight_key,
+                value: nonminimal["weight"].as_u64().unwrap() as usize,
+            },
+            Metric {
+                readme,
+                key: script_sig_key,
+                value: nonminimal["input_script_sig_bytes"][1].as_u64().unwrap() as usize,
+            },
+        ]);
     }
     check_readme_metrics(metrics);
 }

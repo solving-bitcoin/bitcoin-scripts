@@ -59,7 +59,7 @@
   ],
   "run_passed": true,
   "schema_version": 1,
-  "scope": "Two disjoint low-work 2-of-3 legacy subset spends with OP_ROLL, size filter, and Script-consuming preimage checks. No transaction pinning, two-round grind, or collision-security claim.",
+  "scope": "Two disjoint low-work 2-of-3 legacy subset spends with OP_ROLL, size filter, and Script-consuming preimage checks; alternate scriptSig push encodings on the same prevouts. No transaction pinning, two-round grind, or collision-security claim.",
   "spends": [
     {
       "binohash_vout": 1,
@@ -271,6 +271,39 @@
       },
       "easy_vout": 0,
       "name": "pair-0-1",
+      "nonminimal_puzzle_push": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "371e0b82cf1ea8394df0a38d16768ebe58d926b542b2e04116ca2a9fc66f39ba",
+          "block_height": 103
+        },
+        "decoded": {
+          "size": 728,
+          "txid": "f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97",
+          "vsize": 728,
+          "weight": 2912
+        },
+        "invalidated_before_canonical": true,
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Data push larger than necessary), input 1 of f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97 (wtxid f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97), spending 70a476bebe0e8191c76f69632c4c6623f5125338c2661970e6c5d0665ac446be:1",
+          "reject-reason": "mempool-script-verify-flag-failed (Data push larger than necessary)",
+          "txid": "f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97",
+          "wtxid": "f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97"
+        },
+        "transaction": {
+          "base_bytes": 728,
+          "hex": "0200000002be46c45a66d0c5e6701966c2385312f523664c2c63696fc791810ebebe76a47000000000020151ffffffffbe46c45a66d0c5e6701966c2385312f523664c2c63696fc791810ebebe76a47001000000fd4d02004c4730440220344fc7cbd60687849159f46509521f0ce48c445d006232be7da0c165840675ac02201c04690a19dd3112bfd62fb2fc6686e4932e9988c4f80992ff50dabd1e4a673f01100b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b00514ded017b6b6e7c7600877c51879b697651877c52879b696e9f696e6b6b473044022015ad60f7a6c08fb7346c4b8fb9e0174bb65063ee478429c5bd793addbf3bf7cf0220351d41b57742b6688a70fd27fb2682338512697786fc067f483a53355a925aab0347304402205a3a3ebd8ec4634a10a24dbcfc68941133698a170f1aec1f59328ce540ce0f7402206266a11df618f29a5ef68e5a4745882ceb3a31914b48b5d09ff77a89edbbf86603483045022100a67d7d3076c39725423c3b7bb2af189268b88c24714e169c3e3a12810c2e978d02204a4f6feaee449f333739334237ff5a03d416ac9f1d816da939f91e866aa243a4035379527c947a6b5379517c947a6b756d6c6c5279820147a169755321024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d076621031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f21031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f21031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f54af6c6c93765187637514309f63854eb372b0b6ce616a60ed703846c1926e677652876375140f4bd5fa6f7872eafcde19c28575eb13bea679d667538814ac3434d2c1e4e965801233f324bddd010f0704aa68686ca987ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+          "input_script_sig_bytes": [
+            2,
+            589
+          ],
+          "total_bytes": 728,
+          "txid": "f7b119b6083c353e88002086ad7c4a99fc54fb2d0b3f0b85db3ab08b1fff8c97",
+          "vsize": 728,
+          "weight": 2912
+        }
+      },
       "oversized_valid_puzzle_signature_hex": "3045022100ebe55b554089a7431bb54e688b02c8546a6c854238cbf2946e55b44f8fb91760022034e9478b0207abe0ae938aed05e0a6b9a00a67c4c5267a9670a10c611c37407d01",
       "selected_local_digest_hex": "117c9787d47d83a06d014d86adf50845aeb5d6cc86e275ee028142c069c78153",
       "selected_pair": [
@@ -522,6 +555,39 @@
       },
       "easy_vout": 2,
       "name": "pair-0-2",
+      "nonminimal_puzzle_push": {
+        "consensus": {
+          "accepted": true,
+          "block_hash": "5be4c3eca116071ed621238b2c48402e82005f63e6f159fe655bad7ba3f3063f",
+          "block_height": 104
+        },
+        "decoded": {
+          "size": 728,
+          "txid": "1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0",
+          "vsize": 728,
+          "weight": 2912
+        },
+        "invalidated_before_canonical": true,
+        "policy": {
+          "allowed": false,
+          "reject-details": "mempool-script-verify-flag-failed (Data push larger than necessary), input 1 of 1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0 (wtxid 1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0), spending 70a476bebe0e8191c76f69632c4c6623f5125338c2661970e6c5d0665ac446be:3",
+          "reject-reason": "mempool-script-verify-flag-failed (Data push larger than necessary)",
+          "txid": "1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0",
+          "wtxid": "1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0"
+        },
+        "transaction": {
+          "base_bytes": 728,
+          "hex": "0200000002be46c45a66d0c5e6701966c2385312f523664c2c63696fc791810ebebe76a47002000000020151ffffffffbe46c45a66d0c5e6701966c2385312f523664c2c63696fc791810ebebe76a47003000000fd4d02004c47304402205e8af7427e2f6c2d9a326d14acac8ccfee8ed3e9c7bbdec072bb9de11d5c0802022022e7e6d06894252826ab16953d555f3fc8370a40b8f74ee0d66aaa7dfc50a7f101100c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c00524ded017b6b6e7c7600877c51879b697651877c52879b696e9f696e6b6b473044022015ad60f7a6c08fb7346c4b8fb9e0174bb65063ee478429c5bd793addbf3bf7cf0220351d41b57742b6688a70fd27fb2682338512697786fc067f483a53355a925aab0347304402205a3a3ebd8ec4634a10a24dbcfc68941133698a170f1aec1f59328ce540ce0f7402206266a11df618f29a5ef68e5a4745882ceb3a31914b48b5d09ff77a89edbbf86603483045022100a67d7d3076c39725423c3b7bb2af189268b88c24714e169c3e3a12810c2e978d02204a4f6feaee449f333739334237ff5a03d416ac9f1d816da939f91e866aa243a4035379527c947a6b5379517c947a6b756d6c6c5279820147a169755321024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d076621031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f21031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f21031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f54af6c6c93765187637514309f63854eb372b0b6ce616a60ed703846c1926e677652876375140f4bd5fa6f7872eafcde19c28575eb13bea679d667538814ac3434d2c1e4e965801233f324bddd010f0704aa68686ca987ffffffff0160361e00000000002200204ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc3326000000000",
+          "input_script_sig_bytes": [
+            2,
+            589
+          ],
+          "total_bytes": 728,
+          "txid": "1c4fe4a8aff9381532223503e0cfc9ac00f591bcada0b929293f4002bdc4d7f0",
+          "vsize": 728,
+          "weight": 2912
+        }
+      },
       "oversized_valid_puzzle_signature_hex": "3045022100b612bff6d1606176f402c8bfb8fa8eb0e5bd028e7498d4e0399ed54058d178180220276014401dcd0280c757001c4846c2cc5a09dbb292aa83822c970a6a25a72d7601",
       "selected_local_digest_hex": "c28fa17e19e9be115708b23c5a90e2eb2eab7cb18dd1fceb20a7ae34d9a04c9e",
       "selected_pair": [

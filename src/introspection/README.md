@@ -26,9 +26,14 @@ The checked Core report fixes its complete-transaction measurement boundary:
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `[0,1]` | <!-- metric:binohash_subset_lock -->23<!-- /metric:binohash_subset_lock --> bytes | <!-- metric:binohash_subset_redeem -->493<!-- /metric:binohash_subset_redeem --> bytes | <!-- metric:binohash_subset_first_weight -->2908<!-- /metric:binohash_subset_first_weight --> WU | <!-- metric:binohash_subset_first_easy_sig -->2<!-- /metric:binohash_subset_first_easy_sig --> bytes | <!-- metric:binohash_subset_first_main_sig -->588<!-- /metric:binohash_subset_first_main_sig --> bytes | 0 |
 | `[0,2]` | 23 bytes | 493 bytes | <!-- metric:binohash_subset_second_weight -->2908<!-- /metric:binohash_subset_second_weight --> WU | <!-- metric:binohash_subset_second_easy_sig -->2<!-- /metric:binohash_subset_second_easy_sig --> bytes | <!-- metric:binohash_subset_second_main_sig -->588<!-- /metric:binohash_subset_second_main_sig --> bytes | 0 |
+| `[0,1]` nonminimal puzzle push | 23 bytes | 493 bytes | <!-- metric:binohash_subset_first_nonminimal_weight -->2912<!-- /metric:binohash_subset_first_nonminimal_weight --> WU | 2 bytes | <!-- metric:binohash_subset_first_nonminimal_main_sig -->589<!-- /metric:binohash_subset_first_nonminimal_main_sig --> bytes | 0 |
+| `[0,2]` nonminimal puzzle push | 23 bytes | 493 bytes | <!-- metric:binohash_subset_second_nonminimal_weight -->2912<!-- /metric:binohash_subset_second_nonminimal_weight --> WU | 2 bytes | <!-- metric:binohash_subset_second_nonminimal_main_sig -->589<!-- /metric:binohash_subset_second_nonminimal_main_sig --> bytes | 0 |
 
 There are six scriptSig data pushes and zero witness items. The report does
 not measure a combined stack peak or executed opcode count.
+For each pair, Core accepts the nonminimal and canonical encodings in
+alternate blocks spending the same prevout at the same height. Their txids
+differ, though both are rejected by default relay policy.
 
 The focused tests cover opcode-boundary deletion, subset-dependent digests,
 the legacy `SIGHASH_SINGLE` bug constant, invalid selections, and invalid input

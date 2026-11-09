@@ -549,6 +549,14 @@ has no signed-spend or Core verdict. The full protocol remains open because
 transaction pinning, two-round grinding, authenticated Script extraction, and
 complete protocol costs are not reproduced.
 
+The same 2-of-3 fixture now accepts two scriptSig encodings of the identical
+signature stack in alternate Core blocks at the same height, with distinct
+txids. A full protocol must specify and test whether its pinning or downstream
+consumer binds the scriptSig serialization it relies on. The acceptance
+criterion is a funded full-protocol Core fixture in which every allowed
+scriptSig encoding has an explicitly checked transaction identity and
+consumer outcome.
+
 The [8-of-n planning report](../research/binohash-parameters/README.md)
 establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
 `2^42` combinations at fixed `t=8`. Under an independent uniform-hit model,

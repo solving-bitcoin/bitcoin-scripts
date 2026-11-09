@@ -192,6 +192,28 @@ fn generate(funding_txid: Txid, destination: ScriptBuf, easy_vout: u32, bino_vou
             let mut candidate = tx.clone();
             candidate.input[1].script_sig =
                 script_sig(&puzzle, &preimages[pair_index], (i, j), redeem.as_bytes());
+            // Legacy sighash excludes scriptSig. Encode the same puzzle signature
+            // with PUSHDATA1 to keep its stack value while changing the txid.
+            assert!(puzzle.len() <= 75);
+            let canonical_script_sig = candidate.input[1].script_sig.as_bytes();
+            assert_eq!(canonical_script_sig[0], 0x00);
+            assert_eq!(canonical_script_sig[1] as usize, puzzle.len());
+            let mut nonminimal_puzzle_push = candidate.clone();
+            nonminimal_puzzle_push.input[1].script_sig = ScriptBuf::from_bytes(
+                [
+                    vec![0x00, 0x4c, puzzle.len() as u8],
+                    canonical_script_sig[2..].to_vec(),
+                ]
+                .concat(),
+            );
+            assert_ne!(
+                candidate.compute_txid(),
+                nonminimal_puzzle_push.compute_txid()
+            );
+            assert_eq!(
+                digest,
+                binohash_digest(&nonminimal_puzzle_push, 1, &redeem, &pool, &[i, j], 0x01).unwrap()
+            );
             let mut wrong_preimage = candidate.clone();
             wrong_preimage.input[1].script_sig = script_sig(
                 &puzzle,
@@ -266,6 +288,7 @@ fn generate(funding_txid: Txid, destination: ScriptBuf, easy_vout: u32, bino_vou
                 "puzzle_signature_bytes": puzzle.len(),
                 "passes_size_filter": puzzle.len() <= MAX_PUZZLE_SIGNATURE_BYTES,
                 "transaction": transaction_record(&candidate),
+                "nonminimal_puzzle_push": transaction_record(&nonminimal_puzzle_push),
                 "wrong_preimage": transaction_record(&wrong_preimage),
                 "wrong_indices": transaction_record(&wrong_indices),
                 "reversed_indices": transaction_record(&reversed_indices),
@@ -328,5 +351,18 @@ mod tests {
         let fixture = generate(txid, ScriptBuf::from_bytes(vec![0x51]), 0, 1);
         assert_eq!(fixture["results"].as_array().unwrap().len(), 3);
         assert!(fixture["redeem_script_bytes"].as_u64().unwrap() <= 520);
+        for row in fixture["results"].as_array().unwrap() {
+            let canonical = &row["transaction"];
+            let nonminimal = &row["nonminimal_puzzle_push"];
+            assert_ne!(canonical["txid"], nonminimal["txid"]);
+            assert_eq!(
+                nonminimal["input_script_sig_bytes"][1].as_u64().unwrap(),
+                canonical["input_script_sig_bytes"][1].as_u64().unwrap() + 1
+            );
+            assert_eq!(
+                nonminimal["weight"].as_u64().unwrap(),
+                canonical["weight"].as_u64().unwrap() + 4
+            );
+        }
     }
 }

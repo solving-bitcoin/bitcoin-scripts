@@ -3,7 +3,8 @@
 - **Question:** Can a legacy P2SH spend use canonical scriptSig indices to
   select two of three embedded signatures, vary `scriptCode` through
   `FindAndDelete`, enforce a signature-size condition, and pass the selected
-  indices to a later Script predicate?
+  indices to a later Script predicate? Can a nonminimal push of the same
+  puzzle signature change its txid without changing validity?
 - **Comparison objective:** Compare a locally signed three-subset fixture with
   pinned Bitcoin Core v30.3 consensus and default relay-policy verdicts.
 - **Execution class:** `differentially-validated`, `consensus-validated` for
@@ -45,6 +46,17 @@ preimage, and a different but valid 72-byte puzzle signature. Both valid
 transactions are rejected by default mempool policy with `Signature is found
 in scriptCode` (`CONST_SCRIPTCODE`).
 
+For each selected pair, the runner also changes only the puzzle signature's
+scriptSig push from a direct length byte to `OP_PUSHDATA1`. The pushed bytes,
+other inputs, output, and selected signature pool remain identical. Core
+accepts that alternate in a block, the runner invalidates its block, and Core
+accepts the canonical encoding in a replacement block at the same height
+spending the **same prevout**. Their txids differ. This is transaction identity
+malleability in the reduced legacy fixture; the local Binohash digest and
+Script stack values are unchanged. The canonical encoding fails default relay
+policy under `CONST_SCRIPTCODE`; the nonminimal encoding is rejected earlier
+as `Data push larger than necessary` under `MINIMALDATA`.
+
 ## Script metrics
 
 The P2SH locking scriptPubKey is 23 bytes; the raw redeemScript is 493 bytes
@@ -52,11 +64,18 @@ and is included in scriptSig. Each complete two-input, one-output valid spend
 weighs 2,908 WU. Each has 2- and 588-byte scriptSigs. There is no
 witness: **zero witness items and zero hint items**. The selected scriptSig has six data
 pushes: CHECKMULTISIG dummy, puzzle signature, public preimage, two selectors,
-and redeemScript. These values include the easy first input, selected P2SH
+and redeemScript. The easy first input has one more scriptSig push, for seven
+transaction input data pushes total. The six selected-input items coexist at
+that input's script entry; the easy input executes separately. The alternate
+encoding changes no data item count. These values include the easy first input, selected P2SH
 input, and complete transaction serialization; they exclude the funding
 transaction and all full-protocol pinning/grinding costs. Combined main and
 alt-stack peak and executed opcode count are not measured. This is a fixed toy
 cost, not a Binohash parameter estimate.
+The nonminimal-push alternative has a 589-byte second scriptSig and weighs
+2,912 WU. Its extra byte is scriptSig encoding overhead, not an additional
+stack item or hint. The two encodings are alternative spends, not jointly
+included transactions.
 
 ## Stack contract and security
 
