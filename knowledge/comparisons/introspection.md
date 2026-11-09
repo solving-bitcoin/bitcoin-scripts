@@ -9,6 +9,7 @@ default relay acceptance.
 | Binohash transaction digest | Full two-round signature grinding, transaction mutation, and Script extraction | reported | unclassified | No complete local reproduction or Core regtest |
 | Binohash legacy core | Opcode-boundary `FindAndDelete` plus legacy sighash | locally-reproduced | unclassified | No grinding, complete spend, or Script consumer |
 | Binohash six-mode mutation matrix | Eight field mutations per canonical legacy sighash mode on a fixed host template | locally-reproduced | unclassified | No signed spends or Core validation; out-of-range SINGLE is non-committing |
+| Binohash signed six-mode field matrix | Six signed P2SH baselines and 48 field mutations against pinned Core | differentially-validated | policy-validated | Baselines policy accepted and mined; changed-digest variants consensus rejected; no embedded signature or pinning puzzle |
 | Binohash 10-choose-5 host probe | All 252 ascending subsets over one fixed template | locally-reproduced | unclassified | Dummy deletion targets; order/duplicate aliases need Script-side canonicalization |
 | Binohash two-choice fixture | Two signed P2SH spends with selected embedded signatures and a wrong-selection control | differentially-validated | consensus-validated | Default policy rejects `CONST_SCRIPTCODE`; no grinding or Script consumer |
 | Binohash 2-of-3 toy subset | `OP_ROLL` chooses two embedded signatures; size filter and selected-index preimage check | differentially-validated | consensus-validated | Toy nonce space, public preimages, no pinning/two-round grind; default policy rejects `CONST_SCRIPTCODE` |
@@ -23,6 +24,9 @@ of 1,744/1,740 WU; it has zero witness/hint items and no measured stack peak.
 The 2-of-3 toy has a 23-byte P2SH locking scriptPubKey, a 493-byte redeemScript,
 and two 2,908-WU complete spends, also with zero witness/hint items and no measured
 stack peak. The 71-byte size filter is a toy condition, not a work estimate.
+The signed six-mode matrix uses a 23-byte P2SH locking scriptPubKey, a
+35-byte selected redeemScript, and complete spend weights of 1,152–1,156 WU.
+It has zero witness/hint items and no measured stack peak.
 The raw-flag census uses a 23-byte P2SH locking scriptPubKey, a 35-byte
 redeemScript, and complete spend weights of 804–812 WU. It has zero
 witness/hint items and no measured stack peak. Its six canonical flag rows
