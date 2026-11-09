@@ -549,6 +549,14 @@ has no signed-spend or Core verdict. The full protocol remains open because
 transaction pinning, two-round grinding, authenticated Script extraction, and
 complete protocol costs are not reproduced.
 
+A [reduced two-round fixture](../research/binohash-two-round-subsets/README.md)
+now executes two independent one-of-two embedded-signature pool selections
+and puzzle checks in one funded P2SH spend. It establishes the sequential
+legacy Script mechanics under Core consensus, including two selector-flip
+failures, but uses tiny pools and cheap size checks. The selected indices are
+consumed, so no authenticated Script-readable Binohash emerges. The full
+two-round grind, pinning security, and complete protocol costs remain open.
+
 The [8-of-n planning report](../research/binohash-parameters/README.md)
 establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
 `2^42` combinations at fixed `t=8`. Under an independent uniform-hit model,
