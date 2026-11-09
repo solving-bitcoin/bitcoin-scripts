@@ -1955,6 +1955,30 @@ separately from these witness-specific peaks. For eight runs of width 16 the
 bound is 26, above the length-2 fixture's 21. No variable run count and no
 byte-winning layout is claimed. See [OP-040](../open-problems.md#op-040--byte-competitive-variable-run-length-decoder).
 
+## NR-088: Hint-free bounded division loses combined bytes
+
+The [checked bounded divider](../primitives/scriptnum-bounded-div.md) replaces
+a quotient hint with binary threshold subtraction. In matched complete leaves,
+divisor 31 / maximum 991 costs 92 script + 4 data-witness bytes versus 49 + 6
+for the existing hinted verifier with the same canonical dividend/range checks
+and canonical outputs. Combined bytes rise by 41 while the peak falls from 8
+to 4 and one mandatory hint/entry item disappears. Divisor 17 / maximum 271
+loses 32 combined bytes (79 versus 47); the full 31-bit divisor-31 fixture
+loses 474 (538 versus 64). These are scoped results, not universal domination.
+
+The full-range leaf has 229 static non-push operations, though only 145 execute
+on the measured input. Legacy/P2WSH's 201-opcode cap counts the static total;
+the 532-byte complete leaf also exceeds P2SH's 520-byte element bound. Local
+tapscript stack enforcement does not establish complete-spend validity.
+
+All direct rows have one operand and zero auxiliary arithmetic hints. Each
+baseline has that operand plus one quotient hint, both at entry; baseline
+normalization allows harmless numeric aliases, making the smaller witness
+maxima 9 bytes rather than their 6-byte canonical representatives. A payload
+used as a surrounding protocol's selector certificate remains a protocol hint
+even when arithmetic decoding requires no additional hints. Evidence is
+`locally-reproduced`; execution `unclassified`. OP-044 tracks that consumer.
+
 ## NR-084: Packed permutation ranks lose combined bytes
 
 Canonical, hint-free factoradic decoding saves data witness items and stack peak,

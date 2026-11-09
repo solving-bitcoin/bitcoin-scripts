@@ -393,6 +393,13 @@
       "kind": "upstream-source",
       "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md",
       "revision": "55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6"
+    },
+    {
+      "id": "bitcoin-script-permutation-quotient-core",
+      "title": "Existing bounded binary quotient core in the local permutation decoder",
+      "kind": "reference-implementation",
+      "url": "https://github.com/solving-bitcoin/bitcoin-scripts/blob/f6624f6edcf52257811eec1fd3e1d05967385fca/src/arithmetic/permutation/mod.rs",
+      "revision": "f6624f6edcf52257811eec1fd3e1d05967385fca; inline bounded quotient core inspected and extracted into a checked public API on 2026-10-27; not a new division algorithm"
     }
   ]
 }

@@ -132,3 +132,8 @@ See [the implementation README](../../src/support/selection/README.md),
 [comparison](../../knowledge/comparisons/stack-selection.md),
 [NR-078](../../knowledge/negative-results/stable-selection.md) and
 [OP-036](../../knowledge/open-problems.md#op-036--stable-selection-protocol-composition).
+
+Historical source digests are checked against their pinned Git tree. Current
+artifact reproduction retains the source-file inventory, dependency pins and
+every measured artifact while allowing unrelated source digest changes. A
+shallow checkout without that commit cannot verify historical source blobs.

@@ -33,15 +33,10 @@ pub fn decode_rank(width: u32) -> Script {
             // Residual r < remaining!, so floor(r / (remaining-1)!) < remaining.
             // Binary threshold subtraction computes that bounded quotient
             // without disabled OP_DIV, a table, or a hostile quotient hint.
-            0 OP_SWAP
-            for bit in (0..(u32::BITS - (remaining - 1).leading_zeros())).rev() {
-                OP_DUP { (1u32 << bit) * permutation_count(remaining - 1) }
-                OP_GREATERTHANOREQUAL
-                OP_IF
-                    { (1u32 << bit) * permutation_count(remaining - 1) } OP_SUB
-                    OP_SWAP { 1u32 << bit } OP_ADD OP_SWAP
-                OP_ENDIF
-            }
+            { crate::arithmetic::scriptint::bounded::div_rem_unchecked(
+                permutation_count(remaining - 1),
+                permutation_count(remaining) - 1,
+            ) }
             // Pool | quotient | residual -> Pool | residual | selected.
             // +1 accounts for the residual above the shrinking trusted pool.
             OP_SWAP OP_1ADD OP_ROLL OP_TOALTSTACK

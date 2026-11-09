@@ -13,6 +13,15 @@ all at entry, and a 66-item combined peak. Two preloaded batches have 62 hints,
 bound is essential: native `OP_ROLL` only bounds an index against the entire
 main stack, including other hints and preserved protocol state.
 
+The [bounded direct divider](../primitives/scriptnum-bounded-div.md) illustrates
+removing an arithmetic hint at a price: a 32-by-31 packed choice payload decodes
+from one operand with zero extra hints and a four-item combined peak, versus
+one operand plus one quotient hint and an eight-item peak for the matched
+existing verifier. The complete direct leaf costs 92 versus 49 bytes. All data
+and hints coexist at entry. If the payload encodes auxiliary protocol choices,
+the surrounding protocol still counts it as one hint. No integrated consumer
+gain follows from the standalone decoder; see OP-044.
+
 For every hinted construction, document:
 
 - hint generation algorithm and serialization order;

@@ -1,4 +1,8 @@
 //! Shared byte-witness contracts across checksum schedules and word adapters.
+#[path = "common/research_artifacts.rs"]
+mod research_artifacts;
+use research_artifacts::reproduced_measurements;
+
 use bitcoin::{
     hashes::{sha256, Hash},
     ScriptBuf,
@@ -321,18 +325,6 @@ fn both_terminal_bindings_detect_changes_and_predicate_mutations() {
         caught(&r, ExecError::EqualVerify);
     }
 }
-/// Historical source hashes describe the pinned tree, not today's shared files.
-/// Everything else, including pins, profiles and every measured row, must match.
-fn reproduced_measurements(report: &serde_json::Value) -> serde_json::Value {
-    let mut measurements = report.clone();
-    assert!(measurements
-        .as_object_mut()
-        .unwrap()
-        .remove("source_sha256")
-        .unwrap()
-        .is_object());
-    measurements
-}
 fn recorded_report() -> serde_json::Value {
     serde_json::from_str(include_str!(
         "../research/adler32-delayed-reduction/metrics.json"
@@ -361,6 +353,28 @@ fn artifact_comparison_allows_unrelated_source_changes_but_detects_bytecode_chan
     assert_ne!(current["source_sha256"], report["source_sha256"]);
     assert_eq!(
         reproduced_measurements(&current),
+        reproduced_measurements(&report)
+    );
+
+    let mut missing_source = current.clone();
+    let path = report["source_sha256"]
+        .as_object()
+        .unwrap()
+        .keys()
+        .next()
+        .unwrap();
+    missing_source["source_sha256"]
+        .as_object_mut()
+        .unwrap()
+        .remove(path);
+    assert_ne!(
+        reproduced_measurements(&missing_source),
+        reproduced_measurements(&report)
+    );
+    let mut changed_pin = current.clone();
+    changed_pin["compiler_source"] = serde_json::json!("different compiler");
+    assert_ne!(
+        reproduced_measurements(&changed_pin),
         reproduced_measurements(&report)
     );
 

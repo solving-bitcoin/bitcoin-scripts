@@ -1215,6 +1215,24 @@ packed representation or record the consumer as dominated. Complete-spend/Core
 validation is required before strengthening deployment claims. The 49-key
 signature multiset representation is outside the present four-byte rank domain.
 
+## OP-044 — Packed bounded-choice consumers
+
+The [checked bounded divider](primitives/scriptnum-bounded-div.md) decodes
+`x=31*a+b` for choice domains 32 and 31 with one operand, zero additional
+arithmetic hints and a four-item combined peak. Its 85-byte fragment costs
+more locking bytes than the matched 42-byte hinted verifier, which needs a
+second entry item and peaks at eight. This decoder alone does not measure
+sorting or other protocol composition; the packed choice payload would itself
+be a protocol hint when it carries auxiliary selector choices.
+
+**Complete when:** integrate paired decoding into an exact selector/operand
+consumer at widths 16 and 32, compare with independent selectors under the
+same semantics, and publish final whole-script bytes, full data-witness bytes,
+every hint/operand item at entry, executed operations and combined peak.
+Include routing, retained outputs, caller state and malformed/out-of-pool
+selector tests. Record a negative result if decoding/routing erases the saving;
+zero auxiliary arithmetic hints cannot substitute for protocol hint accounting.
+
 ## OP-042 — Reflection witness consumer frontier
 
 Half-vector expansion improves complete-leaf bytes and entry items over raw

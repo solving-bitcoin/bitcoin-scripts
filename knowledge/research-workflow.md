@@ -64,6 +64,15 @@ Fresh Core reports are uploaded as CI artifacts; committed historical reports
 are not overwritten. CI availability and a configured workflow are not evidence
 that a particular remote run passed.
 
+Historical source digests bind the recorded Git revision. Current artifact
+reproduction keeps the same source-file inventory, dependency identities,
+profiles and every generated artifact; unrelated additions to a shared file
+may change its source digest without changing those artifacts. The shared test
+helper masks only digest values during that comparison. Full clones verify
+every historical blob separately; a shallow checkout without the recorded
+commit verifies current artifacts and pins but cannot verify historical source.
+Do not refresh frozen reports merely to absorb unrelated source edits.
+
 For new Rust reports, use `support::provenance::{interpreter, compiler, stack}`
 to record the Git packages resolved in the binary's embedded lockfile. Missing,
 ambiguous, malformed or non-Git identities fail explicitly. A Python harness

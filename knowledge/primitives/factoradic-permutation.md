@@ -15,6 +15,10 @@ contains small public symbols; this decoder actually reconstructs the permutatio
 on chain. It does not extend that 49-key multiset scheme or authenticate a rank.
 Existing hinted ScriptNum division is unnecessary because each quotient is
 bounded by the shrinking alphabet and can be computed directly.
+That arithmetic is now shared with the [checked bounded divider](scriptnum-bounded-div.md).
+The permutation decoder supplies the certified residual bound internally;
+the public divider adds canonical-input and explicit range checks. The existing
+width-4/8/12 permutation metric snapshots remain unchanged by the extraction.
 
 The hypothesis holds for entry items and stack usage, but fails for total bytes.
 At width 8, the equal complete-leaf comparison gives 312 script bytes, 5 data

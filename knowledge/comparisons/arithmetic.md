@@ -189,6 +189,32 @@ condition differ from sorting arbitrary hostile nibbles; the shared mechanism
 is bounded destructive selection. A packed-rank sorting consumer remains an
 explicit witness/stack comparison question, rather than an assumed win.
 
+### Bounded constant division
+
+The [checked bounded divider](../primitives/scriptnum-bounded-div.md) reuses
+the permutation decoder's quotient arithmetic. At the same canonical bounded
+dividend and quotient/remainder output contract, it trades script bytes for
+one fewer entry item and no quotient hint:
+
+| Divisor / maximum / x | Direct / hinted leaf bytes | Direct / hinted serialized data witness | Direct / hinted hint items | Direct / hinted total entry items | Direct / hinted peak | Direct / hinted executed non-push ops |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 31 / 991 / 991 | 92 / 49 | 4 / 6 | 0 / 1 | 1 / 2 | 4 / 8 | 53 / 35 |
+| 17 / 271 / 271 | 75 / 41 | 4 / 6 | 0 / 1 | 1 / 2 | 4 / 5 | 45 / 29 |
+| 31 / 2^31-1 / 2^31-1 | 532 / 53 | 6 / 11 | 0 / 1 | 1 / 2 | 4 / 8 | 145 / 35 |
+
+Boundary: `complete-leaf:` canonical dividend/range checks, quotient/remainder
+arithmetic and identical output comparisons through clean truthy success.
+The hinted baseline includes quotient normalization and the existing binary
+constant-multiplication verifier; it is not an optimal addition-chain claim.
+All data and hints coexist at entry. Witness serialization includes every
+count/length prefix, excluding script/control-block and transaction context.
+The direct form loses combined bytes in each fixture (NR-088), but lowers
+entry and stack costs. The 31-bit direct leaf has 229 static non-push opcodes,
+so its 145 actually executed operations do not establish legacy/P2WSH fit.
+These results are `locally-reproduced` / `unclassified`, with local tapscript
+stack enforcement and global minimal-data off. OP-044 tracks an integrated
+packed-choice consumer; no sorting composition gain is assumed.
+
 Selection order: choose semantics and range, then representation compatibility,
 then consensus feasibility, and only then minimize bytes. The prime-log profile
 keeps canonical operands and covers one unsigned 256-by-256-bit product exactly,

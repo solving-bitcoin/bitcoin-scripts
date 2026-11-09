@@ -15,9 +15,10 @@ compact=lambda n:bytes([n]) if n<253 else b'\xfd'+n.to_bytes(2,'little')
 encode=lambda items:compact(len(items))+b''.join(compact(len(x))+x for x in items)
 sha=lambda b:hashlib.sha256(b).hexdigest()
 for path,h in r['source_sha256'].items():
- assert sha((root/path).read_bytes())==h,path
  if r['source_revision']!='0'*40:
   assert sha(subprocess.check_output(['git','show',f"{r['source_revision']}:{path}"],cwd=root))==h,path
+ else:
+  assert sha((root/path).read_bytes())==h,path
 meta=json.loads(subprocess.check_output(['cargo','metadata','--locked','--format-version','1'],cwd=root))
 for name,key in [('bitcoin-script','compiler_source'),('bitcoin-scriptexec','interpreter_source')]:
  assert {p['source'] for p in meta['packages'] if p['name']==name}=={r[key]}
