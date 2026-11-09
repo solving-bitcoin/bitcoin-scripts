@@ -41,6 +41,16 @@ checks which transaction-field changes affect the selected digest in a fixed
 host-side template. It also isolates the non-committing out-of-range
 `SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.
 
+The [reduced four-mode pinning fixture](../../research/binohash-four-mode-pinning/README.md)
+adds a complete funded bare-script spend with four ordered checks and six
+field-mutation controls. Pinned Core accepts the signed spend and rejects all
+six altered spends; default relay policy rejects the bare input. Its 71-byte
+size predicates are low-work execution probes, not a security bound.
+
+| Bare locking script | Complete spend | Selected scriptSig | Witness items | Hint items |
+| ---: | ---: | ---: | ---: | ---: |
+| <!-- metric:binohash_four_mode_lock -->159<!-- /metric:binohash_four_mode_lock --> bytes | <!-- metric:binohash_four_mode_weight -->1756<!-- /metric:binohash_four_mode_weight --> WU | <!-- metric:binohash_four_mode_scriptsig -->288<!-- /metric:binohash_four_mode_scriptsig --> bytes | 0 | 0 |
+
 The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
 independently signs all 256 flag values in P2SH spends. Its canonical `01`
 sample has this complete-transaction boundary:

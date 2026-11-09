@@ -17,11 +17,14 @@ transaction-dependent digest that Bitcoin Script can extract and authenticate.
   values pass default relay policy.
   A [CODESEPARATOR fixture](binohash-codesep-core.md) differentially validates
   selected signature pushes on both sides of the operative legacy boundary.
+  A [reduced four-mode pinning fixture](../../research/binohash-four-mode-pinning/README.md)
+  validates one funded bare-script spend and six field-mutation controls, using
+  low-work exact signature-size predicates.
 - **Reported profile:** the paper proposes a two-round nonce extraction design
   with tunable work/collision parameters and a Lamport-signable output.
 - **Execution context:** relies on legacy signature semantics, not the local
   tapscript-only executor defaults.
-- **Research need:** reproduce transaction pinning, the full two-round grind,
+- **Research need:** reproduce security-scale transaction pinning, the full two-round grind,
   and authenticated Script extraction,
   catalog its complete costs and mutation boundaries, and model grinding
   economics. The reduced Core fixtures do not establish these properties.

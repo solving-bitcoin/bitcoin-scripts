@@ -28,6 +28,11 @@ signed spends enter blocks. Do not model Binohash
 with the default tapscript executor: its legacy signature context and
 transaction template are essential semantics. Full reproduction still needs
 grinding parameters, mutation constraints, Script extraction, and full costs.
+The [reduced four-mode pinning fixture](../../research/binohash-four-mode-pinning/README.md)
+adds one funded bare-script transaction with four sequential signature-size
+checks and confirms their field-dependency order under Core consensus. Its
+71-byte predicates cost only a few deterministic trials and provide no
+security-scale pinning bound. Default relay policy rejects the bare input.
 If a consumer uses the HORS-like helper to authenticate extracted indices,
 its upper-clamped openings do not bind the raw index sequence; see
 [NR-110](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices).
