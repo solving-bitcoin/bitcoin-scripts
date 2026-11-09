@@ -636,3 +636,11 @@ tapscript MINIMALIF supplies the canonical-selector check, against 544 bytes wit
 explicit range and reserialization checks (strict local tapscript executor,
 `unclassified`, `locally-reproduced`). See
 [the primitive](../primitives/subset-sum.md) and NR-103.
+
+## Lexicographic comparison of u4 vectors
+
+Comparing two 64-nibble Taproot sibling nodes costs 2,171 script bytes with packed
+seven-nibble words (peak 135) against 3,532 bytes (peak 131) for the per-nibble
+first-difference state machine, and 4,486 versus 7,500 at 128 nibbles (zero hints,
+strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-compare-packed.md) and NR-104.

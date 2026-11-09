@@ -2221,3 +2221,14 @@ exercise. Byte counts are policy-compiled fragments under strict local
 `unclassified` tapscript rules, `locally-reproduced`; the BIP 342 rule itself is
 not re-verified against Bitcoin Core here. See the
 [primitive](../primitives/subset-sum.md).
+
+## NR-104: The per-nibble comparator costs more locking-script bytes
+
+The existing `lexicographic_le` costs 3,532 script bytes at 64 nibbles and 7,500 at
+128, while packing each vector into seven-nibble words and comparing the words
+costs 2,171 and 4,486: 39% and 40% smaller at a peak four items higher
+(`2n + 7` versus `2n + 3`) and with maximum width 496 rather than 498. The older form remains useful where stack capacity is binding. Packed words are smaller at every measured width from
+one nibble (29 versus 44 bytes) and also use fewer static non-push opcodes (1,650
+versus 2,178 at 64). Figures are policy-compiled fragments with checking-leaf peaks under the explicit local consensus numeric
+profile and stack enforcement, `unclassified` tapscript, `locally-reproduced`, and the two forms agree on 120
+deterministic vector pairs. See the [primitive](../primitives/u4-compare-packed.md).

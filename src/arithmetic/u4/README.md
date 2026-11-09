@@ -1587,3 +1587,23 @@ and 8 cleanup bytes; `32 + 64*10 + 8 = 680`, with zero cross-component optimizer
 delta. The 64-item rows exceed the legacy/P2SH/P2WSH 201-opcode limit; both
 fragments also exceed P2SH's 520-byte element limit. This is not a
 consensus or policy validation.
+
+## Packed lexicographic comparison
+
+`compare_packed::lexicographic_le_packed(n)` (`n` in `1..=496`, peak `2n + 7`) has
+the contract of `compare::lexicographic_le`, but packs each vector into words of
+seven nibbles with a Horner sum and compares the words with native ScriptNum
+arithmetic, folding from the last word to the first so that the first differing
+word decides. `lexicographic_le_packed_constant` embeds the right vector. All `2n`
+nibbles are range-checked; no hints.
+
+Fragment-only boundary: range checks, packing, word comparisons and cleanup; input
+pushes and terminal predicate excluded. Fixture: two 32-byte sibling nodes as 64
+nibbles each sharing a 40-nibble prefix (<!-- metric:u4_compare_node_witness -->228<!-- /metric:u4_compare_node_witness --> witness bytes, <!-- metric:u4_compare_node_witness_items -->128<!-- /metric:u4_compare_node_witness_items --> items, 0 hints).
+
+| Configuration | Script bytes | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: |
+| Per-nibble state machine, 64 + 64 nibbles | <!-- metric:u4_compare_state_64 -->3532<!-- /metric:u4_compare_state_64 --> | <!-- metric:u4_compare_state_64_stack -->131<!-- /metric:u4_compare_state_64_stack --> | <!-- metric:u4_compare_state_64_opcodes -->2178<!-- /metric:u4_compare_state_64_opcodes --> |
+| Packed seven-nibble words, 64 + 64 nibbles | <!-- metric:u4_compare_packed_64 -->2171<!-- /metric:u4_compare_packed_64 --> | <!-- metric:u4_compare_packed_64_stack -->135<!-- /metric:u4_compare_packed_64_stack --> | <!-- metric:u4_compare_packed_64_opcodes -->1650<!-- /metric:u4_compare_packed_64_opcodes --> |
+
+Numeric range checks accept nonminimal aliases under the measured profile; byte-sensitive callers must enforce canonical encoding. The packed form saves script bytes in the measured cases, but its peak is four items higher and its maximum width is 496 instead of 498. See the [knowledge page](../../../knowledge/primitives/u4-compare-packed.md).
