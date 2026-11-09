@@ -627,3 +627,12 @@ branching arithmetic form (peak 67) and 680 bytes with a resident 16-entry table
 (peak 83), 125 witness bytes over 64 items, zero hints (strict local
 `unclassified` tapscript, `locally-reproduced`). The table form wins from about five
 nibbles. See [the primitive](../primitives/u4-ascii-hex-encode.md) and NR-102.
+
+## Subset-sum witness verification
+
+Verifying a 32-weight subset-sum selection costs 224 script bytes (7 per weight,
+peak 33, 54 witness bytes over 32 selectors, zero hints beyond the selection) when
+tapscript MINIMALIF supplies the canonical-selector check, against 544 bytes with
+explicit range and reserialization checks (strict local tapscript executor,
+`unclassified`, `locally-reproduced`). See
+[the primitive](../primitives/subset-sum.md) and NR-103.

@@ -1372,3 +1372,13 @@ computed digest) combines the decoder and encoder with its live protocol state a
 compares text, nibble and raw-byte witnesses on equal complete-leaf boundaries
 with witness bytes and items, hint counts, executed opcodes and combined peaks.
 Core validation is required for any deployment claim.
+
+## OP-059 — MINIMALIF differential and subset-sum consumer
+
+The canonical-selector behavior rests on the local tapscript executor. **Accept
+when:** a complete Taproot spend containing the plain and explicit verifiers is
+validated against a pinned Bitcoin Core revision with canonical, aliased and
+negative-zero selectors, recording consensus and policy outcomes, and a concrete
+consumer (for example a partition or cardinality condition) compares the plain
+form with an alternative encoding on equal complete-leaf boundaries with witness
+bytes and items, hint counts, executed opcodes and combined peaks.

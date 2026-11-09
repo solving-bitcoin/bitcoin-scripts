@@ -178,3 +178,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Multi-digit Lamport commitments](lamport-digits.md)
 - [k-th smallest nibble claim check and selector](u4-order-statistic.md)
 - [Nibbles to ASCII hexadecimal text](u4-ascii-hex-encode.md)
+- [Subset-sum verification with free canonical selectors](subset-sum.md)

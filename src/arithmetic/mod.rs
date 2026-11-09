@@ -4,6 +4,7 @@ pub mod bigint;
 pub mod checksums;
 pub mod factoradic;
 pub mod integer_root;
+pub mod knapsack;
 pub mod permutation;
 pub mod rns;
 pub mod scriptint;
