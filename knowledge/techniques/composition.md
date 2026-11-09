@@ -267,6 +267,15 @@ vector. Exact 1,000-item tests include that preserved state; preloaded subsequen
 invocations and retained prior outputs must be added at their live boundaries.
 Both use zero hints and remain locally `unclassified`.
 
+The [stable bipartition](../primitives/stable-bipartition.md) leaves a
+caller-owned false group on main and a true group above caller alt state.
+Its generated count identifies the split, while all payloads remain live
+until the consumer removes them. A nonempty `n`-pair call needs `2*n+2`
+combined items plus both caller stacks. It reaches 1,000 items at 499 pairs
+or at 498 pairs with two caller items. It uses zero hints. A downstream
+consumer must account for the actual surviving payloads and avoid consuming
+preserved alt items. These limits are locally reproduced and unclassified.
+
 The [reflection adapter](../primitives/u4-reflection.md) also separates compressed
 entry from expanded output: width 32 enters with 16 data items but emits 32.
 Its measured complete leaf peaks at 33 versus 36 for raw verification, before

@@ -13,6 +13,7 @@ pub mod rotation;
 pub mod script;
 pub mod script_ops;
 pub mod selection;
+pub mod split;
 pub mod taproot;
 pub mod tapscript;
 pub mod witness_data_size;

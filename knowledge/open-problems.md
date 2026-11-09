@@ -1205,6 +1205,11 @@ length to its actual payload positions. Price that guard and its entire entry
 flag vector on the same boundary. See the
 [single-run mask decoder](primitives/single-run-mask.md).
 
+The [stable bipartition](primitives/stable-bipartition.md) retains both
+groups. For a two-group consumer, use the same acceptance criteria and
+include both output stacks and the cleanup of every payload. Compare the
+single-cursor and recomputed-depth schedules at a width that both support.
+
 ## OP-037 — Authenticated decimal transducer composition
 
 Determine whether the Damm table schedule is useful inside a real authenticated

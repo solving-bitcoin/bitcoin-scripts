@@ -2625,6 +2625,230 @@
       ]
     },
     {
+      "id": "support/stable-bipartition",
+      "name": "Stable bipartition of opaque stack items",
+      "class": "support/stack",
+      "summary": "Consumes native binary flags and routes both stable payload groups to separate stacks using a live-width cursor.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/stable-bipartition.md",
+      "implementation": "src/support/split/mod.rs",
+      "documentation": "src/support/split/README.md",
+      "tests": [
+        "src/support/split/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "cpp-draft-stable-partition-20261002",
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "stack-scheduling"
+      ],
+      "security": "Payloads and flags are hostile. Native tapscript MINIMALIF checks the exact binary encoding. Routing preserves payload bytes and group order. A protocol must bind any required flag meaning, provenance, and terminal checks.",
+      "stack_contract": "Consumes interleaved payload/flag suffix. Appends the stable false group and its canonical count to main and the stable true group to alt, preserving both caller stacks. There are 2*n ordinary inputs and zero hints at entry. Nonempty standalone combined peak is 2*n+2; n=0 produces only a zero count.",
+      "configurations": [
+        {
+          "id": "32-cursor",
+          "label": "32 pairs, single cursor, alternating flags",
+          "parameters": {
+            "pairs": 32,
+            "schedule": "cursor",
+            "payload_bytes": 2,
+            "flags": "alternating, first true",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: flag validation, split routing, count and all raw output checks on both stacks, and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 533,
+          "witness_bytes": 145,
+          "witness_bytes_max": null,
+          "max_stack_items": 66,
+          "executed_opcodes": 337,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "stable_split_32_cursor_script",
+            "stable_split_32_cursor_witness",
+            "stable_split_32_cursor_stack",
+            "stable_split_32_cursor_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "32-recomputed",
+          "label": "32 pairs, recomputed depth, alternating flags",
+          "parameters": {
+            "pairs": 32,
+            "schedule": "recomputed",
+            "payload_bytes": 2,
+            "flags": "alternating, first true",
+            "data_items": 64,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: flag validation, split routing, count and all raw output checks on both stacks, and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 644,
+          "witness_bytes": 145,
+          "witness_bytes_max": null,
+          "max_stack_items": 67,
+          "executed_opcodes": 385,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "stable_split_32_recomputed_script",
+            "stable_split_32_recomputed_witness",
+            "stable_split_32_recomputed_stack",
+            "stable_split_32_recomputed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-cursor",
+          "label": "128 pairs, single cursor, alternating flags",
+          "parameters": {
+            "pairs": 128,
+            "schedule": "cursor",
+            "payload_bytes": 2,
+            "flags": "alternating, first true",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: flag validation, split routing, count and all raw output checks on both stacks, and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 2119,
+          "witness_bytes": 579,
+          "witness_bytes_max": null,
+          "max_stack_items": 258,
+          "executed_opcodes": 1345,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "stable_split_128_cursor_script",
+            "stable_split_128_cursor_witness",
+            "stable_split_128_cursor_stack",
+            "stable_split_128_cursor_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-recomputed",
+          "label": "128 pairs, recomputed depth, alternating flags",
+          "parameters": {
+            "pairs": 128,
+            "schedule": "recomputed",
+            "payload_bytes": 2,
+            "flags": "alternating, first true",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: flag validation, split routing, count and all raw output checks on both stacks, and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 2743,
+          "witness_bytes": 579,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 1537,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "stable_split_128_recomputed_script",
+            "stable_split_128_recomputed_witness",
+            "stable_split_128_recomputed_stack",
+            "stable_split_128_recomputed_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "499-cursor",
+          "label": "499 pairs, single cursor, alternating flags",
+          "parameters": {
+            "pairs": 499,
+            "schedule": "cursor",
+            "payload_bytes": 2,
+            "flags": "alternating, first true",
+            "data_items": 998,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "caller_main_items": 0,
+            "caller_alt_items": 0,
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: flag validation, split routing, count and all raw output checks on both stacks, and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 8242,
+          "witness_bytes": 2249,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 5241,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "stable_split_499_cursor_script",
+            "stable_split_499_cursor_witness",
+            "stable_split_499_cursor_stack",
+            "stable_split_499_cursor_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "The two stable groups occupy different stacks and require consumer cleanup.",
+        "Standalone generation supports at most 499 pairs. This width leaves no free caller slots.",
+        "Recomputed roll depth rejects at width 499; it requires 1,001 combined live items.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-036"
+      ]
+    },
+    {
       "id": "arithmetic/u4-trichotomy",
       "name": "Checked u4 embedded-threshold trichotomy",
       "class": "arithmetic/word",

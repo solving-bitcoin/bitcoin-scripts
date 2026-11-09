@@ -117,6 +117,13 @@ The [distinct-mask comparison](u4-distinct-mask.md) records the fixed
 threshold cost at small widths and a duplicate carry that passes a
 sum-only wrapper. Valid set masks preserve membership but discard order.
 
+## Recomputed stable split depth fails at 499 pairs
+
+The [stable bipartition boundary](stable-bipartition.md) shows why carrying
+the live width allows 499 pairs while recomputing each roll depth exceeds
+1,000 combined items. Evidence is `locally-reproduced` and execution
+is `unclassified`.
+
 ## NR-049: Signature opcodes still diverge after resource repairs
 
 The [funded signature experiment](../tapscript-signature-validation.md) records
