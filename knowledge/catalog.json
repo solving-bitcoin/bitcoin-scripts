@@ -7949,6 +7949,69 @@
       ]
     },
     {
+      "id": "introspection/binohash-der-size-grind",
+      "name": "Binohash exact DER-size nonce probe",
+      "class": "introspection/transaction",
+      "summary": "Finds a 70-byte legacy ECDSA signature for one fixed transaction digest by deterministic nonce-data search and validates size and ECDSA controls against Bitcoin Core.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "policy-validated",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-der-size-grind.md",
+      "implementation": "examples/binohash_der_size_grind.rs",
+      "documentation": "research/binohash-der-size-grind/README.md",
+      "tests": [
+        "examples/binohash_der_size_grind.rs",
+        "tools/binohash_der_size_grind_regtest.py",
+        "tools/test_binohash_der_size_grind_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [],
+      "security": "One fixed-digest, public-key and public-seed nonce-size probe. It does not establish Binohash pinning, two-round grind, collision resistance, or one-time-key secrecy.",
+      "stack_contract": "Legacy P2SH scriptSig pushes one DER-plus-sighash signature and the redeemScript; the redeemScript consumes the signature, checks exact size, and ends in CHECKSIG truth.",
+      "configurations": [
+        {
+          "id": "fixed-digest-70-byte-core-v30.3",
+          "label": "Deterministic 70-byte signature-size search with valid and invalid Core spends",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "seed_hex": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+            "target_signature_bytes": 70,
+            "attempts": 188,
+            "redeem_script_bytes": 39,
+            "complete_transaction_bytes": 205,
+            "complete_transaction_weight_wu": 820,
+            "script_sig_bytes": 111,
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "accepted"
+          },
+          "includes": "complete-transaction: confirmed P2SH prevout, one input, one output, full scriptSig, fixed-digest nonce search, and Core consensus/policy verdicts; script_bytes is the 23-byte P2SH scriptPubKey; excludes funding transaction, Binohash subset selection, pinning, second round, and Script digest extraction",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "static_non_push_opcodes": 3,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": ["binohash_der_lock"],
+          "evidence": "differentially-validated",
+          "execution": "policy-validated"
+        }
+      ],
+      "limitations": [
+        "Low-work single-signature size probe; no subset or two-round protocol",
+        "Public test key and seed; no secrecy or collision-security claim"
+      ],
+      "open_problems": ["OP-011"]
+    },
+    {
       "id": "introspection/binohash-legacy-core",
       "name": "Binohash legacy core",
       "class": "introspection/transaction",

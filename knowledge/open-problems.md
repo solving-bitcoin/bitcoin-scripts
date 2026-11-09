@@ -549,6 +549,13 @@ has no signed-spend or Core verdict. The full protocol remains open because
 transaction pinning, two-round grinding, authenticated Script extraction, and
 complete protocol costs are not reproduced.
 
+A [fixed-digest nonce-size probe](../research/binohash-der-size-grind/README.md)
+now finds one 70-byte ECDSA signature after 188 deterministic trials and
+validates its P2SH size check under Core consensus and default policy. A
+different-size valid signature and a same-size invalid ECDSA signature fail
+their distinct checks. This is a single low-work predicate, not a measurement
+of the full subset grind or a security-scale work factor.
+
 The [8-of-n planning report](../research/binohash-parameters/README.md)
 establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
 `2^42` combinations at fixed `t=8`. Under an independent uniform-hit model,
