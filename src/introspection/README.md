@@ -51,3 +51,9 @@ sample has this complete-transaction boundary:
 
 The sample uses a plain `OP_CHECKSIG`, without Binohash subset selection or
 grinding. Stack peak and executed opcode count remain unmeasured.
+
+The [10-choose-5 host probe](../../research/binohash-ten-choose-five/README.md)
+enumerates all 252 ascending subsets for one fixed transaction and scriptCode.
+It finds distinct local digests for this fixture, while permutations and
+duplicate index vectors alias unless a Script consumer validates them. It does
+not execute ECDSA or Core consensus.

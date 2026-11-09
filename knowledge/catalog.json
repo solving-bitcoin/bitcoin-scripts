@@ -5476,7 +5476,8 @@
         "tests/binohash_sighash_matrix.rs",
         "examples/binohash_core_fixtures.rs",
         "tools/test_binohash_core_regtest.py",
-        "tools/binohash_core_regtest.py"
+        "tools/binohash_core_regtest.py",
+        "tests/binohash_ten_choose_five.rs"
       ],
       "references": [
         "binohash-paper",
@@ -5566,6 +5567,30 @@
           "metric_keys": [],
           "evidence": "differentially-validated",
           "execution": "consensus-validated"
+        },
+        {
+          "id": "ten-choose-five-host-subsets",
+          "label": "All 252 ascending 5-of-10 subsets in one fixed host template",
+          "parameters": {
+            "candidate_signatures": 10,
+            "selected_signatures": 5,
+            "canonical_subset_count": 252,
+            "distinct_local_digests": 252,
+            "deletion_target_bytes": 9,
+            "script_code_bytes_not_locking_script": 101,
+            "hash_type": 1,
+            "hint_items": 0
+          },
+          "includes": "complete-transaction: fixed host transaction and raw scriptCode for rust-bitcoin legacy sighash after selected-push deletion; excludes valid ECDSA signatures, Script execution, locking-script and witness serialization, Core consensus/policy, and complete Binohash grinding",
+          "script_bytes": null,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
         }
       ],
       "limitations": [

@@ -553,6 +553,12 @@ default `STRICTENC` policy. A fixed host template yields 256 distinct digests;
 this does not establish independent or usable entropy after the full
 Binohash script, pinning and grinding constraints are imposed.
 
+A host-only 10-choose-5 enumeration now finds distinct digests for all 252
+ascending subsets of one fixed template. It also shows reversed order and
+duplicate selections alias unless the eventual Script consumer validates
+length, range, uniqueness, order, and canonical encoding. The experiment uses
+DER-shaped deletion targets rather than Core-validated ECDSA signatures.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and

@@ -35,6 +35,12 @@ two-output host-side template. It separates the `ALL`, `NONE`, `SINGLE`, and
 out-of-range `SIGHASH_SINGLE` digest. Its evidence is `locally-reproduced` and
 its execution class is `unclassified`; it does not execute a signed spend.
 
+The [10-choose-5 host probe](../../research/binohash-ten-choose-five/README.md)
+enumerates all 252 ascending subsets in one fixed template and finds distinct
+local legacy digests. Reverse order and duplicate selections demonstrate
+index-vector aliases; the host API does not enforce a canonical 5-of-10
+encoding. This remains `locally-reproduced`, `unclassified` host evidence.
+
 The host-only configuration remains `locally-reproduced` and `unclassified`.
 The [funded two-choice fixture](../../research/binohash-legacy-core/README.md)
 is `differentially-validated` against pinned Bitcoin Core v30.3 commit
