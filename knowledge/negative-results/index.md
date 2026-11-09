@@ -1623,6 +1623,9 @@ produce the same digest, and a repeated index aliases a shorter selection.
 Distinct digests for the 252 canonical subsets therefore do not make an
 unvalidated index vector a canonical or collision-resistant protocol digest.
 
+A separate nine-byte `SIGHASH_SINGLE` anchor validates the constant-digest
+boundary under Core, but that digest commits to no transaction field.
+
 ## NR-056: Optional-SHA256 hash paths do not bind a free starting preimage
 
 For `F0(x)=R(x)` and `F1(x)=R(S(x))`, `F1(x)=F0(S(x))` exactly.

@@ -6321,6 +6321,44 @@ fn check_readme_metrics(metrics: Vec<Metric>) {
     }
 }
 
+#[test]
+fn binohash_single_anchor_core_report_metrics_are_current() {
+    let report: serde_json::Value =
+        serde_json::from_str(include_str!("data/binohash-single-anchor-v30.3.json")).unwrap();
+    assert_eq!(report["run_passed"], true);
+    let fixture = &report["fixture"];
+    let tx = &report["valid"]["transaction"];
+    let hex_bytes = |value: &serde_json::Value| value.as_str().unwrap().len() / 2;
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![
+        Metric {
+            readme,
+            key: "binohash_anchor_lock",
+            value: hex_bytes(&fixture["anchor_script_pubkey_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_redeem",
+            value: hex_bytes(&fixture["anchor_redeem_script_hex"]),
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_weight",
+            value: tx["weight"].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_easy_sig",
+            value: tx["input_script_sig_bytes"][0].as_u64().unwrap() as usize,
+        },
+        Metric {
+            readme,
+            key: "binohash_anchor_main_sig",
+            value: tx["input_script_sig_bytes"][1].as_u64().unwrap() as usize,
+        },
+    ]);
+}
+
 fn u254_add_nocarry_metrics() -> Vec<Metric> {
     let fragment = U254::add_nocarry(1, 0);
     let witness = vec![Vec::new(); (2 * U254::N_LIMBS) as usize];

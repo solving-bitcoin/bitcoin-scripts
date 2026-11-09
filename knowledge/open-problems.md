@@ -575,6 +575,9 @@ the existing clamped verifier is insufficient for exact index binding; see
 and the exact-index acceptance criterion in OP-009. This local HORS observation
 does not establish a flaw in the paper's complete protocol.
 
+A separate nine-byte anchor fixture confirms the out-of-range `SIGHASH_SINGLE`
+signature boundary against Core but does not commit to transaction fields.
+
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,
 collision/work parameters, full transaction costs, mutation boundaries, and

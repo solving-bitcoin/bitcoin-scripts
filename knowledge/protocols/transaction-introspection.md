@@ -42,3 +42,9 @@ confirms that 256 byte values can be signed under legacy consensus while
 default relay policy accepts only six canonical values. This is an input to
 grinding-space analysis, not a measurement of independent nonce entropy or a
 full transaction-introspection protocol.
+
+The [nine-byte SIGHASH_SINGLE anchor](../primitives/binohash-single-anchor.md)
+confirms under pinned Core that a hardcoded legacy signature can use the
+out-of-range constant digest. Adding an output or moving it to an earlier
+input invalidates the same signature. This is an anchor primitive, not proof
+that transaction fields are pinned or that a nonce is authenticated.

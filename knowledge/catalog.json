@@ -25184,6 +25184,78 @@
       "open_problems": [
         "OP-011"
       ]
+    },
+    {
+      "id": "introspection/binohash-single-anchor",
+      "name": "Binohash nine-byte SIGHASH_SINGLE anchor",
+      "class": "introspection/transaction",
+      "summary": "Validates an embedded nine-byte legacy SIGHASH_SINGLE signature only at the out-of-range input/output boundary against pinned Bitcoin Core.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-10-29",
+      "knowledge_page": "knowledge/primitives/binohash-single-anchor.md",
+      "implementation": "examples/binohash_single_bug_anchor.rs",
+      "documentation": "research/binohash-single-anchor/README.md",
+      "tests": [
+        "examples/binohash_single_bug_anchor.rs",
+        "tools/binohash_single_anchor_regtest.py",
+        "tools/test_binohash_single_anchor_regtest.py",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "sighash-single-bug"
+      ],
+      "security": "The recovered test key and constant bug digest authenticate no transaction fields. Full Binohash pinning, grinding, collision security, and a Script-readable digest are not established.",
+      "stack_contract": "P2SH scriptSig pushes only the redeemScript; the redeemScript pushes the embedded signature and recovered compressed public key, then CHECKSIG leaves one boolean.",
+      "configurations": [
+        {
+          "id": "funded-anchor-core-v30.3",
+          "label": "One funded valid anchor spend and two boundary-crossing controls",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "signature_bytes": 9,
+            "signature_hex": "300602010102010103",
+            "valid_input_index": 1,
+            "valid_output_count": 1,
+            "redeem_script_bytes": 45,
+            "complete_transaction_weight_wu": 732,
+            "script_sig_bytes": [
+              2,
+              46
+            ],
+            "hint_items": 0,
+            "witness_items": 0,
+            "policy_result": "rejected: Signature is found in scriptCode"
+          },
+          "includes": "complete-transaction: two funded P2SH inputs, one output, both complete scriptSigs, and prevout context; script_bytes is the 23-byte anchor P2SH scriptPubKey, the 45-byte redeemScript is included in scriptSig, and witness_bytes is zero; excludes the funding transaction and all Binohash grinding and pinning costs",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "binohash_anchor_lock"
+          ]
+        }
+      ],
+      "limitations": [
+        "The historical SIGHASH_SINGLE constant digest commits to no transaction field",
+        "Default relay policy rejects the valid consensus spend under CONST_SCRIPTCODE",
+        "P2WSH, tapscript, and bare legacy spends are not exercised",
+        "Combined main-plus-alt-stack peak and executed opcode count were not measured"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
     }
   ]
 }
