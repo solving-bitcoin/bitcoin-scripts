@@ -5154,6 +5154,88 @@ fn winternitz20_mixed_sum_metrics_are_current() {
 }
 
 #[test]
+fn sparse_threshold_metrics_are_current() {
+    mod fixture {
+        include!("support/sparse_threshold.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_data"),
+                concat!($prefix, "_full"),
+                concat!($prefix, "_hintbytes"),
+                concat!($prefix, "_peak"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_budget"),
+                concat!($prefix, "_charged"),
+            ]
+        };
+    }
+
+    let mut metrics = Vec::new();
+    for (width, depths, sparse_keys, dense_keys) in [
+        (
+            16,
+            &[0, 4, 8, 15][..],
+            keys!("sparse_threshold_16"),
+            keys!("dense_threshold_16"),
+        ),
+        (
+            64,
+            &[0, 63][..],
+            keys!("sparse_threshold_64"),
+            keys!("dense_threshold_64"),
+        ),
+    ] {
+        for (sparse, keys) in [(true, sparse_keys), (false, dense_keys)] {
+            let case = fixture::fixture(width, depths, sparse);
+            let trace = case.trace(&case.tx);
+            let full_bytes = case.tx.input[0].witness.size();
+            assert!(trace.success);
+            assert_eq!(trace.error, None);
+            assert_eq!(trace.charged, 50 * depths.len() as i64);
+            assert_eq!(trace.initial_budget, 50 + full_bytes as i64);
+            assert!(
+                case.raw_script_bytes <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES
+            );
+            assert_eq!(
+                case.data.len(),
+                if sparse { 2 * depths.len() } else { width }
+            );
+            let hint_bytes = if sparse {
+                case.data
+                    .iter()
+                    .skip(1)
+                    .step_by(2)
+                    .map(|item| 1 + item.len())
+                    .sum()
+            } else {
+                0
+            };
+            for (key, value) in keys.into_iter().zip([
+                case.script.len(),
+                witness_size(&case.data),
+                full_bytes,
+                hint_bytes,
+                trace.peak,
+                trace.executed,
+                trace.initial_budget as usize,
+                trace.charged as usize,
+            ]) {
+                metrics.push(Metric {
+                    readme: "src/signatures/sparse_threshold/README.md",
+                    key,
+                    value,
+                });
+            }
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn winternitz20_metrics_are_current() {
     check_readme_metrics(winternitz20_metrics());
 }

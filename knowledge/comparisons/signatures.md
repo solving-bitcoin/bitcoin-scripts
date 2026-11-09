@@ -65,6 +65,18 @@ Within the explicit field certificate, the retained 2M/1S schedule has a
 product shared batch and 8,075 bytes smaller than three isolated general
 multipliers. The specialized square also lowers peak stack use from 993 to 882.
 
+## Native exact-threshold tapscript witnesses
+
+The [indexed key-table experiment](../primitives/sparse-tapscript-threshold.md)
+and dense `CHECKSIGADD` baseline verify the same selected keys. At 2 of 64,
+the indexed complete witness uses 2,368 bytes versus 2,408, with peaks of
+72 versus 65 and 67 versus 65 executed non-push operations. It uses two
+signature items and two hints, while the dense encoding uses 64 ordinary
+items including empty placeholders. Both charge 100 budget units.
+At 4 of 16 the indexed witness costs 940 versus 856 complete bytes and
+peaks at 28 versus 17. These local transaction-aware measurements use exact
+leaf commitments and complete witness accounting, with unclassified execution.
+
 ## Custom Ed25519-style BLAKE3 slope verifier
 
 These rows share one fixed public key and one fixed 32-byte benchmark message,

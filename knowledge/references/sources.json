@@ -59,6 +59,13 @@
       "revision": "final specification"
     },
     {
+      "id": "bip-387",
+      "title": "BIP 387: Tapscript Multisig Output Script Descriptors",
+      "kind": "specification",
+      "url": "https://github.com/bitcoin/bips/blob/master/bip-0387.mediawiki",
+      "revision": "BIP 387, multi_a and sortedmulti_a exact-threshold templates"
+    },
+    {
       "id": "rust-secp256k1-0.29.1",
       "title": "rust-secp256k1 0.29.1 and libsecp256k1",
       "kind": "reference-implementation",
