@@ -1,4 +1,4 @@
-# Integer commitments
+# Commitment comparisons
 
 | Construction | Value mechanism | Script bytes | Witness bytes | Peak items | Main caveat |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -28,6 +28,14 @@ Historical binary/four-way integer metrics are `locally-reproduced`,
 `research-unlimited` tapscript runs with the stack check disabled. Retained-bit
 and retained-digit rows use strict local stack checks and remain `unclassified`.
 All exclude input pushes and terminal checks.
+
+The [joint HASH160 and HASH256 check](../primitives/dual-digest-preimage.md)
+verifies two digest constants for one opening. With a 520-byte opening,
+explicitly sharing the first SHA-256 costs 61 complete-leaf bytes and six
+executed non-push operations. Separate native hash opcodes cost 60 and five.
+Both use a 524-byte data witness, one ordinary item, zero hints and a peak of
+three. Derived SHA-256 compression work is 10 versus 19 blocks. These
+complete-leaf measurements are locally reproduced with unclassified execution.
 
 The ternary path is not a byte-efficiency improvement for this integer target:
 it uses 21 data items (zero hints) versus 17 for the four-way path and is 509

@@ -127,6 +127,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Four-way mixed-hash integer path](four-way-hash-path-integer.md)
 - [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
+- [Joint HASH160 and HASH256 preimage verification](dual-digest-preimage.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
 - [Pinned-start checkpoint chains](pinned-hash-path-chain.md)
