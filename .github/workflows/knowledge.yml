@@ -75,7 +75,7 @@ jobs:
           path: target/core-regtest/*.tar.gz
           key: bitcoin-core-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/bitcoin_core_release.json') }}
       - name: Test fixture determinism and local execution contracts
-        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures --example tapscript_budget_fixtures --example tapscript_csv_fixtures --example binohash_core_fixtures --example binohash_subset_fixtures --example binohash_sighash_flag_fixtures --example binohash_single_bug_anchor --example binohash_codesep_fixtures --example pointlock_small_r_core_fixtures --example binohash_committed_point_core
+        run: cargo test --locked --example core_validation_fixtures --example tapscript_signature_fixtures --example prince_validation_fixtures --example tapscript_budget_fixtures --example tapscript_csv_fixtures --example binohash_core_fixtures --example binohash_subset_fixtures --example binohash_sighash_flag_fixtures --example binohash_single_bug_anchor --example binohash_single_bug_pinning_skip --example binohash_codesep_fixtures --example pointlock_small_r_core_fixtures --example binohash_committed_point_core
       - name: Compare Tapscript resource and policy profiles
         run: python3 tools/core_regtest.py --download-core --output target/ci-reports/core-profiles.json
       - name: Compare transaction-aware signature behavior
@@ -100,6 +100,8 @@ jobs:
         run: python3 tools/binohash_sighash_flags_regtest.py --download-core --output target/ci-reports/binohash-sighash-flags.json
       - name: Compare Binohash nine-byte SIGHASH_SINGLE anchor
         run: python3 tools/binohash_single_anchor_regtest.py --download-core --output target/ci-reports/binohash-single-anchor.json
+      - name: Check SIGHASH_SINGLE pinning-skip boundary
+        run: python3 tools/binohash_single_bug_pinning_skip_regtest.py --download-core --output target/ci-reports/binohash-single-bug-pinning-skip.json
       - name: Compare legacy CODESEPARATOR and FindAndDelete behavior
         run: python3 tools/binohash_codesep_regtest.py --download-core --output target/ci-reports/binohash-codesep.json
       - name: Compare funded G/2 small-R point lock

@@ -15,6 +15,11 @@ specifies the exact signature, key recovery, funded transaction, controls,
 cost boundary, and limitations; the [checked report](../../tests/data/binohash-single-anchor-v30.3.json)
 stores the transactions and Core verdicts.
 
+The [pinning-skip regression](binohash-single-bug-pinning-skip.md) confirms
+that version, locktime, prevout, sequence and output mutations can preserve
+this bug digest and embedded signature under Core consensus while the selected
+output is absent.
+
 The P2SH scriptPubKey is 23 bytes, the redeemScript is 45 bytes, and the valid
 complete transaction weighs 732 WU with no witness or hint items. Exact stack
 peak and executed opcode count were not measured. The signature's fixed digest

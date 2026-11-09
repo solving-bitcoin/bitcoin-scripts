@@ -48,6 +48,12 @@ default relay policy accepts only six canonical values. This is an input to
 grinding-space analysis, not a measurement of independent nonce entropy or a
 full transaction-introspection protocol.
 
+The [pinning-skip regression](../primitives/binohash-single-bug-pinning-skip.md)
+shows that nine individual/combined field mutations retain the same embedded
+signature while the selected output is absent; two Core controls reject after
+that boundary is crossed. It therefore supplies an adversarial check for any
+pinning argument that relies on this signature to bind transaction fields.
+
 The [nine-byte SIGHASH_SINGLE anchor](../primitives/binohash-single-anchor.md)
 confirms under pinned Core that a hardcoded legacy signature can use the
 out-of-range constant digest. Adding an output or moving it to an earlier
