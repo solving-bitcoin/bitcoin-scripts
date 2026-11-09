@@ -9409,6 +9409,79 @@ fn u4_xor_hinted_metrics_are_current() {
     check_readme_metrics(metrics);
 }
 
+/// This isolated fixture measures the hint-checked histogram at 64 nibbles.
+#[test]
+fn u4_histogram_metrics_are_current() {
+    use u4::histogram::u4_nibbles_histogram_hinted;
+    const N: u32 = 64;
+    let values: Vec<i64> = (0..N as i64).map(|i| (7 * i + 3) % 16).collect();
+    let mut counts = [0i64; 16];
+    for &v in &values {
+        counts[v as usize] += 1;
+    }
+    let mut witness: Vec<Vec<u8>> = values.iter().map(|&v| scriptnum(v)).collect();
+    let hints: Vec<_> = counts.iter().map(|&c| scriptnum(c)).collect();
+    let hint_vector_bytes = witness_size(&hints);
+    let incremental_hint_bytes = hint_vector_bytes - 1;
+    witness.extend(hints);
+    let fragment = u4_nibbles_histogram_hinted(N);
+    let run = bitcoin_lab::support::tapscript::execute_tapscript(
+        fragment.clone().compile_with_policy(),
+        witness.clone(),
+        bitcoin_lab::support::tapscript::TapscriptProfile::Consensus,
+    );
+    let result = run.execution().expect("histogram fragment executes");
+    assert!(result.error.is_none(), "{result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 16);
+    for i in 0..16 {
+        assert_eq!(result.final_stack.get(i), scriptnum(counts[i]));
+    }
+    let peak = result.stats.max_nb_stack_items;
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_hint_bytes",
+            value: incremental_hint_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_hint_vector",
+            value: hint_vector_bytes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64",
+            value: script_len(fragment.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_stack",
+            value: peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_opcodes",
+            value: static_non_push_opcodes(fragment),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_histogram_64_count_baseline",
+            value: 16 * script_len(u4::count::u4_nibbles_count(0, N)),
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

@@ -2268,3 +2268,14 @@ range at 214. Non-32 script sizes are pinned separately, but their prior witness
 and peak figures are not established by the recorded fixtures. Results are
 `locally-reproduced`, `unclassified` local execution. See the
 [primitive](../primitives/u4-xor-hinted.md).
+
+## NR-108: Sixteen counting passes are dominated for a full histogram
+
+Obtaining all 16 symbol counts with the fixed-symbol count primitive costs at least 4,256
+script bytes at 16 nibbles, 18,448 at 64 and 37,424 at 128 (sixteen passes, excluding the
+vector copies they need), against 956, 3,158 and 5,988 bytes for verifying
+prover-supplied counts with packed lane words: 78%, 83% and 84% smaller, for 16 hint
+items. The counting route keeps its role when only one symbol is needed or hints are
+forbidden. The baseline is an estimate, not a built comparator; the hinted figures are
+policy-compiled fragments under strict local `unclassified` tapscript rules,
+`locally-reproduced`. See the [primitive](../primitives/u4-histogram.md).

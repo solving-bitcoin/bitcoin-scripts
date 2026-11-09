@@ -668,3 +668,11 @@ peak, and the parity-hinted reduction 617 bytes with a 59-item peak and five hin
 items (1,185 versus 689 including witness; strict local `unclassified` tapscript,
 `locally-reproduced`). The hinted form is 50% smaller at 16 nibbles and 42% at 64, but
 is limited to 212 nibbles. See [the primitive](../primitives/u4-xor-hinted.md) and NR-107.
+
+## Symbol histograms of u4 vectors
+
+Verifying all 16 symbol counts of a 64-nibble vector costs 3,158 script bytes with the
+hint-checked histogram (16 hints, 157 witness bytes over 80 items, peak 102), against
+at least 18,448 bytes for sixteen fixed-symbol counting passes (a lower-bound
+estimate), 83% less (strict local `unclassified` tapscript, `locally-reproduced`). See
+[the primitive](../primitives/u4-histogram.md) and NR-108.

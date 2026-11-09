@@ -20,6 +20,7 @@ pub mod distance;
 pub mod equality;
 pub mod gray;
 pub mod gray_inverse;
+pub mod histogram;
 pub mod interleave;
 pub mod inversions;
 pub mod leading_zeros;

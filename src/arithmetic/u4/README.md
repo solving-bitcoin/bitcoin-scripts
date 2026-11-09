@@ -1663,3 +1663,27 @@ For the 32-item fixture the five hints add <!-- metric:u4_xor_hinted_32_hint_byt
 The implementation cap 212 is conservative: the single-word arithmetic bound fits at 213 and first exceeds `2^31` at 214. With minimality disabled, the result preserves the original y bytes and permits numeric aliases; canonicalize for byte-sensitive use. Preloading k equal-width calls entails k(n+5) entry items, including 5k hints, before preserved state and scheduling overhead; the isolated peak is n+27. The 32-item fragment exceeds P2SH's 520-byte element limit and the legacy/P2SH/P2WSH 201-opcode limit; no consensus or policy validation is claimed. See the [knowledge page](../../../knowledge/primitives/u4-xor-hinted.md).
 
 For the measured 32-item configurations, both the 617-byte hinted fragment and the 1,122-byte table fragment exceed P2SH’s 520-byte redeem-script element limit; their 383 and 758 non-push opcodes exceed the 201-opcode legacy, P2SH and P2WSH limit. Tapscript removes that opcode limit but retains stack and element constraints. Complete-script and relay-policy validity have not been established.
+
+## Hint-checked symbol histogram
+
+`histogram::u4_nibbles_histogram_hinted(n)` (`n` in `1..=962`, peak `n + 38`) returns
+the 16 symbol counts of `n` checked nibbles from a witness `x[0..n-1] c[0..15]`
+(`c[15]` on top) and consumes the vector. Every `c[s]` is range-checked to `0..=n`;
+the claimed counts and the vector's own symbols are packed into the same base-`(n+1)`
+lane words and must be equal, so every `c[s]` is exact. **Hint items per
+invocation: 16.** The fixed-symbol `count::u4_nibbles_count` returns one count per
+pass.
+
+Fragment-only boundary: nibble and count range checks, claimed target words, lane
+accumulation and cleanup; input pushes and terminal predicate excluded. Fixture
+`x[i] = (7i + 3) mod 16` over 64 nibbles.
+
+| Configuration | Script bytes | Witness bytes | Witness items | Hint items | Combined peak | Static non-push opcodes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hint-checked histogram, 64 nibbles | <!-- metric:u4_histogram_64 -->3158<!-- /metric:u4_histogram_64 --> | <!-- metric:u4_histogram_64_witness -->157<!-- /metric:u4_histogram_64_witness --> | <!-- metric:u4_histogram_64_witness_items -->80<!-- /metric:u4_histogram_64_witness_items --> | 16 | <!-- metric:u4_histogram_64_stack -->102<!-- /metric:u4_histogram_64_stack --> | <!-- metric:u4_histogram_64_opcodes -->2080<!-- /metric:u4_histogram_64_opcodes --> |
+
+For the all-four fixture the sixteen hints add <!-- metric:u4_histogram_64_hint_bytes -->32<!-- /metric:u4_histogram_64_hint_bytes --> serialized bytes; separately serialized they occupy <!-- metric:u4_histogram_64_hint_vector -->33<!-- /metric:u4_histogram_64_hint_vector --> bytes. The numeric checks return original hint bytes, so permissive execution accepts padded count values and negative zero; enforce canonical encodings if output bytes matter.
+
+Sixteen fixed-symbol counts alone are a <!-- metric:u4_histogram_64_count_baseline -->18448<!-- /metric:u4_histogram_64_count_baseline -->-byte lower bound for the same
+output (an estimate: it excludes vector copies). See the
+[knowledge page](../../../knowledge/primitives/u4-histogram.md).

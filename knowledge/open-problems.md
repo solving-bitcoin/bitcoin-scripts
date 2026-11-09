@@ -1421,3 +1421,12 @@ established by exhaustive hint search on a small case, and script bytes, witness
 bytes and items, executed opcodes and combined peaks compared with the existing
 table-driven construction on an equal boundary. Supporting 213 nibbles and a
 two-word lane split for vectors at 214 or above are also open. Core validation is required for any deployment claim.
+
+## OP-064 — Histogram consumers and table reuse
+
+The hinted histogram repushes its 16-entry table once per accumulator word. **Accept
+when:** a schedule that reuses one table across words (or a two-sided multiset
+comparison built on the same lanes) is measured on the same boundary, and a consumer
+such as a sortedness or entropy-style certificate uses the histogram with its live
+state, recording witness bytes and items, hint counts under repeated use, executed
+opcodes and combined peaks. Core validation is required for any deployment claim.
