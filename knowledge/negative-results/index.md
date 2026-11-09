@@ -264,6 +264,12 @@ The lab now pins integration revision `4b7269a`, and the shared driver delegates
 these checks to the repaired dependency; see
 [NR-048](#nr-048-minimal-push-policy-must-follow-execution). Earlier measurements
 keep their original tool provenance and evidence classes.
+
+A separate [wide negative ScriptNum result discrepancy](scriptnum-wide-sum.md)
+occurs when numeric equality reparses an internally computed five-byte
+negative sum. Pinned Core rejects that funded leaf while the current local
+interpreter accepts it.
+
 ## NR-061: BLAKE3 derive-key mode is not a drop-in unkeyed extension
 
 **Status (2026-10-11): reasoning retracted; derive-key is implemented.** The

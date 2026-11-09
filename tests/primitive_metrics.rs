@@ -13441,7 +13441,7 @@ fn indexed_selection_metrics_are_current() {
             );
             let checked = checked.execution().unwrap();
             assert!(checked.success && checked.stack_limit_enforced);
-            let (peak, executed) = measure_tapscript_nonpush(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             assert_eq!(peak, checked.stats.max_nb_stack_items);
             assert_eq!(
                 checked.stats.start_validation_weight,
@@ -13540,6 +13540,83 @@ fn u4_damm_metrics_are_current() {
 }
 
 #[test]
+fn scriptnum_equal_sums_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::sum_equality::verify_equal_sums,
+        support::tapscript::{execute_tapscript, TapscriptProfile},
+    };
+
+    mod baseline {
+        use bitcoin_lab::support::script::*;
+        include!("../research/wide-scriptnum-equality/baseline.rs");
+    }
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_positive_executed"),
+                concat!($prefix, "_negative_executed"),
+            ]
+        };
+    }
+
+    let max = i64::from(scriptint::MAX_SCRIPTNUM);
+    let mut metrics = Vec::new();
+    for (fragment, keys) in [
+        (verify_equal_sums(), keys!("equal_sums_bytes")),
+        (
+            baseline::verify_equal_sums_with_limbs(),
+            keys!("equal_sums_limbs"),
+        ),
+    ] {
+        let leaf = script! {{fragment} OP_TRUE};
+        assert!(leaf.len() <= bitcoin_lab::support::script::MAX_OPTIMIZER_INPUT_BYTES);
+        let compiled = leaf.compile_with_policy();
+        let mut executed = [0; 2];
+        let mut peak = 0;
+        let mut witness_bytes = 0;
+        for (value, executed) in [max, -max].into_iter().zip(&mut executed) {
+            let witness = vec![scriptnum(value); 4];
+            let result = execute_tapscript(
+                compiled.clone(),
+                witness.clone(),
+                TapscriptProfile::Consensus,
+            );
+            let result = result.execution().unwrap();
+            assert!(result.success && result.stack_limit_enforced);
+            assert_eq!(
+                result.stats.start_validation_weight,
+                result.stats.validation_weight
+            );
+            let (trace_peak, trace_ops) =
+                measure_executed_non_push(compiled.clone(), witness.clone());
+            assert_eq!(trace_peak, result.stats.max_nb_stack_items);
+            peak = peak.max(trace_peak);
+            witness_bytes = witness_size(&witness);
+            assert_eq!(witness_bytes, 21);
+            *executed = trace_ops;
+        }
+        for (key, value) in keys.into_iter().zip([
+            compiled.len(),
+            witness_bytes,
+            peak,
+            executed[0],
+            executed[1],
+        ]) {
+            metrics.push(Metric {
+                readme: "src/arithmetic/scriptint/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
+}
+
+#[test]
 fn scriptnum_isqrt_metrics_are_current() {
     let g16 = bitcoin_lab::arithmetic::integer_root::scriptnum_isqrt(16);
     let g31 = bitcoin_lab::arithmetic::integer_root::scriptnum_isqrt(31);
@@ -13585,17 +13662,17 @@ fn scriptnum_isqrt_metrics_are_current() {
     ]);
 }
 
-/// Trace actual non-push dispatches, excluding skipped branch bodies.
-/// Synthetic local tapscript execution only; not a complete transaction validator.
-fn measure_tapscript_nonpush(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
+/// Count dispatched non-push instructions, including inactive branch delimiters.
+fn measure_executed_non_push(script: bitcoin::ScriptBuf, witness: Vec<Vec<u8>>) -> (usize, usize) {
     use bitcoin::{absolute, transaction, TapLeafHash, Transaction};
-    use bitcoin_scriptexec::{Exec, ExecCtx, Options, TxTemplate};
+    use bitcoin_scriptexec::{Exec, ExecCtx, Experimental, Options, TxTemplate};
+
     let mut exec = Exec::new(
         ExecCtx::Tapscript,
         Options {
             require_minimal: false,
             enforce_stack_limit: true,
-            experimental: bitcoin_scriptexec::Experimental { op_cat: false },
+            experimental: Experimental { op_cat: false },
             ..Default::default()
         },
         TxTemplate {
@@ -13693,7 +13770,7 @@ fn bounded_division_metrics_are_current() {
                 optimizer_delta, 0,
                 "documented cost components must sum exactly"
             );
-            let (peak, executed) = measure_tapscript_nonpush(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (method, name) {
                 ("bounded", "pair31") => keys!("scriptint_bounded_pair31"),
                 ("hinted", "pair31") => keys!("scriptint_hinted_pair31"),
@@ -13770,7 +13847,7 @@ fn permutation_rank_metrics_are_current() {
                 OP_TRUE
             };
             let compiled = leaf.clone().compile_with_policy();
-            let (peak, executed) = measure_tapscript_nonpush(compiled.clone(), witness.clone());
+            let (peak, executed) = measure_executed_non_push(compiled.clone(), witness.clone());
             let keys = match (width, encoding) {
                 (4, "rank") => [
                     "permutation_rank_4_script",

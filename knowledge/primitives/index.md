@@ -20,6 +20,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [CRC-8/SMBus with nibble feedback](crc8-smbus.md)
 
 - [ScriptNum constant multiplication](scriptnum-constant-mul.md)
+- [Exact equality of signed ScriptNum sums](scriptnum-equal-sums.md)
 - [ScriptNum integer floor root](scriptnum-isqrt.md)
 - [Hinted ScriptNum division](scriptnum-hinted-div.md)
 - [Bounded ScriptNum division without quotient hints](scriptnum-bounded-div.md)
