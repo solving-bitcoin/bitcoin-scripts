@@ -7,6 +7,7 @@ the source. Read a page together with its comparison page and evidence record.
 ## Stack support
 
 - [Stable selection of opaque stack items](stable-selection.md)
+- [Exact equality of two opaque multisets](opaque-multiset.md)
 
 ## Arithmetic
 

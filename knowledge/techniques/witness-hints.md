@@ -22,6 +22,13 @@ and hints coexist at entry. If the payload encodes auxiliary protocol choices,
 the surrounding protocol still counts it as one hint. No integrated consumer
 gain follows from the standalone decoder; see OP-044.
 
+The [opaque multiset verifier](../primitives/opaque-multiset.md) interleaves
+one hint with each right item except the last one consumed. The bounded roll
+removes a left item and binds it by raw-byte equality. A width-16 invocation
+uses 32 ordinary items and 15 hints, with a measured peak of 50. Two such
+invocations preload 64 ordinary items and 30 hints and peak at 97. Equal
+values can share a meaning while still using separate pool positions.
+
 For every hinted construction, document:
 
 - hint generation algorithm and serialization order;

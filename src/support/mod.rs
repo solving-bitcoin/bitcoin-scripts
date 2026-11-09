@@ -5,6 +5,7 @@ pub mod bip68;
 pub mod execution;
 pub mod indexed_selection;
 pub mod provenance;
+pub mod raw_multiset;
 pub mod script;
 pub mod script_ops;
 pub mod selection;

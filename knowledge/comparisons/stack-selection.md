@@ -21,6 +21,15 @@ items; it must not be attributed to routing. At 499 pairs, native backward /
 forward fragment bytes are 8,339 / 18,800 and peaks 999 / 1,000. Explicit guards
 reach 1,000 at 498 pairs and fail at 499. These are scoped configurations.
 
+For a separate [raw multiset comparison](../primitives/opaque-multiset.md),
+both width-16 leaves verify two lists have identical raw multiplicities.
+Bounded deletion hints lower script bytes from 1,477 to 219 and executed
+non-push operations from 599 to 151. They add 15 hint items and 27 witness
+bytes to the same 32 ordinary payload items, and raise combined peak from
+34 to 50. Two preloaded hinted invocations have 64 payload items plus
+30 hints and peak at 97. These figures use a complete local checked-leaf
+boundary and carry unclassified execution.
+
 The existing `u32_conditional_select` selects one of two four-item vectors.
 Its numeric truthy condition is normalized by OP_0NOTEQUAL, accepts numeric
 aliases when allowed by the profile, and rejects overlong numbers. It is not

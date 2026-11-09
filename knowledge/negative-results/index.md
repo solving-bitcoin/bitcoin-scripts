@@ -57,6 +57,10 @@ routing and cleanup, and final policy-produced bytes. Terminal comparisons and
 transaction context are excluded on both sides. No optimized Batcher/bitonic
 network has yet been measured; see OP-043.
 
+The [raw multiset comparison](opaque-multiset.md) tests the distinct
+problem of exact multiplicity across two opaque lists. It records why
+checking membership without consuming matches is insufficient.
+
 
 ## NR-078: Forward stable filtering and redundant flag guards
 
