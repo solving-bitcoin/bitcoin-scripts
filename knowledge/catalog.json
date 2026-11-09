@@ -7736,12 +7736,14 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-09-01",
+      "as_of": "2026-10-29",
       "knowledge_page": "knowledge/primitives/hors-hash160.md",
       "implementation": "src/signatures/hors/mod.rs",
       "documentation": "src/signatures/hors/README.md",
       "tests": [
         "signatures::hors::tests",
+        "signatures::hors::tests::test_hors_index_clamping_and_minimaldata_boundary",
+        "signatures::hors::tests::test_hors_representative_subset_aliases_last_index",
         "primitive_metrics::hors_index_boundary_metrics_are_current",
         "primitive_metrics::hors_witness_boundary_metrics_are_current"
       ],
@@ -7751,8 +7753,8 @@
       "techniques": [
         "hash-chain"
       ],
-      "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160.",
-      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true. Host indices are minimally serialized, but the verifier clamps with OP_MIN and does not independently require canonical index bytes.",
+      "security": "Strictly one-time; concrete forgery probability depends on n, t, index derivation, disclosures, and HASH160. Clamped indices do not bind a raw Binohash index sequence.",
+      "stack_contract": "Witness supplies reverse-ordered index/preimage pairs; verifier consumes commitments and leaves true. Host indices are minimally serialized, but the verifier upper-clamps with OP_MIN and does not independently require canonical index bytes. The local default rejects nonminimal numbers under the policy MINIMALDATA check; with that check disabled, aliases authenticate. Both test profiles enforce the stack limit and remain unclassified for deployment.",
       "configurations": [
         {
           "id": "n32-t8",
@@ -7809,6 +7811,7 @@
       ],
       "limitations": [
         "Message-to-index derivation not implemented",
+        "Oversized witness indices alias the final commitment; raw canonical indices are not script-validated",
         "One-time key only"
       ],
       "open_problems": [

@@ -415,6 +415,16 @@ script-size/witness-size and raw-chain-length tradeoffs. Durable crash-safe and
 distributed one-time state, concrete multi-target bounds, raw ScriptNum
 canonicality, and complete state-transport transaction costs remain open.
 
+The current HORS-like helper upper-clamps witness indices, so its successful
+openings do not bind the raw index sequence ([NR-110](negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)).
+For an exact-index consumer, implement a distinct verifier while preserving
+the clamped API. **Acceptance criterion:** canonical in-range openings pass;
+out-of-range, negative, nonminimal ScriptNum, and wrong-preimage openings fail
+in strict local tests and an independently pinned Bitcoin Core spend; repeated
+and reordered index semantics are specified; and script bytes, serialized
+witness bytes, combined stack peak, and executed opcode costs are compared
+against the clamped helper under the same execution boundary.
+
 Compatible follow-up improvements add an exact verifier that carries the
 residual digit and a staged Horner checksum. Exhaustive chain-digit tests
 retain strict range and node-length checks. The relevant cost objective is
@@ -558,6 +568,12 @@ ascending subsets of one fixed template. It also shows reversed order and
 duplicate selections alias unless the eventual Script consumer validates
 length, range, uniqueness, order, and canonical encoding. The experiment uses
 DER-shaped deletion targets rather than Core-validated ECDSA signatures.
+
+If HORS is used to authenticate the Script-readable Binohash index sequence,
+the existing clamped verifier is insufficient for exact index binding; see
+[NR-110](negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices)
+and the exact-index acceptance criterion in OP-009. This local HORS observation
+does not establish a flaw in the paper's complete protocol.
 
 Implement the specified legacy signature-grinding construction and validate it
 against a pinned Bitcoin Core regtest. **Complete when:** extraction correctness,

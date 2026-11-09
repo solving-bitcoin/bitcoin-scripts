@@ -23,6 +23,9 @@ protocol, ECDSA nonce search, or Script-readable digest. Do not model Binohash
 with the default tapscript executor: its legacy signature context and
 transaction template are essential semantics. Full reproduction still needs
 grinding parameters, mutation constraints, Script extraction, and full costs.
+If a consumer uses the HORS-like helper to authenticate extracted indices,
+its upper-clamped openings do not bind the raw index sequence; see
+[NR-110](../negative-results/index.md#nr-110-clamped-hors-openings-do-not-bind-raw-binohash-indices).
 See `introspection/binohash` and `OP-011`.
 
 A separate [2-of-3 toy subset](../primitives/binohash-subset-toy.md) now

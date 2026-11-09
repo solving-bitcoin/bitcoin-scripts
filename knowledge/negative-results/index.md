@@ -3,6 +3,33 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-110: Clamped HORS openings do not bind raw Binohash indices
+
+The existing [HORS-like verifier](../primitives/hors-hash160.md) intentionally
+uses `OP_MIN` to upper-clamp each witness index. A deterministic `n=32,t=8`
+strict local tapscript test changes the final canonical index from 31 to 32
+without changing its preimage; both openings succeed. A wrong preimage for
+the clamped commitment fails. Thus the verifier authenticates the *clamped*
+subset relation, not the exact supplied index sequence. Reusing it unchanged
+to sign Script-readable Binohash indices would leave an index alias.
+
+The same test shows nonminimal `0100`, `00`, and negative-zero `80` hex
+encodings are rejected by the local executor's default `MinimalData` check.
+With `require_minimal=false`, they authenticate the corresponding numeric
+indices, because the HORS script itself does not compare raw index bytes to a
+canonical encoding. The Bitcoin Script reference classifies `MINIMALDATA` as
+policy, not consensus. Both local tapscript profiles enforce the combined
+1,000-item stack limit; both remain `unclassified` for deployment. Neither is
+a Bitcoin Core legacy spend or proof that a composed Binohash protocol is
+forgeable.
+
+The current clamping API and its measured 809-byte `n=32,t=8` script remain
+unchanged. A future exact-index variant must reject out-of-range and
+noncanonical encodings while preserving the selected preimage, and must define
+whether repeated or reordered indices are legal before claiming subset
+authentication. See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
+and [OP-011](../open-problems.md#op-011--reproduce-binohash).
+
 ## NR-087: Hinted u4 sorting loses at small widths
 
 The [exact sorter](../primitives/u4-sort.md) replaces repeated min/max scans
