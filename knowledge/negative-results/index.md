@@ -90,6 +90,13 @@ retains the rescan stack peak, and shares a 16-entry lookup boundary
 that cannot address the maximal width-eight initial sum. Its entire
 output vector can collide for two different valid input vectors.
 
+## Opposite-case ASCII gap admits punctuation
+
+The [gap-only counterexample](ascii-pair-checks.md) shows that two exact
+one-byte items separated by 32 can be punctuation. Checking the lower
+value's uppercase interval and both byte widths closes that gap.
+Evidence is `locally-reproduced`; execution is `unclassified`.
+
 ## NR-071: u4 MSB lookup table is dominated by grouped thresholds at n=32
 
 The former 16-entry lookup implementation measured 440 locking-script bytes

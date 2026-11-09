@@ -19310,6 +19310,242 @@
       ]
     },
     {
+      "id": "support/ascii-opposite-case",
+      "name": "Opposite-case ASCII pair check",
+      "class": "support/stack",
+      "summary": "Checks two raw ASCII letter bytes against one uppercase interval and the required numeric gap, with no hints.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/ascii-opposite-case.md",
+      "implementation": "src/support/ascii_case/mod.rs",
+      "documentation": "src/support/ascii_case/README.md",
+      "tests": [
+        "src/support/ascii_case/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "rfc-20-ascii",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-csv-20260920"
+      ],
+      "techniques": [
+        "digit-arithmetic"
+      ],
+      "security": "Both witness items are hostile. Each must be exactly one raw byte. The smaller numeric value must be an uppercase ASCII letter and the absolute difference must be 32. Gap alone admits punctuation; unguarded numeric inputs admit raw aliases in the local Consensus profile.",
+      "stack_contract": "Consumes caller | left right in either orientation and leaves caller unchanged. Preserves caller altstack. Zero hints and no result item. The tested complete leaf appends true and uses clean stack. Combined peak for n preloaded pairs and c caller items is 2*n+c+3.",
+      "configurations": [
+        {
+          "id": "1-range-gap",
+          "label": "1 pair, shared interval and gap",
+          "parameters": {
+            "pairs": 1,
+            "schedule": "range_gap",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 21,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 12,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_1_range_gap_script",
+            "ascii_case_1_range_gap_witness",
+            "ascii_case_1_range_gap_stack",
+            "ascii_case_1_range_gap_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "1-mate",
+          "label": "1 pair, raw mate",
+          "parameters": {
+            "pairs": 1,
+            "schedule": "mate",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 32,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 5,
+          "executed_opcodes": 12,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_1_mate_script",
+            "ascii_case_1_mate_witness",
+            "ascii_case_1_mate_stack",
+            "ascii_case_1_mate_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "1-fold",
+          "label": "1 pair, independent folds",
+          "parameters": {
+            "pairs": 1,
+            "schedule": "fold",
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 46,
+          "witness_bytes": 5,
+          "witness_bytes_max": null,
+          "max_stack_items": 7,
+          "executed_opcodes": 26,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_1_fold_script",
+            "ascii_case_1_fold_witness",
+            "ascii_case_1_fold_stack",
+            "ascii_case_1_fold_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-range-gap",
+          "label": "128 pairs, shared interval and gap",
+          "parameters": {
+            "pairs": 128,
+            "schedule": "range_gap",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 2561,
+          "witness_bytes": 515,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 1536,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_128_range_gap_script",
+            "ascii_case_128_range_gap_witness",
+            "ascii_case_128_range_gap_stack",
+            "ascii_case_128_range_gap_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-mate",
+          "label": "128 pairs, raw mate",
+          "parameters": {
+            "pairs": 128,
+            "schedule": "mate",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 3969,
+          "witness_bytes": 515,
+          "witness_bytes_max": null,
+          "max_stack_items": 259,
+          "executed_opcodes": 1536,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_128_mate_script",
+            "ascii_case_128_mate_witness",
+            "ascii_case_128_mate_stack",
+            "ascii_case_128_mate_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        },
+        {
+          "id": "128-fold",
+          "label": "128 pairs, independent folds",
+          "parameters": {
+            "pairs": 128,
+            "schedule": "fold",
+            "data_items": 256,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "all_data_at_entry": true,
+            "compile_options": "ALL",
+            "profile": "Local stack-limited Tapscript Consensus; local Policy cross-check",
+            "charged_signature_weight": 0
+          },
+          "includes": "complete-leaf: all pair checks and terminal true. Serialized data witness includes count and item lengths; excludes leaf, control block, annex, and transaction framing. Executed count excludes pushes and includes processed control delimiters.",
+          "script_bytes": 5761,
+          "witness_bytes": 515,
+          "witness_bytes_max": null,
+          "max_stack_items": 261,
+          "executed_opcodes": 3328,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "hint_items": 0,
+          "metric_keys": [
+            "ascii_case_128_fold_script",
+            "ascii_case_128_fold_witness",
+            "ascii_case_128_fold_stack",
+            "ascii_case_128_fold_executed"
+          ],
+          "evidence": "locally-reproduced",
+          "execution": "unclassified"
+        }
+      ],
+      "limitations": [
+        "Checks only the two ASCII cases of one letter; no Unicode or normalization behavior.",
+        "Standalone repeated frontier is 498 pairs with no caller state; both caller stacks count toward the combined limit.",
+        "Local acceptance establishes no funded-spend or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
+    },
+    {
       "id": "arithmetic/u4-mod17",
       "name": "Checked base-16 integer residue modulo 17",
       "class": "arithmetic/word",

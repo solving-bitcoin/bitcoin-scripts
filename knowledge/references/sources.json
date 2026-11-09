@@ -491,6 +491,13 @@
       "kind": "upstream-source",
       "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/serialize.h",
       "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227; GetSizeOfCompactSize and ReadCompactSize"
+    },
+    {
+      "id": "rfc-20-ascii",
+      "title": "RFC 20 §2: ASCII format for Network Interchange",
+      "kind": "specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc20.html#section-2",
+      "revision": "RFC 20, October 16, 1969; §2 code table defines the uppercase and lowercase letter byte values"
     }
   ]
 }
