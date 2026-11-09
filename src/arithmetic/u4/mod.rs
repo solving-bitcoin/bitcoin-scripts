@@ -23,6 +23,7 @@ pub mod leading_zeros;
 pub mod logic;
 pub mod lowbit;
 pub mod lsb;
+pub mod majority;
 pub mod mirror;
 pub mod mod17;
 pub mod mod3;

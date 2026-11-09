@@ -168,3 +168,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Checked ASCII hexadecimal text to u4 nibbles](u4-ascii-hex.md)
 - [Nibble-packed bracket-balance check](u4-balanced.md)
 - [Checked u4 vector distances](u4-distance.md)
+- [Checked u4 strict majority](u4-majority.md)

@@ -1282,3 +1282,13 @@ nibbles with no hints in fewer than 235 total script-plus-witness bytes on the
 same boundary (the hint-checked form totals 72), or a protocol consumer shows the
 hint-free form is required and measures its complete-leaf cost. Core validation
 is required for any deployment claim.
+
+## OP-050 — Frequent-element generalization
+
+Boyer-Moore decides only a strict majority. **Accept when:** a Script construction
+decides, for hostile 16-nibble vectors, whether any nibble exceeds a threshold
+`n/k` for `k > 2` (a Misra-Gries summary with a verification pass), rejects
+out-of-range nibbles, and reports script bytes, witness items, hint count, peak
+and executed opcodes on the same boundary as the 486-byte majority fragment, or
+a consumer shows the strict-majority form suffices. Core validation is required
+for any deployment claim.

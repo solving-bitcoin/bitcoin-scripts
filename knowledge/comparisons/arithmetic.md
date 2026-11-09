@@ -556,3 +556,11 @@ over one item with no hints, against 59 script bytes and 13 witness bytes over
 five items (four nibble hints) for Horner verification: 235 versus 72 bytes
 in total (strict local `unclassified` tapscript, `locally-reproduced`). See
 [the primitive](../primitives/u4-scriptnum-nibbles.md) and NR-093.
+
+## Strict majority of u4 vectors
+
+At 16 nibbles the Boyer-Moore decision costs 486 script bytes (peak 20, zero
+hints) against a 4,256-byte naive sum of sixteen destructive fixed-symbol helpers (not a lower bound for shared counting), and a
+witness-claimed majority check costs 213 bytes with one hint (strict local
+`unclassified` tapscript, `locally-reproduced`). The claim check cannot report
+absence. See [the primitive](../primitives/u4-majority.md) and NR-094.
