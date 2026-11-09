@@ -169,3 +169,4 @@ the source. Read a page together with its comparison page and evidence record.
 - [Nibble-packed bracket-balance check](u4-balanced.md)
 - [Checked u4 vector distances](u4-distance.md)
 - [Checked u4 strict majority](u4-majority.md)
+- [Casting-out residues and delayed reduction](u4-mod15.md)

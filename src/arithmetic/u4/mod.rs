@@ -25,6 +25,7 @@ pub mod lowbit;
 pub mod lsb;
 pub mod majority;
 pub mod mirror;
+pub mod mod15;
 pub mod mod17;
 pub mod mod3;
 pub mod msb;

@@ -1292,3 +1292,14 @@ out-of-range nibbles, and reports script bytes, witness items, hint count, peak
 and executed opcodes on the same boundary as the 486-byte majority fragment, or
 a consumer shows the strict-majority form suffices. Core validation is required
 for any deployment claim.
+
+## OP-051 — Residue-check consumer frontier
+
+The residues are measured standalone. **Accept when:** a concrete consumer (for
+example a cheap necessary check on witness-supplied limb arithmetic) combines
+casting-out residues with its live protocol state and compares them with an
+exact check on equal complete-leaf boundaries, with witness bytes and items,
+hint counts, executed opcodes and combined peaks, recording either a winning
+regime or dominance. A delayed-reduction variant of the modulo-65,537 and
+Damm schedules is unmeasured. Core validation is required for any deployment
+claim.
