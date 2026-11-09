@@ -28,6 +28,13 @@ changes, invalid selection/input errors, and the out-of-range-input
 suite also passes its eight covered Python tests with `PYTHONPATH=src` and
 `python-bitcoinlib`.
 
+The [six-mode mutation matrix](../../research/binohash-sighash-matrix/README.md)
+checks eight transaction-field mutations against a fixed two-input,
+two-output host-side template. It separates the `ALL`, `NONE`, `SINGLE`, and
+`ANYONECANPAY` commitment boundaries and reproduces the non-committing
+out-of-range `SIGHASH_SINGLE` digest. Its evidence is `locally-reproduced` and
+its execution class is `unclassified`; it does not execute a signed spend.
+
 The host-only configuration remains `locally-reproduced` and `unclassified`.
 The [funded two-choice fixture](../../research/binohash-legacy-core/README.md)
 is `differentially-validated` against pinned Bitcoin Core v30.3 commit

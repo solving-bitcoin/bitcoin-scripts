@@ -5464,7 +5464,7 @@
       "status": "experimental",
       "evidence": "locally-reproduced",
       "execution": "unclassified",
-      "as_of": "2026-10-21",
+      "as_of": "2026-10-29",
       "knowledge_page": "knowledge/primitives/binohash-legacy-core.md",
       "implementation": "src/introspection/binohash.rs",
       "documentation": "src/introspection/README.md",
@@ -5473,6 +5473,7 @@
         "introspection::binohash::tests::subset_selection_changes_legacy_digest",
         "introspection::binohash::tests::reproduces_legacy_single_bug_digest",
         "introspection::binohash::tests::rejects_invalid_selection_and_input",
+        "tests/binohash_sighash_matrix.rs",
         "examples/binohash_core_fixtures.rs",
         "tools/test_binohash_core_regtest.py",
         "tools/binohash_core_regtest.py"
@@ -5497,6 +5498,29 @@
             "hash_type": 1
           },
           "includes": "complete-transaction: host-side deterministic digest only: opcode-boundary signature deletion and rust-bitcoin legacy sighash; excludes ECDSA grinding, complete transaction execution, Script consumer, and transaction weight",
+          "script_bytes": null,
+          "witness_bytes": null,
+          "witness_bytes_max": null,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        },
+        {
+          "id": "six-mode-host-mutation-matrix",
+          "label": "Eight transaction-field mutations under each canonical legacy sighash mode",
+          "parameters": {
+            "selected_input_index": 1,
+            "transaction_inputs": 2,
+            "transaction_outputs": 2,
+            "selected_dummy_signatures": 1,
+            "canonical_sighash_flags": [1, 2, 3, 129, 130, 131],
+            "mutation_cases_per_mode": 8,
+            "single_bug_control_output_count": 1
+          },
+          "includes": "complete-transaction: host-side digest comparison over a fixed transaction template with one selected embedded push and one field mutated per case; excludes ECDSA signing, Script execution, witness, Core consensus and policy verdicts, transaction serialization cost, and full Binohash pinning",
           "script_bytes": null,
           "witness_bytes": null,
           "witness_bytes_max": null,

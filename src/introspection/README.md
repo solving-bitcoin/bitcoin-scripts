@@ -35,3 +35,8 @@ the legacy `SIGHASH_SINGLE` bug constant, invalid selections, and invalid input
 indices. The host helper alone remains `unclassified`; the separate funded
 configuration is `differentially-validated` against Core v30.3 and
 `consensus-validated`, but fails default relay policy.
+
+The [six-mode mutation matrix](../../research/binohash-sighash-matrix/README.md)
+checks which transaction-field changes affect the selected digest in a fixed
+host-side template. It also isolates the non-committing out-of-range
+`SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.

@@ -533,9 +533,11 @@ spends and wrong-selection failures against pinned Core v30.3. Default Core
 relay policy rejects the valid spends under `CONST_SCRIPTCODE`. A second toy
 fixture now checks 2-of-3 `OP_ROLL` selection, a signature-size condition, and
 an index-selected preimage predicate against pinned Core, including malformed
-controls. The full protocol remains open because transaction pinning, two-round
-grinding, authenticated Script extraction, and complete protocol costs are not
-reproduced.
+controls. A host-side six-mode matrix identifies which transaction-field
+mutations change each canonical legacy sighash in one fixed template, but it
+has no signed-spend or Core verdict. The full protocol remains open because
+transaction pinning, two-round grinding, authenticated Script extraction, and
+complete protocol costs are not reproduced.
 
 The [8-of-n planning report](../research/binohash-parameters/README.md)
 establishes `C(120,8)=840,261,910,995` and finds that `n=147` first reaches
