@@ -29426,6 +29426,431 @@
         "OP-001",
         "OP-002"
       ]
+    },
+    {
+      "id": "commitment/sha256-pair-pool",
+      "name": "Two distinct SHA-256 openings from one public pool",
+      "class": "commitment/preimage",
+      "summary": "Verify two distinct SHA-256 preimages against one unique public digest pool by removing each selected slot.",
+      "status": "active",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-06",
+      "knowledge_page": "knowledge/primitives/sha256-pair-pool.md",
+      "implementation": "src/commitments/sha256_pool/mod.rs",
+      "documentation": "src/commitments/sha256_pool/README.md",
+      "tests": [
+        "src/commitments/sha256_pool/mod.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "fips-180-4",
+        "binohash-paper",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "stack-scheduling"
+      ],
+      "security": "The generator rejects duplicate digests, and each rank is canonical and checked against its current pool. Native hash equality binds each preimage to one distinct selected digest. This is an opening relation without message binding, freshness or quantified cryptographic claims.",
+      "stack_contract": "Consumes two preimages and their canonical ranks in reverse pair order. The second rank indexes the pool after removing the first selected digest. On success, preserves both caller stacks and leaves no output.",
+      "configurations": [
+        {
+          "id": "ranks-3",
+          "label": "Destructive ranks, 3 digests",
+          "parameters": {
+            "digest_count": 3,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 3,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 0 and 2"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 133,
+          "witness_bytes": 70,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 25,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_3_ranks_script",
+            "sha256_pool_3_ranks_witness",
+            "sha256_pool_3_ranks_stack",
+            "sha256_pool_3_ranks_executed"
+          ]
+        },
+        {
+          "id": "fixed-3",
+          "label": "Fixed indices, 3 digests",
+          "parameters": {
+            "digest_count": 3,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 3,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 0 and 2"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 142,
+          "witness_bytes": 70,
+          "witness_bytes_max": null,
+          "max_stack_items": 10,
+          "executed_opcodes": 32,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_3_fixed_script",
+            "sha256_pool_3_fixed_witness",
+            "sha256_pool_3_fixed_stack",
+            "sha256_pool_3_fixed_executed"
+          ]
+        },
+        {
+          "id": "scan-3",
+          "label": "Zero-hint scan, 3 digests",
+          "parameters": {
+            "digest_count": 3,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "entry_items": 2,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 0 and 2"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 141,
+          "witness_bytes": 67,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 33,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_3_scan_script",
+            "sha256_pool_3_scan_witness",
+            "sha256_pool_3_scan_stack",
+            "sha256_pool_3_scan_executed"
+          ]
+        },
+        {
+          "id": "ranks-32",
+          "label": "Destructive ranks, 32 digests",
+          "parameters": {
+            "digest_count": 32,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 4,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 31"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 1112,
+          "witness_bytes": 71,
+          "witness_bytes_max": null,
+          "max_stack_items": 39,
+          "executed_opcodes": 39,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_32_ranks_script",
+            "sha256_pool_32_ranks_witness",
+            "sha256_pool_32_ranks_stack",
+            "sha256_pool_32_ranks_executed"
+          ]
+        },
+        {
+          "id": "fixed-32",
+          "label": "Fixed indices, 32 digests",
+          "parameters": {
+            "digest_count": 32,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 4,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 31"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 1119,
+          "witness_bytes": 71,
+          "witness_bytes_max": null,
+          "max_stack_items": 39,
+          "executed_opcodes": 46,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_32_fixed_script",
+            "sha256_pool_32_fixed_witness",
+            "sha256_pool_32_fixed_stack",
+            "sha256_pool_32_fixed_executed"
+          ]
+        },
+        {
+          "id": "scan-32",
+          "label": "Zero-hint scan, 32 digests",
+          "parameters": {
+            "digest_count": 32,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "entry_items": 2,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 31"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 1388,
+          "witness_bytes": 67,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 265,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_32_scan_script",
+            "sha256_pool_32_scan_witness",
+            "sha256_pool_32_scan_stack",
+            "sha256_pool_32_scan_executed"
+          ]
+        },
+        {
+          "id": "ranks-129",
+          "label": "Destructive ranks, 129 digests",
+          "parameters": {
+            "digest_count": 129,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 4,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 128"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 4368,
+          "witness_bytes": 71,
+          "witness_bytes_max": null,
+          "max_stack_items": 136,
+          "executed_opcodes": 88,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_129_ranks_script",
+            "sha256_pool_129_ranks_witness",
+            "sha256_pool_129_ranks_stack",
+            "sha256_pool_129_ranks_executed"
+          ]
+        },
+        {
+          "id": "fixed-129",
+          "label": "Fixed indices, 129 digests",
+          "parameters": {
+            "digest_count": 129,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 5,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 128"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 4375,
+          "witness_bytes": 72,
+          "witness_bytes_max": null,
+          "max_stack_items": 136,
+          "executed_opcodes": 95,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_129_fixed_script",
+            "sha256_pool_129_fixed_witness",
+            "sha256_pool_129_fixed_stack",
+            "sha256_pool_129_fixed_executed"
+          ]
+        },
+        {
+          "id": "scan-129",
+          "label": "Zero-hint scan, 129 digests",
+          "parameters": {
+            "digest_count": 129,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "entry_items": 2,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "ALL",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 128"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 5559,
+          "witness_bytes": 67,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 1041,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_129_scan_script",
+            "sha256_pool_129_scan_witness",
+            "sha256_pool_129_scan_stack",
+            "sha256_pool_129_scan_executed"
+          ]
+        },
+        {
+          "id": "ranks-993",
+          "label": "Destructive ranks, 993 digests",
+          "parameters": {
+            "digest_count": 993,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 5,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "NONE",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 992"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 33807,
+          "witness_bytes": 72,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 1015,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_993_ranks_script",
+            "sha256_pool_993_ranks_witness",
+            "sha256_pool_993_ranks_stack",
+            "sha256_pool_993_ranks_executed"
+          ]
+        },
+        {
+          "id": "fixed-993",
+          "label": "Fixed indices, 993 digests",
+          "parameters": {
+            "digest_count": 993,
+            "data_items": 2,
+            "hint_items": 2,
+            "hint_bytes": 5,
+            "entry_items": 4,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "NONE",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 992"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 33815,
+          "witness_bytes": 72,
+          "witness_bytes_max": null,
+          "max_stack_items": 1000,
+          "executed_opcodes": 1023,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_993_fixed_script",
+            "sha256_pool_993_fixed_witness",
+            "sha256_pool_993_fixed_stack",
+            "sha256_pool_993_fixed_executed"
+          ]
+        },
+        {
+          "id": "scan-993",
+          "label": "Zero-hint scan, 993 digests",
+          "parameters": {
+            "digest_count": 993,
+            "data_items": 2,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "entry_items": 2,
+            "all_data_at_entry": true,
+            "native_sha256_ops": 2,
+            "compile_options": "NONE",
+            "local_tapscript_profile": "Consensus",
+            "signature_validation_charge": 0,
+            "fixture": "32-byte preimages with LE slot prefix, opened slots 1 and 992"
+          },
+          "includes": "complete-leaf: one embedded copy of each digest, both native hash checks, table or scan cleanup and terminal true. Witness includes data and selectors and excludes leaf, control block, annex and transaction.",
+          "script_bytes": 42711,
+          "witness_bytes": 67,
+          "witness_bytes_max": null,
+          "max_stack_items": 6,
+          "executed_opcodes": 7953,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [
+            "sha256_pool_993_scan_script",
+            "sha256_pool_993_scan_witness",
+            "sha256_pool_993_scan_stack",
+            "sha256_pool_993_scan_executed"
+          ]
+        }
+      ],
+      "limitations": [
+        "The resident pool uses n+7 combined stack items plus caller state; width 993 has no caller headroom.",
+        "Destructive and fixed selectors both require two hints; witness byte savings depend on selected ranks.",
+        "The width-993 leaves are unoptimized under the central compilation policy.",
+        "Disclosure permits replay of the same preimages wherever the same relation is accepted.",
+        "Local tapscript fragment evidence only. No funded or relay validation."
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002"
+      ]
     }
   ]
 }

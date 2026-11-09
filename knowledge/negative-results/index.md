@@ -219,6 +219,13 @@ output bytes. The correction is submitted upstream; the lab retains its
 compiler pin and primitive snapshots. Diagnostic timings do not establish a
 general compile-time speedup or a Bitcoin execution-cost improvement.
 
+## Distinct SHA-256 pool openings
+
+The [two-opening comparison](sha256-pair-pool.md) reproduces acceptance
+of a repeated index by the HORS opening helper under its own contract.
+Destructive ranks enforce distinct slots and sometimes save a selector
+byte. A zero-hint scan uses a much smaller stack peak.
+
 ## NR-045: Core differentials expose local executor boundaries
 
 The [initial v30.3 report](../../tests/data/core-validation-v30.3.json) compared

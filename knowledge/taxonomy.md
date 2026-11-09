@@ -15,6 +15,7 @@ constructions from being hidden behind local module names.
 - `arithmetic/rns`: residue-number representations.
 - `commitment/integer`: openings that authenticate and return small integers.
 - `commitment/hash-state`: ordered, unary hash-state openings and checkpoint checks.
+- `commitment/preimage`: checks on openings of public hash digests.
 - `hash/fixed`: fixed-output hashes.
 - `hash/xof`: extendable-output functions.
 - `signature/schnorr`: secp256k1 Schnorr verification constructions.

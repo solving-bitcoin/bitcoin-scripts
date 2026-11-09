@@ -139,6 +139,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Ternary mixed-hash integer path](ternary-hash-path-integer.md)
 - [Preimage-length integer](preimage-length.md)
 - [Joint HASH160 and HASH256 preimage verification](dual-digest-preimage.md)
+- [Two distinct SHA-256 openings from one public pool](sha256-pair-pool.md)
 - [TapBranch tagged hash over u4 nodes](tapbranch-u4.md)
 
 - [Pinned-start checkpoint chains](pinned-hash-path-chain.md)
