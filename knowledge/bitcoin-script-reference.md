@@ -939,9 +939,14 @@ Details that matter:
 
 - For `CHECKMULTISIG` it removes **all** the signatures passed in, not just the one being verified.
   So the scriptCode used to verify signature *i* has signatures *1..m* all deleted.
-- It is a **byte-substring** deletion over the serialised script, not a structural one. It will
-  happily remove matching bytes from the middle of an unrelated push.
-- It also strips all `OP_CODESEPARATOR` bytes from the scriptCode.
+- It compares raw bytes **only at parsed opcode boundaries**. The target is the signature's
+  canonical serialized push (`CScript() << vchSig`), so an exact non-minimal push encoding is not
+  removed and matching bytes inside another push's payload are not removed. Every matching
+  canonical push at a boundary is removed, including duplicates. This is pinned to Bitcoin Core
+  v30.3 [`FindAndDelete`](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp#L228-L254).
+- `OP_CODESEPARATOR` removal is a separate legacy sighash-serialization step, not part of
+  `FindAndDelete`; Core's serializer skips parsed separator opcodes after choosing the scriptCode
+  boundary ([v30.3 source](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp#L1266-L1287)).
 - The intent was to stop a signature from "signing itself." The side effect is that **which
   signatures appear in the locking script determines the scriptCode, and therefore the sighash** —
   giving a spender a controllable source of sighash variation, since choosing a different subset of

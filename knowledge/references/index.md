@@ -28,6 +28,16 @@ archive and binary SHA256 hashes, block acceptance and policy results for 24
 complete Taproot spends. Its evidence is `differentially-validated` within that
 fixture scope.
 
+The `bitcoin-core-v30.3-findanddelete` source pins the legacy
+`FindAndDelete` implementation and `OP_CHECKMULTISIG` call site at the same
+v30.3 commit. It establishes that deletion comparisons occur at parsed opcode
+boundaries against canonical serialized signature pushes, and that multisig
+applies the operation to every supplied signature
+([call site](https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp#L1137-L1149)).
+The focused local tests inspect host-helper parity, including parser
+termination on truncated push payloads and incomplete length headers; they do
+not execute Core or classify malformed Script as consensus-valid.
+
 The `bitcoin-core-v30.3-legacy-sighash` source pins the same revision's
 `src/script/interpreter.cpp` for the legacy CODESEPARATOR boundary,
 FindAndDelete, and scriptCode serialization paths inspected by the funded

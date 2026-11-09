@@ -45,10 +45,16 @@ fn next_sop(script: &[u8], index: usize) -> usize {
     match opcode {
         0x01..=0x4b => next += opcode as usize,
         0x4c if next < script.len() => next += 1 + script[next] as usize,
-        0x4d if next + 1 < script.len() => {
+        0x4d => {
+            if next + 1 >= script.len() {
+                return script.len();
+            }
             next += 2 + u16::from_le_bytes([script[next], script[next + 1]]) as usize
         }
-        0x4e if next + 3 < script.len() => {
+        0x4e => {
+            if next + 3 >= script.len() {
+                return script.len();
+            }
             next += 4 + u32::from_le_bytes([
                 script[next],
                 script[next + 1],
@@ -170,6 +176,82 @@ mod tests {
                 b't', b'a', 0x51
             ]
         );
+    }
+
+    #[test]
+    fn deletes_canonical_pushes_across_pushdata_boundaries() {
+        for length in [3, 76, 256] {
+            let signature = vec![0x31; length];
+            let canonical = push_data(&signature);
+            let mut embedded = vec![0xaa];
+            embedded.extend_from_slice(&canonical);
+            embedded.push(0xbb);
+            let embedded_push = push_data(&embedded);
+            let script = ScriptBuf::from_bytes(
+                [
+                    canonical.clone(),
+                    embedded_push.clone(),
+                    vec![0x51],
+                    canonical,
+                ]
+                .concat(),
+            );
+
+            let deleted = find_and_delete(&script, &[signature]);
+            assert_eq!(deleted.as_bytes(), [embedded_push, vec![0x51]].concat());
+        }
+    }
+
+    #[test]
+    fn leaves_nonminimal_signature_pushes_untouched() {
+        let cases = [
+            (vec![0x31; 3], vec![0x4c, 3]),
+            (vec![0x31; 76], vec![0x4d, 76, 0]),
+            (vec![0x31; 256], vec![0x4e, 0, 1, 0, 0]),
+        ];
+        for (signature, mut nonminimal) in cases {
+            nonminimal.extend_from_slice(&signature);
+            let canonical = push_data(&signature);
+            let script = ScriptBuf::from_bytes([nonminimal.clone(), canonical].concat());
+
+            let deleted = find_and_delete(&script, &[signature]);
+            assert_eq!(deleted.as_bytes(), nonminimal);
+        }
+    }
+
+    #[test]
+    fn malformed_trailing_push_stops_boundary_scanning() {
+        let signature = b"sig".to_vec();
+        let canonical = push_data(&signature);
+        // OP_PUSHDATA1 declares six payload bytes but only five follow. The
+        // canonical signature bytes inside that truncated payload are not a
+        // subsequent opcode boundary. This is parser-parity coverage only: a
+        // script containing this malformed push is not consensus-valid.
+        let malformed_tail = [vec![0x4c, 6, 0xaa], canonical.clone()].concat();
+        let script = ScriptBuf::from_bytes([canonical, malformed_tail.clone()].concat());
+
+        let deleted = find_and_delete(&script, &[signature]);
+        assert_eq!(deleted.as_bytes(), malformed_tail);
+    }
+
+    #[test]
+    fn incomplete_pushdata_length_headers_stop_boundary_scanning() {
+        // A zero byte inside a truncated length header is not an opcode
+        // boundary. Core's GetOp stops at the malformed push, including when
+        // a matching push was already deleted before it. These scripts are
+        // parser-parity fixtures, not consensus-valid locking scripts.
+        for malformed in [
+            vec![0x4d, 0x00],
+            vec![0x4e, 0x00],
+            vec![0x4e, 0x00, 0x00],
+            vec![0x4e, 0x00, 0x00, 0x00],
+        ] {
+            let script = ScriptBuf::from_bytes(malformed.clone());
+            assert_eq!(find_and_delete(&script, &[vec![]]), script);
+
+            let prefixed = ScriptBuf::from_bytes([vec![0x00], malformed.clone()].concat());
+            assert_eq!(find_and_delete(&prefixed, &[vec![]]).as_bytes(), malformed);
+        }
     }
 
     #[test]

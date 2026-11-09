@@ -21,9 +21,16 @@ to a Script consumer.
 ## Evidence
 
 Evidence is `locally-reproduced` for the deterministic core. Focused tests
-cover opcode-boundary deletion versus embedded bytes, subset-dependent digest
+cover canonical direct and PUSHDATA deletion at opcode boundaries, repeated
+pushes, embedded bytes, non-minimal push encodings, parser termination at a
+malformed trailing payload or incomplete length header, subset-dependent digest
 changes, invalid selection/input errors, and the out-of-range-input
-`SIGHASH_SINGLE` digest constant. The external
+`SIGHASH_SINGLE` digest
+constant. The malformed case is source-parity coverage for the host helper,
+not consensus-valid Script evidence. The behavior is pinned to Bitcoin Core
+v30.3 source commit `49faec4f87f5cd19c88db01a82e5c68b087c8227`.
+PUSHDATA boundary cases use arbitrary vectors to exercise the helper and do
+not classify oversized vectors as valid ECDSA signatures. The external
 [`binohash-experiments`](https://github.com/aaron-recompile/binohash-experiments)
 suite also passes its eight covered Python tests with `PYTHONPATH=src` and
 `python-bitcoinlib`.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-09-20",
+  "as_of": "2026-10-29",
   "sources": [
     {
       "id": "cpp-n4950-min-element",
@@ -127,6 +127,13 @@
       "kind": "upstream-source",
       "url": "https://github.com/bitcoin/bitcoin/blob/master/src/script/interpreter.cpp",
       "revision": "rolling master; pin before reproduction"
+    },
+    {
+      "id": "bitcoin-core-v30.3-findanddelete",
+      "title": "Bitcoin Core v30.3 legacy FindAndDelete",
+      "kind": "upstream-source",
+      "url": "https://github.com/bitcoin/bitcoin/blob/49faec4f87f5cd19c88db01a82e5c68b087c8227/src/script/interpreter.cpp#L228-L254",
+      "revision": "49faec4f87f5cd19c88db01a82e5c68b087c8227 (v30.3); FindAndDelete lines 228-254 and OP_CHECKMULTISIG call site lines 1137-1149 inspected 2026-10-29, not executed by the focused host tests"
     },
     {
       "id": "bitcoin-core-v30-resource-limits",

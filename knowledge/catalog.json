@@ -7962,6 +7962,9 @@
       "documentation": "src/introspection/README.md",
       "tests": [
         "introspection::binohash::tests::deletes_only_opcode_aligned_signature_pushes",
+        "introspection::binohash::tests::deletes_canonical_pushes_across_pushdata_boundaries",
+        "introspection::binohash::tests::leaves_nonminimal_signature_pushes_untouched",
+        "introspection::binohash::tests::malformed_trailing_push_stops_boundary_scanning",
         "introspection::binohash::tests::subset_selection_changes_legacy_digest",
         "introspection::binohash::tests::reproduces_legacy_single_bug_digest",
         "introspection::binohash::tests::rejects_invalid_selection_and_input",
@@ -7973,7 +7976,7 @@
       ],
       "references": [
         "binohash-paper",
-        "bitcoin-core-interpreter",
+        "bitcoin-core-v30.3-findanddelete",
         "rust-bitcoin-0.32.102"
       ],
       "techniques": [
