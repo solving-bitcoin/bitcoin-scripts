@@ -8092,6 +8092,64 @@ fn u4_multiset_equal_metrics_are_current() {
     ]);
 }
 
+/// This isolated fixture measures the exact u4 inversion count at length 16.
+#[test]
+fn u4_inversions_metrics_are_current() {
+    const LEN: u32 = 16;
+    let fragment = u4::inversions::u4_nibbles_inversions(LEN);
+    // Strictly descending: every pair is an inversion, 120 in total.
+    let witness: Vec<Vec<u8>> = (0..16).rev().map(|nibble| scriptnum(nibble)).collect();
+    use bitcoin_lab::support::tapscript::{execute_tapscript, TapscriptProfile};
+    let compiled = fragment.compile_with_policy();
+    let execution = execute_tapscript(
+        compiled.clone(),
+        witness.clone(),
+        TapscriptProfile::Consensus,
+    );
+    let result = execution.execution().expect("executed fragment");
+    assert!(result.success, "metric fragment failed: {result}");
+    assert!(result.stack_limit_enforced);
+    assert_eq!(result.final_stack.len(), 1);
+    assert_eq!(result.final_stack.get(0), scriptnum(120));
+    let opcodes = compiled
+        .instructions()
+        .filter(|instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60))
+        .count();
+    let nondecreasing = script_len(u4::nondecreasing::u4_nibbles_nondecreasing(LEN));
+    check_readme_metrics(vec![
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16",
+            value: compiled.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness",
+            value: witness_size(&witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_witness_items",
+            value: witness.len(),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_stack",
+            value: result.stats.max_nb_stack_items,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_opcodes",
+            value: opcodes,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_inversions_16_nondecreasing",
+            value: nondecreasing,
+        },
+    ]);
+}
+
 /// This isolated fixture measures only the checked u32 population count.
 #[test]
 fn u32_popcount_metrics_are_current() {

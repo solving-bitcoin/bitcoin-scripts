@@ -1233,3 +1233,13 @@ data and hint items, executed opcodes and combined peaks; record either the
 winning regime or dominance. A cheaper table schedule (reusing one table
 across words) is also open. Complete-spend/Core validation is required before
 any deployment claim.
+
+## OP-045 — Sub-quadratic inversion counting
+
+The pairwise count is quadratic in script bytes. **Accept when:** a Script
+construction computes the same exact count for hostile 32-nibble vectors in
+fewer policy-compiled script bytes than 3,709 plus witness bytes on the same
+complete-leaf boundary, with exact hint counts, executed opcodes and combined
+peaks, or a consumer of the count (permutation parity, Kendall-tau distance)
+measures a hinted certificate that dominates it. Core validation is required for
+any deployment claim.

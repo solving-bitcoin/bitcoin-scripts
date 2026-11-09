@@ -2044,3 +2044,15 @@ lane base of `2n + 1` leaves only 20/10/7/6 lanes per four-byte word at
 `n = 1/4/8/16`, so 16 symbols need 1/2/3/3 words and 6 words at `n = 489`.
 Byte figures are `locally-reproduced`; the baseline figure is an estimate, and
 deployment is `unclassified`. See the [primitive](../primitives/u4-multiset-equal.md).
+
+## NR-089: Inversion count is dominated as a sortedness test
+
+Testing `inversions == 0` instead of calling the nondecreasing predicate costs
+822 versus 263 script bytes at 16 nibbles, 3,709 versus 588 at 32, and 15,629
+versus 1,244 at 64, because it compares all `n(n-1)/2` pairs while sortedness
+needs only the `n-1` adjacent ones. Every figure is a policy-compiled fragment
+under strict local `unclassified` tapscript rules, `locally-reproduced`. The
+count is justified only when its magnitude is consumed. Sums of lane-packed
+histograms were not attempted: extracting a lane would need division or
+remainder, and no such opcode is available, which is reasoning rather than
+measurement. See the [primitive](../primitives/u4-inversions.md).
