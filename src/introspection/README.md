@@ -73,6 +73,13 @@ Combined stack peak and executed opcode count were not measured. The valid
 spend is consensus-valid but fails default relay policy under
 `CONST_SCRIPTCODE`.
 
+The [SINGLE pinning-skip regression](../../research/binohash-single-bug-pinning-skip/README.md)
+keeps that same embedded signature valid across version, locktime, input,
+sequence, and output mutations while input index 1 exceeds output count 1.
+Pinned Core mines nine disjoint variants and rejects the two controls that
+make the selected output exist. This is a consensus boundary result; default
+relay policy still rejects the valid spends.
+
 The separate [CODESEPARATOR fixture](../../research/binohash-codesep/README.md)
 requires its caller to identify the suffix after the last executed separator
 and to omit all parsed separator opcodes before calling rust-bitcoin's legacy

@@ -34808,6 +34808,82 @@
       ]
     },
     {
+      "id": "introspection/binohash-single-bug-pinning-skip",
+      "name": "Binohash SIGHASH_SINGLE bug pinning-skip regression",
+      "class": "introspection/transaction",
+      "summary": "Shows nine field mutations retaining an embedded out-of-range SIGHASH_SINGLE signature in funded Core spends, with two boundary-crossing rejections.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-single-bug-pinning-skip.md",
+      "implementation": "examples/binohash_single_bug_pinning_skip.rs",
+      "documentation": "research/binohash-single-bug-pinning-skip/README.md",
+      "tests": [
+        "examples/binohash_single_bug_pinning_skip.rs",
+        "tools/binohash_single_bug_pinning_skip_regtest.py",
+        "tools/test_binohash_single_bug_pinning_skip_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "bitcoin-core-v30.3-regtest",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "sighash-single-bug",
+        "signature-commitment"
+      ],
+      "security": "The fixed out-of-range digest commits to no tested transaction fields; this is a pinning-skip counterexample, not a full Binohash grind or collision-security claim. Core default policy rejects the consensus-valid embedded signature under CONST_SCRIPTCODE.",
+      "stack_contract": "Two-input P2SH spend: input 0 scriptSig pushes OP_TRUE redeemScript; input 1 scriptSig pushes the 45-byte redeemScript containing the nine-byte signature, compressed public key and CHECKSIG. One output leaves input index 1 out of range. No witness or hint items.",
+      "configurations": [
+        {
+          "id": "nine-variants-core-v30.3",
+          "label": "Nine disjoint bug-boundary variants and two boundary-crossing controls",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "signature_hex": "300602010102010103",
+            "signature_bytes": 9,
+            "anchor_input_index": 1,
+            "output_count": 1,
+            "confirmed_variant_count": 9,
+            "rejected_control_count": 2,
+            "complete_transaction_weight_range_wu": [
+              688,
+              732
+            ],
+            "script_sig_bytes": [
+              2,
+              46
+            ],
+            "redeem_script_bytes": 45,
+            "witness_items": 0,
+            "hint_items": 0,
+            "policy_result": "rejected: Signature is found in scriptCode"
+          },
+          "includes": "complete-transaction: funded two-input one-output legacy P2SH spends with both scriptSigs and full serialization; script_bytes is the 23-byte P2SH locking scriptPubKey and the 45-byte redeemScript is included in the anchor scriptSig; excludes separate funding transaction and other Binohash stages",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": []
+        }
+      ],
+      "limitations": [
+        "All nine valid spends are rejected by default relay policy under CONST_SCRIPTCODE",
+        "The out-of-range signature authenticates no tested transaction field; protocols need another binding predicate or existing selected output",
+        "No two-round grind, chosen digest, Script consumer or Binohash security bound",
+        "Combined stack peak and executed opcode count are not measured"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash-single-anchor",
       "name": "Binohash nine-byte SIGHASH_SINGLE anchor",
       "class": "introspection/transaction",

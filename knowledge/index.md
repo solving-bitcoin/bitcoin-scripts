@@ -45,6 +45,7 @@ python3 tools/kb.py validate
 - [Binohash legacy Core comparison](primitives/binohash-legacy-core.md)
 - [Binohash 2-of-3 subset Core comparison](primitives/binohash-subset-toy.md)
 - [Nine-byte Binohash SIGHASH_SINGLE anchor](primitives/binohash-single-anchor.md)
+- [Binohash SIGHASH_SINGLE pinning-skip regression](primitives/binohash-single-bug-pinning-skip.md)
 - [Binohash CODESEPARATOR and FindAndDelete comparison](primitives/binohash-codesep-core.md)
 - [Checked PRINCEv2 complete-leaf experiment](prince-core-validation.md)
 - [Primitive entries](primitives/index.md)
