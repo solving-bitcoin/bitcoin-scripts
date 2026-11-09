@@ -9,6 +9,7 @@ pub mod byte_parity;
 pub mod byte_planes;
 pub mod cmp;
 pub mod mersenne_residue;
+pub mod dual_residue;
 pub mod msb_mask;
 pub mod nand;
 pub mod nor;

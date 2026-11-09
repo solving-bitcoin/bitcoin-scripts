@@ -416,6 +416,16 @@ different input/output semantics, so their byte sizes do not establish a
 like-for-like dominance relation here.
 
 
+## Joint u32 residues
+
+The [paired modulo-7 and modulo-9 projection](../primitives/u32-dual-residue.md)
+uses a common modulo-63 reduction. Two complete checked leaves each cost 210
+script bytes and peak at seven items, versus 248 and ten for matched centered
+reductions. Executed non-push counts are 115/113 versus 136/136 for the two
+words. Each witness has four ordinary items and zero hints. The fixture
+witnesses are 9 and 13 serialized bytes, with equal bytes within each
+comparison. The evidence is locally reproduced with unclassified execution.
+
 ## Canonical modulo-16 prefix vectors
 
 The [prefix scan](../primitives/u4-prefix-sum.md) returns every prefix, unlike
