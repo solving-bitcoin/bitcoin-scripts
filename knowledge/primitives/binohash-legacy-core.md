@@ -35,6 +35,12 @@ two-output host-side template. It separates the `ALL`, `NONE`, `SINGLE`, and
 out-of-range `SIGHASH_SINGLE` digest. Its evidence is `locally-reproduced` and
 its execution class is `unclassified`; it does not execute a signed spend.
 
+The [signed six-mode matrix](../../research/binohash-signed-sighash-matrix/README.md)
+adds funded two-input P2SH signatures and pinned Core verdicts for those eight
+field boundaries. It exercises ordinary `OP_CHECKSIG` transaction commitments
+without embedded-signature deletion; its result does not strengthen the
+Binohash pinning or grinding claim.
+
 The [10-choose-5 host probe](../../research/binohash-ten-choose-five/README.md)
 enumerates all 252 ascending subsets in one fixed template and finds distinct
 local legacy digests. Reverse order and duplicate selections demonstrate

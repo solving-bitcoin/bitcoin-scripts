@@ -34708,6 +34708,90 @@
       ]
     },
     {
+      "id": "introspection/binohash-signed-sighash-matrix",
+      "name": "Binohash signed legacy sighash field matrix",
+      "class": "introspection/transaction",
+      "summary": "Checks eight legacy transaction-field mutations under all six canonical sighash modes in funded P2SH spends against pinned Bitcoin Core.",
+      "status": "experimental",
+      "evidence": "differentially-validated",
+      "execution": "consensus-validated",
+      "as_of": "2026-11-09",
+      "knowledge_page": "knowledge/primitives/binohash-signed-sighash-matrix.md",
+      "implementation": "examples/binohash_signed_sighash_matrix.rs",
+      "documentation": "research/binohash-signed-sighash-matrix/README.md",
+      "tests": [
+        "examples/binohash_signed_sighash_matrix.rs",
+        "tools/binohash_signed_sighash_matrix_regtest.py",
+        "tools/test_binohash_signed_sighash_matrix_regtest.py"
+      ],
+      "references": [
+        "binohash-paper",
+        "bitcoin-core-interpreter",
+        "bitcoin-core-v30.3-regtest",
+        "rust-bitcoin-0.32.102"
+      ],
+      "techniques": [
+        "signature-commitment"
+      ],
+      "security": "Ordinary P2SH CHECKSIG isolates field commitments. The signing signature is not embedded in scriptCode, so no selected FindAndDelete deletion, grinding, pinning, or collision-security bound is demonstrated.",
+      "stack_contract": "Two-input P2SH spend: input 0 scriptSig pushes OP_TRUE redeemScript, input 1 scriptSig pushes DER ECDSA signature and pubkey CHECKSIG redeemScript; no witness or hint items.",
+      "configurations": [
+        {
+          "id": "six-canonical-modes-core-v30.3",
+          "label": "Six signed baselines and eight single-field mutations per mode",
+          "parameters": {
+            "bitcoin_core_commit": "49faec4f87f5cd19c88db01a82e5c68b087c8227",
+            "sighash_flags": [
+              1,
+              2,
+              3,
+              129,
+              130,
+              131
+            ],
+            "mutation_count_per_mode": 8,
+            "selected_input_index": 1,
+            "input_count": 2,
+            "output_count": 2,
+            "confirmed_baseline_count": 6,
+            "changed_digest_consensus_rejections": 34,
+            "unchanged_digest_policy_acceptances": 14,
+            "complete_transaction_weight_range_wu": [
+              1152,
+              1156
+            ],
+            "other_script_sig_bytes": 2,
+            "selected_script_sig_bytes_range": [
+              108,
+              109
+            ],
+            "selected_redeem_script_bytes": 35,
+            "witness_items": 0,
+            "hint_items": 0
+          },
+          "includes": "complete-transaction: signed two-input two-output P2SH spends with confirmed prevouts, both scriptSigs and full serialization; script_bytes is the 23-byte selected P2SH locking scriptPubKey and 35-byte redeemScript is included in selected scriptSig; excludes funding transaction and Binohash subset/pinning costs",
+          "script_bytes": 23,
+          "witness_bytes": 0,
+          "witness_bytes_max": 0,
+          "max_stack_items": null,
+          "executed_opcodes": null,
+          "validation_weight": null,
+          "setup_script_bytes": null,
+          "per_use_script_bytes": null,
+          "metric_keys": [],
+          "execution": "policy-validated"
+        }
+      ],
+      "limitations": [
+        "Changed-digest variants have direct Core consensus rejection; unchanged-digest variants have policy acceptance but were not separately mined",
+        "No embedded-signature FindAndDelete selection, grinding, transaction pinning or Script-readable digest",
+        "Combined stack peak and executed opcode count are not measured"
+      ],
+      "open_problems": [
+        "OP-011"
+      ]
+    },
+    {
       "id": "introspection/binohash-sighash-flags",
       "name": "Binohash raw legacy sighash-byte census",
       "class": "introspection/transaction",

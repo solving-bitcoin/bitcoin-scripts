@@ -42,6 +42,11 @@ for each. The preimages are public, and the
 fixture has no transaction pinning, two-round grind, or meaningful security
 parameter. Default policy still rejects both consensus-valid spends.
 
+The [signed six-mode matrix](../primitives/binohash-signed-sighash-matrix.md)
+checks the host field-commitment predictions with funded ordinary P2SH
+signatures and pinned Core verdicts. It omits embedded-signature deletion,
+grinding, and pinning, so it is a boundary check rather than a protocol proof.
+
 The [raw sighash-byte census](../primitives/binohash-sighash-flags.md)
 confirms that 256 byte values can be signed under legacy consensus while
 default relay policy accepts only six canonical values. This is an input to

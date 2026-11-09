@@ -41,6 +41,13 @@ checks which transaction-field changes affect the selected digest in a fixed
 host-side template. It also isolates the non-committing out-of-range
 `SIGHASH_SINGLE` case; this result alone remains `unclassified` for execution.
 
+The [signed six-mode matrix](../../research/binohash-signed-sighash-matrix/README.md)
+checks the same eight field boundaries in funded two-input P2SH transactions
+against pinned Core. It uses ordinary `OP_CHECKSIG` signatures and calls the
+Binohash digest helper without selected FindAndDelete candidates. The six
+baselines and changed-digest rejections have direct block verdicts;
+unchanged-digest variants have default-policy acceptance verdicts.
+
 The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
 independently signs all 256 flag values in P2SH spends. Its canonical `01`
 sample has this complete-transaction boundary:
