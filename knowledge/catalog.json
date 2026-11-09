@@ -34778,7 +34778,9 @@
           "validation_weight": null,
           "setup_script_bytes": null,
           "per_use_script_bytes": null,
-          "metric_keys": [],
+          "metric_keys": [
+            "binohash_signed_matrix_lock"
+          ],
           "execution": "policy-validated"
         }
       ],

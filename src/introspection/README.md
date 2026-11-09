@@ -48,6 +48,12 @@ Binohash digest helper without selected FindAndDelete candidates. The six
 baselines and changed-digest rejections have direct block verdicts;
 unchanged-digest variants have default-policy acceptance verdicts.
 
+The selected P2SH scriptPubKey is <!-- metric:binohash_signed_matrix_lock -->23<!-- /metric:binohash_signed_matrix_lock -->
+bytes and its redeemScript is 35 bytes in scriptSig. The complete `ALL`
+baseline weighs 1,152 WU; the `ANYONECANPAY|NONE` baseline weighs 1,156 WU.
+Both have zero witness and hint items. The separate funding transaction is
+excluded.
+
 The [raw sighash-byte census](../../research/binohash-sighash-flags/README.md)
 independently signs all 256 flag values in P2SH spends. Its canonical `01`
 sample has this complete-transaction boundary:

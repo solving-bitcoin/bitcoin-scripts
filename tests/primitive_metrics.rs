@@ -17009,6 +17009,25 @@ fn binohash_subset_core_report_metrics_are_current() {
 }
 
 #[test]
+fn binohash_signed_matrix_core_report_metrics_are_current() {
+    let report: serde_json::Value = serde_json::from_str(include_str!(
+        "data/binohash-signed-sighash-matrix-v30.3.json"
+    ))
+    .unwrap();
+    assert_eq!(report["run_passed"], true);
+    let readme = "src/introspection/README.md";
+    check_readme_metrics(vec![Metric {
+        readme,
+        key: "binohash_signed_matrix_lock",
+        value: report["fixture"]["selected_script_pubkey_hex"]
+            .as_str()
+            .unwrap()
+            .len()
+            / 2,
+    }]);
+}
+
+#[test]
 fn pinned_chain_metrics_are_current() {
     use bitcoin::secp256k1::{Keypair, Secp256k1, SecretKey};
     use bitcoin::taproot::{LeafVersion, TaprootBuilder};
