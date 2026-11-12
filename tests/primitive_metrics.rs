@@ -14625,12 +14625,36 @@ fn u4_run_length_metrics_are_current() {
             OP_DROP
         }
     };
-    assert_eq!(script_len(direct), 206);
+    assert_eq!(script_len(direct.clone()), 206);
     assert_eq!(witness_size(&direct_witness), 25);
     assert_eq!(repetitive_witness.len(), 4);
     assert_eq!(short_witness.len(), 16);
     assert_eq!(repetitive_peak, 20);
     assert_eq!(short_peak, 21);
+
+    let dynamic = u4::run_length::u4_expand_canonical_runs_dynamic(16, 0);
+    assert_eq!(
+        bitcoin_sha256::Hash::hash(dynamic.clone().compile_with_policy().as_bytes()).to_string(),
+        "35a8f35f60326e78fc754a6b68c7bda669009b201135cbcdb49300e6beb1424d"
+    );
+    let dynamic_leaf = script! {
+        { dynamic.clone() }
+        for _ in 0..16 { OP_DROP }
+        OP_TRUE
+    }
+    .compile_with_policy();
+    let (dynamic_peak, dynamic_executed) =
+        measure_executed_non_push(dynamic_leaf, repetitive_witness.clone());
+    let direct_leaf = script! {
+        { direct.clone() }
+        for _ in 0..16 { OP_DROP }
+        OP_TRUE
+    }
+    .compile_with_policy();
+    let (direct_peak, direct_executed) =
+        measure_executed_non_push(direct_leaf, direct_witness.clone());
+    assert!(script_len(dynamic.clone()) + witness_size(&repetitive_witness) > 231);
+    assert_eq!(dynamic_peak, 20);
 
     check_readme_metrics(vec![
         Metric {
@@ -14672,6 +14696,46 @@ fn u4_run_length_metrics_are_current() {
             readme: "src/arithmetic/u4/README.md",
             key: "u4_run_length_width16_runs8_opcodes",
             value: static_non_push_opcodes(short),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2",
+            value: script_len(dynamic.clone()),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_witness",
+            value: witness_size(&repetitive_witness),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_stack",
+            value: dynamic_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_opcodes",
+            value: static_non_push_opcodes(dynamic),
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_executed",
+            value: dynamic_executed,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_direct_stack",
+            value: direct_peak,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_direct_executed",
+            value: direct_executed,
+        },
+        Metric {
+            readme: "src/arithmetic/u4/README.md",
+            key: "u4_run_length_dynamic_width16_runs2_direct_opcodes",
+            value: static_non_push_opcodes(direct),
         },
     ]);
 }

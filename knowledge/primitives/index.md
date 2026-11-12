@@ -59,6 +59,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Joint u32 residues modulo 7 and 9](u32-dual-residue.md)
 - [Sliding modulo-three sums over u4 inputs](u4-sliding-mod3.md)
 - [Checked u4 run-length expansion](u4-run-length.md)
+- [Dynamic-count u4 run-length dispatch](u4-run-length.md#dynamic-count-result)
 - [Checked u4 parity projection](u4-parity.md)
 - [Checked fixed-symbol u4 occurrence count](u4-count.md)
 - [Checked u4 presence-bit projection](u4-presence.md)

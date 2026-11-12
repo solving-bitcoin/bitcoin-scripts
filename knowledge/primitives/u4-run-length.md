@@ -80,6 +80,56 @@ A length greater than 1 used directly as `OP_IF` fails with
 `TapscriptMinimalIf`. The countdown uses `OP_GREATERTHAN` so the condition is
 a minimal 0 or 1.
 
+## Dynamic-count result
+
+`u4_expand_canonical_runs_dynamic(width, preserved_items)` accepts one through
+`width` canonical pairs with no separate count item. `OP_DEPTH` compares the
+exact caller-owned main-stack depth plus each even pair count; unmatched empty,
+odd-sized, and overfull lists reach a rejecting tail. The selected branch is
+the same checked fixed-count expander. The comparison question was whether this
+adds run-count flexibility without losing the in-place byte frontier. The
+hypothesis that nesting all fixed schedulers would dominate was confirmed.
+
+The width-16 experiment accepts every run count from 1 through 16. Tests mutate
+symbols and lengths at every pair position of a three-run witness, exercise
+zero, negative, overlong, overflow, aliased, adjacent-equal and sum-mismatch
+inputs, and cover missing, extra, odd-sized and overfull lists. Re-encoding is
+also checked with `require_minimal=false`, so acceptance does not rely on
+MINIMALDATA. One preserved main-stack item and one altstack item survive a
+complete numeric-equality leaf. There are **zero hint items**; the measured
+two-run witness has four data items, all present at entry.
+
+| Metric | Dynamic, `(0,8),(15,8)` selected | In-place canonical nibbles |
+| --- | ---: | ---: |
+| Fragment script bytes | 11,675 | 206 |
+| Serialized data-witness bytes | 8 | 25 |
+| Fragment + data-witness bytes | 11,683 | 231 |
+| Data items / hint items | 4 / 0 | 16 / 0 |
+| Static non-push opcodes | 9,249 | 144 |
+| Combined stack peak | 20 | 20 |
+| Executed non-push opcodes, complete drop-output leaf | 1,861 | 152 |
+
+The fragment boundary includes canonical checks, exact-width sum, adjacent
+inequality, selection, countdown emission, and output restoration. It excludes
+input pushes, output cleanup, terminal predicates, unrelated state and
+transaction context on both sides. Witness bytes include payload CompactSize
+prefixes, not a complete Taproot witness. Executed counts use a separate
+matching leaf with 16 output drops and `OP_TRUE`; a stepping helper counts
+dispatched non-push instructions, including branch delimiters but excluding
+pushes and unexecuted bodies. The interpreter's parsed-instruction counter is
+not used. The dynamic fragment SHA256 is
+`35a8f35f60326e78fc754a6b68c7bda669009b201135cbcdb49300e6beb1424d`.
+
+This resolves OP-040 with the required measured negative result, recorded in
+[NR-111](../negative-results/index.md#nr-111-depth-dispatched-variable-run-count-decoding-is-byte-dominated).
+[OP-066](../open-problems.md#op-066--shared-validator-variable-run-length-expansion)
+tracks a shared-validator design instead of statically nesting every
+fixed-count expander. Evidence is `locally-reproduced`; execution remains
+`unclassified`, with the same strict local tapscript limits and dependency pins
+as above. No Bitcoin Core transaction or relay-policy validation is claimed.
+The dynamic depth-selection schedule and its measured costs are local results;
+no external construction or cryptographic property is imported.
+
 The 271 and 709 static non-push counts exceed the 201-opcode limit for bare,
 P2SH, and P2WSH script. These rows are tapscript-oriented fragments, not
 complete leaves.

@@ -67,6 +67,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | 32 checked nibbles to modulo-three residues | `u4_nibbles_to_mod3(32)` | 440 | 50-item peak; one residue per input |
 | 16 nibbles from two canonical runs | `u4_expand_canonical_runs(16, 2)` | 321 | 20-item peak; 4 payload items; 8 witness bytes; 0 hints; in-place canonical check is 206 bytes and 25 witness bytes |
 | 16 nibbles from eight length-2 runs | `u4_expand_canonical_runs(16, 8)` | 867 | 21-item peak on that witness; 16 payload items; 29 witness bytes; 0 hints; same item count as the raw vector |
+| 16 nibbles with run count selected at runtime | `u4_expand_canonical_runs_dynamic(16, 0)` | 11,675 | Two-run witness: 20-item peak; 4 data items; 8 witness bytes; 0 hints; accepts all counts 1–16 but dominated by 231-byte in-place total |
 | 32 checked nibbles to parity bits | `u4_nibbles_to_parity(32)` | 440 | 50-item peak; one output bit per input; numeric range only; accepts non-minimal aliases without MINIMALDATA |
 | 32 canonical checked nibbles to parity bits | `u4_nibbles_to_parity_canonical(32)` | 504 | 51-item peak; 65-byte witness; rejects raw aliases; standalone maximum 981 inputs |
 | 12 checked Lehmer digits to one permutation rank | `u4_lehmer_to_value(12)` | 185 | 22-item peak; 24-byte witness; 12 data items; one value output; numeric range only; accepts non-minimal aliases without MINIMALDATA |

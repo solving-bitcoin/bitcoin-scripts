@@ -15,6 +15,11 @@
 //! There are no hint items. All `2 * run_count` payload items coexist at
 //! script entry. Callers add preserved main-stack and altstack items to
 //! [`u4_run_length_stack_peak`] when checking the 1,000-item limit.
+//!
+//! The dynamic-count variant uses the same pair layout with `1..=width` pairs.
+//! It takes the exact preserved main-stack depth as a compile-time parameter,
+//! derives the pair count with `OP_DEPTH`, and dispatches to the same checks.
+//! No separate run-count witness item or hint is introduced.
 
 use crate::support::script::*;
 
@@ -185,12 +190,43 @@ pub fn u4_expand_canonical_runs(width: u32, run_count: u32) -> Script {
     expand_runs(width, run_count, RunPolicy::all())
 }
 
+fn expand_dynamic_runs(width: u32, preserved_items: u32, run_count: u32) -> Script {
+    if run_count > width {
+        return script! { OP_FALSE OP_VERIFY };
+    }
+    script! {
+        OP_DEPTH
+        { preserved_items + 2 * run_count }
+        OP_EQUAL
+        OP_IF
+            { expand_runs(width, run_count, RunPolicy::all()) }
+        OP_ELSE
+            { expand_dynamic_runs(width, preserved_items, run_count + 1) }
+        OP_ENDIF
+    }
+}
+
+/// Expand one of the canonical run-length shapes whose count is chosen at runtime.
+///
+/// `preserved_items` is the exact number of caller-owned items below the run
+/// pairs on the main stack. The witness supplies `1..=width` pairs without a
+/// separate count item. `OP_DEPTH` selects exactly one checked fixed-count
+/// expander; empty, odd-sized, and overfull pair lists reach a rejecting tail.
+/// There are no hint items, and all payload items coexist at script entry.
+/// Preserved main- and altstack items add to the selected shape's stack bound.
+pub fn u4_expand_canonical_runs_dynamic(width: u32, preserved_items: u32) -> Script {
+    assert!(width > 0, "run-length witness must contain a run");
+    assert_shape(width, width);
+    expand_dynamic_runs(width, preserved_items, 1)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::support::{
         execution::{
-            execute_script_buf_with_options, execute_script_with_inputs_strict, ExecuteInfo,
+            execute_raw_script_with_inputs_strict, execute_script_buf_with_options,
+            execute_script_with_inputs_strict, ExecuteInfo,
         },
         script::ScriptCompilation,
     };
@@ -481,6 +517,161 @@ mod tests {
     }
 
     #[test]
+    fn dynamic_count_accepts_every_shape_and_preserves_caller_state() {
+        let fragment = u4_expand_canonical_runs_dynamic(16, 0);
+        for run_count in 1..=16u32 {
+            let runs = worst(16, run_count);
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { fragment.clone() }
+                    { compare(&expanded(&runs)) }
+                },
+                witness(&runs),
+            );
+            assert_clean_success(&result);
+            assert!(
+                result.stats.max_nb_stack_items <= u4_run_length_stack_peak(16, run_count) as usize,
+                "run count {run_count}: {result}"
+            );
+        }
+
+        let runs = [(0, 1), (15, 6), (1, 9)];
+        let mut items = vec![vec![7]];
+        items.extend(witness(&runs));
+        let preserved = execute_script_with_inputs_strict(
+            script! {
+                9 OP_TOALTSTACK
+                { u4_expand_canonical_runs_dynamic(16, 1) }
+                for nibble in expanded(&runs).iter().rev() {
+                    { *nibble } OP_NUMEQUALVERIFY
+                }
+                7 OP_NUMEQUALVERIFY
+                OP_FROMALTSTACK 9 OP_NUMEQUAL
+            },
+            items,
+        );
+        assert_clean_success(&preserved);
+        assert!(preserved.stats.max_nb_stack_items <= u4_run_length_stack_peak(16, 3) as usize + 2);
+    }
+
+    #[test]
+    fn dynamic_count_rejects_empty_odd_and_overfull_pair_lists() {
+        let runs = [(1, 1), (2, 1), (3, 2)];
+        let fragment = u4_expand_canonical_runs_dynamic(4, 0);
+        let valid = witness(&runs);
+        let mut odd = valid.clone();
+        odd.push(vec![4]);
+        let mut overfull = valid.clone();
+        overfull.extend(witness(&[(4, 1), (5, 1)]));
+        let too_few = valid[..4].to_vec();
+
+        for items in [vec![], vec![vec![1]], odd, overfull, too_few] {
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { fragment.clone() }
+                    OP_TRUE
+                },
+                items.clone(),
+            );
+            assert!(!result.success, "unexpectedly accepted {items:?}: {result}");
+        }
+    }
+
+    #[test]
+    fn dynamic_count_rejects_hostile_items_at_every_position() {
+        let runs = [(1, 1), (2, 1), (3, 2)];
+        let width = 4;
+        let fragment = u4_expand_canonical_runs_dynamic(width, 0);
+        let base = witness(&runs);
+        let replacements = [
+            (0, vec![0x10], ExecError::Verify),
+            (0, vec![0x81], ExecError::Verify),
+            (0, vec![0x80], ExecError::MinimalData),
+            (0, vec![1, 0, 0, 0, 0], ExecError::ScriptIntNumericOverflow),
+            (1, vec![], ExecError::Verify),
+            (1, vec![4], ExecError::Verify),
+            (1, vec![0x81], ExecError::Verify),
+            (1, vec![0x80], ExecError::MinimalData),
+            (1, vec![0x01, 0x00], ExecError::MinimalData),
+            (1, vec![1, 0, 0, 0, 0], ExecError::ScriptIntNumericOverflow),
+        ];
+        for position in [0, 2, 4] {
+            for (offset, value, error) in &replacements {
+                let mut items = base.clone();
+                let index = position + *offset;
+                items[index] = value.clone();
+                let result = execute_script_with_inputs_strict(
+                    script! {
+                        { fragment.clone() }
+                        OP_TRUE
+                    },
+                    items,
+                );
+                assert_eq!(
+                    result.error,
+                    Some(error.clone()),
+                    "position {index}: {result}"
+                );
+            }
+        }
+
+        for (index, length) in [(1, 2), (3, 2), (5, 1)] {
+            let mut items = base.clone();
+            items[index] = scriptnum(length);
+            let result = execute_script_with_inputs_strict(
+                script! {
+                    { fragment.clone() }
+                    OP_TRUE
+                },
+                items,
+            );
+            assert_eq!(
+                result.error,
+                Some(ExecError::NumEqualVerify),
+                "sum mismatch at length index {index}: {result}"
+            );
+        }
+
+        let mut adjacent = base.clone();
+        adjacent[2] = adjacent[0].clone();
+        let result = execute_script_with_inputs_strict(
+            script! {
+                { fragment.clone() }
+                OP_TRUE
+            },
+            adjacent,
+        );
+        assert_eq!(result.error, Some(ExecError::Verify));
+    }
+
+    #[test]
+    fn dynamic_count_reencodes_without_minimaldata() {
+        let runs = [(1, 1), (2, 1), (3, 2)];
+        let base = witness(&runs);
+        let compiled = script! {
+            { u4_expand_canonical_runs_dynamic(4, 0) }
+            { compare(&expanded(&runs)) }
+        }
+        .compile_with_policy();
+        let minimal = execute_raw_script_with_inputs_strict(compiled.to_bytes(), base.clone());
+        assert_clean_success(&minimal);
+
+        let mut options = Options::default();
+        options.require_minimal = false;
+        for index in 0..base.len() {
+            let mut items = base.clone();
+            items[index].push(0);
+            let result = execute_script_buf_with_options(compiled.clone(), items, options.clone())
+                .expect("execution context");
+            assert_eq!(
+                result.error,
+                Some(ExecError::EqualVerify),
+                "position {index}"
+            );
+        }
+    }
+
+    #[test]
     fn stack_peak_matches_the_checked_formula() {
         for (width, runs) in [(1, 1), (8, 1), (9, 1), (8, 2), (16, 2), (16, 4), (5, 5)] {
             let pairs = worst(width, runs);
@@ -566,6 +757,8 @@ mod tests {
         assert!(std::panic::catch_unwind(|| u4_expand_canonical_runs(4, 0)).is_err());
         assert!(std::panic::catch_unwind(|| u4_expand_canonical_runs(3, 4)).is_err());
         assert!(std::panic::catch_unwind(|| u4_expand_canonical_runs(1_000, 1)).is_err());
+        assert!(std::panic::catch_unwind(|| u4_expand_canonical_runs_dynamic(0, 0)).is_err());
+        assert!(std::panic::catch_unwind(|| u4_expand_canonical_runs_dynamic(498, 0)).is_err());
     }
 
     fn worst(width: u32, runs: u32) -> Vec<(i64, i64)> {
