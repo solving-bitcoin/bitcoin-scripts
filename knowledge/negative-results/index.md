@@ -30,6 +30,41 @@ whether repeated or reordered indices are legal before claiming subset
 authentication. See [OP-009](../open-problems.md#op-009--one-time-authentication-security-profiles)
 and [OP-011](../open-problems.md#op-011--reproduce-binohash).
 
+## NR-111: Depth-dispatched variable run count decoding is byte-dominated
+
+`u4_expand_canonical_runs_dynamic(16,0)` uses `OP_DEPTH` to select one of the
+existing checked expanders for every run count 1 through 16. It rejects empty,
+odd-sized, and overfull pair lists, then enforces canonical symbols and lengths,
+positive bounded run lengths, adjacent inequality, and exact width. There is no
+count item and no hint item; all four data items in the two-run fixture coexist
+at entry. The result is a valid dynamic-count fragment, not a byte improvement.
+
+| Width-16 boundary | Dynamic, two runs selected | In-place canonical check |
+| --- | ---: | ---: |
+| Data items / hint items | 4 / 0 | 16 / 0 |
+| Serialized data-witness bytes | 8 | 25 |
+| Fragment script bytes | 11,675 | 206 |
+| Fragment + data-witness bytes | 11,683 | 231 |
+| Static non-push opcodes | 9,249 | 144 |
+| Combined stack peak | 20 | 20 |
+| Dispatched non-push opcodes, drop outputs then `OP_TRUE` | 1,861 | 152 |
+
+Fragment bytes and static counts exclude input pushes, output cleanup,
+terminal predicates, unrelated state, and transaction context. Dynamic
+`OP_DEPTH` dispatch duplicates the checked fixed-count bodies statically even
+though only one executes. The runtime count comes from an independent stepping
+helper, includes branch delimiters, and excludes pushes and unexecuted bodies;
+it is not the interpreter's parsed-instruction counter. Both complete leaves
+are policy-compiled and executed with the combined stack limit.
+
+The dynamic fragment SHA256 is
+`35a8f35f60326e78fc754a6b68c7bda669009b201135cbcdb49300e6beb1424d`.
+Every-count correctness, per-position malformed inputs, raw aliases under
+non-minimal execution, item-count malleability, and preserved main/alt state
+are tested. Evidence is `locally-reproduced`; execution is `unclassified`.
+No Core differential or relay-policy claim follows. [OP-040](../open-problems.md#op-040--byte-competitive-variable-run-length-decoder)
+is resolved by this negative result; OP-066 tracks a non-replicated layout.
+
 ## Eager mismatch state exceeds the 500-pair frontier
 
 The [unique-mismatch boundary](opaque-unique-mismatch.md) shows that
@@ -2230,8 +2265,10 @@ cost entry.
 
 The shape-wide stack bound `max(2*run_count+5, width+run_count+2)` is pinned
 separately from these witness-specific peaks. For eight runs of width 16 the
-bound is 26, above the length-2 fixture's 21. No variable run count and no
-byte-winning layout is claimed. See [OP-040](../open-problems.md#op-040--byte-competitive-variable-run-length-decoder).
+bound is 26, above the length-2 fixture's 21. Dynamic-count selection is now
+implemented, but [NR-111](#nr-111-depth-dispatched-variable-run-count-decoding-is-byte-dominated)
+shows that it loses much more heavily on the same two-run boundary. OP-040 is
+resolved by that negative result; OP-066 tracks a cheaper shared validator.
 
 ## NR-088: Hint-free bounded division loses combined bytes
 

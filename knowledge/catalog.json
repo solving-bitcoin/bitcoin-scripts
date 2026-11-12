@@ -21915,7 +21915,91 @@
         "OP-001",
         "OP-002",
         "OP-003",
-        "OP-040"
+        "OP-066"
+      ]
+    },
+    {
+      "id": "arithmetic/u4-run-length-dynamic",
+      "name": "Dynamic-count checked u4 run-length expansion",
+      "class": "arithmetic/word",
+      "summary": "Selects every canonical run count from one through the width with OP_DEPTH and applies the checked fixed-count run-length expander, rejecting malformed pair counts and witnesses.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-12",
+      "knowledge_page": "knowledge/primitives/u4-run-length.md",
+      "implementation": "src/arithmetic/u4/run_length.rs",
+      "documentation": "src/arithmetic/u4/README.md",
+      "tests": [
+        "src/arithmetic/u4/run_length.rs",
+        "tests/primitive_metrics.rs"
+      ],
+      "references": [
+        "bip-342",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "tracked-stack"
+      ],
+      "security": "OP_DEPTH selects only a pair count from the exact declared preserved main-stack depth. The selected branch performs the same canonical encoding, range, positive-length, adjacent-inequality and exact-width checks as the fixed decoder. Empty, odd-sized and overfull pair lists reject. No terminal predicate, cryptographic security, or complete-spend validity is asserted; zero hint items.",
+      "stack_contract": "Consumes exactly preserved_items caller-owned main-stack items followed by 2*r canonical (symbol,length) pairs, with runtime r in 1..=width, and returns the preserved items followed by width nibbles. Pre-existing altstack items are preserved. All pair data coexists at entry; there is no separate count item and no hint item or resident table.",
+      "configurations": [
+        {
+          "id": "width16-runs2-dynamic",
+          "label": "u4_expand_canonical_runs_dynamic(16,0) on (0,8),(15,8)",
+          "parameters": {
+            "width": 16,
+            "accepted_run_counts": "1..=16",
+            "selected_run_count": 2,
+            "preserved_items": 0,
+            "runs": "(0, 8), (15, 8)",
+            "data_items": 4,
+            "hint_items": 0,
+            "hints_coexist_at_entry": true,
+            "input_check": true,
+            "dynamic_count_dispatch": "OP_DEPTH over every even pair count 2..=32 followed by a rejecting tail",
+            "script_sha256": "35a8f35f60326e78fc754a6b68c7bda669009b201135cbcdb49300e6beb1424d",
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "stack_limit_enforced": true,
+            "require_minimal": true,
+            "verify_minimal_if": true,
+            "executed_non_push_scope": "separate policy-compiled complete leaf with 16 output drops and OP_TRUE; counts dispatched non-push instructions and branch delimiters, excludes pushes and unexecuted bodies; this measurement sets require_minimal=false on the same canonical witness",
+            "baseline_comparison": "in-place canonical width-16 check costs 206 fragment bytes plus 25 data-witness bytes, with 16 data items, zero hints, a measured 20-item combined peak and 144 static non-push opcodes; its matching complete leaf dispatches 152 non-push opcodes"
+          },
+          "includes": "fragment-only: run-count selection, canonical pair checks, exact-width sum, adjacent inequality, countdown emission and output restoration for one through 16 runs, measured with two runs selected; excludes input pushes, output cleanup, terminal predicate, unrelated live state and transaction context; serialized witness bytes cover payload only",
+          "script_bytes": 11675,
+          "witness_bytes": 8,
+          "witness_bytes_max": 8,
+          "max_stack_items": 20,
+          "executed_opcodes": 1861,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 11675,
+          "metric_keys": [
+            "u4_run_length_dynamic_width16_runs2",
+            "u4_run_length_dynamic_width16_runs2_witness",
+            "u4_run_length_dynamic_width16_runs2_stack",
+            "u4_run_length_dynamic_width16_runs2_opcodes",
+            "u4_run_length_dynamic_width16_runs2_executed"
+          ],
+          "static_non_push_opcodes": 9249
+        }
+      ],
+      "limitations": [
+        "The complete dynamic fragment nests every fixed-count expander; script size grows with all accepted run counts even though only one branch executes",
+        "Measured two-run fragment plus data-witness bytes are 11683 versus 231 for in-place canonical checking; this is a documented negative result, not a byte claim",
+        "Static non-push count exceeds the 201-opcode bare, P2SH and P2WSH limit",
+        "The exact preserved main-stack depth is a caller-supplied generation parameter; unknown-depth state is not supported by OP_DEPTH dispatch",
+        "No Bitcoin Core consensus or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003",
+        "OP-066"
       ]
     },
     {

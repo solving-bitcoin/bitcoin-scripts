@@ -661,17 +661,14 @@ including validation and table setup/cleanup at the same boundary.
 
 ## OP-040 — Byte-competitive variable run-length decoder
 
-`u4_expand_canonical_runs` fixes the run count in the locking script. On the
-measured width-16 shapes it costs more script-plus-witness bytes than checking
-the expanded nibbles in place. [NR-083](negative-results/index.md#nr-083-fixed-count-u4-run-length-expansion-loses-combined-bytes)
-records those boundaries.
-
-**Complete when:** one fragment accepts every canonical run count from 1
-through a stated width, rejects zero-length, overlong, adjacent-equal,
-non-canonical, and sum-mismatch witnesses at every pair, and either undercuts
-the in-place canonical-nibble script-plus-witness total on a stated repetitive
-witness or records a new measured negative result at that same boundary. A
-single compile-time run count does not close this.
+**Resolved with a scoped negative result (2026-11-12).**
+`u4_expand_canonical_runs_dynamic(16, preserved_items)` accepts every canonical
+run count from 1 through 16 and applies the existing per-pair checks. Empty,
+odd-sized, and overfull pair lists reject in the dispatch tail. On `(0,8),
+(15,8)` it costs 11,675 fragment bytes + 8 serialized data-witness bytes,
+versus 206 + 25 for the in-place check, so it does not undercut the baseline.
+The requested measured negative result is [NR-111](negative-results/index.md#nr-111-depth-dispatched-variable-run-count-decoding-is-byte-dominated).
+The remaining shared-validator question is OP-066.
 
 ## OP-026 — Total-domain compressed-u32 shift pair
 
@@ -1519,3 +1516,16 @@ comparison built on the same lanes) is measured on the same boundary, and a cons
 such as a sortedness or entropy-style certificate uses the histogram with its live
 state, recording witness bytes and items, hint counts under repeated use, executed
 opcodes and combined peaks. Core validation is required for any deployment claim.
+
+## OP-066 — Shared-validator variable run-length expansion
+
+The depth-dispatched width-16 decoder accepts every run count but statically
+embeds all fixed-count expanders, costing 11,675 fragment bytes on its two-run
+fixture (NR-111). **Accept when:** a shared validation/expansion schedule accepts
+all counts 1 through 16, rejects the same malformed, non-canonical, zero-length,
+overlong, adjacent-equal, sum-mismatch, empty, odd-sized and overfull witnesses,
+reduces that matched fragment-byte cost, and records data/hint item counts,
+witness bytes, strict combined peak, static and dispatched non-push opcodes.
+Compare against the 231-byte in-place fragment-plus-data-witness total on
+`(0,8),(15,8)` without assuming that any byte improvement must exist. Core
+validation is required for any deployment claim.

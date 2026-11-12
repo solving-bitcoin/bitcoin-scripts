@@ -149,6 +149,11 @@ these operations, but this module contains no hash-specific round logic.
   length is in `1..=width-run_count+1`, the lengths sum to `width`, and
   adjacent symbols differ. The fragment has no hints. Its no-preserved
   combined stack peak is `max(2*run_count+5, width+run_count+2)`.
+- `run_length::u4_expand_canonical_runs_dynamic(width, preserved_items)` uses
+  `OP_DEPTH` to accept every canonical run count in `1..=width` without a
+  count witness item. It rejects empty, odd-sized and overfull pair lists,
+  then executes the same checked expander as the fixed-count API. The exact
+  caller-owned main-stack depth must be supplied; all pairs coexist at entry.
 - `bit_planes::u4_nibbles_to_bit_planes(nibble_count, check_inputs)` reuses
   checked nibble decomposition and transposes batches up to 234 nibbles.
 - `bit_planes::u4_nibbles_to_bit_planes_canonical(nibble_count)` additionally
@@ -289,6 +294,7 @@ words as data, with no hint items.
 | Embedded trichotomy, 16 nibbles | <!-- metric:u4_trichotomy_16 -->398<!-- /metric:u4_trichotomy_16 --> bytes | <!-- metric:u4_trichotomy_16_stack -->18<!-- /metric:u4_trichotomy_16_stack --> items | <!-- metric:u4_trichotomy_16_opcodes -->286<!-- /metric:u4_trichotomy_16_opcodes --> |
 | Checked run-length expansion, width 16, 2 runs | <!-- metric:u4_run_length_width16_runs2 -->321<!-- /metric:u4_run_length_width16_runs2 --> bytes | <!-- metric:u4_run_length_width16_runs2_stack -->20<!-- /metric:u4_run_length_width16_runs2_stack --> items | <!-- metric:u4_run_length_width16_runs2_opcodes -->271<!-- /metric:u4_run_length_width16_runs2_opcodes --> |
 | Checked run-length expansion, width 16, 8 runs | <!-- metric:u4_run_length_width16_runs8 -->867<!-- /metric:u4_run_length_width16_runs8 --> bytes | <!-- metric:u4_run_length_width16_runs8_stack -->21<!-- /metric:u4_run_length_width16_runs8_stack --> items | <!-- metric:u4_run_length_width16_runs8_opcodes -->709<!-- /metric:u4_run_length_width16_runs8_opcodes --> |
+| Dynamic-count run expansion, width 16, 2 runs selected | <!-- metric:u4_run_length_dynamic_width16_runs2 -->11675<!-- /metric:u4_run_length_dynamic_width16_runs2 --> bytes | <!-- metric:u4_run_length_dynamic_width16_runs2_stack -->20<!-- /metric:u4_run_length_dynamic_width16_runs2_stack --> items | <!-- metric:u4_run_length_dynamic_width16_runs2_opcodes -->9249<!-- /metric:u4_run_length_dynamic_width16_runs2_opcodes --> |
 | Multiset equality, 16 + 16 nibbles | <!-- metric:u4_multiset_equal_16 -->1158<!-- /metric:u4_multiset_equal_16 --> bytes | <!-- metric:u4_multiset_equal_16_stack -->53<!-- /metric:u4_multiset_equal_16_stack --> items | <!-- metric:u4_multiset_equal_16_opcodes -->723<!-- /metric:u4_multiset_equal_16_opcodes --> |
 | Inversion count, 16 nibbles | <!-- metric:u4_inversions_16 -->822<!-- /metric:u4_inversions_16 --> bytes | <!-- metric:u4_inversions_16_stack -->19<!-- /metric:u4_inversions_16_stack --> items | <!-- metric:u4_inversions_16_opcodes -->537<!-- /metric:u4_inversions_16_opcodes --> |
 | ASCII hex decode, 64 chars, fold | <!-- metric:u4_ascii_hex_fold_64 -->1470<!-- /metric:u4_ascii_hex_fold_64 --> bytes | <!-- metric:u4_ascii_hex_fold_64_stack -->67<!-- /metric:u4_ascii_hex_fold_64_stack --> items | <!-- metric:u4_ascii_hex_fold_64_opcodes -->830<!-- /metric:u4_ascii_hex_fold_64_opcodes --> |
@@ -441,6 +447,8 @@ The embedded-trichotomy fixture uses <!-- metric:u4_trichotomy_16_witness -->33<
 <!-- metric:u4_run_length_width16_runs2_witness -->8<!-- /metric:u4_run_length_width16_runs2_witness --> serialized witness bytes for the width-16 two-run expansion. The witness is four payload items and zero hints.
 
 <!-- metric:u4_run_length_width16_runs8_witness -->29<!-- /metric:u4_run_length_width16_runs8_witness --> serialized witness bytes for the width-16 eight-run expansion. The witness is 16 payload items and zero hints. That length-2 fixture peaks at 21 combined items; a valid length pattern for the same shape can reach the generator bound of 26.
+
+The dynamic-count width-16 two-run fixture uses <!-- metric:u4_run_length_dynamic_width16_runs2_witness -->8<!-- /metric:u4_run_length_dynamic_width16_runs2_witness --> serialized data-witness bytes for four items, all present at entry and zero hints. Its drop-output/`OP_TRUE` leaf dispatches <!-- metric:u4_run_length_dynamic_width16_runs2_executed -->1861<!-- /metric:u4_run_length_dynamic_width16_runs2_executed --> non-push opcodes; the same in-place canonical-check leaf uses <!-- metric:u4_run_length_dynamic_width16_runs2_direct_executed -->152<!-- /metric:u4_run_length_dynamic_width16_runs2_direct_executed --> and peaks at <!-- metric:u4_run_length_dynamic_width16_runs2_direct_stack -->20<!-- /metric:u4_run_length_dynamic_width16_runs2_direct_stack --> combined items. The standalone direct fragment has <!-- metric:u4_run_length_dynamic_width16_runs2_direct_opcodes -->144<!-- /metric:u4_run_length_dynamic_width16_runs2_direct_opcodes --> static non-push opcodes. These runtime counts include inactive branch delimiters but exclude pushes and unexecuted branch bodies.
 
 <!-- metric:u4_lsb_batch32_witness -->65<!-- /metric:u4_lsb_batch32_witness --> serialized witness bytes for the representative LSB batch.
 A separately scoped Core v30.3 run accepts a complete 16-nibble
@@ -800,9 +808,12 @@ or a byte encoding.
 
 Run-length expansion range-checks every symbol and length, requires canonical
 ScriptNum encoding, rejects a zero or overlong length, rejects adjacent equal
-symbols, and requires the lengths to sum to the width. It does not provide a
-terminal predicate. The two measured width-16 scripts have 271 and 709 static
-non-push opcodes, above the 201-opcode limit for bare, P2SH, and P2WSH script.
+symbols, and requires the lengths to sum to the width. The dynamic-count entry
+point additionally requires an exact preserved main-stack depth and rejects
+empty, odd-sized, and overfull pair lists before applying those same checks.
+Neither form provides a terminal predicate. The two fixed width-16 scripts have
+271 and 709 static non-push opcodes; the dynamic width-16 script has 9,249.
+All exceed the 201-opcode limit for bare, P2SH, and P2WSH script.
 
 ## Script compatibility and standardness
 
@@ -824,7 +835,9 @@ Bitcoin Core validation.
 Most operations require no hints. Exact sorting requires n-1 public selection hints; its section below documents item counts, ordering and coexistence. A run-length witness is payload, not a
 hint: `u4_expand_canonical_runs(width, run_count)` consumes exactly
 `2 * run_count` items, all present at script entry. The width-16 two-run
-fixture has four payload items and zero hints. Operand nibbles may come from the witness;
+fixture has four payload items and zero hints. The dynamic-count decoder also
+consumes `2 * run_count` payload items with zero hints; it derives the count
+from `OP_DEPTH` instead of adding a count item. Operand nibbles may come from the witness;
 their order is operation-specific. The bit-plane adapter adds zero data or
 incremental hint items beyond the source nibbles. Tables are generated by the
 locking script. The bit-reversal batch consumes one data
@@ -840,6 +853,12 @@ with the last nibble on top. With no preserved state, the combined peak is
 `max(2*run_count+5, width+run_count+2)`. Preserved main-stack and altstack
 items add to that peak. The fragment returns any pre-existing altstack items
 beneath the expanded nibbles.
+
+For `u4_expand_canonical_runs_dynamic(width, preserved_items)`, the pair layout
+is the same but `run_count` is selected at runtime from `OP_DEPTH`. There is no
+count witness item. The selected branch's bound is the fixed formula for its
+run count; add every preserved main- and altstack item. The caller must supply
+the exact preserved main-stack item count when generating the fragment.
 
 For `u4_nibbles_to_be_bits(n, ...)`, input is
 `preserved | nibble[0] | ... | nibble[n-1]`, with `nibble[n-1]` on top. The
