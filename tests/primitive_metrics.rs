@@ -17278,3 +17278,118 @@ fn checked_fragment_metrics(
         .count();
     (compiled.len(), result.stats.max_nb_stack_items, opcodes)
 }
+
+mod zeckendorf_research {
+    use super::scriptnum;
+    use bitcoin_lab::support::script::*;
+
+    pub fn bits(mask: u32, width: u32) -> Vec<Vec<u8>> {
+        (0..width)
+            .map(|position| scriptnum(i64::from((mask >> position) & 1)))
+            .collect()
+    }
+
+    /// Matched ordinary power-of-two weights with identical canonical-bit checks.
+    pub fn decode_binary(width: u32) -> Script {
+        script! {
+            0
+            for position in (0..width).rev() {
+                OP_SWAP
+                OP_DUP 0 2 OP_WITHIN OP_VERIFY
+                OP_DUP OP_DUP 0 OP_ADD OP_EQUALVERIFY
+                OP_IF { 1i64 << position } OP_ADD OP_ENDIF
+            }
+        }
+    }
+}
+
+/// Compare complete leaves for the integer 100 over twelve ordinary bit items.
+#[test]
+fn zeckendorf_decoder_metrics_are_current() {
+    use bitcoin_lab::{
+        arithmetic::zeckendorf::decode_zeckendorf,
+        support::{
+            provenance,
+            tapscript::{execute_tapscript, TapscriptProfile},
+        },
+    };
+
+    assert_eq!(
+        provenance::compiler().unwrap().commit,
+        "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180"
+    );
+    assert_eq!(
+        provenance::interpreter().unwrap().commit,
+        "a09e87af444034698697f0a2267e755cf72f9aed"
+    );
+
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_witness_items"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_static"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_hints"),
+            ]
+        };
+    }
+
+    for (decoder, keys) in [
+        (decode_zeckendorf(12), keys!("zeckendorf_12")),
+        (
+            zeckendorf_research::decode_binary(12),
+            keys!("zeckendorf_binary_12"),
+        ),
+    ] {
+        // Zeckendorf: 89 + 8 + 3; binary: 64 + 32 + 4. Both have three ones.
+        let mask = if keys[0] == "zeckendorf_12_script" {
+            (1 << 2) | (1 << 4) | (1 << 9)
+        } else {
+            (1 << 2) | (1 << 5) | (1 << 6)
+        };
+        let witness = zeckendorf_research::bits(mask, 12);
+        assert_eq!(witness.len(), 12);
+        let leaf = script! { { decoder } 100 OP_EQUALVERIFY OP_TRUE }.compile_with_policy();
+        for profile in [TapscriptProfile::Consensus, TapscriptProfile::Policy] {
+            let result = execute_tapscript(leaf.clone(), witness.clone(), profile);
+            assert_eq!(result.accepted(), Some(true));
+            let execution = result.execution().unwrap();
+            assert!(execution.stack_limit_enforced);
+            assert_eq!(
+                execution.stats.start_validation_weight,
+                execution.stats.validation_weight
+            );
+            assert_eq!(execution.final_stack.len(), 1);
+            assert_eq!(execution.final_stack.get(0), vec![1]);
+        }
+        let (peak, executed) = measure_executed_non_push(leaf.clone(), witness.clone());
+        let static_ops = leaf
+            .instructions()
+            .filter(
+                |instruction| matches!(instruction, Ok(Instruction::Op(op)) if op.to_u8() > 0x60),
+            )
+            .count();
+        let values = [
+            leaf.len(),
+            witness_size(&witness),
+            witness.len(),
+            peak,
+            static_ops,
+            executed,
+            0,
+        ];
+        check_readme_metrics(
+            keys.into_iter()
+                .zip(values)
+                .map(|(key, value)| Metric {
+                    readme: "src/arithmetic/zeckendorf/README.md",
+                    key,
+                    value,
+                })
+                .collect(),
+        );
+    }
+}

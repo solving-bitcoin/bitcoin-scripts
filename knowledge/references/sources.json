@@ -540,6 +540,27 @@
       "kind": "paper",
       "url": "https://doi.org/10.46298/dmtcs.538",
       "revision": "DMTCS 13(1), 2011, pages 75–94. Introduction describes integer negative-radix digit alphabets."
+    },
+    {
+      "id": "fraenkel-systems-numeration-1985",
+      "title": "Aviezri S. Fraenkel: Systems of Numeration",
+      "kind": "paper",
+      "url": "https://www.jstor.org/stable/2322638",
+      "revision": "American Mathematical Monthly 92(2), 1985, pages 105–114; bibliographic context for canonical nonconsecutive representations; original JSTOR landing was not locally retrievable and no Script cost or implementation is imported"
+    },
+    {
+      "id": "mathworld-zeckendorf-representation",
+      "title": "MathWorld: Zeckendorf Representation and Zeckendorf's Theorem",
+      "kind": "reference",
+      "url": "https://mathworld.wolfram.com/ZeckendorfsTheorem.html",
+      "revision": "Evaluated 2026-11-13; subtractive Fibonacci forms with each adjacent epsilon product zero; related representation page also inspected; definitions only, no Script measurements"
+    },
+    {
+      "id": "oeis-a035517",
+      "title": "OEIS A035517: Zeckendorf expansion of integers",
+      "kind": "reference-implementation",
+      "url": "https://oeis.org/A035517",
+      "revision": "Approved sequence entry, consulted 2026-11-13; greedy Fibonacci expansion, independent 100 = 3 + 8 + 89 example and generator notation, not a Bitcoin Script oracle"
     }
   ]
 }

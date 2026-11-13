@@ -23,6 +23,7 @@ pub mod u31;
 pub mod u32;
 pub mod u4;
 pub mod wide_sum;
+pub mod zeckendorf;
 
 #[cfg(test)]
 mod test_helpers {
