@@ -193,3 +193,10 @@ The Luhn arithmetic definition is sourced to [US patent 2,950,048](https://paten
 The 32-item sorting baseline is pinned to [u4-sort at commit 55a61e5](https://github.com/solving-bitcoin/bitcoin-scripts/blob/55a61e5cecb4cc767dc4aa6788f76cd6fe01f3a6/knowledge/primitives/u4-sort.md), source ID `u4-sort-baseline-55a61e5`. Its output is a sorted vector, not a selected scalar.
 
 The [pinned-chain experiment](../primitives/pinned-hash-path-chain.md) uses the existing immutable compiler, interpreter and Core v30.3 source IDs. Its committed report records the verified release binary and distinguishes Core verdicts from the local transaction trace.
+
+The retained NAF witness uses `hankerson-guide-ecc-ch3-2004` for the standard
+signed non-adjacent representation, not as a source of Script code, deployment,
+or cost claims. The fixed-width nonnegative domain, pairwise absolute-sum
+spacing check, retained copy-depth schedule, adversarial fixtures and complete
+leaf metrics are local. Existing host-side NAF uses elsewhere in the repository
+do not validate this new witness boundary; see [the primitive](../primitives/scriptnum-naf.md).

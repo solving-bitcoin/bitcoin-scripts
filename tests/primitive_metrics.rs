@@ -14,7 +14,7 @@ use bitcoin::hashes::{
 use bitcoin::{script::Instruction, Witness};
 use bitcoin_lab::arithmetic::rns::prime::carry::bound;
 use bitcoin_lab::{
-    arithmetic::{bigint::U254, factoradic, rns, scriptint, signed_window, u31, u32, u4},
+    arithmetic::{bigint::U254, factoradic, naf, rns, scriptint, signed_window, u31, u32, u4},
     ciphers::{aes, prince},
     commitments::{
         four_way_hash_path_integer_commitment, four_way_hash_path_integer_witness,
@@ -50,6 +50,7 @@ use bitcoin_lab::{
     },
     support::{
         execution::{execute_script_with_inputs, execute_script_with_inputs_strict},
+        provenance,
         script::ScriptCompilation,
     },
 };
@@ -17202,6 +17203,114 @@ fn pinned_chain_metrics_are_current() {
         measured += 1;
     }
     assert_eq!(measured, 5);
+}
+
+#[test]
+fn scriptnum_naf_metrics_are_current() {
+    assert_eq!(
+        provenance::compiler().unwrap().commit,
+        "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180"
+    );
+    assert_eq!(
+        provenance::interpreter().unwrap().commit,
+        "a09e87af444034698697f0a2267e755cf72f9aed"
+    );
+    macro_rules! keys {
+        ($prefix:literal) => {
+            [
+                concat!($prefix, "_script"),
+                concat!($prefix, "_witness"),
+                concat!($prefix, "_hints"),
+                concat!($prefix, "_stack"),
+                concat!($prefix, "_opcodes"),
+                concat!($prefix, "_executed"),
+                concat!($prefix, "_plain_script"),
+                concat!($prefix, "_plain_stack"),
+                concat!($prefix, "_plain_opcodes"),
+                concat!($prefix, "_plain_executed"),
+            ]
+        };
+    }
+
+    let alternating: Vec<i64> = (0..16).map(|index| i64::from(index % 2 == 0)).collect();
+    let configurations: [(u32, i64, Vec<i64>, [&str; 10]); 2] = [
+        (
+            9,
+            175,
+            vec![-1, 0, 0, 0, -1, 0, -1, 0, 1],
+            keys!("scriptnum_naf_w9"),
+        ),
+        (16, 21_845, alternating, keys!("scriptnum_naf_w16")),
+    ];
+    let mut metrics = Vec::new();
+    for (width, scalar, digits, names) in configurations {
+        assert_eq!(digits.len(), width as usize);
+        assert!(digits.windows(2).all(|pair| pair[0] == 0 || pair[1] == 0));
+        let witness: Vec<Vec<u8>> = std::iter::once(scriptnum(scalar))
+            .chain(digits.iter().copied().map(scriptnum))
+            .collect();
+        let claim: i64 = digits
+            .iter()
+            .enumerate()
+            .map(|(index, digit)| digit * (1i64 << index))
+            .sum();
+        assert_eq!(claim, scalar);
+        let leaf = script! {
+            { naf::verify_scriptnum_naf(width) }
+            for expected in witness.iter().rev() {
+                { expected.clone() } OP_EQUALVERIFY
+            }
+            OP_TRUE
+        }
+        .compile_with_policy();
+        let (script_bytes, stack, static_opcodes) =
+            checked_fragment_metrics(leaf.clone(), witness.clone(), vec![vec![1]], true);
+        let (peak, executed) = measure_executed_non_push(leaf, witness.clone());
+        assert_eq!(peak, stack);
+
+        let plain_leaf = script! {
+            OP_DUP OP_0 OP_GREATERTHANOREQUAL OP_VERIFY
+            { scriptint::verify_canonical() }
+            { scriptnum(scalar) } OP_EQUALVERIFY
+            OP_TRUE
+        }
+        .compile_with_policy();
+        let plain_witness = vec![scriptnum(scalar)];
+        let plain_witness_bytes = witness_size(&plain_witness);
+        let (plain_script, plain_stack, plain_opcodes) = checked_fragment_metrics(
+            plain_leaf.clone(),
+            plain_witness.clone(),
+            vec![vec![1]],
+            true,
+        );
+        let (plain_peak, plain_executed) = measure_executed_non_push(plain_leaf, plain_witness);
+        assert_eq!(plain_peak, plain_stack);
+        assert_eq!(plain_witness_bytes, 4);
+        assert_eq!(
+            witness_size(&witness) - plain_witness_bytes,
+            digits.len() + digits.iter().filter(|&&digit| digit != 0).count()
+        );
+        let values = [
+            script_bytes,
+            witness_size(&witness),
+            digits.len(),
+            stack,
+            static_opcodes,
+            executed,
+            plain_script,
+            plain_stack,
+            plain_opcodes,
+            plain_executed,
+        ];
+        for (key, value) in names.into_iter().zip(values) {
+            metrics.push(Metric {
+                readme: "src/arithmetic/naf/README.md",
+                key,
+                value,
+            });
+        }
+    }
+    check_readme_metrics(metrics);
 }
 
 /// Count dispatched non-push instructions, including inactive branch delimiters.

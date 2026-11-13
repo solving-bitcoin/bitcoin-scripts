@@ -1519,3 +1519,22 @@ comparison built on the same lanes) is measured on the same boundary, and a cons
 such as a sortedness or entropy-style certificate uses the histogram with its live
 state, recording witness bytes and items, hint counts under repeated use, executed
 opcodes and combined peaks. Core validation is required for any deployment claim.
+
+## OP-067 — NAF consumer and representation frontier
+
+The retained [canonical NAF verifier](primitives/scriptnum-naf.md) proves the
+nonnegative scalar/digit relation and preserves the stream, but measures no
+actual consumer. At width 9 its complete leaf is 464 script-plus-data bytes
+versus 18 for the scalar-only predicate; width 16 is 819 versus 18 (NR-112).
+Whether that cost earns anything in a real schedule is unresolved.
+
+**Complete when:** a deterministic consumer uses the retained NAF digits and
+compares the resulting verified predicate with an ordinary scalar-only relation
+and at least one other signed representation. Measure script bytes, data/hint
+items and serialized bytes per invocation and for any batch, combined stack
+peak, static and executed non-push opcodes, and unrelated live state. Show that
+every malformed or equal-value non-NAF witness still rejects and document the
+exact routing/cleanup boundary. A toy arithmetic relation is acceptable as a
+first experiment; no scalar-multiplication, protocol, or economic win should be
+claimed without the corresponding evidence. Core differential validation is
+required for any deployment claim.

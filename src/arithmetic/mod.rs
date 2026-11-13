@@ -10,6 +10,7 @@ pub mod integer_root;
 pub mod interval_mask;
 pub mod knapsack;
 pub mod midpoint;
+pub mod naf;
 pub mod negabinary;
 pub mod permutation;
 pub mod progression;

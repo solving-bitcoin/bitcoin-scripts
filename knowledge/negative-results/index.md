@@ -3,6 +3,45 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-112: NAF openings cost more than the plain scalar predicate
+
+The retained [canonical NAF verifier](../primitives/scriptnum-naf.md) proves a
+nonnegative scalar and its signed, non-adjacent expansion without consuming
+that expansion. This is useful only when a downstream consumer needs the digit
+stream. On complete-leaf boundaries, it cannot compete with merely checking
+the same canonical nonnegative scalar:
+
+| Configuration | NAF script + data witness | Plain scalar script + data witness | NAF / plain peak | Incremental hints |
+| --- | ---: | ---: | ---: | ---: |
+| Width 9, scalar 175 | 447 + 17 = 464 | 14 + 4 = 18 | 14 / 4 | 9 items / 13 bytes |
+| Width 16, scalar 21845 | 791 + 28 = 819 | 14 + 4 = 18 | 21 / 4 | 16 items / 24 bytes |
+
+Both sides perform canonical nonnegative validation, exact retained-item
+checks, and terminal `OP_TRUE`. NAF has a different retained payload: one
+scalar plus digits versus one scalar. Compared totals exclude input pushes,
+script/control-block serialization, and transaction context; each remains a
+data-witness metric, not a complete Taproot-spend cost.
+
+Every NAF digit coexists at script entry. Static non-push counts are 347 and
+613; dispatched counts are 286 and 493 because not every digit branch executes.
+The plain controls dispatch eight each. Even width 9 exceeds the legacy/P2WSH
+201-opcode cap. This is a scoped cost result, not an argument that NAF is always
+dominated for scalar multiplication. That consumer comparison is OP-067.
+
+A prototype reused `offset + 1` after copying the first digit and `width`
+after allocating the accumulator. Both ignored the newly introduced stack item
+and rejected valid inputs. Zero-only vectors hid the first error; scalar 2
+exposed it. The corrected depth schedule uses `offset + 2` and `width + 1`,
+retained guards for those depths, all 81 four-digit ternary vectors, and every
+standard NAF vector for `0..=255`. Review also exposed a valid maximum-scalar
+NAF for `2147483647`: an intermediate doubled accumulator overflows before the
+final `-1` cancellation. Reconstruction now branches on the signed digit and
+forms `2*a-1` as `a+(a-1)`, with that exact maximum scalar as an acceptance
+regression. These were repaired prototype failures, not soundness evidence for
+the alternative representation. Evidence for the final costs and corrected
+implementation is `locally-reproduced`; execution is `unclassified`, with no
+independent complete-spend validation.
+
 ## NR-110: Clamped HORS openings do not bind raw Binohash indices
 
 The existing [HORS-like verifier](../primitives/hors-hash160.md) intentionally
