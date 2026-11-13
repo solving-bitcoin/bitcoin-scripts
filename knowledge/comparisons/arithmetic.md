@@ -12,6 +12,7 @@ the current byte-oriented and decode/re-encode configurations below.
 | --- | --- | ---: | --- |
 | Small constant product | ScriptNum × 13 | 10 | Four-byte ScriptNum domain |
 | Canonical ScriptNum boundary | `scriptint::verify_canonical()` | 5 | 4-item peak; rejects raw aliases and oversized items |
+| Canonical Zeckendorf decoder, width 12 | `zeckendorf::decode_zeckendorf(12)` | 300 | 12 canonical bit data items, zero hints; 16 witness bytes / 16-item peak; 210 static / 201 executed non-push operations; matched power-of-two row is 196 bytes plus identical witness, peak 16, 133 static / 124 executed non-push opcodes |
 | Exact signed min and max, 128 values | [Paired checked reduction](signed-min-max.md) | 1,927 | 131-item peak; 641-byte data witness; zero hints; complete output checks included |
 | Conditional u32 sign routing | `u32_conditional_negate()` | 83 | 9-item peak; condition normalized before branch |
 | Small-field add | M31 u31 add | 18 | Canonical field input |

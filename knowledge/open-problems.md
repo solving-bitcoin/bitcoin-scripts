@@ -1519,3 +1519,22 @@ comparison built on the same lanes) is measured on the same boundary, and a cons
 such as a sortedness or entropy-style certificate uses the histogram with its live
 state, recording witness bytes and items, hint counts under repeated use, executed
 opcodes and combined peaks. Core validation is required for any deployment claim.
+
+## OP-068 — Zeckendorf consumer and composition cost
+
+The [canonical Zeckendorf decoder](primitives/zeckendorf.md) proves a unique
+binary positional numeral and can expose its decoded value to another fragment,
+but no downstream consumer is measured. Its width-12 leaf uses 300 bytes plus 16
+data-witness bytes versus 196 plus 16 for matched ordinary binary (NR-113).
+
+**Complete when:** an actual consumer uses the exact decoded value and compares
+its full boundary with ordinary binary and an ordinary scalar-only relation.
+Record script bytes, exact data and auxiliary-hint item counts and serialized
+bytes for every measured invocation or batch, combined main/alt stack peak,
+static and executed non-push opcodes, and the depth/output-checking boundary.
+Include malformed, adjacent-set-bit and wrong-output witnesses, caller-owned
+state, the fixed terminal predicate, and the maximum-width cost or a precise
+reason it cannot compose. A bounded arithmetic consumer is sufficient for the
+first experiment; do not infer a protocol, compression or scalar-multiplication
+win from representation uniqueness alone. Core differential validation is
+required for any deployment claim.

@@ -3,6 +3,43 @@
 These records prevent repeated dead ends. They are scoped observations, not
 universal impossibility proofs.
 
+## NR-113: Canonical Zeckendorf validation costs more than matched power-of-two binary
+
+The [canonical Zeckendorf decoder](../primitives/zeckendorf.md) adds
+byte-canonical binary inputs, Fibonacci weights and a no-adjacent-set-bit rule
+to one exact scalar decoder. Its matched power-of-two control uses the same
+raw-canonicity checks, conditional weight additions and exact scalar comparison,
+with no adjacency requirement. Neither one is a generic rank decoder or an
+application-level commitment.
+
+| Width-12 complete leaf, value 100 | Zeckendorf | Power-of-two binary |
+| --- | ---: | ---: |
+| Script bytes | 300 | 196 |
+| Data witness bytes/items | 16 / 12 | 16 / 12 |
+| Auxiliary hint items / bytes | 0 / 0 | 0 / 0 |
+| Combined main-plus-alt peak | 16 | 16 |
+| Static non-push operations | 210 | 133 |
+| Executed non-push operations | 201 | 124 |
+| Script + data-witness bytes | 316 | 212 |
+
+The no-adjacency representation therefore costs 104 more leaf bytes on this
+fixture, with no saving on this particular witness and no peak reduction.
+Expected decoded value 100 is a locking-script constant, not a supplied scalar
+or an auxiliary hint. Static counts include all branch bodies; executed counts
+include branch delimiters but omit unexecuted `OP_ADD` bodies. The boundary is
+complete-leaf, with terminal output checks and cleaning, not complete-spend.
+Both are `CompileOptions::ALL` policy products under strict local tapscript
+execution. Evidence is `locally-reproduced`; execution is `unclassified`.
+
+Every one of the 4,096 width-12 masks is examined: 377 no-adjacent masks
+decode bijectively onto `0..=376`; the rest reject. A prototype used `offset+1`
+for the second `OP_PICK` after copying the first bit. This reselected that copy,
+rejecting valid sparse vectors but leaving zero-only cases apparently correct.
+The retained implementation uses `offset+2`, with adjacent-copy depth comments
+and exhaustive falsification. This is a corrected scheduler bug, not an argument
+that the numeral form is invalid. [OP-068](../open-problems.md#op-068--zeckendorf-consumer-and-composition-cost)
+covers whether a real consumer needs the canonical form enough to repay its cost.
+
 ## NR-110: Clamped HORS openings do not bind raw Binohash indices
 
 The existing [HORS-like verifier](../primitives/hors-hash160.md) intentionally

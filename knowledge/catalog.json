@@ -15804,6 +15804,97 @@
       ]
     },
     {
+      "id": "arithmetic/zeckendorf",
+      "name": "Canonical Zeckendorf decoding",
+      "class": "arithmetic/scriptnum",
+      "summary": "Decodes canonical fixed-width binary vectors into nonnegative ScriptNums using Fibonacci weights and exact no-adjacent-set-bit validation, while preserving unrelated stack state.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-13",
+      "knowledge_page": "knowledge/primitives/zeckendorf.md",
+      "implementation": "src/arithmetic/zeckendorf/mod.rs",
+      "documentation": "src/arithmetic/zeckendorf/README.md",
+      "tests": [
+        "src/arithmetic/zeckendorf/mod.rs",
+        "tests/primitive_metrics.rs zeckendorf_decoder_metrics_are_current"
+      ],
+      "references": [
+        "fraenkel-systems-numeration-1985",
+        "mathworld-zeckendorf-representation",
+        "oeis-a035517",
+        "bitcoin-core-scriptnum-v30.3",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "tracked-stack"
+      ],
+      "security": "Every bit is hostile until range and raw canonical encoding checked. Only empty ScriptNum zero and 01 one are accepted. Adjacent set bits are rejected before arithmetic, independently of global MINIMALDATA and MINIMALIF. Exact Fibonacci-weighted summation reconstructs the value without a lookup table, multiplication or division. The fragment does not validate bits' provenance, a scalar target, a transaction, or any cryptographic relation. Caller must consume the result, clean any preserved prefix, and supply a terminal predicate or exact-arity guard as appropriate.",
+      "stack_contract": "Consumes preserved | bit[0] | ... | bit[width-1], with weight-one bit deepest and the highest weight on top, consuming exactly width data items and returning preserved | value. Every accepted bit is zero or one, no two adjacent bits are nonzero, while preserving unrelated caller state. There are exactly width ordinary data items, zero auxiliary hints and zero hint bytes, all present at entry. The fragment never touches the altstack and returns unrelated caller state unchanged. Combined stack peak is width + caller_items + 4; reserve client consumers separately. Width is 1..=43 with no default and its whole weight sum is generation-checked to fit ScriptNum.",
+      "configurations": [
+        {
+          "id": "width12-value100-complete-leaf",
+          "label": "decode_zeckendorf(12) for 100 compared with matched power-of-two binary",
+          "parameters": {
+            "width": 12,
+            "decoded_value": 100,
+            "digits": "indices 2,4,9 set, giving 3+8+89; other indices are zero; least significant deepest",
+            "data_items": 12,
+            "nonzero_data_items": 3,
+            "empty_data_items": 9,
+            "hint_items": 0,
+            "hint_bytes": 0,
+            "hints_coexist_at_entry": true,
+            "input_check": true,
+            "stack_limit_enforced": true,
+            "witness_element_limit": 520,
+            "combined_peak_formula": "width + caller_items + 4",
+            "measured_other_caller_items": 0,
+            "witness_scope": "expected decoded scalar 100 is a locking-script constant, so exact accepted canonical Zeckendorf witness; no maximum over different scalar targets is implied",
+            "compile_options": "ALL",
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "provenance_resolver": "support::provenance over the embedded Cargo.lock resolved at build time",
+            "matched_binary_baseline": "powers 1,2,4,...,2048, same raw canonical bit checks and conditional additions, exact decoded 100, no adjacency pass: 196 script bytes, 16 data-witness bytes, peak 16, 133 static and 124 executed non-push operations; total 212 versus 316"
+          },
+          "includes": "complete-leaf: canonical range/reserialization checks for all twelve hostile bits, adjacency rejection, conditional Fibonacci weight reconstruction to 100, exact output comparison, terminal OP_TRUE and clean stack; excludes input pushes, unrelated caller state, tapscript/control-block serialization, full Taproot framing and transaction context; data-witness bytes contain count and item lengths only",
+          "script_bytes": 300,
+          "witness_bytes": 16,
+          "witness_bytes_max": 16,
+          "max_stack_items": 16,
+          "executed_opcodes": 201,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 300,
+          "hint_items": 0,
+          "metric_keys": [
+            "zeckendorf_12_script",
+            "zeckendorf_12_witness",
+            "zeckendorf_12_stack",
+            "zeckendorf_12_static",
+            "zeckendorf_12_executed"
+          ],
+          "static_non_push_opcodes": 210
+        }
+      ],
+      "limitations": [
+        "The no-adjacency representation costs 104 more complete-leaf bytes than the matched ordinary-binary control on this fixture, with equal peak and data-witness size; not a compression win",
+        "Its 210 static non-push operations exceed the 201-opcode legacy/P2SH/P2WSH limit; the 300-byte complete leaf fits the 520-byte P2SH element ceiling but other limits remain relevant",
+        "Actual consumer use and any downstream advantage are unmeasured (OP-068)",
+        "Only width 12 has a complete cost fixture; width-43 and exact 1,000-item boundaries are tested separately",
+        "No Bitcoin Core differential, relay-policy acceptance, or complete-transaction validation",
+        "Scalar-target byte witness maximum is specific to the fixed value-100 leaf; no arbitrary target comparison is conflated with ordinary binary"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003",
+        "OP-068"
+      ]
+    },
+    {
       "id": "arithmetic/signed-radix32-decoder",
       "name": "Signed radix-32 window decoder",
       "class": "arithmetic/word",
