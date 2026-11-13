@@ -540,6 +540,13 @@
       "kind": "paper",
       "url": "https://doi.org/10.46298/dmtcs.538",
       "revision": "DMTCS 13(1), 2011, pages 75–94. Introduction describes integer negative-radix digit alphabets."
+    },
+    {
+      "id": "hankerson-guide-ecc-ch3-2004",
+      "title": "Hankerson, Menezes, and Vanstone: Elliptic Curve Arithmetic",
+      "kind": "book-chapter",
+      "url": "https://doi.org/10.1007/0-387-21846-7_3",
+      "revision": "Guide to Elliptic Curve Cryptography, chapter 3, pages 75–152, 2004; online ISBN 978-0-387-21846-5; representation context, no Script costs"
     }
   ]
 }

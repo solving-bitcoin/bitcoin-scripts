@@ -45,6 +45,7 @@ the source. Read a page together with its comparison page and evidence record.
 - [Exact wide ScriptNum sum](wide-scriptnum-sum.md)
 - [Checked factoradic (Lehmer code) decoding](factoradic-u4.md)
 - [Checked negabinary decoding](negabinary-decoder.md)
+- [Retained canonical NAF ScriptNum witnesses](scriptnum-naf.md)
 - [Fixed-width u4 lexicographic comparison](u4-lexicographic.md)
 - [Checked u4 cyclic lag-equality mask](u4-cyclic-equality.md)
 - [Opaque lag-match count](opaque-lag-count.md)

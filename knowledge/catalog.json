@@ -15804,6 +15804,133 @@
       ]
     },
     {
+      "id": "arithmetic/scriptnum-naf",
+      "name": "Retained canonical NAF ScriptNum witnesses",
+      "class": "arithmetic/scriptnum",
+      "summary": "Verifies a nonnegative ScriptNum and a retained fixed-width non-adjacent-form digit opening, with canonical ternary digits, exact positional reconstruction, and hostile-input rejection.",
+      "status": "experimental",
+      "evidence": "locally-reproduced",
+      "execution": "unclassified",
+      "as_of": "2026-11-13",
+      "knowledge_page": "knowledge/primitives/scriptnum-naf.md",
+      "implementation": "src/arithmetic/naf/mod.rs",
+      "documentation": "src/arithmetic/naf/README.md",
+      "tests": [
+        "src/arithmetic/naf/mod.rs",
+        "tests/primitive_metrics.rs scriptnum_naf_metrics_are_current"
+      ],
+      "references": [
+        "hankerson-guide-ecc-ch3-2004",
+        "bitcoin-core-scriptnum-v30.3",
+        "bitcoin-script-locked",
+        "bitcoin-scriptexec-locked"
+      ],
+      "techniques": [
+        "digit-arithmetic",
+        "tracked-stack",
+        "witness-hints"
+      ],
+      "security": "The scalar and all digit hints are canonical ScriptNums checked before adjacency testing or accumulation. Each digit is in {-1,0,1}, consecutive digits are not both nonzero, and the scalar is nonnegative and exactly the positional weighted sum. This proves the unique NAF for the fixed-width nonnegative representation domain only. It authenticates no point, key, signature, message or scalar multiplication, has no terminal predicate, and uses no lookup table or forbidden arithmetic opcode.",
+      "stack_contract": "Consumes preserved | scalar | digit[0] | ... | digit[width-1], with most significant digit on top, and returns the exact unchanged stack after successful canonical/range/spacing/scalar checks. The scalar is one data item and width digit items are incremental arithmetic hints; all width+1 items coexist at entry. Pre-existing main/alt state is preserved. Conservative stack bound is width+5 plus all caller items. Altstack is not used; output comparisons or cleanup are caller obligations.",
+      "configurations": [
+        {
+          "id": "width9-complete-leaf",
+          "label": "verify_scriptnum_naf(9) for 175 with exact retained-item checks",
+          "parameters": {
+            "width": 9,
+            "scalar": 175,
+            "digits": [-1, 0, 0, 0, -1, 0, -1, 0, 1],
+            "data_items": 10,
+            "hint_items": 9,
+            "hint_bytes": 13,
+            "nonzero_hints": 4,
+            "hints_coexist_at_entry": true,
+            "scalar_formula": "256 - 64 - 16 - 1",
+            "maximum_valid_scalar": 341,
+            "input_check": true,
+            "stack_limit_enforced": true,
+            "require_minimal": false,
+            "explicit_canonical_encoding": true,
+            "compile_options": "ALL",
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "plain_scalar_baseline": "Same canonical nonnegative 175, exact retained-scalar check and OP_TRUE: 14 script bytes, 4 witness bytes, peak 4, 8 static/executed non-push opcodes; zero hints"
+          },
+          "includes": "complete-leaf: canonical nonnegative scalar check, canonical ternary digit checks, pairwise absolute-sum NAF spacing, high-to-low positional reconstruction, exact retained-scalar/digit output comparisons and terminal OP_TRUE; excludes input pushes, tapscript/control-block serialization, unrelated state and transaction context; witness measurement covers one scalar plus nine hints with count and CompactSize lengths only",
+          "script_bytes": 447,
+          "witness_bytes": 17,
+          "witness_bytes_max": 18,
+          "max_stack_items": 14,
+          "executed_opcodes": 286,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 447,
+          "hint_items": 9,
+          "metric_keys": [
+            "scriptnum_naf_w9_script",
+            "scriptnum_naf_w9_witness",
+            "scriptnum_naf_w9_stack",
+            "scriptnum_naf_w9_opcodes",
+            "scriptnum_naf_w9_executed"
+          ],
+          "static_non_push_opcodes": 347
+        },
+        {
+          "id": "width16-complete-leaf",
+          "label": "verify_scriptnum_naf(16) for 21845 with exact retained-item checks",
+          "parameters": {
+            "width": 16,
+            "scalar": 21845,
+            "digits": "alternating 1,0 at positions 0..15",
+            "data_items": 17,
+            "hint_items": 16,
+            "hint_bytes": 24,
+            "nonzero_hints": 8,
+            "hints_coexist_at_entry": true,
+            "input_check": true,
+            "stack_limit_enforced": true,
+            "require_minimal": false,
+            "explicit_canonical_encoding": true,
+            "compile_options": "ALL",
+            "interpreter_rev": "a09e87af444034698697f0a2267e755cf72f9aed",
+            "compiler_rev": "124b561ed75ac3ec4c6ad99207d8dcdd3bc67180",
+            "plain_scalar_baseline": "Same canonical nonnegative 21845, exact retained-scalar check and OP_TRUE: 14 script bytes, 4 witness bytes, peak 4, 8 static/executed non-push opcodes; zero hints"
+          },
+          "includes": "complete-leaf: same checks and exact retained-item boundary as width 9, with 16 alternating digits, terminal OP_TRUE and combined-stack measurement; excludes input pushes, tapscript/control-block serialization, unrelated state and transaction context; witness measurement covers one scalar plus 16 hints with count and CompactSize lengths only",
+          "script_bytes": 791,
+          "witness_bytes": 28,
+          "witness_bytes_max": 28,
+          "max_stack_items": 21,
+          "executed_opcodes": 493,
+          "validation_weight": null,
+          "setup_script_bytes": 0,
+          "per_use_script_bytes": 791,
+          "hint_items": 16,
+          "metric_keys": [
+            "scriptnum_naf_w16_script",
+            "scriptnum_naf_w16_witness",
+            "scriptnum_naf_w16_stack",
+            "scriptnum_naf_w16_opcodes",
+            "scriptnum_naf_w16_executed"
+          ],
+          "static_non_push_opcodes": 613
+        }
+      ],
+      "limitations": [
+        "NAF validation and retained representation cost more than scalar-only canonical/nonnegative checking: 464 versus 18 script-plus-data bytes at width 9 and 819 versus 18 at width 16",
+        "The actual consuming scalar schedule, routing, output cleanup and any economic benefit remain unmeasured (OP-067)",
+        "Even width 9 exceeds the 201-non-push-opcode limit for bare, P2SH and P2WSH; fitting the 520-byte P2SH element ceiling does not remove that limit",
+        "Width 32 correctness and near-limit stack behavior are tested separately, but only widths 9 and 16 have full measured leaf configurations",
+        "No Bitcoin Core differential or relay-policy validation"
+      ],
+      "open_problems": [
+        "OP-001",
+        "OP-002",
+        "OP-003",
+        "OP-067"
+      ]
+    },
+    {
       "id": "arithmetic/signed-radix32-decoder",
       "name": "Signed radix-32 window decoder",
       "class": "arithmetic/word",
